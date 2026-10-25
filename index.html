@@ -73,6 +73,12 @@ main { padding: 4px 16px calc(var(--nav-h) + var(--safe-b) + 24px); max-width: 7
 .tabbar button svg { width: 24px; height: 24px; }
 .tabbar button[aria-current="page"] { color: var(--primary-strong); }
 .tabbar button[aria-current="page"] svg { background: var(--primary-soft); border-radius: 999px; padding: 2px 14px; box-sizing: content-box; margin: -2px 0; }
+body.logged-out .tabbar, body.logged-out [data-act="settings"] { display: none; }
+.auth { max-width: 400px; margin: 4vh auto 0; }
+.auth .logo { width: 72px; height: 72px; border-radius: 20px; background: var(--primary); color: #fff; display: grid; place-items: center; margin: 0 auto 14px; }
+.auth .logo svg { width: 40px; height: 40px; }
+.auth h2 { text-align: center; margin: 0 0 4px; font-size: 24px; }
+.auth > p { text-align: center; margin: 0 0 20px; }
 .extra-form { display: grid; grid-template-columns: 1fr 76px 44px; gap: 6px; }
 .extra-form select { grid-column: 1 / -1; }
 .badge-extra { font-size: 11px; font-weight: 700; color: var(--primary-strong); background: var(--primary-soft); border-radius: 6px; padding: 1px 6px; }
@@ -438,6 +444,8 @@ function fmtNum(n) {
 // État global
 // ---------------------------------------------------------------------------
 const state = {
+  user: null,
+  authMode: 'login',
   tab: store.get('tab', 'scan'),
   settings: { store_name: 'Super U Porte de Savoie Montmélian', store_slug: 'superu-montmelian', default_servings: 2 },
   recipes: [],
@@ -457,16 +465,34 @@ const recipeById = (id) => state.recipes.find((r) => r.id === id);
 // ---------------------------------------------------------------------------
 // Accès aux données (Supabase)
 // ---------------------------------------------------------------------------
+// Tables réservées à l'utilisateur connecté (la sécurité RLS filtre par user_id).
+const T = {
+  settings: 'reglages',
+  recipes: 'recettes',
+  plan: 'planning_repas',
+  scans: 'historique_scans',
+  links: 'liens_produits',
+  checks: 'courses_coches',
+  extras: 'courses_ajouts',
+};
+const PHOTO_BUCKET = 'photos-recettes';
+const me = () => state.user?.id;
+
 const Data = {
   async loadAll() {
     const [s, r, l, sc] = await Promise.all([
-      db.from('settings').select('*').eq('id', 1).maybeSingle(),
-      db.from('recipes').select('*').order('updated_at', { ascending: false }),
-      db.from('product_links').select('*'),
-      db.from('scans').select('*').order('scanned_at', { ascending: false }).limit(150),
+      db.from(T.settings).select('*').maybeSingle(),
+      db.from(T.recipes).select('*').order('updated_at', { ascending: false }),
+      db.from(T.links).select('*'),
+      db.from(T.scans).select('*').order('scanned_at', { ascending: false }).limit(150),
     ]);
     for (const res of [s, r, l, sc]) if (res.error) throw res.error;
     if (s.data) state.settings = s.data;
+    else {
+      const ins = await db.from(T.settings).insert({ user_id: me() }).select().single();
+      if (ins.error) throw ins.error;
+      state.settings = ins.data;
+    }
     state.recipes = r.data;
     state.links = Object.fromEntries(l.data.map((x) => [x.ingredient, x]));
     state.scans = sc.data;
@@ -474,9 +500,9 @@ const Data = {
   async loadWeek() {
     const week = isoDate(state.week);
     const [p, c, x] = await Promise.all([
-      db.from('meal_plan').select('*').eq('week', week),
-      db.from('shopping_checks').select('*').eq('week', week),
-      db.from('shopping_extras').select('*').eq('week', week).order('created_at'),
+      db.from(T.plan).select('*').eq('week', week),
+      db.from(T.checks).select('*').eq('week', week),
+      db.from(T.extras).select('*').eq('week', week).order('created_at'),
     ]);
     for (const res of [p, c, x]) if (res.error) throw res.error;
     state.plan = p.data;
@@ -484,24 +510,24 @@ const Data = {
     state.extras = x.data;
   },
   async addExtra(name, qty, aisle) {
-    const { data, error } = await db.from('shopping_extras').insert({ week: isoDate(state.week), name, qty: qty || null, aisle }).select().single();
+    const { data, error } = await db.from(T.extras).insert({ user_id: me(), week: isoDate(state.week), name, qty: qty || null, aisle }).select().single();
     if (error) throw error;
     state.extras.push(data);
   },
   async setExtraChecked(id, checked) {
-    const { error } = await db.from('shopping_extras').update({ checked }).eq('id', id);
+    const { error } = await db.from(T.extras).update({ checked }).eq('id', id);
     if (error) throw error;
     const e = state.extras.find((x) => x.id === id);
     if (e) e.checked = checked;
   },
   async deleteExtra(id) {
-    const { error } = await db.from('shopping_extras').delete().eq('id', id);
+    const { error } = await db.from(T.extras).delete().eq('id', id);
     if (error) throw error;
     state.extras = state.extras.filter((x) => x.id !== id);
   },
   async saveRecipe(r) {
-    const row = { ...r, updated_at: new Date().toISOString() };
-    const { data, error } = await db.from('recipes').upsert(row).select().single();
+    const row = { ...r, user_id: me(), updated_at: new Date().toISOString() };
+    const { data, error } = await db.from(T.recipes).upsert(row).select().single();
     if (error) throw error;
     const i = state.recipes.findIndex((x) => x.id === data.id);
     if (i >= 0) state.recipes.splice(i, 1);
@@ -509,60 +535,60 @@ const Data = {
     return data;
   },
   async deleteRecipe(id) {
-    const { error } = await db.from('recipes').delete().eq('id', id);
+    const { error } = await db.from(T.recipes).delete().eq('id', id);
     if (error) throw error;
     state.recipes = state.recipes.filter((r) => r.id !== id);
     state.plan = state.plan.filter((m) => m.recipe_id !== id);
   },
   async setMeal(day, slot, recipe_id, servings) {
-    const row = { week: isoDate(state.week), day, slot, recipe_id, servings };
-    const { data, error } = await db.from('meal_plan').upsert(row, { onConflict: 'week,day,slot' }).select().single();
+    const row = { user_id: me(), week: isoDate(state.week), day, slot, recipe_id, servings };
+    const { data, error } = await db.from(T.plan).upsert(row, { onConflict: 'user_id,week,day,slot' }).select().single();
     if (error) throw error;
     state.plan = state.plan.filter((m) => !(m.day === day && m.slot === slot));
     state.plan.push(data);
   },
   async updateMeal(id, patch) {
-    const { data, error } = await db.from('meal_plan').update(patch).eq('id', id).select().single();
+    const { data, error } = await db.from(T.plan).update(patch).eq('id', id).select().single();
     if (error) throw error;
     const i = state.plan.findIndex((m) => m.id === id);
     state.plan[i] = data;
   },
   async removeMeals(ids) {
     if (!ids.length) return;
-    const { error } = await db.from('meal_plan').delete().in('id', ids);
+    const { error } = await db.from(T.plan).delete().in('id', ids);
     if (error) throw error;
     state.plan = state.plan.filter((m) => !ids.includes(m.id));
   },
   async addScan(p, score) {
-    const row = { ean: p.code, name: p.product_name_fr || p.product_name || null, brand: p.brands || null, image_url: p.image_front_small_url || p.image_front_url || null, score };
-    await db.from('scans').delete().eq('ean', p.code);
-    const { data, error } = await db.from('scans').insert(row).select().single();
+    const row = { user_id: me(), ean: p.code, name: p.product_name_fr || p.product_name || null, brand: p.brands || null, image_url: p.image_front_small_url || p.image_front_url || null, score };
+    await db.from(T.scans).delete().eq('ean', p.code);
+    const { data, error } = await db.from(T.scans).insert(row).select().single();
     if (error) throw error;
     state.scans = [data, ...state.scans.filter((s) => s.ean !== p.code)];
   },
   async clearScans() {
-    const { error } = await db.from('scans').delete().not('id', 'is', null);
+    const { error } = await db.from(T.scans).delete().eq('user_id', me());
     if (error) throw error;
     state.scans = [];
   },
   async saveLink(ingredient, url, label) {
-    const row = { ingredient, url, label, updated_at: new Date().toISOString() };
-    const { error } = await db.from('product_links').upsert(row);
+    const row = { user_id: me(), ingredient, url, label, updated_at: new Date().toISOString() };
+    const { error } = await db.from(T.links).upsert(row);
     if (error) throw error;
     state.links[ingredient] = row;
   },
   async deleteLink(ingredient) {
-    const { error } = await db.from('product_links').delete().eq('ingredient', ingredient);
+    const { error } = await db.from(T.links).delete().eq('ingredient', ingredient);
     if (error) throw error;
     delete state.links[ingredient];
   },
   async setCheck(item, checked) {
-    const { error } = await db.from('shopping_checks').upsert({ week: isoDate(state.week), item, checked });
+    const { error } = await db.from(T.checks).upsert({ user_id: me(), week: isoDate(state.week), item, checked });
     if (error) throw error;
     state.checks[item] = checked;
   },
   async saveSettings(patch) {
-    const { data, error } = await db.from('settings').update({ ...patch, updated_at: new Date().toISOString() }).eq('id', 1).select().single();
+    const { data, error } = await db.from(T.settings).upsert({ ...patch, user_id: me(), updated_at: new Date().toISOString() }).select().single();
     if (error) throw error;
     state.settings = data;
   },
@@ -1429,10 +1455,10 @@ async function uploadPhoto(file, el) {
   toast('Envoi de la photo…');
   try {
     const blob = await resizeImage(file, 1280);
-    const path = `${uid()}.jpg`;
-    const { error } = await db.storage.from('recipe-photos').upload(path, blob, { contentType: 'image/jpeg', upsert: false });
+    const path = `${me()}/${uid()}.jpg`;
+    const { error } = await db.storage.from(PHOTO_BUCKET).upload(path, blob, { contentType: 'image/jpeg', upsert: false });
     if (error) throw error;
-    editing.photo_url = db.storage.from('recipe-photos').getPublicUrl(path).data.publicUrl;
+    editing.photo_url = db.storage.from(PHOTO_BUCKET).getPublicUrl(path).data.publicUrl;
     drawEditor(el);
     toast('Photo ajoutée');
   } catch (err) { fail(err, 'Photo non envoyée'); }
@@ -1731,7 +1757,7 @@ function weekMenu() {
     try {
       if (act === 'today') { state.week = mondayOf(new Date()); await Data.loadWeek(); }
       if (act === 'dup') {
-        const { data, error } = await db.from('meal_plan').select('*').eq('week', isoDate(addDays(state.week, -7)));
+        const { data, error } = await db.from(T.plan).select('*').eq('week', isoDate(addDays(state.week, -7)));
         if (error) throw error;
         if (!data.length) { toast('La semaine précédente est vide'); return; }
         for (const m of data) if (!state.plan.some((x) => x.day === m.day && x.slot === m.slot)) await Data.setMeal(m.day, m.slot, m.recipe_id, m.servings);
@@ -1970,6 +1996,9 @@ function linkItem(k, name) {
 function openSettings() {
   const s = state.settings;
   const el = openSheet(`${sheetHead('Paramètres')}
+    <div class="card row" style="padding:12px;margin-bottom:16px;box-shadow:none;background:var(--surface-2)">
+      <div class="grow"><div class="muted small">Connecté en tant que</div><b style="word-break:break-all">${esc(state.user?.email || '')}</b></div>
+      <button class="btn small" data-x="logout">Se déconnecter</button></div>
     <form class="stack" data-form="settings">
       <h3 style="margin:0">Supermarché</h3>
       <label class="field"><span>Nom du magasin</span><input class="input" name="store_name" value="${esc(s.store_name)}" required></label>
@@ -1982,7 +2011,11 @@ function openSettings() {
     <h3 style="margin:22px 0 8px">Sauvegarde</h3>
     <div class="grid2"><button class="btn" data-x="export">${ICON.download} Exporter</button>
       <label class="btn">${ICON.upload} Importer<input type="file" accept="application/json" data-x="import" hidden></label></div>
-    <p class="muted small">Données nutritionnelles : Open Food Facts. Aucune connexion requise : toute personne disposant du lien de l'application peut voir et modifier les données.</p>`);
+    <p class="muted small">Données nutritionnelles : Open Food Facts. Vos recettes, plannings et listes sont privés et liés à votre compte.</p>`);
+  $('[data-x="logout"]', el).addEventListener('click', async () => {
+    while (sheets.length) closeSheet();
+    await db.auth.signOut();
+  });
   const form = $('form', el);
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -1999,7 +2032,7 @@ function openSettings() {
 }
 async function exportData() {
   try {
-    const [plan] = await Promise.all([db.from('meal_plan').select('*')]);
+    const [plan] = await Promise.all([db.from(T.plan).select('*')]);
     if (plan.error) throw plan.error;
     const data = { app: APP_NAME, version: 1, exported_at: new Date().toISOString(), settings: state.settings, recipes: state.recipes, meal_plan: plan.data, product_links: Object.values(state.links) };
     const a = document.createElement('a');
@@ -2014,10 +2047,13 @@ async function importData(file) {
     const d = JSON.parse(await file.text());
     if (!Array.isArray(d.recipes)) throw new Error('Fichier non reconnu');
     if (!(await confirmSheet(`Importer ${d.recipes.length} recette(s) et le planning ? Les éléments existants avec le même identifiant seront remplacés.`, 'Importer', false))) return;
-    if (d.recipes.length) { const r = await db.from('recipes').upsert(d.recipes); if (r.error) throw r.error; }
-    if (d.product_links?.length) { const r = await db.from('product_links').upsert(d.product_links); if (r.error) throw r.error; }
-    if (d.meal_plan?.length) { const r = await db.from('meal_plan').upsert(d.meal_plan.map(({ id, ...m }) => m), { onConflict: 'week,day,slot' }); if (r.error) throw r.error; }
-    if (d.settings) { const { id, updated_at, ...s } = d.settings; await Data.saveSettings(s); }
+    // Les éléments importés sont rattachés au compte connecté ; les recettes reçoivent de nouveaux identifiants.
+    const ids = new Map(d.recipes.map((r) => [r.id, uid()]));
+    if (d.recipes.length) { const r = await db.from(T.recipes).insert(d.recipes.map((x) => ({ ...x, id: ids.get(x.id), user_id: me() }))); if (r.error) throw r.error; }
+    if (d.product_links?.length) { const r = await db.from(T.links).upsert(d.product_links.map(({ id, ...l }) => ({ ...l, user_id: me() }))); if (r.error) throw r.error; }
+    const plan = (d.meal_plan || []).filter((m) => ids.has(m.recipe_id)).map(({ id, ...m }) => ({ ...m, recipe_id: ids.get(m.recipe_id), user_id: me() }));
+    if (plan.length) { const r = await db.from(T.plan).upsert(plan, { onConflict: 'user_id,week,day,slot' }); if (r.error) throw r.error; }
+    if (d.settings) { const { id, user_id, updated_at, ...s } = d.settings; await Data.saveSettings(s); }
     await Data.loadAll();
     await Data.loadWeek();
     closeSheet(); render(); toast('Import terminé');
@@ -2147,17 +2183,87 @@ document.addEventListener('keydown', (e) => {
   else if (sheets.length) closeSheet();
 });
 
-(async function init() {
-  document.title = APP_NAME;
+// ---------------------------------------------------------------------------
+// Comptes utilisateurs
+// ---------------------------------------------------------------------------
+function renderAuth() {
+  const signup = state.authMode === 'signup';
+  document.body.classList.add('logged-out');
+  $('#title').textContent = '';
+  $('#main').innerHTML = `<section class="auth">
+    <div class="logo">${ICON.leaf}</div>
+    <h2>${esc(APP_NAME)}</h2>
+    <p class="muted">${signup ? 'Créez votre compte pour retrouver vos données sur tous vos appareils.' : 'Connectez-vous pour accéder à votre espace.'}</p>
+    <div class="seg" role="group" style="grid-template-columns:1fr 1fr">
+      <button type="button" aria-pressed="${!signup}" data-auth-mode="login">Se connecter</button>
+      <button type="button" aria-pressed="${signup}" data-auth-mode="signup">Créer un compte</button></div>
+    <form class="stack" data-form="auth">
+      <label class="field"><span>Adresse e-mail</span><input class="input" type="email" name="email" autocomplete="email" inputmode="email" required></label>
+      <label class="field"><span>Mot de passe${signup ? ' (6 caractères minimum)' : ''}</span>
+        <input class="input" type="password" name="password" minlength="6" maxlength="72" autocomplete="${signup ? 'new-password' : 'current-password'}" required></label>
+      <label class="check"><input type="checkbox" data-show-pass> Afficher le mot de passe</label>
+      <button class="btn primary block">${signup ? 'Créer mon compte' : 'Se connecter'}</button>
+    </form></section>`;
+}
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-auth-mode]');
+  if (!b) return;
+  state.authMode = b.dataset.authMode;
+  const email = $('[data-form="auth"] [name="email"]')?.value || '';
+  renderAuth();
+  $('[data-form="auth"] [name="email"]').value = email;
+});
+document.addEventListener('change', (e) => {
+  if (e.target.matches('[data-show-pass]')) $('[data-form="auth"] [name="password"]').type = e.target.checked ? 'text' : 'password';
+});
+document.addEventListener('submit', async (e) => {
+  const f = e.target;
+  if (f.dataset.form !== 'auth') return;
+  e.preventDefault();
+  const email = f.email.value.trim().toLowerCase();
+  const password = f.password.value;
+  const btn = $('button.primary', f);
+  btn.disabled = true;
+  try {
+    if (state.authMode === 'signup') {
+      const { error } = await db.functions.invoke('signup', { body: { email, password } });
+      if (error) {
+        let msg = 'Création du compte impossible';
+        try { msg = (await error.context.json()).error || msg; } catch { /* réponse non JSON */ }
+        throw new Error(msg);
+      }
+    }
+    const { error } = await db.auth.signInWithPassword({ email, password });
+    if (error) throw new Error(/invalid/i.test(error.message) ? 'E-mail ou mot de passe incorrect' : error.message);
+  } catch (err) {
+    btn.disabled = false;
+    toast(err.message || 'Connexion impossible');
+  }
+});
+
+async function onSession(session) {
+  const user = session?.user || null;
+  if (user?.id === state.user?.id && state.loaded) return;
+  state.user = user;
+  state.loaded = false;
+  Object.assign(state, { recipes: [], links: {}, scans: [], plan: [], checks: {}, extras: [], moving: null });
+  if (!user) { renderAuth(); return; }
+  document.body.classList.remove('logged-out');
+  $('#main').innerHTML = '<div class="spinner"></div>';
   try {
     await Data.loadAll();
     await Data.loadWeek();
+    state.loaded = true;
     render();
   } catch (err) {
     $('#main').innerHTML = `<div class="empty"><p>Impossible de charger vos données.</p><button class="btn primary" onclick="location.reload()">Réessayer</button></div>`;
     console.error(err);
   }
-})();
+}
+
+document.title = APP_NAME;
+// Différé : on ne rappelle pas Supabase depuis l'intérieur du callback d'authentification.
+db.auth.onAuthStateChange((_event, session) => { setTimeout(() => onSession(session), 0); });
 </script>
 </body>
 </html>
