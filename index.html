@@ -342,6 +342,8 @@ textarea.input { resize: vertical; min-height: 72px; }
 // Configuration
 // ---------------------------------------------------------------------------
 const APP_NAME = 'Nutri Semaine'; // titre provisoire
+// À incrémenter à chaque publication, avec la même valeur dans version.json.
+const APP_VERSION = '2026-10-25.2';
 const SUPABASE_URL = 'https://svugddkrptqpjmywhorb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2dWdkZGtycHRxcGpteXdob3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MjU5NDgsImV4cCI6MjEwODUwMTk0OH0.63RETgf7rbVMquGV-7ooY3qn-Qf31uVCA3ZBfqBvFcI';
 const OFF = 'https://world.openfoodfacts.org/api/v2';
@@ -2260,6 +2262,52 @@ async function onSession(session) {
     console.error(err);
   }
 }
+
+// ---------------------------------------------------------------------------
+// Mises à jour : version.json est relu sans cache ; si la version publiée diffère,
+// la page est rechargée avec une URL nouvelle pour contourner le cache du navigateur.
+// ---------------------------------------------------------------------------
+const Updater = {
+  pending: null,
+  async check() {
+    try {
+      const r = await fetch(`version.json?t=${Date.now()}`, { cache: 'no-store' });
+      if (!r.ok) return;
+      const { version } = await r.json();
+      if (version && version !== APP_VERSION) this.apply(version);
+    } catch { /* hors ligne : on réessaiera plus tard */ }
+  },
+  apply(version) {
+    // Évite une boucle si le cache sert encore l'ancienne page après un rechargement.
+    if (store.get('updateTried', null) === version) return this.banner(version);
+    // Ne pas interrompre une saisie en cours (éditeur, feuille ouverte, scanner, mode cuisine).
+    if (sheets.length || Scanner.el || $('.cook')) { this.pending = version; return this.banner(version); }
+    this.reload(version);
+  },
+  reload(version) {
+    store.set('updateTried', version);
+    location.replace(`${location.pathname}?v=${encodeURIComponent(version)}`);
+  },
+  banner(version) {
+    if ($('#update-banner')) return;
+    const el = document.createElement('div');
+    el.id = 'update-banner';
+    el.className = 'toast show';
+    el.style.cssText = 'pointer-events:auto;display:flex;gap:10px;align-items:center';
+    el.innerHTML = '<span>Nouvelle version disponible</span><button class="btn small primary">Mettre à jour</button>';
+    $('button', el).addEventListener('click', () => this.reload(version));
+    document.body.append(el);
+  },
+};
+(function afterUpdate() {
+  const v = new URLSearchParams(location.search).get('v');
+  if (!v) return;
+  history.replaceState(null, '', location.pathname);
+  if (v === APP_VERSION) { store.set('updateTried', null); setTimeout(() => toast('Application mise à jour'), 600); }
+})();
+Updater.check();
+setInterval(() => Updater.check(), 5 * 60 * 1000);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') Updater.check(); });
 
 document.title = APP_NAME;
 // Différé : on ne rappelle pas Supabase depuis l'intérieur du callback d'authentification.
