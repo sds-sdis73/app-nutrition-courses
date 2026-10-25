@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1f9d55">
+<meta name="theme-color" content="#f8f9f5">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Nutri Semaine</title>
@@ -13,49 +13,30 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/umd/zxing-browser.min.js" defer></script>
 <style>
+/* Thème clair unique, tons vert sauge */
 :root {
-  --bg: #f4f7f4;
+  --bg: #f8f9f5;
   --surface: #ffffff;
-  --surface-2: #eef3ef;
-  --text: #17231b;
-  --muted: #5d6b62;
-  --border: #dbe4dd;
-  --primary: #1f9d55;
-  --primary-strong: #167a42;
-  --primary-soft: #e3f4ea;
+  --surface-2: #f1f4ee;
+  --text: #2b332d;
+  --muted: #6b7a6e;
+  --border: #e1e7dd;
+  --primary: #5f8a67;
+  --primary-strong: #4a6f51;
+  --primary-soft: #e9f0e6;
+  --sage-light: #a9c2a6;
   --on-primary: #ffffff;
-  --danger: #d64532;
-  --excellent: #1e8f4e;
-  --bon: #7cbf3a;
-  --mediocre: #f0a031;
-  --mauvais: #e04f2f;
-  --shadow: 0 6px 24px rgba(16, 40, 24, .10);
+  --danger: #c4553f;
+  --excellent: #2e8b57;
+  --bon: #8cc15a;
+  --mediocre: #eea84a;
+  --mauvais: #dd5b3e;
+  --shadow: 0 4px 18px rgba(60, 80, 62, .08);
   --radius: 16px;
   --nav-h: 64px;
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-t: env(safe-area-inset-top, 0px);
   color-scheme: light;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0f1612;
-    --surface: #18211c;
-    --surface-2: #212c25;
-    --text: #e7efe9;
-    --muted: #9db0a3;
-    --border: #2c3a31;
-    --primary: #34b96c;
-    --primary-strong: #4fd083;
-    --primary-soft: #1d3326;
-    --on-primary: #08130c;
-    --shadow: 0 6px 24px rgba(0, 0, 0, .45);
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #0f1612; --surface: #18211c; --surface-2: #212c25; --text: #e7efe9; --muted: #9db0a3;
-  --border: #2c3a31; --primary: #34b96c; --primary-strong: #4fd083; --primary-soft: #1d3326;
-  --on-primary: #08130c; --shadow: 0 6px 24px rgba(0, 0, 0, .45); color-scheme: dark;
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; }
@@ -81,16 +62,20 @@ img { display: block; max-width: 100%; }
 main { padding: 4px 16px calc(var(--nav-h) + var(--safe-b) + 24px); max-width: 760px; margin: 0 auto; }
 .tabbar {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
-  display: grid; grid-template-columns: repeat(3, 1fr);
+  display: grid; grid-template-columns: repeat(5, 1fr);
   height: calc(var(--nav-h) + var(--safe-b)); padding-bottom: var(--safe-b);
   background: var(--surface); border-top: 1px solid var(--border);
 }
 .tabbar button {
   border: 0; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 3px; font-size: 12px; color: var(--muted); font-weight: 600;
+  gap: 3px; font-size: 11px; color: var(--muted); font-weight: 600; padding: 0;
 }
-.tabbar button svg { width: 26px; height: 26px; }
-.tabbar button[aria-current="page"] { color: var(--primary); }
+.tabbar button svg { width: 24px; height: 24px; }
+.tabbar button[aria-current="page"] { color: var(--primary-strong); }
+.tabbar button[aria-current="page"] svg { background: var(--primary-soft); border-radius: 999px; padding: 2px 14px; box-sizing: content-box; margin: -2px 0; }
+.extra-form { display: grid; grid-template-columns: 1fr 76px 44px; gap: 6px; }
+.extra-form select { grid-column: 1 / -1; }
+.badge-extra { font-size: 11px; font-weight: 700; color: var(--primary-strong); background: var(--primary-soft); border-radius: 6px; padding: 1px 6px; }
 
 /* Composants communs */
 .icon-btn {
@@ -170,11 +155,11 @@ textarea.input { resize: vertical; min-height: 72px; }
 /* Scan */
 .scan-hero {
   display: grid; gap: 12px; padding: 20px; text-align: center;
-  background: linear-gradient(160deg, var(--primary) 0%, var(--primary-strong) 100%); color: #fff; border-radius: 22px;
+  background: linear-gradient(160deg, #86a98a 0%, var(--primary) 100%); color: #fff; border-radius: 22px;
 }
 .scan-hero h2 { margin: 0; font-size: 20px; }
 .scan-hero p { margin: 0; opacity: .9; font-size: 15px; }
-.scan-hero .btn { background: #fff; color: #167a42; border: 0; min-height: 56px; font-size: 17px; }
+.scan-hero .btn { background: #fff; color: var(--primary-strong); border: 0; min-height: 56px; font-size: 17px; }
 .manual { display: flex; gap: 8px; }
 .manual .input { background: rgba(255,255,255,.18); border-color: transparent; color: #fff; }
 .manual .input::placeholder { color: rgba(255,255,255,.75); }
@@ -339,6 +324,8 @@ textarea.input { resize: vertical; min-height: 72px; }
   <button data-act="tab" data-tab="scan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M10 8v8M13 8v8M17 8v8"/></svg>Scan</button>
   <button data-act="tab" data-tab="recettes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/><path d="M9 7h7M9 11h5"/></svg>Recettes</button>
   <button data-act="tab" data-tab="planning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h3M8 18h3M14 14h2"/></svg>Planning</button>
+  <button data-act="tab" data-tab="courses"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>Courses</button>
+  <button data-act="tab" data-tab="batch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1.1-2.1-.2-4 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.2.4-2.3 1-3.3.3 1.6 1.4 2.8 2.5 2.8z"/></svg>Batch</button>
 </nav>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -459,7 +446,7 @@ const state = {
   week: mondayOf(new Date()),
   plan: [],
   checks: {},
-  planView: 'semaine',
+  extras: [],
   recipeQuery: '',
   recipeChip: 'tous',
   scanFilter: 'tous',
@@ -486,14 +473,31 @@ const Data = {
   },
   async loadWeek() {
     const week = isoDate(state.week);
-    const [p, c] = await Promise.all([
+    const [p, c, x] = await Promise.all([
       db.from('meal_plan').select('*').eq('week', week),
       db.from('shopping_checks').select('*').eq('week', week),
+      db.from('shopping_extras').select('*').eq('week', week).order('created_at'),
     ]);
-    if (p.error) throw p.error;
-    if (c.error) throw c.error;
+    for (const res of [p, c, x]) if (res.error) throw res.error;
     state.plan = p.data;
-    state.checks = Object.fromEntries(c.data.map((x) => [x.item, x.checked]));
+    state.checks = Object.fromEntries(c.data.map((r) => [r.item, r.checked]));
+    state.extras = x.data;
+  },
+  async addExtra(name, qty, aisle) {
+    const { data, error } = await db.from('shopping_extras').insert({ week: isoDate(state.week), name, qty: qty || null, aisle }).select().single();
+    if (error) throw error;
+    state.extras.push(data);
+  },
+  async setExtraChecked(id, checked) {
+    const { error } = await db.from('shopping_extras').update({ checked }).eq('id', id);
+    if (error) throw error;
+    const e = state.extras.find((x) => x.id === id);
+    if (e) e.checked = checked;
+  },
+  async deleteExtra(id) {
+    const { error } = await db.from('shopping_extras').delete().eq('id', id);
+    if (error) throw error;
+    state.extras = state.extras.filter((x) => x.id !== id);
   },
   async saveRecipe(r) {
     const row = { ...r, updated_at: new Date().toISOString() };
@@ -997,7 +1001,7 @@ function renderScan() {
 // Ingrédients : analyse, rayons, unités
 // ---------------------------------------------------------------------------
 const UNITS = ['', 'g', 'kg', 'ml', 'cl', 'l', 'pièce', 'c. à s.', 'c. à c.', 'pincée', 'gousse', 'tranche', 'botte', 'sachet', 'boîte', 'pot', 'verre'];
-const AISLES = ['Fruits & légumes', 'Boucherie & poissonnerie', 'Crèmerie & œufs', 'Fromages', 'Boulangerie', 'Épicerie salée', 'Épicerie sucrée', 'Conserves', 'Surgelés', 'Boissons', 'Herbes & épices', 'Autres'];
+const AISLES = ['Fruits & légumes', 'Boucherie & poissonnerie', 'Crèmerie & œufs', 'Fromages', 'Boulangerie', 'Épicerie salée', 'Épicerie sucrée', 'Conserves', 'Surgelés', 'Boissons', 'Herbes & épices', 'Entretien & maison', 'Hygiène & beauté', 'Bébé & animaux', 'Autres'];
 const AISLE_WORDS = {
   'Fruits & légumes': 'oignon, echalote, ail, carotte, courgette, tomate, poivron, aubergine, pomme, poire, banane, citron, orange, salade, laitue, epinard, brocoli, chou, poireau, celeri, concombre, champignon, pomme de terre, patate, avocat, fraise, framboise, myrtille, kiwi, mangue, ananas, radis, navet, betterave, potiron, butternut, courge, haricot vert, petit pois, mais, fenouil, artichaut, asperge, raisin, peche, abricot, gingembre, citron vert',
   'Boucherie & poissonnerie': 'boeuf, veau, porc, poulet, cuisse de poulet, dinde, canard, agneau, steak, hache, viande, escalope, filet, saumon, cabillaud, thon, crevette, poisson, moule, lardon, jambon, chorizo, saucisse, bacon, merguez',
@@ -1009,6 +1013,9 @@ const AISLE_WORDS = {
   'Conserves': 'conserve, coulis, concentre de tomate, tomate pelee, pulpe de tomate, haricot rouge, lait de coco',
   'Surgelés': 'surgele, glace',
   'Boissons': 'eau, jus, vin, biere, soda, cafe, the',
+  'Entretien & maison': 'lessive, adoucissant, liquide vaisselle, pastille lave vaisselle, tablette lave vaisselle, eponge, essuie tout, sopalin, papier toilette, sac poubelle, nettoyant, javel, vinaigre blanc, desinfectant, serpilliere, aluminium, film alimentaire, papier cuisson, ampoule, pile, allumette, bougie, mouchoir',
+  'Hygiène & beauté': 'shampoing, apres shampoing, gel douche, dentifrice, brosse a dent, savon, deodorant, coton, coton tige, rasoir, mousse a raser, creme hydratante, serviette hygienique, tampon, protege slip, maquillage, demaquillant, creme solaire',
+  'Bébé & animaux': 'couche, lingette, lait infantile, petit pot, croquette, patee, litiere',
   'Herbes & épices': 'sel, poivre, persil, basilic, coriandre, ciboulette, thym, laurier, romarin, cumin, curry, paprika, muscade, cannelle, piment, herbes de provence, origan, curcuma, estragon, menthe',
 };
 const AISLE_INDEX = Object.entries(AISLE_WORDS)
@@ -1599,17 +1606,16 @@ async function seedRecipes() {
 // ---------------------------------------------------------------------------
 // Onglet Planning
 // ---------------------------------------------------------------------------
-function renderPlanning() {
-  const v = state.planView;
+function weekNav({ menu = false } = {}) {
   const end = addDays(state.week, 6);
-  return `
-    <div class="week-nav"><button class="icon-btn" data-act="week" data-d="-1" aria-label="Semaine précédente">${ICON.back}</button>
+  return `<div class="week-nav"><button class="icon-btn" data-act="week" data-d="-1" aria-label="Semaine précédente">${ICON.back}</button>
       <strong>${fmtDay(state.week)} – ${fmtDay(end)}</strong>
       <button class="icon-btn" data-act="week" data-d="1" aria-label="Semaine suivante">${ICON.next}</button>
-      <button class="icon-btn" data-act="week-menu" aria-label="Actions de la semaine">${ICON.dots}</button></div>
-    <div class="seg" role="group">${[['semaine', 'Semaine'], ['batch', 'Batch'], ['courses', 'Courses']].map(([k, l]) => `<button aria-pressed="${v === k}" data-act="plan-view" data-v="${k}">${l}</button>`).join('')}</div>
-    ${v === 'semaine' ? renderWeek() : v === 'batch' ? renderBatch() : renderShopping()}`;
+      ${menu ? `<button class="icon-btn" data-act="week-menu" aria-label="Actions de la semaine">${ICON.dots}</button>` : ''}</div>`;
 }
+const renderPlanning = () => weekNav({ menu: true }) + renderWeek();
+const renderCourses = () => weekNav() + renderShopping();
+const renderBatchTab = () => weekNav() + renderBatch();
 
 function renderWeek() {
   const today = isoDate(new Date());
@@ -1810,7 +1816,7 @@ function computeBatch() {
   return { meals, byRecipe, phases, sameDay, mergedIng: [...mergedIng.values()], total, stepsCount };
 }
 function renderBatch() {
-  if (!state.plan.length) return `<div class="empty">${ICON.flame}<p>Planifiez des repas pour générer votre session de batch cooking.</p><button class="btn primary" data-act="plan-view" data-v="semaine">Remplir la semaine</button></div>`;
+  if (!state.plan.length) return `<div class="empty">${ICON.flame}<p>Planifiez des repas pour générer votre session de batch cooking.</p><button class="btn primary" data-act="tab" data-tab="planning">Remplir la semaine</button></div>`;
   const b = computeBatch();
   if (!b.stepsCount) return `<div class="empty">${ICON.flame}<p>Aucune étape n'est marquée « À l'avance » dans les recettes de la semaine.</p><p class="small">Modifiez vos recettes et cochez « À l'avance » sur les étapes à préparer pendant la session.</p></div>`;
   let n = 0;
@@ -1875,20 +1881,30 @@ function buildShopping() {
       items.set(key, it);
     }
   }
+  for (const e of state.extras) {
+    items.set(`extra:${e.id}`, { key: `extra:${e.id}`, extraId: e.id, ingKey: ingKey(e.name), name: e.name, qtyText: e.qty || '', aisle: e.aisle, recipes: new Set(), checked: e.checked });
+  }
   const byAisle = new Map(AISLES.map((a) => [a, []]));
   for (const it of items.values()) (byAisle.get(it.aisle) || byAisle.get('Autres')).push(it);
   for (const l of byAisle.values()) l.sort((a, b) => a.name.localeCompare(b.name, 'fr'));
   return { byAisle, count: items.size };
 }
-const qtyLabel = (it) => (it.qty ? fmtQtyBase(it.qty, it.base) : '');
+const qtyLabel = (it) => (it.extraId ? it.qtyText : it.qty ? fmtQtyBase(it.qty, it.base) : '');
+const isChecked = (it) => (it.extraId ? !!it.checked : !!state.checks[it.key]);
 const cuSearch = (name) => `https://www.coursesu.com/recherche?q=${encodeURIComponent(name)}`;
 const cuStore = () => `https://www.coursesu.com/drive-${encodeURIComponent(state.settings.store_slug)}`;
 
 function renderShopping() {
-  if (!state.plan.length) return `<div class="empty">${ICON.cart}<p>La liste se remplit automatiquement avec les ingrédients des repas planifiés.</p><button class="btn primary" data-act="plan-view" data-v="semaine">Remplir la semaine</button></div>`;
+  const addForm = `<form class="card extra-form" style="padding:12px;margin-bottom:12px" data-form="extra">
+      <input class="input" name="xname" placeholder="Ajouter un article (lessive, café…)" aria-label="Article à ajouter" required autocomplete="off">
+      <input class="input" name="xqty" placeholder="Qté" aria-label="Quantité">
+      <button class="icon-btn" style="background:var(--primary);color:var(--on-primary)" aria-label="Ajouter l'article">${ICON.plus}</button>
+      <select class="input" name="xaisle" aria-label="Rayon"><option value="">Rayon : automatique</option>${AISLES.map((a) => `<option>${a}</option>`).join('')}</select>
+    </form>`;
+  if (!state.plan.length && !state.extras.length) return `${addForm}<div class="empty">${ICON.cart}<p>La liste se remplit automatiquement avec les ingrédients des repas planifiés. Vous pouvez aussi ajouter vos propres articles ci-dessus.</p><button class="btn primary" data-act="tab" data-tab="planning">Remplir la semaine</button></div>`;
   const { byAisle, count } = buildShopping();
-  const done = [...byAisle.values()].flat().filter((it) => state.checks[it.key]).length;
-  return `
+  const done = [...byAisle.values()].flat().filter(isChecked).length;
+  return `${addForm}
     <div class="card" style="padding:12px;margin-bottom:12px">
       <div class="row"><span style="color:#e30613">${ICON.store}</span><div class="grow"><b>${esc(state.settings.store_name)}</b><div class="muted small">Courses U · ${done}/${count} articles cochés</div></div></div>
       <a class="btn soft block" style="margin-top:10px" href="${esc(cuStore())}" target="_blank" rel="noopener">${ICON.ext} 1. Ouvrir mon magasin sur Courses U</a>
@@ -1898,19 +1914,21 @@ function renderShopping() {
     ${[...byAisle.entries()].filter(([, l]) => l.length).map(([aisle, list]) => `<div class="aisle"><h3>${esc(aisle)}</h3>
       ${list.map((it) => {
         const link = state.links[it.ingKey];
-        const checked = !!state.checks[it.key];
+        const checked = isChecked(it);
+        const origin = it.extraId ? '<span class="badge-extra">Ajouté</span>' : esc([...it.recipes].join(', '));
         return `<div class="shop-item ${checked ? 'done' : ''}"><input type="checkbox" ${checked ? 'checked' : ''} data-check="${esc(it.key)}" aria-label="${esc(it.name)}">
-          <div><div class="nm">${qtyLabel(it) ? `${esc(qtyLabel(it))} · ` : ''}${esc(it.name)}</div><div class="for">${link ? `${esc(link.label || 'Produit mémorisé')} · ` : ''}${esc([...it.recipes].join(', '))}</div></div>
+          <div><div class="nm">${qtyLabel(it) ? `${esc(qtyLabel(it))} · ` : ''}${esc(it.name)}</div><div class="for">${link ? `${esc(link.label || 'Produit mémorisé')} · ` : ''}${origin}</div></div>
           <div class="acts">${link ? `<a class="linked" href="${esc(safeUrl(link.url))}" target="_blank" rel="noopener" aria-label="Ouvrir le produit Courses U">U</a>` : ''}
             <a href="${esc(cuSearch(it.name))}" target="_blank" rel="noopener" aria-label="Rechercher sur Courses U">${ICON.search}</a>
-            <button data-act="link-item" data-k="${esc(it.ingKey)}" data-n="${esc(it.name)}" aria-label="Mémoriser un produit">${ICON.link}</button></div></div>`;
+            <button data-act="link-item" data-k="${esc(it.ingKey)}" data-n="${esc(it.name)}" aria-label="Mémoriser un produit">${ICON.link}</button>
+            ${it.extraId ? `<button data-act="del-extra" data-id="${esc(it.extraId)}" aria-label="Retirer l'article">${ICON.trash}</button>` : ''}</div></div>`;
       }).join('')}</div>`).join('')}`;
 }
 function shoppingText() {
   const { byAisle } = buildShopping();
   const lines = [`Liste de courses – semaine du ${fmtDay(state.week)}`, `Magasin : ${state.settings.store_name}`, ''];
   for (const [aisle, list] of byAisle) {
-    const todo = list.filter((it) => !state.checks[it.key]);
+    const todo = list.filter((it) => !isChecked(it));
     if (!todo.length) continue;
     lines.push(aisle.toUpperCase());
     for (const it of todo) {
@@ -2011,9 +2029,18 @@ async function importData(file) {
 // ---------------------------------------------------------------------------
 function render() {
   const main = $('#main');
-  $('#title').textContent = { scan: APP_NAME, recettes: 'Mes recettes', planning: 'Ma semaine' }[state.tab];
+  const views = {
+    scan: [APP_NAME, renderScan],
+    recettes: ['Mes recettes', renderRecipes],
+    planning: ['Ma semaine', renderPlanning],
+    courses: ['Liste de courses', renderCourses],
+    batch: ['Batch cooking', renderBatchTab],
+  };
+  if (!views[state.tab]) state.tab = 'scan';
+  const [title, view] = views[state.tab];
+  $('#title').textContent = title;
   $$('.tabbar button').forEach((b) => b.setAttribute('aria-current', b.dataset.tab === state.tab ? 'page' : 'false'));
-  main.innerHTML = state.tab === 'scan' ? renderScan() : state.tab === 'recettes' ? renderRecipes() : renderPlanning();
+  main.innerHTML = view();
 }
 function switchTab(tab) {
   state.tab = tab;
@@ -2057,7 +2084,7 @@ const ACTIONS = {
     render();
   },
   'week-menu': () => weekMenu(),
-  'plan-view': (b) => { state.planView = b.dataset.v; state.moving = null; render(); },
+  'del-extra': async (b) => { try { await Data.deleteExtra(b.dataset.id); render(); } catch (e) { fail(e); } },
   slot: (b) => onSlot(Number(b.dataset.d), b.dataset.s),
   'cancel-move': () => { state.moving = null; render(); },
   'link-item': (b) => linkItem(b.dataset.k, b.dataset.n),
@@ -2079,6 +2106,17 @@ document.addEventListener('click', (e) => {
 });
 document.addEventListener('submit', (e) => {
   const f = e.target;
+  if (f.dataset.form === 'extra') {
+    e.preventDefault();
+    const raw = f.xname.value.trim();
+    if (!raw) return;
+    const name = raw.charAt(0).toUpperCase() + raw.slice(1);
+    const aisle = f.xaisle.value || guessAisle(name);
+    Data.addExtra(name, f.xqty.value.trim(), aisle)
+      .then(() => { render(); toast(`Ajouté au rayon ${aisle}`); $('[data-form="extra"] [name="xname"]')?.focus(); })
+      .catch((err) => fail(err));
+    return;
+  }
   if (f.dataset.form === 'ean-inline') {
     e.preventDefault();
     const code = f.ean.value.trim();
@@ -2098,7 +2136,10 @@ document.addEventListener('change', async (e) => {
   if (k == null) return;
   const row = e.target.closest('.shop-item');
   row?.classList.toggle('done', e.target.checked);
-  try { await Data.setCheck(k, e.target.checked); } catch (err) { e.target.checked = !e.target.checked; row?.classList.toggle('done', e.target.checked); fail(err); }
+  try {
+    if (k.startsWith('extra:')) await Data.setExtraChecked(k.slice(6), e.target.checked);
+    else await Data.setCheck(k, e.target.checked);
+  } catch (err) { e.target.checked = !e.target.checked; row?.classList.toggle('done', e.target.checked); fail(err); }
 });
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
