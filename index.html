@@ -168,7 +168,64 @@ body.logged-out .tabbar, body.logged-out [data-act="settings"] { display: none; 
 .famille { display: flex; gap: 10px; overflow-x: auto; margin-top: 12px; padding: 4px 0; }
 .fam { border: 0; background: var(--surface); border-radius: 14px; padding: 6px 10px; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 12px; font-weight: 700; color: var(--muted); flex: none; }
 .fam.on { background: var(--primary-soft); color: var(--primary-strong); }
-.comp { transform-origin: 50% 100%; animation: breathe 3.2s ease-in-out infinite; }
+.comp { transform-origin: 50% 100%; animation: breathe 3.2s ease-in-out infinite; overflow: visible; }
+.comp .eyes { transform-box: fill-box; transform-origin: 50% 50%; animation: blink 5s infinite; }
+.comp .eyes.closed { animation: none; }
+.comp .tail { transform-box: fill-box; transform-origin: 0% 60%; animation: wag 1.8s ease-in-out infinite; }
+@keyframes blink { 0%, 93%, 100% { transform: scaleY(1); } 95.5% { transform: scaleY(.08); } }
+@keyframes wag { 0%, 100% { transform: rotate(-9deg); } 50% { transform: rotate(11deg); } }
+.hero-pet { padding: 8px; }
+.scene { position: relative; height: 300px; border-radius: 18px; overflow: hidden; isolation: isolate; }
+.scene-mini { height: 190px; }
+.scene-bg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; }
+.scene .star { animation: twinkle 2.6s ease-in-out infinite; }
+.scene .clouds { animation: drift 40s linear infinite alternate; }
+.scene .wave { animation: drift 6s ease-in-out infinite alternate; }
+.scene .steam { animation: twinkle 2s ease-in-out infinite; }
+@keyframes twinkle { 50% { opacity: .25; } }
+@keyframes drift { to { transform: translateX(40px); } }
+.scene-top { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; gap: 6px; z-index: 3; }
+.chip { background: rgba(255,255,255,.88); border-radius: 999px; padding: 4px 10px; font-weight: 800; font-size: 13px; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+.chip.name { margin-left: auto; }
+.chip.pop { animation: pop .5s ease; }
+@keyframes pop { 40% { transform: scale(1.25); } }
+.scene-bubble { position: absolute; top: 46px; left: 50%; transform: translateX(-50%); width: calc(100% - 36px); max-width: 330px; z-index: 3; background: #fff; border-radius: 16px; padding: 9px 12px; font-size: 15px; line-height: 1.35; text-align: center; box-shadow: 0 3px 12px rgba(0,0,0,.14); transition: opacity .22s; color: #26302a; }
+.scene-bubble::after { content: ""; position: absolute; bottom: -8px; left: 50%; margin-left: -8px; border: 8px solid transparent; border-top-color: #fff; border-bottom: 0; }
+.scene-bubble.fade { opacity: 0; }
+.comp-walk { position: absolute; left: 50%; bottom: 6px; width: 190px; margin-left: -95px; z-index: 2; animation: wander 26s ease-in-out infinite; }
+.scene-mini .comp-walk { width: 120px; margin-left: -60px; }
+.comp-walk.still { animation: none; }
+.comp-walk::after { content: ""; position: absolute; bottom: 2px; left: 24%; right: 24%; height: 14px; background: rgba(0,0,0,.16); border-radius: 50%; z-index: -1; }
+@keyframes wander { 0%, 16% { transform: translateX(0); } 28%, 42% { transform: translateX(-62px); } 56%, 72% { transform: translateX(58px); } 86%, 100% { transform: translateX(0); } }
+.comp-tap { border: 0; background: none; padding: 0; display: block; width: 100%; cursor: pointer; -webkit-tap-highlight-color: transparent; transform-origin: 50% 100%; }
+.comp-tap .comp, .comp-walk > .comp { width: 100%; height: auto; display: block; filter: drop-shadow(0 6px 4px rgba(0,0,0,.12)); }
+.act-hop { animation: hop .8s ease; }
+.act-wiggle { animation: wiggle .9s ease; }
+.act-look { animation: look 1.2s ease; }
+.act-spin { animation: spin3d 1s ease; }
+.act-eat { animation: eat .5s ease 3; }
+.act-drink { animation: drink 1.4s ease; }
+@keyframes hop { 30% { transform: translateY(-36px) scale(1.04, .96); } 55% { transform: translateY(0) scale(1.08, .9); } 72% { transform: translateY(-8px); } }
+@keyframes wiggle { 20% { transform: rotate(-8deg); } 40% { transform: rotate(7deg); } 60% { transform: rotate(-5deg); } 80% { transform: rotate(3deg); } }
+@keyframes look { 30%, 70% { transform: translateX(-8px) rotate(-5deg); } 50% { transform: translateX(8px) rotate(5deg); } }
+@keyframes spin3d { to { transform: rotateY(360deg); } }
+@keyframes eat { 50% { transform: scale(1.06, .92); } }
+@keyframes drink { 30%, 70% { transform: rotate(-10deg) translateY(-4px); } }
+.fx { position: absolute; bottom: 150px; z-index: 4; font-size: 24px; pointer-events: none; opacity: 0; }
+.fx-up { animation: floatUp 1.6s ease-out forwards; }
+.fx-gain { animation: floatUp 1.8s ease-out forwards; font-size: 18px; font-weight: 800; background: #fff6d6; color: #8a6400; border-radius: 999px; padding: 3px 10px; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+.fx-drop { bottom: 110px; font-size: 34px; animation: drop 1.1s ease-in forwards; }
+@keyframes floatUp { 0% { transform: translateY(0) scale(.6); opacity: 0; } 15% { opacity: 1; transform: translateY(-10px) scale(1); } 100% { transform: translateY(-110px); opacity: 0; } }
+@keyframes drop { 0% { transform: translateY(-160px); opacity: 1; } 75% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(0) scale(.2); opacity: 0; } }
+.pet-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.bq-tabs button { font-size: 13px; white-space: nowrap; padding: 0 2px; }
+.bq-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.bq-item { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 8px 4px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; font-size: 13px; min-width: 0; }
+.bq-item .btn { width: 100%; min-height: 34px; padding: 0 4px; }
+.bq-emo { font-size: 38px; line-height: 70px; }
+.bq-fond { display: block; position: relative; width: 100%; height: 70px; border-radius: 10px; overflow: hidden; }
+.bq-fond .scene-bg { z-index: 0; }
+@media (prefers-reduced-motion: reduce) { .comp-walk, .comp, .comp .tail, .comp .eyes, .scene * { animation: none !important; } }
 .comp-ravi, .comp-fier { animation: jump 1.1s ease-in-out infinite; }
 .comp-dodo { animation: breathe 5s ease-in-out infinite; }
 @keyframes breathe { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(1.03); } }
@@ -455,7 +512,7 @@ textarea.input { resize: vertical; min-height: 72px; }
 // ---------------------------------------------------------------------------
 const APP_NAME = 'Nutri Semaine'; // titre provisoire
 // À incrémenter à chaque publication, avec la même valeur dans version.json.
-const APP_VERSION = '2026-10-27.5';
+const APP_VERSION = '2026-10-27.6';
 const SUPABASE_URL = 'https://svugddkrptqpjmywhorb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2dWdkZGtycHRxcGpteXdob3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MjU5NDgsImV4cCI6MjEwODUwMTk0OH0.63RETgf7rbVMquGV-7ooY3qn-Qf31uVCA3ZBfqBvFcI';
 const OFF = 'https://world.openfoodfacts.org/api/v2';
@@ -696,6 +753,7 @@ const Data = {
       const { data, error } = await db.from(T.journal).insert(row).select().single();
       if (error) throw error;
       state.journal.push(data);
+      Rewards.journal(data);
     } catch (e) {
       if (!isNetworkError(e)) throw e;
       Queue.push({ type: 'journal', row });
@@ -783,17 +841,20 @@ const Data = {
     const { data, error } = await db.from(T.activites).upsert({ ...own(), ...row }, { onConflict: 'member_id,date,source,ref' }).select().single();
     if (error) throw error;
     state.activites = [...state.activites.filter((a) => a.id !== data.id), data];
+    Rewards.sport(data);
     return data;
   },
   async updateActivite(id, patch) {
     const { data, error } = await db.from(T.activites).update(patch).eq('id', id).select().single();
     if (error) throw error;
     state.activites = state.activites.map((a) => (a.id === id ? data : a));
+    Rewards.sport(data);
   },
   async addEau(row) {
     const { data, error } = await db.from(T.eau).insert({ ...own(), ...row }).select().single();
     if (error) throw error;
     state.eau.push(data);
+    Rewards.eau(data);
   },
   async deleteEau(id) {
     const { error } = await db.from(T.eau).delete().eq('id', id);
@@ -3125,7 +3186,11 @@ function linkItem(k, name) {
 // Compagnon animal : rendu SVG, humeurs, messages, bilan quotidien, coquillages, boutique
 // ---------------------------------------------------------------------------
 const ESPECES = { loutre: { label: 'Loutre', nom: 'Noisette' }, herisson: { label: 'Hérisson', nom: 'Pico' }, renard: { label: 'Renard', nom: 'Rouxy' } };
-const ACCESSOIRES = [['bonnet', 'Bonnet', 15], ['echarpe', 'Écharpe', 15], ['lunettes', 'Lunettes', 20], ['noeud', 'Nœud', 20], ['couronne', 'Couronne de fleurs', 40], ['tablier', 'Tablier de chef', 40], ['cape', 'Cape de héros', 60]];
+const ACCESSOIRES = [['bonnet', 'Bonnet', 20], ['echarpe', 'Écharpe', 20], ['lunettes', 'Lunettes', 25], ['noeud', 'Nœud', 25], ['casquette', 'Casquette', 30], ['couronne', 'Couronne de fleurs', 45], ['tablier', 'Tablier de chef', 50], ['medaille', 'Médaille', 60], ['cape', 'Cape de héros', 80]];
+const FONDS = [['jardin', 'Jardin', 0], ['plage', 'Plage', 60], ['foret', 'Forêt', 60], ['montagne', 'Montagne', 80], ['cuisine', 'Cuisine', 80], ['espace', 'Espace', 120]];
+const FRIANDISES = [['pomme', '🍎', 'Pomme', 5], ['fraise', '🍓', 'Fraises', 5], ['carotte', '🥕', 'Carotte', 5], ['poisson', '🐟', 'Poisson', 8], ['smoothie', '🥤', 'Smoothie', 8], ['cupcake', '🧁', 'Cupcake', 12]];
+const FAVORI = { loutre: 'poisson', herisson: 'fraise', renard: 'pomme' };
+const WELCOME_SHELLS = 100;
 const companionOf = (m) => (m ? state.compagnons.find((c) => c.member_id === m.id) : null) || null;
 const worn = (c) => (c?.accessoires || []).filter((a) => !a.startsWith('!'));
 const owned = (c) => (c?.accessoires || []).map((a) => a.replace(/^!/, ''));
@@ -3146,9 +3211,9 @@ function companionSvg(c, mood = 'content', size = 140) {
   }[mood] || '';
   const mouth = { ravi: '<path d="M43 56q7 8 14 0" stroke="#2b2320" stroke-width="2.4" fill="#b8443a" stroke-linejoin="round"/>', fier: '<path d="M43 56q7 8 14 0" stroke="#2b2320" stroke-width="2.4" fill="#b8443a"/>', faim: '<path d="M44 58h12" stroke="#2b2320" stroke-width="2.4" stroke-linecap="round"/>', dodo: '<circle cx="50" cy="58" r="2" fill="#2b2320"/>', sportif: '<ellipse cx="50" cy="58" rx="4" ry="3" fill="#2b2320"/>', rassasie: '<path d="M45 57q5 3 10 0" stroke="#2b2320" stroke-width="2.4" fill="none" stroke-linecap="round"/>' }[mood] || '<path d="M45 56q5 5 10 0" stroke="#2b2320" stroke-width="2.4" fill="none" stroke-linecap="round"/>';
   const body = {
-    loutre: '<ellipse cx="50" cy="78" rx="26" ry="20" fill="#8a6a4f"/><ellipse cx="50" cy="82" rx="15" ry="13" fill="#d9c3a5"/><path d="M74 86q14 2 16-10" stroke="#8a6a4f" stroke-width="8" fill="none" stroke-linecap="round"/><circle cx="50" cy="48" r="22" fill="#8a6a4f"/><circle cx="31" cy="34" r="6" fill="#8a6a4f"/><circle cx="69" cy="34" r="6" fill="#8a6a4f"/><ellipse cx="50" cy="56" rx="12" ry="9" fill="#d9c3a5"/><ellipse cx="50" cy="52" rx="3.5" ry="2.5" fill="#2b2320"/><path d="M26 84q-3 10 6 10M74 84q3 10-6 10" stroke="#6f533d" stroke-width="5" fill="none" stroke-linecap="round"/>',
+    loutre: '<ellipse cx="50" cy="78" rx="26" ry="20" fill="#8a6a4f"/><ellipse cx="50" cy="82" rx="15" ry="13" fill="#d9c3a5"/><circle cx="50" cy="48" r="22" fill="#8a6a4f"/><circle cx="31" cy="34" r="6" fill="#8a6a4f"/><circle cx="69" cy="34" r="6" fill="#8a6a4f"/><ellipse cx="50" cy="56" rx="12" ry="9" fill="#d9c3a5"/><ellipse cx="50" cy="52" rx="3.5" ry="2.5" fill="#2b2320"/><path d="M26 84q-3 10 6 10M74 84q3 10-6 10" stroke="#6f533d" stroke-width="5" fill="none" stroke-linecap="round"/>',
     herisson: '<path d="M22 70l6-10 7 8 6-11 6 10 6-11 6 11 7-8 6 10q8 12 2 24H22q-6-12 0-24z" fill="#6b4f3a"/><ellipse cx="50" cy="84" rx="22" ry="14" fill="#8f7357"/><ellipse cx="52" cy="54" rx="22" ry="18" fill="#e8d6bd"/><path d="M28 50l-10 6 12 2z" fill="#e8d6bd"/><circle cx="18" cy="56" r="3" fill="#2b2320"/><path d="M32 42l5-9 5 8 5-9 5 8 5-9 5 8" stroke="#6b4f3a" stroke-width="6" fill="none" stroke-linejoin="round"/><path d="M34 96v6M48 96v6M62 96v6" stroke="#6f533d" stroke-width="4" stroke-linecap="round"/>',
-    renard: '<ellipse cx="50" cy="80" rx="24" ry="18" fill="#d8864a"/><ellipse cx="50" cy="84" rx="13" ry="11" fill="#f6e9d6"/><path d="M72 84q18 2 16-14q-4 4-8 4" fill="#d8864a"/><path d="M84 72q6 4 4-2" fill="#f6e9d6"/><path d="M28 40l4-22 12 14zM72 40l-4-22-12 14z" fill="#d8864a"/><path d="M31 36l2-12 7 9zM69 36l-2-12-7 9z" fill="#f0c7b0"/><circle cx="50" cy="48" r="22" fill="#d8864a"/><path d="M34 54q16 20 32 0q-8 6-16 6t-16-6z" fill="#f6e9d6"/><ellipse cx="50" cy="53" rx="3.5" ry="2.5" fill="#2b2320"/><path d="M30 86q-4 8 4 10M70 86q4 8-4 10" stroke="#b86a35" stroke-width="5" fill="none" stroke-linecap="round"/>',
+    renard: '<ellipse cx="50" cy="80" rx="24" ry="18" fill="#d8864a"/><ellipse cx="50" cy="84" rx="13" ry="11" fill="#f6e9d6"/><path d="M28 40l4-22 12 14zM72 40l-4-22-12 14z" fill="#d8864a"/><path d="M31 36l2-12 7 9zM69 36l-2-12-7 9z" fill="#f0c7b0"/><circle cx="50" cy="48" r="22" fill="#d8864a"/><path d="M34 54q16 20 32 0q-8 6-16 6t-16-6z" fill="#f6e9d6"/><ellipse cx="50" cy="53" rx="3.5" ry="2.5" fill="#2b2320"/><path d="M30 86q-4 8 4 10M70 86q4 8-4 10" stroke="#b86a35" stroke-width="5" fill="none" stroke-linecap="round"/>',
   }[sp];
   const access = {
     bonnet: '<path d="M30 32q20-18 40 0v6H30z" fill="#dd5b3e"/><rect x="29" y="34" width="42" height="7" rx="3" fill="#f6e9d6"/><circle cx="50" cy="16" r="5" fill="#f6e9d6"/>',
@@ -3159,10 +3224,181 @@ function companionSvg(c, mood = 'content', size = 140) {
     tablier: '<path d="M38 70h24l4 26H34z" fill="#f6e9d6"/><path d="M42 70v-6h16v6" stroke="#f6e9d6" stroke-width="3" fill="none"/><path d="M44 80h12" stroke="#5f8a67" stroke-width="2"/>',
     cape: '<path d="M26 66q24 12 48 0l4 36H22z" fill="#6a7fd1" opacity=".9"/><path d="M30 66q20 6 40 0" stroke="#f0c04a" stroke-width="3" fill="none"/>',
   };
+  access.casquette = '<path d="M29 37q21-24 42 0z" fill="#5b7fc7"/><path d="M62 35q16-3 22 5H62z" fill="#3f5fa3"/><circle cx="50" cy="22" r="2.5" fill="#3f5fa3"/>';
+  access.medaille = '<path d="M43 62l7 11 7-11" stroke="#dd5b3e" stroke-width="3" fill="none"/><circle cx="50" cy="77" r="6.5" fill="#f0c04a" stroke="#c99a2a" stroke-width="1.5"/><path d="M50 73.5l1.2 2.4 2.6.4-1.9 1.8.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.8 2.6-.4z" fill="#fff6c9"/>';
+  const tail = { loutre: '<path d="M74 86q14 2 16-10" stroke="#8a6a4f" stroke-width="8" fill="none" stroke-linecap="round"/>', renard: '<path d="M72 84q18 2 16-14q-4 4-8 4" fill="#d8864a"/><path d="M84 72q6 4 4-2" fill="#f6e9d6"/>' }[sp] || '';
+  const cheeks = mood === 'dodo' ? '' : '<circle cx="35" cy="55" r="3.6" fill="#f4a3b5" opacity=".55"/><circle cx="65" cy="55" r="3.6" fill="#f4a3b5" opacity=".55"/>';
+  const closed = ['ravi', 'fier', 'dodo', 'rassasie'].includes(mood);
   const behind = acc.includes('cape') ? access.cape : '';
   const front = acc.filter((a) => a !== 'cape').map((a) => access[a] || '').join('');
-  return `<svg class="comp comp-${mood}" viewBox="0 0 100 104" width="${size}" height="${size * 1.04}" aria-label="${esc(c?.nom || 'Compagnon')}">${behind}${body}${eyes}${mouth}${front}</svg>`;
+  return `<svg class="comp comp-${mood}" viewBox="0 0 100 104" width="${size}" height="${size * 1.04}" aria-label="${esc(c?.nom || 'Compagnon')}"><g class="tail">${tail}</g>${behind}${body}${cheeks}<g class="eyes${closed ? ' closed' : ''}">${eyes}</g>${mouth}${front}</svg>`;
 }
+
+// Décors : ciel selon l'heure, paysage selon le fond choisi.
+let sceneSeq = 0;
+const periodOf = (h = new Date().getHours()) => (h < 6 || h >= 21 ? 'nuit' : h < 10 ? 'matin' : h < 17 ? 'jour' : 'soir');
+function sceneSvg(fond = 'jardin', period = periodOf()) {
+  const id = `sk${++sceneSeq}`;
+  const sky = { matin: ['#ffd9b0', '#d7ecf5'], jour: ['#9fd3f0', '#e6f5fb'], soir: ['#f3a37a', '#f8dcaa'], nuit: ['#16203c', '#3a4a78'] }[fond === 'espace' ? 'nuit' : period];
+  const night = period === 'nuit' || fond === 'espace';
+  const stars = night ? [[30, 30], [80, 60], [130, 22], [170, 70], [215, 35], [260, 80], [300, 20], [350, 64], [380, 30], [110, 100], [240, 110], [60, 120]].map(([x, y], i) => `<circle class="star" style="animation-delay:${i * 0.4}s" cx="${x}" cy="${y}" r="${i % 3 ? 1.3 : 2}" fill="#fff"/>`).join('') : '';
+  const astre = night ? '<circle cx="330" cy="52" r="18" fill="#f4f1de"/><circle cx="338" cy="46" r="15" fill="' + sky[0] + '"/>' : period === 'matin' ? '<circle cx="64" cy="96" r="24" fill="#ffd36b"/>' : period === 'soir' ? '<circle cx="300" cy="112" r="28" fill="#ff9a5a" opacity=".9"/>' : '<circle cx="322" cy="52" r="26" fill="#ffe07a"/><circle cx="322" cy="52" r="36" fill="#ffe07a" opacity=".25"/>';
+  const clouds = night ? '' : '<g class="clouds" fill="#fff" opacity=".85"><ellipse cx="90" cy="48" rx="34" ry="11"/><ellipse cx="110" cy="40" rx="20" ry="10"/><ellipse cx="230" cy="74" rx="28" ry="9"/></g>';
+  const land = {
+    jardin: '<path d="M0 170q70-40 150-10t140-12 110 8V290H0z" fill="#a9cf98"/><path d="M0 205q100-26 200-6t200-4V290H0z" fill="#86b874"/><rect x="44" y="120" width="10" height="70" rx="4" fill="#8a6a4f"/><circle cx="49" cy="112" r="30" fill="#6fa463"/><circle cx="32" cy="124" r="18" fill="#6fa463"/><circle cx="66" cy="124" r="18" fill="#7cb06e"/><g stroke="#e9dcc4" stroke-width="4"><path d="M300 205v-34M326 205v-34M352 205v-34M378 205v-34"/><path d="M292 180h100M292 194h100" stroke-width="3"/></g>' + [[110, 250, '#f4a3b5'], [150, 262, '#f0c04a'], [250, 255, '#fff'], [290, 268, '#f4a3b5'], [350, 250, '#f0c04a'], [70, 270, '#fff']].map(([x, y, col]) => `<circle cx="${x}" cy="${y}" r="5" fill="${col}"/><circle cx="${x}" cy="${y}" r="2" fill="#e8a33d"/>`).join(''),
+    plage: '<rect y="165" width="400" height="50" fill="#5fb0d3"/><path class="wave" d="M-20 180q20-6 40 0t40 0 40 0 40 0 40 0 40 0 40 0 40 0 40 0 40 0 40 0" stroke="#fff" stroke-width="3" fill="none" opacity=".7"/><path d="M0 205q100-14 200 0t200-4V290H0z" fill="#f1dcae"/><path d="M340 140v100" stroke="#8a6a4f" stroke-width="4"/><path d="M296 150q44-44 88 0z" fill="#dd5b3e"/><path d="M318 150q22-44 44 0z" fill="#fff" opacity=".8"/><circle cx="80" cy="262" r="6" fill="#f4a3b5"/><path d="M110 250l8 6-8 6" fill="#f0c04a"/>',
+    foret: '<path d="M0 190V290H400V190z" fill="#79a565"/>' + [20, 75, 140, 200, 265, 330, 385].map((x, i) => `<path d="M${x} ${70 + (i % 3) * 14}l-30 ${110 - (i % 3) * 10}h60z" fill="#5d8a5a"/>`).join('') + [50, 160, 310, 370].map((x) => `<path d="M${x} 120l-34 100h68z" fill="#3f6b45"/><rect x="${x - 4}" y="220" width="8" height="12" fill="#6b4f3a"/>`).join('') + '<path d="M0 222q200-12 400 0V290H0z" fill="#6c9858"/><rect x="236" y="246" width="6" height="12" fill="#f6e9d6"/><path d="M228 248q11-14 22 0z" fill="#dd5b3e"/><circle cx="235" cy="244" r="1.6" fill="#fff"/><circle cx="244" cy="245" r="1.6" fill="#fff"/>',
+    montagne: '<path d="M-10 200L90 70l60 70 60-90 90 110 50-50 70 90z" fill="#8a9bb0"/><path d="M90 70l-22 28 14-4 8 8 10-12 12 10zM210 50l-24 30 14-4 10 10 10-10 12 8z" fill="#fff"/><path d="M0 205q100-30 200-8t200 0V290H0z" fill="#93bf7d"/><path d="M0 238q120-16 240 0t160 0V290H0z" fill="#7fae6c"/>',
+    cuisine: '<rect width="400" height="290" fill="#f7ecd9"/><rect x="36" y="34" width="120" height="100" rx="8" fill="url(#' + id + ')" stroke="#c69a6b" stroke-width="6"/><path d="M96 34v100M36 84h120" stroke="#c69a6b" stroke-width="4"/>' + (night ? '<circle cx="128" cy="58" r="9" fill="#f4f1de"/>' : '<circle cx="128" cy="60" r="12" fill="#ffe07a"/>') + '<g fill="#e7dcc8">' + Array.from({ length: 10 }, (_, i) => `<rect x="${i * 40}" y="150" width="38" height="38" rx="3"/>`).join('') + '</g><rect y="200" width="400" height="90" fill="#c69a6b"/><rect y="196" width="400" height="12" fill="#e0bd8f"/><path d="M230 60v40M262 60v34M294 60v44" stroke="#8a6a4f" stroke-width="3"/><circle cx="230" cy="106" r="8" fill="none" stroke="#7a7f88" stroke-width="4"/><rect x="256" y="94" width="12" height="18" rx="3" fill="#7a7f88"/><path d="M288 104h12l-2 12h-8z" fill="#7a7f88"/><path d="M318 168h56v28h-56z" fill="#5f8a67"/><rect x="312" y="164" width="68" height="8" rx="3" fill="#4b7353"/><path class="steam" d="M334 156q-6-8 0-16M350 156q-6-8 0-16M366 156q-6-8 0-16" stroke="#fff" stroke-width="3" fill="none" opacity=".7" stroke-linecap="round"/>',
+    espace: '<circle cx="90" cy="80" r="30" fill="#e8a33d"/><ellipse cx="90" cy="80" rx="50" ry="10" fill="none" stroke="#f4d58a" stroke-width="4" transform="rotate(-18 90 80)"/><path d="M0 214q200-50 400 0V290H0z" fill="#c9c6d6"/><ellipse cx="80" cy="250" rx="22" ry="7" fill="#aaa6bd"/><ellipse cx="300" cy="236" rx="16" ry="5" fill="#aaa6bd"/><ellipse cx="220" cy="270" rx="12" ry="4" fill="#aaa6bd"/><path d="M340 214v-40" stroke="#7a7f88" stroke-width="3"/><path d="M340 174h28l-6 8 6 8h-28z" fill="#dd5b3e"/>',
+  }[fond] || '';
+  const indoor = fond === 'cuisine';
+  const dark = night && !indoor && fond !== 'espace' ? '<rect width="400" height="290" fill="#0b1430" opacity=".32"/>' : '';
+  return `<svg class="scene-bg" viewBox="0 0 400 290" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${sky[0]}"/><stop offset="1" stop-color="${sky[1]}"/></linearGradient></defs>
+    ${indoor ? '' : `<rect width="400" height="290" fill="url(#${id})"/>${stars}${astre}${clouds}`}${land}${dark}${indoor ? '' : ''}</svg>`;
+}
+
+// Compagnon vivant : petits gestes au repos, réactions aux saisies, caresses, bulles qui changent.
+const ACTS = ['act-hop', 'act-wiggle', 'act-look', 'act-spin', 'act-eat', 'act-drink'];
+const PET_MSG = {
+  caresse: ['Hihi, ça chatouille !', 'Encore, encore !', 'Je t\'adore, tu sais.', 'Un câlin, ça recharge les batteries.', 'Ronron… euh, je ne suis pas un chat.'],
+  repas: ['Miam, c\'est noté ! Merci de prendre soin de toi.', 'Bien joué, un repas de plus dans le carnet.', 'Ça sent bon d\'ici !'],
+  boire: ['Glou glou ! Ça hydrate.', 'Un verre de plus, bravo !', 'L\'eau, c\'est la vie. Et toi aussi.'],
+  sport: ['Bravo pour cette activité ! Je suis épaté·e.', 'Quelle énergie ! On fait une petite danse ?', 'Ton corps te dit merci.'],
+  miam: ['Délicieux ! Merci beaucoup.', 'Miam miam, c\'était trop bon !', 'Tu me gâtes !'],
+  favori: ['Mon plat préféré ! Tu me connais par cœur.', 'Ooooh ! C\'est mon péché mignon !'],
+  idle: ['Tu m\'as manqué !', 'Touche-moi, j\'adore les câlins.', 'Je me demande ce qu\'on mange ce soir…', 'On forme une super équipe, toi et moi.', 'Petit à petit, on avance. Je suis fier·e de toi.'],
+};
+const rnd = (l) => l[Math.floor(Math.random() * l.length)];
+const Pet = {
+  queue: [],
+  lines: [],
+  timer: null,
+  greeted: false,
+  el: () => document.querySelector('[data-scene]'),
+  start() {
+    if (this.timer) return;
+    this.timer = setInterval(() => this.idle(), 6500);
+  },
+  idle() {
+    const sc = this.el();
+    if (!sc || document.hidden || sheets.length) return;
+    const r = Math.random();
+    if (r < 0.5) this.act(rnd(['act-hop', 'act-wiggle', 'act-look', 'act-look', 'act-spin']));
+    if (r > 0.45 && this.lines.length) this.say(rnd(this.lines));
+  },
+  act(cls, ms = 1200) {
+    const t = this.el()?.querySelector('.comp-tap');
+    if (!t) return;
+    t.classList.remove(...ACTS);
+    void t.offsetWidth;
+    t.classList.add(cls);
+    clearTimeout(this.actT);
+    this.actT = setTimeout(() => t.classList.remove(cls), ms);
+  },
+  say(text) {
+    const b = this.el()?.querySelector('[data-bubble]');
+    if (!b || !text) return;
+    b.classList.add('fade');
+    setTimeout(() => { b.textContent = text; b.classList.remove('fade'); }, 220);
+  },
+  fx(txt, { n = 1, cls = 'fx-up', spread = 24 } = {}) {
+    const sc = this.el();
+    if (!sc) return;
+    const walk = sc.querySelector('.comp-walk');
+    const x = walk ? walk.getBoundingClientRect().left - sc.getBoundingClientRect().left + walk.offsetWidth / 2 : sc.offsetWidth / 2;
+    for (let i = 0; i < n; i++) {
+      const s2 = document.createElement('span');
+      s2.className = `fx ${cls}`;
+      s2.textContent = txt;
+      s2.style.left = `${x - 14 + (Math.random() - 0.5) * spread * 2}px`;
+      s2.style.animationDelay = `${i * 0.18}s`;
+      sc.appendChild(s2);
+      setTimeout(() => s2.remove(), 2200 + i * 180);
+    }
+  },
+  // Les réactions sont mises en file puis jouées sur la scène affichée (après le prochain rendu).
+  play(kind, arg) {
+    this.queue = [...this.queue.filter((q) => Date.now() - q[2] < 60000), [kind, arg, Date.now()]].slice(-4);
+    setTimeout(() => this.flush(), 80);
+  },
+  flush() {
+    if (!this.el() || !this.queue.length) return;
+    const q = this.queue.splice(0);
+    q.forEach(([k, a], i) => setTimeout(() => this.run(k, a), 250 + i * 1100));
+  },
+  run(kind, arg) {
+    const c = companionOf(journalMember());
+    if (kind === 'gain') {
+      this.fx(`+${arg} 🐚`, { cls: 'fx-gain', spread: 4 });
+      const chip = this.el()?.querySelector('[data-shells]');
+      if (chip && c) { chip.textContent = `${c.coquillages} 🐚`; chip.classList.remove('pop'); void chip.offsetWidth; chip.classList.add('pop'); }
+      return;
+    }
+    if (kind === 'hello') { this.act('act-hop'); this.fx('👋'); this.say(arg); return; }
+    if (kind === 'pet') { this.act('act-hop'); this.fx('❤️', { n: 3 }); this.say(rnd(PET_MSG.caresse)); return; }
+    if (kind === 'repas') { this.act('act-eat', 1500); this.fx('✨', { n: 2 }); this.say(rnd(PET_MSG.repas)); return; }
+    if (kind === 'boire') { this.act('act-drink', 1500); this.fx('💧', { n: 3 }); this.say(rnd(PET_MSG.boire)); return; }
+    if (kind === 'sport') { this.act('act-spin'); this.fx('⭐', { n: 3 }); this.say(rnd(PET_MSG.sport)); return; }
+    if (kind === 'miam') { this.fx(arg.emoji, { cls: 'fx-drop', spread: 0 }); setTimeout(() => { this.act('act-eat', 1600); this.fx(arg.fav ? '💖' : '❤️', { n: arg.fav ? 4 : 2 }); }, 900); this.say(rnd(arg.fav ? PET_MSG.favori : PET_MSG.miam)); return; }
+    if (kind === 'achat') { this.act('act-spin'); this.fx('✨', { n: 4 }); this.say(arg); }
+  },
+  pet() {
+    const m = journalMember();
+    this.run('pet');
+    const k = `caresses:${isoDate(new Date())}:${m?.id}`;
+    const n = store.get(k, 0) + 1;
+    store.set(k, n);
+    if (n <= 3) Rewards.earn(m, `caresse:${n}`, 1);
+  },
+};
+document.addEventListener('visibilitychange', () => { if (!document.hidden && Pet.el()) Pet.act('act-hop'); });
+
+// Coquillages : un gain par (membre, jour, clé), enregistré côté serveur (fonction gagner).
+const Rewards = {
+  today: () => isoDate(new Date()),
+  async earn(m, cle, n, date = isoDate(new Date())) {
+    if (!m || !companionOf(m) || state.offline) return 0;
+    try {
+      const { data, error } = await db.rpc('gagner', { p_member: m.id, p_date: date, p_cle: cle, p_n: n });
+      if (error || data == null) return 0;
+      companionOf(m).coquillages = data;
+      if (m.id === journalMember()?.id) Pet.play('gain', n);
+      return n;
+    } catch { return 0; }
+  },
+  journal(row) {
+    const m = memberById(row.member_id);
+    if (!m || row.date !== this.today()) return;
+    if (m.id === journalMember()?.id) Pet.play('repas');
+    this.earn(m, `repas:${row.slot}`, 3);
+  },
+  eau(row) {
+    const m = memberById(row.member_id);
+    if (!m || row.date !== this.today()) return;
+    if (m.id === journalMember()?.id) Pet.play('boire');
+    const n = waterDay(m, new Date()).length;
+    if (n <= 8) this.earn(m, `eau:${n}`, 1);
+    if (waterTotal(m, new Date()) >= waterGoal(m)) this.earn(m, 'eau-objectif', 5);
+  },
+  sport(a) {
+    const m = memberById(a.member_id);
+    if (!m || a.kind !== 'seance' || a.statut === 'prevu' || a.date !== this.today()) return;
+    if (m.id === journalMember()?.id) Pet.play('sport');
+    const n = dayActs(m.id, a.date).filter((x) => x.kind === 'seance' && x.statut !== 'prevu').length;
+    if (n <= 3) this.earn(m, `activite:${n}`, 5);
+  },
+  // Cadeau de bienvenue (une fois par compagnon) et visite du jour.
+  async daily() {
+    const me = journalMember();
+    for (const m of state.members) {
+      if (!companionOf(m)) continue;
+      const got = await this.earn(m, 'bienvenue', WELCOME_SHELLS, '2000-01-01');
+      if (got && m.id === me?.id) toast(`Cadeau de bienvenue : ${WELCOME_SHELLS} coquillages pour ${companionOf(m).nom} !`);
+    }
+    if (me) await this.earn(me, 'visite', 5);
+  },
+};
 
 // Critères du jour : atteindre sans dépasser.
 function dayCriteria(m, date) {
@@ -3184,7 +3420,7 @@ function dayCriteria(m, date) {
   const counted = items.filter((i) => !i.na);
   const score = counted.filter((i) => i.ok).length;
   const cible = items[0].ok;
-  const shells = score + (cible && score >= 5 ? 3 : 0);
+  const shells = score * 2 + (cible && score >= 5 ? 5 : 0);
   return { items, counted, score, max: counted.length, cible, shells, empty: md.entries.length === 0 };
 }
 const MSG = {
@@ -3247,14 +3483,14 @@ function bilanSheet({ m, c, cr, serie }, date) {
     <p class="bubble" style="display:inline-block">${esc(msg)}</p></div>
     <div class="macro-strip" style="grid-template-columns:repeat(3,1fr);margin:10px 0"><div><b>${cr.score}/${cr.max}</b><span>objectifs</span></div><div><b>+${cr.shells}</b><span>coquillages</span></div><div><b>${serie}</b><span>jour${serie > 1 ? 's' : ''} de suite</span></div></div>
     <div class="ntable">${cr.items.filter((i) => !i.na).map((i) => `<div class="nt-row"><span>${i.ok ? '✅' : '◻️'} ${i.label}</span><b class="muted small">${esc(i.detail)}</b></div>`).join('')}</div>
-    ${cr.cible && cr.score >= 5 ? '<p class="small" style="text-align:center;color:var(--primary-strong)"><b>Bonus +3</b> : objectif atteint sans le dépasser, avec une journée équilibrée.</p>' : ''}
+    ${cr.cible && cr.score >= 5 ? '<p class="small" style="text-align:center;color:var(--primary-strong)"><b>Bonus +5</b> : objectif atteint sans le dépasser, avec une journée équilibrée.</p>' : ''}
     <div class="grid2" style="margin-top:8px"><button class="btn" data-act="boutique">Boutique</button><button class="btn primary" data-act="close-sheet">Merci !</button></div>`);
 }
 
 function adoptSheet(m) {
   let espece = 'loutre';
   const el = openSheet(`${sheetHead(`Un compagnon pour ${m.nom}`)}
-    <p class="muted small" style="margin-top:0">Il t'encourage, fête tes objectifs atteints sans excès et gagne des coquillages pour s'habiller. Il ne te gronde jamais.</p>
+    <p class="muted small" style="margin-top:0">Il t'encourage, fête tes objectifs atteints sans excès et ne te gronde jamais. Cadeau d'arrivée : ${WELCOME_SHELLS} 🐚 pour le personnaliser tout de suite.</p>
     <div class="grid3" data-especes>${Object.entries(ESPECES).map(([k, e]) => `<button type="button" class="card espece" aria-pressed="${k === espece}" data-e="${k}">${companionSvg({ espece: k }, 'content', 80)}<b>${e.label}</b></button>`).join('')}</div>
     <form class="stack" data-form="adopt" style="margin-top:12px"><label class="field"><span>Son prénom</span><input class="input" name="nom" maxlength="30" value="${ESPECES[espece].nom}" required></label>
     <button class="btn primary block">Adopter</button></form>`);
@@ -3268,26 +3504,58 @@ function adoptSheet(m) {
   });
   $('form', el).addEventListener('submit', async (e) => {
     e.preventDefault();
-    try { await Data.saveCompagnon({ member_id: m.id, espece, nom: e.target.nom.value.trim() || ESPECES[espece].nom }); closeSheet(); render(); toast(`${e.target.nom.value.trim()} rejoint la famille !`); } catch (err) { fail(err); }
+    try {
+      const c = await Data.saveCompagnon({ member_id: m.id, espece, nom: e.target.nom.value.trim() || ESPECES[espece].nom });
+      closeSheet(); render();
+      await Rewards.earn(m, 'bienvenue', WELCOME_SHELLS, '2000-01-01');
+      toast(`${c.nom} rejoint la famille avec ${WELCOME_SHELLS} coquillages de bienvenue !`);
+      boutiqueSheet(m, 'accessoires');
+    } catch (err) { fail(err); }
   });
 }
-function boutiqueSheet(m) {
+function boutiqueSheet(m, tab = 'friandises') {
   const c = companionOf(m);
   if (!c) return adoptSheet(m);
   const el = openSheet(`${sheetHead('Boutique')}<div data-body></div>`);
   const draw = () => {
     const cc = companionOf(m);
-    $('[data-body]', el).innerHTML = `<div style="text-align:center">${companionSvg(cc, 'content', 120)}<div><b>${esc(cc.nom)}</b> · <b>${cc.coquillages}</b> 🐚</div>
-      <p class="muted small">Les coquillages se gagnent chaque jour avec le bilan : 1 par objectif, +3 quand les calories sont dans la cible.</p></div>
-      ${ACCESSOIRES.map(([k, l, prix]) => { const has = owned(cc).includes(k); const on = worn(cc).includes(k); return `<div class="nt-row"><span>${l}</span>${has ? `<button class="btn small ${on ? 'primary' : ''}" data-wear="${k}">${on ? 'Porté' : 'Mettre'}</button>` : `<button class="btn small soft" data-buy="${k}" ${cc.coquillages < prix ? 'disabled' : ''}>${prix} 🐚</button>`}</div>`; }).join('')}`;
+    const has = owned(cc);
+    const card = (inner, label, btn) => `<div class="bq-item">${inner}<b>${label}</b>${btn}</div>`;
+    const price = (k, prix, kind) => `<button class="btn small ${cc.coquillages < prix ? '' : 'primary'}" data-buy="${k}" data-kind="${kind}" ${cc.coquillages < prix ? 'disabled' : ''}>${prix} 🐚</button>`;
+    const panes = {
+      friandises: FRIANDISES.map(([k, emo, l, prix]) => card(`<span class="bq-emo">${emo}</span>`, `${l}${FAVORI[cc.espece] === k ? ' 💖' : ''}`, price(k, prix, 'friandise'))).join(''),
+      accessoires: ACCESSOIRES.map(([k, l, prix]) => card(companionSvg({ ...cc, accessoires: [k] }, 'content', 70), l, has.includes(k) ? `<button class="btn small ${worn(cc).includes(k) ? 'primary' : 'soft'}" data-wear="${k}">${worn(cc).includes(k) ? 'Porté ✓' : 'Mettre'}</button>` : price(k, prix, 'accessoire'))).join(''),
+      fonds: FONDS.map(([k, l, prix]) => card(`<span class="bq-fond">${sceneSvg(k, 'jour')}</span>`, l, prix === 0 || has.includes(`fond:${k}`) ? `<button class="btn small ${cc.fond === k ? 'primary' : 'soft'}" data-fond="${k}">${cc.fond === k ? 'Choisi ✓' : 'Choisir'}</button>` : price(`fond:${k}`, prix, 'fond'))).join(''),
+    };
+    $('[data-body]', el).innerHTML = `<div class="scene scene-mini">${sceneSvg(cc.fond || 'jardin')}<div class="comp-walk still">${companionSvg(cc, 'content', 120)}</div><div class="scene-top"><span class="chip">${cc.coquillages} 🐚</span></div></div>
+      <div class="seg bq-tabs" role="tablist" style="margin:10px 0">${[['friandises', '🍓 Friandises'], ['accessoires', '🎀 Tenues'], ['fonds', '🏞️ Décors']].map(([k, l]) => `<button data-tab-shop="${k}" aria-pressed="${k === tab}">${l}</button>`).join('')}</div>
+      <div class="bq-grid">${panes[tab]}</div>
+      <p class="muted small">Gagner des coquillages : visite du jour +5, chaque repas noté +3, chaque verre d'eau +1 (objectif d'eau +5), activité faite +5, câlins +1, et le bilan du soir (2 par objectif, +5 si les calories sont dans la cible).</p>`;
   };
   draw();
   el.addEventListener('click', async (e) => {
-    const b = e.target.closest('[data-buy],[data-wear]');
+    const t = e.target.closest('[data-tab-shop]');
+    if (t) { tab = t.dataset.tabShop; draw(); return; }
+    const b = e.target.closest('[data-buy],[data-wear],[data-fond]');
     if (!b) return;
     const cc = companionOf(m);
     try {
-      if (b.dataset.buy) { const prix = ACCESSOIRES.find((a) => a[0] === b.dataset.buy)[2]; if (cc.coquillages < prix) return; await Data.saveCompagnon({ ...cc, coquillages: cc.coquillages - prix, accessoires: [...cc.accessoires, b.dataset.buy] }); toast('Nouvel accessoire !'); }
+      if (b.dataset.kind === 'friandise') {
+        const [k, emoji, , prix] = FRIANDISES.find((f) => f[0] === b.dataset.buy);
+        if (cc.coquillages < prix) return;
+        await Data.saveCompagnon({ ...cc, coquillages: cc.coquillages - prix, friandises: (cc.friandises || 0) + 1 });
+        closeSheet(); render();
+        Pet.play('miam', { emoji, fav: FAVORI[cc.espece] === k });
+        return;
+      }
+      if (b.dataset.buy) {
+        const prix = b.dataset.kind === 'fond' ? FONDS.find((f) => `fond:${f[0]}` === b.dataset.buy)[2] : ACCESSOIRES.find((a) => a[0] === b.dataset.buy)[2];
+        if (cc.coquillages < prix) return;
+        const patch = { coquillages: cc.coquillages - prix, accessoires: [...cc.accessoires, b.dataset.buy] };
+        if (b.dataset.kind === 'fond') patch.fond = b.dataset.buy.slice(5);
+        await Data.saveCompagnon({ ...cc, ...patch });
+        Pet.play('achat', b.dataset.kind === 'fond' ? 'Waouh, quel nouveau décor !' : 'Je suis trop beau·belle comme ça !');
+      } else if (b.dataset.fond) await Data.saveCompagnon({ ...cc, fond: b.dataset.fond });
       else { const k = b.dataset.wear; const acc = cc.accessoires.map((a) => (a.replace(/^!/, '') === k ? (a.startsWith('!') ? k : `!${k}`) : a)); await Data.saveCompagnon({ ...cc, accessoires: acc }); }
       draw(); render();
     } catch (err) { fail(err); }
@@ -3419,12 +3687,24 @@ function renderToday() {
   const timeline = items.map((x, i) => (i === nowIdx ? nowMark : '') + li(x)).join('') + (nowIdx < 0 ? nowMark : '');
 
   const mood = c ? companionMood(me, c) : 'content';
-  const hero = `<div class="hero">
-      <div class="hero-top">${c ? companionSvg(c, mood, 112) : `<button class="btn soft" data-act="adopt">${ICON.sparkle} Adopter un compagnon</button>`}
-        <div class="grow">${c ? `<div class="bubble">${esc(c.messages === false ? `${c.nom} veille sur ${me.nom}.` : pick(mood, c))}</div>
-          <div class="row small" style="margin-top:8px;gap:12px"><span><b>${c.coquillages}</b> 🐚</span><span><b>${c.serie}</b> jour${c.serie > 1 ? 's' : ''} de suite</span><button class="btn small" data-act="boutique" style="margin-left:auto">Boutique</button></div>` : `<p class="muted small" style="margin:0">Un compagnon pour ${esc(me.nom)} : il fête les objectifs atteints sans excès et ne gronde jamais.</p>`}</div></div>
+  const nextMeal = di >= 0 && ['midi', 'soir'].map((sl) => state.plan.find((x) => x.day === di && x.slot === sl && SLOT_TIME[sl] > now)).find(Boolean);
+  const nextAct = dayActs(me.id, iso).find((a) => a.statut === 'prevu' && (a.heure || '') > now);
+  Pet.lines = c && c.messages !== false ? [pick(mood, c), ...PET_MSG.idle,
+    water < wGoal ? `Encore ${fmtL(wGoal - water)} d'eau pour ton objectif. On trinque ? 💧` : 'Objectif d\'eau atteint, bravo !',
+    nextMeal ? `Au menu ${nextMeal.slot === 'midi' ? 'ce midi' : 'ce soir'} : ${recipeById(nextMeal.recipe_id)?.title || 'surprise'}. J'ai hâte !` : '',
+    nextAct ? `${nextAct.label} à ${nextAct.heure} : je viens avec toi !` : '',
+    c.coquillages >= 20 ? `On a ${c.coquillages} coquillages… un petit tour à la boutique ?` : ''].filter(Boolean) : [];
+  const scene = c ? `<div class="scene" data-scene>${sceneSvg(c.fond || 'jardin')}
+      <div class="scene-top"><span class="chip" data-shells>${c.coquillages} 🐚</span><span class="chip">🔥 ${c.serie} j</span><span class="chip name">${esc(c.nom)}</span></div>
+      ${c.messages === false ? '' : `<div class="scene-bubble" data-bubble>${esc(pick(mood, c))}</div>`}
+      <div class="comp-walk"><button class="comp-tap" data-act="pet" aria-label="Faire un câlin à ${esc(c.nom)}">${companionSvg(c, mood, 190)}</button></div></div>
+    <div class="pet-actions"><button class="btn" data-act="nourrir">🍓 Nourrir</button><button class="btn" data-act="boutique">🎀 Boutique</button></div>`
+    : `<div class="scene">${sceneSvg('jardin')}<div class="scene-bubble">Un compagnon pour ${esc(me.nom)} ? Il t'encourage et ne gronde jamais.</div><div class="comp-walk still" style="opacity:.9">${companionSvg({ espece: 'loutre' }, 'matin', 170)}</div></div>
+    <div class="pet-actions" style="grid-template-columns:1fr"><button class="btn primary" data-act="adopt">${ICON.sparkle} Adopter un compagnon · ${WELCOME_SHELLS} 🐚 offerts</button></div>`;
+  const hero = `<div class="hero hero-pet">${scene}
       <div class="rings">${ring(eatenSoFar, nd.kcal, 'var(--primary)', `${eatenSoFar} / ${nd.kcal} kcal`, 'mangé')}${ring(ex.active, Number(me.objectif_kcal_actives) || 300, '#dd8a3e', `${ex.active} / ${me.objectif_kcal_actives || 300} kcal`, 'activité')}${ring(water / 1000, wGoal / 1000, '#4a90c8', `${fmtL(water)} / ${fmtL(wGoal)}`, 'eau')}</div>
       ${members.length > 1 ? `<div class="famille">${members.map((x) => { const cx = companionOf(x); return `<button class="fam ${x.id === me.id ? 'on' : ''}" data-act="famille" data-m="${x.id}">${cx ? companionSvg(cx, 'content', 40) : `<span class="thumb ph" style="width:40px;height:40px;border-radius:50%">${esc(x.nom[0])}</span>`}<span>${esc(x.nom)}</span></button>`; }).join('')}</div>` : ''}</div>`;
+  if (c && !Pet.greeted) { Pet.greeted = true; Pet.play('hello', `${greet} ${me.nom} ! ${today.getHours() < 11 ? 'Bien dormi ?' : 'Content·e de te voir !'}`); }
   return `${head}${hero}
     <div class="quick3"><button class="btn" data-act="journal-add" data-slot="${defaultSlot()}">🍽️ Repas</button><button class="btn" data-act="eau-add" data-ml="250">💧 +250 ml</button><button class="btn" data-act="activite-add">🏃 Activité</button></div>
     <h3 class="tl-head">La journée de ${esc(me.nom)}</h3>
@@ -4111,6 +4391,7 @@ function render() {
   const [title, view] = views[state.tab];
   $('#title').textContent = title;
   $$('.tabbar button').forEach((b) => b.setAttribute('aria-current', b.dataset.tab === state.tab ? 'page' : 'false'));
+  Pet.queue.length && setTimeout(() => Pet.flush(), 0);
   main.innerHTML = (state.offline ? `<div class="offline-banner">${ICON.info} Hors ligne : données du dernier chargement${Queue.size() ? ` · ${Queue.size()} saisie(s) en attente` : ''}</div>` : '') + view();
 }
 function switchTab(tab) {
@@ -4171,7 +4452,9 @@ const ACTIONS = {
   'eau-sheet': () => eauSheet(),
   'eau-add': (b) => addWater(Number(b.dataset.ml)),
   adopt: () => adoptSheet(journalMember()),
-  boutique: () => boutiqueSheet(journalMember()),
+  boutique: () => boutiqueSheet(journalMember(), 'accessoires'),
+  nourrir: () => boutiqueSheet(journalMember(), 'friandises'),
+  pet: () => Pet.pet(),
   compagnon: () => compagnonSettings(),
   famille: (b) => { state.suiviMember = b.dataset.m; store.set('suiviMember', b.dataset.m); render(); },
   'activite-del': async (b) => { try { await Data.deleteActivite(b.dataset.id); render(); } catch (e) { fail(e); } },
@@ -4474,7 +4757,8 @@ async function onSession(session) {
     const hash = location.hash.replace('#', '');
     if (['planning', 'courses', 'batch', 'suivi', 'recettes', 'scan', 'aujourdhui'].includes(hash) ) { if (hash) state.tab = hash; history.replaceState(null, '', location.pathname); }
     render();
-    evaluateYesterday().catch((e) => console.warn('bilan', e));
+    evaluateYesterday().catch((e) => console.warn('bilan', e)).finally(() => Rewards.daily().catch(() => {}));
+    Pet.start();
   } catch (err) {
     // Hors ligne : on repart du dernier chargement connu.
     const cu = store.get(`cache:user:${user.id}`, null);
