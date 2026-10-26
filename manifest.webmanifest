@@ -1,6 +1,6 @@
 {
-  "name": "Nutri Semaine",
-  "short_name": "Nutri Semaine",
+  "name": "Miam & moi",
+  "short_name": "Miam & moi",
   "description": "Scan nutritionnel, recettes, planning de la semaine et liste de courses.",
   "lang": "fr",
   "start_url": "./",

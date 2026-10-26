@@ -41,7 +41,7 @@ Deno.serve(async (req) => {
     const { data: subs } = await admin.from("push_abonnements").select("*").eq("user_id", user.id);
     let sent = 0;
     for (const s of subs ?? []) {
-      try { await webpush.sendNotification({ endpoint: s.endpoint, keys: s.keys }, JSON.stringify({ title: "Nutri Semaine", body: "Les rappels fonctionnent sur cet appareil 👍", tag: "test" })); sent++; }
+      try { await webpush.sendNotification({ endpoint: s.endpoint, keys: s.keys }, JSON.stringify({ title: "Miam & moi", body: "Les rappels fonctionnent sur cet appareil 👍", tag: "test" })); sent++; }
       catch (e) { if ((e as { statusCode?: number }).statusCode === 410 || (e as { statusCode?: number }).statusCode === 404) await admin.from("push_abonnements").delete().eq("endpoint", s.endpoint); }
     }
     return json({ ok: true, sent });

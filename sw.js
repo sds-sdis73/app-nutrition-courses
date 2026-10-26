@@ -1,4 +1,4 @@
-/* Service worker Nutri Semaine : ouverture hors ligne, cache des fichiers de l'app, notifications push. */
+/* Service worker Miam & moi : ouverture hors ligne, cache des fichiers de l'app, notifications push. */
 const CACHE = 'nutri-shell-v1';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './aliments.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png',
   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js',
@@ -56,8 +56,8 @@ self.addEventListener('fetch', (e) => {
 
 self.addEventListener('push', (e) => {
   let data = {};
-  try { data = e.data ? e.data.json() : {}; } catch { data = { title: 'Nutri Semaine', body: e.data?.text() || '' }; }
-  e.waitUntil(self.registration.showNotification(data.title || 'Nutri Semaine', {
+  try { data = e.data ? e.data.json() : {}; } catch { data = { title: 'Miam & moi', body: e.data?.text() || '' }; }
+  e.waitUntil(self.registration.showNotification(data.title || 'Miam & moi', {
     body: data.body || '', icon: './icon-192.png', badge: './icon-192.png', tag: data.tag || 'nutri', data: { url: data.url || './' }, renotify: false,
   }));
 });
