@@ -1,6 +1,6 @@
 /* Service worker Miam & moi : ouverture hors ligne, cache des fichiers de l'app, notifications push. */
-const CACHE = 'nutri-shell-v1';
-const SHELL = ['./', './index.html', './manifest.webmanifest', './aliments.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png',
+const CACHE = 'miam-shell-v2';
+const SHELL = ['./', './index.html', './manifest.webmanifest', './aliments.json', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png',
   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js',
   'https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/umd/zxing-browser.min.js'];
 

@@ -1,6 +1,6 @@
 # app-nutrition-courses
 
-Application web mobile « Miam & moi » : scan nutritionnel des produits, carnet de recettes, planning de la semaine, liste de courses (export Courses U) et batch cooking.
+Application web mobile « Miam & moi » (logo : bulle « M&m ») : scan nutritionnel des produits, carnet de recettes, planning de la semaine, liste de courses (export Courses U) et batch cooking.
 
 En ligne : https://sds-sdis73.github.io/app-nutrition-courses/
 
