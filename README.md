@@ -7,12 +7,17 @@ En ligne : https://sds-sdis73.github.io/app-nutrition-courses/
 ## Contenu
 
 - `index.html` : toute l'application (HTML, CSS et JavaScript, sans étape de build)
+- `sw.js` : service worker (ouverture hors ligne, cache des fichiers de l'app, réception des notifications)
 - `version.json` : version publiée, relue par l'app pour se recharger après une mise à jour
 - `aliments.json` : valeurs nutritionnelles de 3 484 aliments, extraites de la table Ciqual 2025 de l'Anses (Licence Ouverte Etalab 2.0), pour 100 g : énergie, protéines, glucides, sucres, lipides, AG saturés, fibres, sel, calcium, fer, vitamine C
 - `manifest.webmanifest`, `icon-*.png`, `apple-touch-icon.png` : installation sur l'écran d'accueil
 - `supabase/functions/` : fonctions serveur déployées sur Supabase
   - `import-recipe` : import d'une recette depuis une URL (JSON-LD schema.org/Recipe)
   - `signup` : création d'un compte e-mail + mot de passe déjà validé
+  - `join-foyer` : rattachement d'un compte à un foyer par code d'invitation
+  - `reset-password` : nouveau mot de passe défini par un administrateur du foyer (pas d'e-mail)
+  - `send-reminders` : rappels push (appelée toutes les heures par `pg_cron`)
+  - `prix-coursesu` : tentative de lecture d'un prix sur coursesu.com (le site bloque souvent ; repli sur Open Prices)
 
 ## Publier une mise à jour
 
@@ -20,3 +25,9 @@ En ligne : https://sds-sdis73.github.io/app-nutrition-courses/
 2. Pousser sur `main` : GitHub Pages publie en 1 à 2 minutes et les téléphones se rechargent automatiquement.
 
 Les fonctions de `supabase/functions/` se déploient séparément sur le projet Supabase (`supabase functions deploy <nom>`).
+
+## Données
+
+Tables Supabase (toutes protégées par RLS, partagées par foyer) : `foyers`, `foyer_comptes`, `foyer_membres`, `recettes`, `planning_repas`, `restes`, `placards`, `historique_scans`, `liens_produits`, `courses_coches`, `courses_ajouts`, `journal`, `aliments_favoris`, `produits_perso`, `reglages`, `push_abonnements`, `rappels_envoyes`, `config_app` (clés VAPID, service role uniquement).
+
+Sources externes : Open Food Facts (produits, alternatives), Open Prices (prix moyens par code-barres), table Ciqual 2025 de l'Anses (aliments génériques).

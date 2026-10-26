@@ -62,7 +62,7 @@ img { display: block; max-width: 100%; }
 main { padding: 4px 16px calc(var(--nav-h) + var(--safe-b) + 24px); max-width: 760px; margin: 0 auto; }
 .tabbar {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
-  display: grid; grid-template-columns: repeat(6, 1fr);
+  display: grid; grid-template-columns: repeat(5, 1fr);
   height: calc(var(--nav-h) + var(--safe-b)); padding-bottom: var(--safe-b);
   background: var(--surface); border-top: 1px solid var(--border);
 }
@@ -290,6 +290,16 @@ textarea.input { resize: vertical; min-height: 72px; }
 .step-list li::before { counter-increment: s; content: counter(s); position: absolute; left: 0; top: 10px; width: 30px; height: 30px; border-radius: 50%; background: var(--primary-soft); color: var(--primary-strong); display: grid; place-items: center; font-weight: 800; }
 .tag { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--surface-2); color: var(--muted); }
 .tag.ahead { background: var(--primary-soft); color: var(--primary-strong); }
+.tag.warn-tag { background: #fdebd0; color: #9a5b00; }
+.ns { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; color: #fff; font-weight: 900; font-size: 16px; flex: none; }
+.ns.small { width: 20px; height: 20px; font-size: 12px; border-radius: 6px; }
+.ntable.cmp .nt-row { display: grid; grid-template-columns: 1fr 72px 72px 22px; gap: 6px; }
+.ntable.cmp .nt-row > span:first-child { flex: none; }
+.ntable.cmp .up { color: var(--excellent); font-weight: 800; } .ntable.cmp .down { color: var(--mauvais); font-weight: 800; }
+.shop-item .acts button[data-act="have-item"] { font-size: 12px; gap: 2px; padding: 0 6px; }
+.offline-banner { background: #fdebd0; color: #7a4a00; border-radius: 12px; padding: 8px 12px; font-size: 14px; font-weight: 600; display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+.offline-banner svg { width: 18px; height: 18px; flex: none; }
+.shop-item .price { font-weight: 700; color: var(--primary-strong); font-size: 13px; white-space: nowrap; }
 
 /* Éditeur */
 .ed-block { background: var(--surface-2); border-radius: 14px; padding: 12px; }
@@ -373,12 +383,11 @@ textarea.input { resize: vertical; min-height: 72px; }
 </header>
 <main id="main"><div class="spinner"></div></main>
 <nav class="tabbar" aria-label="Navigation principale">
-  <button data-act="tab" data-tab="scan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M10 8v8M13 8v8M17 8v8"/></svg>Scan</button>
+  <button data-act="tab" data-tab="aujourdhui"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>Aujourd'hui</button>
   <button data-act="tab" data-tab="recettes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/><path d="M9 7h7M9 11h5"/></svg>Recettes</button>
   <button data-act="tab" data-tab="planning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h3M8 18h3M14 14h2"/></svg>Planning</button>
   <button data-act="tab" data-tab="suivi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>Suivi</button>
-  <button data-act="tab" data-tab="courses"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>Courses</button>
-  <button data-act="tab" data-tab="batch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1.1-2.1-.2-4 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.2.4-2.3 1-3.3.3 1.6 1.4 2.8 2.5 2.8z"/></svg>Batch</button>
+  <button data-act="more" data-tab="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>Plus</button>
 </nav>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -390,11 +399,11 @@ textarea.input { resize: vertical; min-height: 72px; }
 // ---------------------------------------------------------------------------
 const APP_NAME = 'Nutri Semaine'; // titre provisoire
 // À incrémenter à chaque publication, avec la même valeur dans version.json.
-const APP_VERSION = '2026-10-26.2';
+const APP_VERSION = '2026-10-26.3';
 const SUPABASE_URL = 'https://svugddkrptqpjmywhorb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2dWdkZGtycHRxcGpteXdob3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MjU5NDgsImV4cCI6MjEwODUwMTk0OH0.63RETgf7rbVMquGV-7ooY3qn-Qf31uVCA3ZBfqBvFcI';
 const OFF = 'https://world.openfoodfacts.org/api/v2';
-const OFF_FIELDS = 'code,product_name,product_name_fr,brands,quantity,serving_quantity,serving_size,image_front_url,image_front_small_url,nutriscore_grade,nutriscore_score,nutriscore_data,nova_group,additives_tags,labels_tags,categories_tags,stores_tags,nutriments';
+const OFF_FIELDS = 'code,product_name,product_name_fr,brands,quantity,serving_quantity,serving_size,image_front_url,image_front_small_url,nutriscore_grade,nutriscore_score,nutriscore_data,nova_group,additives_tags,labels_tags,categories_tags,categories_hierarchy,compared_to_category,stores_tags,nutriments';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ---------------------------------------------------------------------------
@@ -402,6 +411,7 @@ const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 // ---------------------------------------------------------------------------
 const I = (d, extra = '') => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ${extra}>${d}</svg>`;
 const ICON = {
+  check: I('<path d="M20 6 9 17l-5-5"/>'),
   barcode: I('<path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M10 8v8M13 8v8M17 8v8"/>'),
   close: I('<path d="M18 6 6 18M6 6l12 12"/>'),
   back: I('<path d="m15 18-6-6 6-6"/>'),
@@ -498,7 +508,9 @@ const state = {
   compte: null,
   comptes: [],
   authMode: 'login',
-  tab: store.get('tab', 'scan'),
+  tab: store.get('tab', 'aujourdhui'),
+  offline: false,
+  push: null,
   settings: { store_name: 'Super U Porte de Savoie Montmélian', store_slug: 'superu-montmelian', default_servings: 2 },
   recipes: [],
   links: {},
@@ -509,6 +521,10 @@ const state = {
   extras: [],
   members: [],
   journal: [],
+  placards: [],
+  restes: [],
+  favoris: [],
+  perso: [],
   day: new Date(),
   suiviMember: store.get('suiviMember', null),
   suiviView: 'jour',
@@ -533,6 +549,10 @@ const T = {
   extras: 'courses_ajouts',
   members: 'foyer_membres',
   journal: 'journal',
+  placards: 'placards',
+  restes: 'restes',
+  favoris: 'aliments_favoris',
+  perso: 'produits_perso',
 };
 const PHOTO_BUCKET = 'photos-recettes';
 const me = () => state.user?.id;
@@ -542,15 +562,24 @@ const own = () => ({ user_id: me(), foyer_id: foyer() });
 
 const Data = {
   async loadAll() {
-    const [s, r, l, sc, mb] = await Promise.all([
+    const [s, r, l, sc, mb, pl, rs, fv, pp] = await Promise.all([
       db.from(T.settings).select('*').eq('foyer_id', foyer()).maybeSingle(),
       db.from(T.recipes).select('*').eq('foyer_id', foyer()).order('updated_at', { ascending: false }),
       db.from(T.links).select('*').eq('foyer_id', foyer()),
       db.from(T.scans).select('*').eq('foyer_id', foyer()).order('scanned_at', { ascending: false }).limit(150),
       db.from(T.members).select('*').eq('foyer_id', foyer()).order('ordre').order('created_at'),
+      db.from(T.placards).select('*').eq('foyer_id', foyer()).order('name'),
+      db.from(T.restes).select('*').eq('foyer_id', foyer()).order('dlc'),
+      db.from(T.favoris).select('*').eq('foyer_id', foyer()).order('created_at'),
+      db.from(T.perso).select('*').eq('foyer_id', foyer()).order('name'),
     ]);
-    for (const res of [s, r, l, sc, mb]) if (res.error) throw res.error;
+    for (const res of [s, r, l, sc, mb, pl, rs, fv, pp]) if (res.error) throw res.error;
+    state.favoris = fv.data;
+    state.perso = pp.data;
     state.members = mb.data;
+    state.placards = pl.data;
+    state.restes = rs.data;
+    if (!state.placards.some((x) => x.type === 'basique')) await Data.seedBasiques().catch((e) => console.warn(e));
     if (s.data) state.settings = s.data;
     else {
       const ins = await db.from(T.settings).insert(own()).select().single();
@@ -574,6 +603,7 @@ const Data = {
     state.checks = Object.fromEntries(c.data.map((r) => [r.item, r.checked]));
     state.extras = x.data;
     state.journal = j.data;
+    if (state.loaded) Offline.saveWeek();
   },
   async saveMember(m) {
     const { data, error } = await db.from(T.members).upsert({ ...m, ...own() }).select().single();
@@ -589,9 +619,19 @@ const Data = {
     state.journal = state.journal.filter((x) => x.member_id !== id);
   },
   async addJournal(entry) {
-    const { data, error } = await db.from(T.journal).insert({ ...entry, ...own() }).select().single();
-    if (error) throw error;
-    state.journal.push(data);
+    const row = { ...entry, ...own() };
+    try {
+      const { data, error } = await db.from(T.journal).insert(row).select().single();
+      if (error) throw error;
+      state.journal.push(data);
+    } catch (e) {
+      if (!isNetworkError(e)) throw e;
+      Queue.push({ type: 'journal', row });
+      state.journal.push({ ...row, id: `local:${uid()}` });
+      state.offline = true;
+      toast('Hors ligne : saisie enregistrée, elle sera synchronisée');
+    }
+    Offline.saveWeek();
   },
   async deleteJournal(id) {
     const { error } = await db.from(T.journal).delete().eq('id', id);
@@ -630,7 +670,7 @@ const Data = {
     state.plan = state.plan.filter((m) => m.recipe_id !== id);
   },
   async setMeal(day, slot, recipe_id, servings, extra = {}) {
-    const row = { ...own(), week: isoDate(state.week), day, slot, recipe_id, servings, eaters: extra.eaters ?? null, guests: extra.guests ?? 0 };
+    const row = { ...own(), week: isoDate(state.week), day, slot, recipe_id, servings, eaters: extra.eaters ?? null, guests: extra.guests ?? 0, reste_id: extra.reste_id ?? null };
     const { data, error } = await db.from(T.plan).upsert(row, { onConflict: 'foyer_id,week,day,slot' }).select().single();
     if (error) throw error;
     state.plan = state.plan.filter((m) => !(m.day === day && m.slot === slot));
@@ -644,27 +684,112 @@ const Data = {
   },
   async removeMeals(ids) {
     if (!ids.length) return;
+    const back = state.plan.filter((m) => ids.includes(m.id) && m.reste_id).map((m) => ({ reste_id: m.reste_id, portions: mealServings(m) }));
     const { error } = await db.from(T.plan).delete().in('id', ids);
     if (error) throw error;
     state.plan = state.plan.filter((m) => !ids.includes(m.id));
+    // Un reste retiré du planning redevient disponible.
+    for (const b of back) {
+      const r = state.restes.find((x) => x.id === b.reste_id);
+      if (r) await Data.updateReste(r.id, { portions: Math.round((Number(r.portions) + b.portions) * 100) / 100 }).catch(() => {});
+    }
+  },
+  async addFavori(row) {
+    const { data, error } = await db.from(T.favoris).insert({ ...own(), ...row }).select().single();
+    if (error) throw error;
+    state.favoris.push(data);
+    return data;
+  },
+  async deleteFavori(id) {
+    const { error } = await db.from(T.favoris).delete().eq('id', id);
+    if (error) throw error;
+    state.favoris = state.favoris.filter((x) => x.id !== id);
+  },
+  async savePerso(row) {
+    const { data, error } = await db.from(T.perso).upsert({ ...row, ...own(), updated_at: new Date().toISOString() }).select().single();
+    if (error) throw error;
+    const i = state.perso.findIndex((x) => x.id === data.id);
+    if (i >= 0) state.perso[i] = data; else state.perso.push(data);
+    return data;
+  },
+  async deletePerso(id) {
+    const { error } = await db.from(T.perso).delete().eq('id', id);
+    if (error) throw error;
+    state.perso = state.perso.filter((x) => x.id !== id);
+  },
+  // Entrées de journal récentes d'un membre (toutes semaines), pour la saisie rapide.
+  async recentJournal(memberId, limit = 120) {
+    const { data, error } = await db.from(T.journal).select('label,source,ref,grams,portions,n,slot,date').eq('foyer_id', foyer()).eq('member_id', memberId).order('created_at', { ascending: false }).limit(limit);
+    if (error) throw error;
+    return data;
+  },
+  async journalOn(date, memberIds) {
+    const { data, error } = await db.from(T.journal).select('*').eq('foyer_id', foyer()).eq('date', date).in('member_id', memberIds);
+    if (error) throw error;
+    return data;
+  },
+  async addPlacard(row) {
+    const { data, error } = await db.from(T.placards).insert({ ...own(), ...row }).select().single();
+    if (error) throw error;
+    state.placards.push(data);
+    return data;
+  },
+  async deletePlacard(id) {
+    const { error } = await db.from(T.placards).delete().eq('id', id);
+    if (error) throw error;
+    state.placards = state.placards.filter((x) => x.id !== id);
+  },
+  async seedBasiques() {
+    const rows = [...DEFAULT_BASIQUES, '__init__'].map((n) => ({ ...own(), name: n === '__init__' ? '(initialisé)' : n, ing_key: n === '__init__' ? '__init__' : ingKey(n), type: 'basique' }));
+    const { data, error } = await db.from(T.placards).insert(rows).select();
+    if (error) throw error;
+    state.placards.push(...data);
+  },
+  async addReste(row) {
+    const { data, error } = await db.from(T.restes).insert({ ...own(), ...row }).select().single();
+    if (error) throw error;
+    state.restes.push(data);
+    state.restes.sort((a, b) => a.dlc.localeCompare(b.dlc));
+    return data;
+  },
+  async updateReste(id, patch) {
+    if (patch.portions != null && patch.portions <= 0.05) return this.deleteReste(id);
+    const { data, error } = await db.from(T.restes).update(patch).eq('id', id).select().single();
+    if (error) throw error;
+    const i = state.restes.findIndex((x) => x.id === id);
+    if (i >= 0) state.restes[i] = data;
+  },
+  async deleteReste(id) {
+    const { error } = await db.from(T.restes).delete().eq('id', id);
+    if (error) throw error;
+    state.restes = state.restes.filter((x) => x.id !== id);
   },
   async addScan(p, score) {
     const row = { ...own(), ean: p.code, name: p.product_name_fr || p.product_name || null, brand: p.brands || null, image_url: p.image_front_small_url || p.image_front_url || null, score };
-    await db.from(T.scans).delete().eq('ean', p.code);
-    const { data, error } = await db.from(T.scans).insert(row).select().single();
-    if (error) throw error;
-    state.scans = [data, ...state.scans.filter((s) => s.ean !== p.code)];
+    try {
+      await db.from(T.scans).delete().eq('ean', p.code);
+      const { data, error } = await db.from(T.scans).insert(row).select().single();
+      if (error) throw error;
+      state.scans = [data, ...state.scans.filter((s) => s.ean !== p.code)];
+    } catch (e) {
+      if (!isNetworkError(e)) throw e;
+      Queue.push({ type: 'scan', row });
+      state.scans = [{ ...row, id: `local:${uid()}`, scanned_at: new Date().toISOString() }, ...state.scans.filter((s) => s.ean !== p.code)];
+    }
+    Offline.saveAll();
   },
   async clearScans() {
     const { error } = await db.from(T.scans).delete().eq('foyer_id', foyer());
     if (error) throw error;
     state.scans = [];
   },
-  async saveLink(ingredient, url, label) {
-    const row = { ...own(), ingredient, url, label, updated_at: new Date().toISOString() };
+  async saveLink(ingredient, url, label, extra = {}) {
+    const prev = state.links[ingredient] || {};
+    const row = { ...own(), ingredient, url, label, prix: prev.prix ?? null, prix_source: prev.prix_source ?? null, prix_date: prev.prix_date ?? null, ean: prev.ean ?? null, pid: prev.pid ?? null, ...extra, updated_at: new Date().toISOString() };
     const { error } = await db.from(T.links).upsert(row, { onConflict: 'foyer_id,ingredient' });
     if (error) throw error;
     state.links[ingredient] = row;
+    return row;
   },
   async deleteLink(ingredient) {
     const { error } = await db.from(T.links).delete().eq('ingredient', ingredient);
@@ -838,13 +963,42 @@ async function fetchProduct(ean) {
 }
 const isU = (p) => (p.stores_tags || []).some((s) => /(^|[-\s])u($|[-\s])|super-?u|hyper-?u|magasins-?u|systeme-?u|courses-?u|u-express/i.test(s));
 
+// Catégories trop larges pour comparer des produits entre eux.
+const GENERIC_CATS = new Set(['en:breakfasts', 'en:spreads', 'en:sweet-spreads', 'en:salty-spreads', 'en:snacks', 'en:sweet-snacks', 'en:salty-snacks', 'en:beverages', 'en:dairies', 'en:meals', 'en:plant-based-foods-and-beverages', 'en:plant-based-foods', 'en:fruits-and-vegetables-based-foods', 'en:cereals-and-potatoes', 'en:meats', 'en:meats-and-their-products', 'en:fishes', 'en:seafood', 'en:frozen-foods', 'en:desserts', 'en:groceries', 'en:canned-foods', 'en:condiments', 'en:sauces', 'en:fats', 'en:fermented-foods', 'en:fermented-milk-products', 'en:biscuits-and-cakes', 'en:confectioneries', 'en:cereals-and-their-products', 'en:farming-products', 'en:non-alcoholic-beverages', 'en:carbonated-drinks', 'en:dairy-drinks', 'en:cheeses', 'en:cooked-meats', 'en:prepared-meats', 'en:legumes-and-their-products', 'en:nuts-and-their-products', 'en:seeds', 'en:vegetables-based-foods', 'en:fruits-based-foods', 'en:bakery', 'en:breads', 'en:pastas', 'en:cereal-grains', 'en:fruit-juices-and-nectars']);
+const altCache = { get(k) { const v = store.get(`alt:${k}`, null); return v && Date.now() - v.t < 864e5 ? v.d : null; }, set(k, d) { store.set(`alt:${k}`, { t: Date.now(), d }); } };
+const hiddenAlts = () => new Set(store.get('hiddenAlts', []));
+function altCategories(p) {
+  const specific = (p.categories_hierarchy || p.categories_tags || []).filter((t) => /^en:[a-z0-9-]+$/.test(t) && !GENERIC_CATS.has(t));
+  const cats = [];
+  const cmp = p.compared_to_category;
+  if (cmp && /^en:[a-z0-9-]+$/.test(cmp) && !GENERIC_CATS.has(cmp)) cats.push(cmp);
+  for (const c of specific.slice().reverse()) if (!cats.includes(c)) cats.push(c);
+  return cats.slice(0, 3);
+}
+// Même famille : profils en graisses et protéines proches (une confiture n'est pas une alternative à une pâte à tartiner).
+function sameFamily(a, b) {
+  const na = a.nutriments || {};
+  const nb = b.nutriments || {};
+  const fa = Number(na.fat_100g) || 0;
+  const fb = Number(nb.fat_100g) || 0;
+  const pa = Number(na.proteins_100g) || 0;
+  const pb = Number(nb.proteins_100g) || 0;
+  return Math.abs(fa - fb) <= Math.max(8, fa * 0.5) && Math.abs(pa - pb) <= Math.max(6, pa * 0.5);
+}
 async function findAlternatives(p, current) {
-  const cats = (p.categories_tags || []).filter((t) => /^en:[a-z0-9-]+$/.test(t));
-  for (const cat of cats.slice(-2).reverse()) {
-    const url = `${OFF}/search?categories_tags=${encodeURIComponent(cat)}&countries_tags=en:france&sort_by=nutriscore_score&page_size=60&fields=${OFF_FIELDS}`;
-    const d = await fetchJson(url);
+  const hidden = hiddenAlts();
+  for (const cat of altCategories(p)) {
+    const key = `${cat}|${p.code}`;
+    let d = altCache.get(key);
+    if (!d) {
+      const url = `${OFF}/search?categories_tags=${encodeURIComponent(cat)}&countries_tags=en:france&sort_by=nutriscore_score&page_size=80&fields=${OFF_FIELDS}`;
+      d = await fetchJson(url);
+      altCache.set(key, { products: (d.products || []).slice(0, 80) });
+      d = altCache.get(key);
+    }
     const list = (d.products || [])
-      .filter((x) => x.code !== p.code && (x.product_name_fr || x.product_name))
+      .filter((x) => x.code !== p.code && (x.product_name_fr || x.product_name) && !hidden.has(`${p.code}:${x.code}`))
+      .filter((x) => (x.categories_tags || []).includes(cat) && sameFamily(p, x))
       .map((x) => ({ ...x, _s: computeScore(x).total }))
       .filter((x) => x._s != null && x._s >= Math.min(75, (current ?? 0) + 10));
     if (list.length) {
@@ -853,6 +1007,28 @@ async function findAlternatives(p, current) {
     }
   }
   return [];
+}
+// Tableau « produit scanné / alternative » sur les critères qui font la note.
+function compareHtml(base, alt) {
+  const nb = offPer100(base);
+  const na = offPer100(alt);
+  const sb = computeScore(base);
+  const sa = computeScore(alt);
+  const rows = [
+    ['Note', `${sb.total ?? '—'}/100`, `${sa.total ?? '—'}/100`, (sa.total ?? 0) - (sb.total ?? 0), true],
+    ['Calories', fmtN(nb.kcal, 'kcal'), fmtN(na.kcal, 'kcal'), nb.kcal - na.kcal, false],
+    ['Sucres', fmtN(nb.suc, 'g'), fmtN(na.suc, 'g'), nb.suc - na.suc, false],
+    ['Graisses saturées', fmtN(nb.ags, 'g'), fmtN(na.ags, 'g'), nb.ags - na.ags, false],
+    ['Sel', fmtN(nb.sel, 'g'), fmtN(na.sel, 'g'), nb.sel - na.sel, false],
+    ['Fibres', fmtN(nb.fib, 'g'), fmtN(na.fib, 'g'), na.fib - nb.fib, false],
+    ['Protéines', fmtN(nb.prot, 'g'), fmtN(na.prot, 'g'), na.prot - nb.prot, false],
+    ['Additifs à risque', String(sb.additives?.filter((a) => a.risk > 0).length ?? 0), String(sa.additives?.filter((a) => a.risk > 0).length ?? 0), (sb.additives?.filter((a) => a.risk > 0).length ?? 0) - (sa.additives?.filter((a) => a.risk > 0).length ?? 0), false],
+    ['Bio', sb.bio ? 'oui' : 'non', sa.bio ? 'oui' : 'non', (sa.bio ? 1 : 0) - (sb.bio ? 1 : 0), false],
+  ];
+  return `<div class="ntable cmp"><div class="nt-title">Comparaison pour 100 g</div>
+    <div class="nt-row head"><span>&nbsp;</span><b class="muted small">Scanné</b><b class="muted small">Celui-ci</b><span></span></div>
+    ${rows.map(([l, a, b, better]) => `<div class="nt-row"><span>${l}</span><b>${a}</b><b>${b}</b><span class="${better > 0.05 ? 'up' : better < -0.05 ? 'down' : ''}">${better > 0.05 ? '▲' : better < -0.05 ? '▼' : '='}</span></div>`).join('')}
+    <p class="muted small" style="margin:6px 0 0">▲ meilleur que le produit scanné, ▼ moins bon.</p></div>`;
 }
 
 // ---------------------------------------------------------------------------
@@ -998,6 +1174,40 @@ function recipeNutrition(r) {
   const servings = r.servings || 1;
   return { total, perPortion: scaleN(total, 1 / servings), lines, missing: lines.filter((l) => !l.n).length };
 }
+
+// Nutri-Score 2023 (aliments généraux) à partir des valeurs pour 100 g.
+const NS_COLORS = { A: '#038141', B: '#85bb2f', C: '#fecb02', D: '#ee8100', E: '#e63e11' };
+const nsPoints = (v, th) => th.filter((t) => v > t).length;
+function nutriScore(n100, fvlPct = 0) {
+  const kj = n100.kcal * 4.184;
+  const N = nsPoints(kj, [335, 670, 1005, 1340, 1675, 2010, 2345, 2680, 3015, 3350]) + nsPoints(n100.suc, [3.4, 6.8, 10, 14, 17, 20, 24, 27, 31, 34])
+    + nsPoints(n100.ags, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) + nsPoints(n100.sel, [0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2]);
+  const fvl = fvlPct > 80 ? 5 : fvlPct > 60 ? 2 : fvlPct > 40 ? 1 : 0;
+  const fib = nsPoints(n100.fib, [3, 4.1, 5.2, 6.3, 7.4]);
+  const prot = nsPoints(n100.prot, [2.4, 4.8, 7.2, 9.6, 12, 14, 17]);
+  const P = fvl + fib + (N >= 11 && fvl < 5 ? 0 : prot);
+  const score = N - P;
+  const grade = score <= 0 ? 'A' : score <= 2 ? 'B' : score <= 10 ? 'C' : score <= 18 ? 'D' : 'E';
+  return { score, grade, N, P };
+}
+const FVL_GROUPS = /^(légumes|fruits|légumineuses|fruits à coque et graines oléagineuses|herbes)$/;
+function recipeNutriScore(r) {
+  const rn = recipeNutrition(r);
+  let grams = 0;
+  let known = 0;
+  let fvl = 0;
+  for (const l of rn.lines) {
+    if (l.g == null) continue;
+    grams += l.g;
+    if (!l.n) continue;
+    known += l.g;
+    if (l.src?.type === 'ciqual' && FVL_GROUPS.test(CQ.byCode.get(l.src.code)?.groupe || '')) fvl += l.g;
+  }
+  if (!known || known / Math.max(grams, 1) < 0.7) return null;
+  const n100 = scaleN(rn.total, 100 / known);
+  return { ...nutriScore(n100, (fvl / known) * 100), n100 };
+}
+const nsBadge = (g, small = false) => (g ? `<span class="ns ${small ? 'small' : ''}" style="background:${NS_COLORS[g.grade]}" title="Nutri-Score ${g.grade}">${g.grade}</span>` : '');
 
 // Besoins : Mifflin-St Jeor (adultes) et équations EER de l'IOM (enfants), repères ANSES/EFSA pour les nutriments.
 const ACTIVITY = {
@@ -1252,7 +1462,51 @@ function manualEntry(onCode) {
 // ---------------------------------------------------------------------------
 // Fiche produit
 // ---------------------------------------------------------------------------
-async function showProduct(ean, { onPick, record = true } = {}) {
+// Produit saisi à la main : même forme qu'un produit Open Food Facts pour réutiliser offPer100().
+const persoToProduct = (x) => ({ code: x.ean || `perso:${x.id}`, product_name: x.name, brands: x.brand || '', serving_quantity: x.serving_g || null, _perso: x, nutriments: Object.fromEntries(Object.entries({ 'energy-kcal_100g': x.n.kcal, proteins_100g: x.n.prot, carbohydrates_100g: x.n.gluc, sugars_100g: x.n.suc, fat_100g: x.n.lip, 'saturated-fat_100g': x.n.ags, fiber_100g: x.n.fib, salt_100g: x.n.sel }).map(([k, v]) => [k, Number(v) || 0])) });
+function persoSheet(init, onDone) {
+  const x = { name: '', brand: '', ean: null, serving_g: '', n: {}, ...init };
+  const fields = [['kcal', 'Énergie (kcal)'], ['prot', 'Protéines (g)'], ['gluc', 'Glucides (g)'], ['suc', 'dont sucres (g)'], ['lip', 'Lipides (g)'], ['ags', 'dont AG saturés (g)'], ['fib', 'Fibres (g)'], ['sel', 'Sel (g)']];
+  const el = openSheet(`${sheetHead(x.id ? 'Modifier la fiche' : 'Nouvelle fiche produit')}
+    <form class="stack" data-form="perso">
+      <label class="field"><span>Nom du produit</span><input class="input" name="name" value="${esc(x.name)}" required maxlength="200"></label>
+      <div class="grid2"><label class="field"><span>Marque</span><input class="input" name="brand" value="${esc(x.brand || '')}"></label>
+        <label class="field"><span>Code-barres</span><input class="input" name="ean" inputmode="numeric" value="${esc(x.ean || '')}" placeholder="facultatif"></label></div>
+      <p class="muted small" style="margin:0">Valeurs de l'étiquette <b>pour 100 g</b> (ou 100 ml) :</p>
+      <div class="grid2">${fields.map(([k, l]) => `<label class="field"><span>${l}</span><input class="input" type="number" step="any" min="0" inputmode="decimal" name="${k}" value="${esc(x.n[k] ?? '')}" ${k === 'kcal' ? 'required' : ''}></label>`).join('')}</div>
+      <label class="field"><span>Poids d'une portion (g, facultatif)</span><input class="input" type="number" step="any" min="0" inputmode="decimal" name="serving_g" value="${esc(x.serving_g || '')}"></label>
+      <button class="btn primary block">Enregistrer</button>
+      ${x.id ? '<button type="button" class="btn danger block" data-x="del">Supprimer la fiche</button>' : ''}
+    </form>`);
+  const f = $('form', el);
+  f.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const n = {};
+    for (const [k] of fields) n[k] = parseFloat(f[k].value) || 0;
+    const row = { ...(x.id ? { id: x.id } : {}), name: f.name.value.trim(), brand: f.brand.value.trim() || null, ean: f.ean.value.trim() || null, n, serving_g: parseFloat(f.serving_g.value) || null };
+    try { const saved = await Data.savePerso(row); closeSheet(); toast('Fiche enregistrée'); onDone?.(saved); } catch (err) { fail(err, 'Enregistrement impossible'); }
+  });
+  $('[data-x="del"]', el)?.addEventListener('click', async () => {
+    if (!(await confirmSheet('Supprimer cette fiche produit ?', 'Supprimer'))) return;
+    try { await Data.deletePerso(x.id); closeSheet(); closeSheet(); } catch (err) { fail(err); }
+  });
+}
+function showPerso(x, { onPick } = {}) {
+  const p = persoToProduct(x);
+  const el = openSheet(`<div class="prod-head"><div class="ph thumb">${ICON.edit}</div>
+      <div class="grow"><div class="prod-name" style="font-size:19px">${esc(x.name)}</div><div class="muted small">${esc(x.brand || '')}${x.ean ? ` · ${esc(x.ean)}` : ''} · fiche manuelle</div></div>
+      <button class="icon-btn" data-act="close-sheet" aria-label="Fermer">${ICON.close}</button></div>
+    ${onPick ? `<button class="btn primary block" style="margin-top:14px" data-x="pick">${ICON.plus} Ajouter comme ingrédient</button>` : state.members.length ? `<button class="btn soft block" style="margin-top:14px" data-x="journal">${ICON.plus} Ajouter à mon journal</button>` : ''}
+    ${nutriTable(offPer100(p), { title: 'Pour 100 g' })}
+    ${x.serving_g ? nutriTable(scaleN(offPer100(p), x.serving_g / 100), { title: `Par portion (${fmtNum(x.serving_g)} g)` }) : ''}
+    <button class="btn block" data-x="edit">${ICON.edit} Modifier la fiche</button>
+    <p class="muted small">Valeurs saisies à la main depuis l'étiquette : pas de note sur 100 ni d'alternatives.</p>`);
+  $('[data-x="pick"]', el)?.addEventListener('click', () => { closeSheet(); onPick(p, null); });
+  $('[data-x="journal"]', el)?.addEventListener('click', () => quantitySheet({ label: x.name, per100: offPer100(p), source: 'off', ref: `perso:${x.id}`, defaultGrams: Number(x.serving_g) || 100 }));
+  $('[data-x="edit"]', el).addEventListener('click', () => persoSheet(x, (saved) => { closeSheet(); showPerso(saved, { onPick }); }));
+}
+let compareBase = null;
+async function showProduct(ean, { onPick, record = true, compareTo = null } = {}) {
   const el = openSheet(`<div class="spinner"></div><p class="muted" style="text-align:center">Recherche du produit…</p>`);
   let p;
   try {
@@ -1263,13 +1517,18 @@ async function showProduct(ean, { onPick, record = true } = {}) {
     return;
   }
   if (!p) {
+    const perso = state.perso.find((x) => x.ean === ean);
+    if (perso) { closeSheet(); return showPerso(perso, { onPick }); }
     el.innerHTML = `${sheetHead('Produit introuvable')}<p>Le code <b>${esc(ean)}</b> n'est pas encore dans la base Open Food Facts.</p>
-      <p class="muted small">Vous pouvez l'ajouter depuis l'application Open Food Facts : il sera ensuite noté ici.</p>
+      <button class="btn primary block" data-x="perso">${ICON.plus} Créer une fiche à partir de l'étiquette</button>
+      <p class="muted small" style="margin:12px 0 6px">La fiche sera réutilisée à chaque scan de ce code et utilisable dans le journal et les recettes.</p>
       <a class="btn soft block" target="_blank" rel="noopener" href="https://fr.openfoodfacts.org/produit/${encodeURIComponent(ean)}">${ICON.ext} Voir sur Open Food Facts</a>`;
+    $('[data-x="perso"]', el).addEventListener('click', () => { closeSheet(); persoSheet({ ean }, (x) => showPerso(x, { onPick })); });
     return;
   }
   const sc = computeScore(p);
   const name = p.product_name_fr || p.product_name || 'Produit sans nom';
+  if (!compareTo) compareBase = p;
   if (record) Data.addScan(p, sc.total).then(() => state.tab === 'scan' && render()).catch((e) => console.warn(e));
   const img = safeUrl(p.image_front_url || p.image_front_small_url);
   const { defects, qualities } = sc.total == null ? { defects: [], qualities: [] } : analyse(p, sc);
@@ -1297,28 +1556,40 @@ async function showProduct(ean, { onPick, record = true } = {}) {
         <div class="crit"><div class="ico">${ICON.leaf}</div><div class="lbl">Bio</div><div class="val">${sc.bio}/10</div><div class="sub">${sc.bio ? 'Label bio' : 'Non bio'}</div></div>` : ''}
       ${nova ? `<p class="muted small" style="margin-top:12px">Transformation : NOVA ${p.nova_group} — ${nova}</p>` : ''}
     </div>
+    ${compareTo ? `<h3 class="section-title">Par rapport à « ${esc(compareTo.product_name_fr || compareTo.product_name || 'produit scanné')} »</h3>${compareHtml(compareTo, p)}
+      <button class="btn small block" data-x="hide-alt" style="border:0;color:var(--muted)">Ce n'est pas une alternative pertinente</button>` : ''}
     ${p.nutriments && typeof p.nutriments['energy-kcal_100g'] === 'number' ? `<h3 class="section-title">Valeurs nutritionnelles</h3>
       ${nutriTable(offPer100(p), { title: `Pour 100 ${isBeverage(p) ? 'ml' : 'g'}` })}
       ${Number(p.serving_quantity) ? nutriTable(scaleN(offPer100(p), Number(p.serving_quantity) / 100), { title: `Par portion (${esc(p.serving_size || `${p.serving_quantity} g`)})` }) : ''}` : ''}
     <div id="alts"><h3 class="section-title">Alternatives plus saines</h3><div class="spinner"></div></div>
     <p class="muted small">Données : Open Food Facts (licence ODbL). Méthode de notation inspirée de Yuka : 60 % nutrition, 30 % additifs, 10 % bio.</p>`;
   if (onPick) $('[data-act="pick-product"]', el).addEventListener('click', () => { closeSheet(); onPick(p, sc.total); });
+  $('[data-x="hide-alt"]', el)?.addEventListener('click', () => {
+    const h = store.get('hiddenAlts', []);
+    h.push(`${compareTo.code}:${p.code}`);
+    store.set('hiddenAlts', h.slice(-300));
+    closeSheet();
+    toast('Alternative masquée');
+    topSheet()?._refreshAlts?.();
+  });
   $('[data-x="journal"]', el)?.addEventListener('click', () => quantitySheet({
     label: name, per100: offPer100(p), source: 'off', ref: p.code, defaultGrams: Number(p.serving_quantity) || 100,
   }));
 
-  findAlternatives(p, sc.total).then((alts) => {
+  el._refreshAlts = () => findAlternatives(p, sc.total).then((alts) => {
     const box = $('#alts', el);
     if (!box) return;
     box.innerHTML = `<h3 class="section-title">Alternatives plus saines</h3>${alts.length
       ? `<div class="alt-scroll">${alts.map((a) => {
         const ai = safeUrl(a.image_front_small_url || a.image_front_url);
-        return `<button class="alt-card" data-act="open-product" data-ean="${esc(a.code)}">${ai ? `<img src="${esc(ai)}" alt="" loading="lazy">` : `<div class="ph">${ICON.barcode}</div>`}
+        return `<button class="alt-card" data-act="open-alt" data-ean="${esc(a.code)}">${ai ? `<img src="${esc(ai)}" alt="" loading="lazy">` : `<div class="ph">${ICON.barcode}</div>`}
           <div class="prod-name small">${esc(a.product_name_fr || a.product_name)}</div><div class="muted small">${esc((a.brands || '').split(',')[0])}</div>
           ${scoreHtml(a._s)}${isU(a) ? '<span class="badge-u">Chez U</span>' : ''}</button>`;
       }).join('')}</div>`
-      : `<p class="muted">${sc.total != null && sc.total >= 75 ? 'Ce produit est déjà excellent.' : 'Aucune alternative mieux notée trouvée dans cette catégorie.'}</p>`}`;
+      : `<p class="muted">${sc.total != null && sc.total >= 75 ? 'Ce produit est déjà excellent.' : 'Aucune alternative comparable et mieux notée trouvée.'}</p>`}
+      ${alts.length ? '<p class="muted small">Alternatives de la même famille de produits (catégorie et profil nutritionnel proches), triées par note ; celles vendues chez U en premier.</p>' : ''}`;
   }).catch(() => { const box = $('#alts', el); if (box) box.innerHTML = '<p class="muted">Alternatives indisponibles pour le moment.</p>'; });
+  el._refreshAlts();
 }
 
 // ---------------------------------------------------------------------------
@@ -1448,6 +1719,210 @@ function detectAction(text) {
 const AHEAD_DEFAULT = new Set(['prep', 'feculent', 'sauce', 'four', 'cuisson']);
 
 // ---------------------------------------------------------------------------
+// Budget : prix par code-barres (Open Prices), lecture Courses U (tentative), saisie manuelle
+// ---------------------------------------------------------------------------
+const Prices = {
+  mem: new Map(),
+  pending: new Set(),
+  // Prix médian des relevés Open Prices (EUR, à l'unité, 12 derniers mois).
+  async open(ean) {
+    if (!/^\d{8,14}$/.test(ean || '')) return null;
+    if (this.mem.has(ean)) return this.mem.get(ean);
+    const cached = store.get(`op:${ean}`, null);
+    if (cached && Date.now() - cached.t < 7 * 864e5) { this.mem.set(ean, cached.p); return cached.p; }
+    if (this.pending.has(ean)) return null;
+    this.pending.add(ean);
+    try {
+      const r = await fetch(`https://prices.openfoodfacts.org/api/v1/prices?product_code=${encodeURIComponent(ean)}&order_by=-date&size=50`);
+      const d = r.ok ? await r.json() : { items: [] };
+      const limit = isoDate(addDays(new Date(), -365));
+      const vals = (d.items || []).filter((x) => x.currency === 'EUR' && x.price_per !== 'KILOGRAM' && x.price > 0 && (x.date || '') >= limit).map((x) => Number(x.price)).sort((a, b) => a - b);
+      const p = vals.length ? { price: Math.round(vals[Math.floor(vals.length / 2)] * 100) / 100, n: vals.length, source: 'openprices' } : { price: null, n: 0, source: 'openprices' };
+      this.mem.set(ean, p);
+      store.set(`op:${ean}`, { t: Date.now(), p });
+      return p;
+    } catch { return null; } finally { this.pending.delete(ean); }
+  },
+  // Lecture serveur du prix Courses U (souvent bloquée par le site : résultat nul possible).
+  async coursesU(url) {
+    try {
+      const { data, error } = await db.functions.invoke('prix-coursesu', { body: { url, store_slug: state.settings.store_slug } });
+      if (error) return { price: null, reason: 'fonction indisponible' };
+      return data || { price: null };
+    } catch { return { price: null, reason: 'réseau' }; }
+  },
+  // Prix d'un article de la liste : mémorisé (manuel ou Courses U) sinon Open Prices (cache).
+  of(it) {
+    const link = state.links[it.ingKey];
+    if (link?.prix) return { price: Number(link.prix), source: link.prix_source || 'manuel', date: link.prix_date };
+    const ean = link?.ean || it.ean;
+    if (ean) { const op = this.mem.get(ean) || store.get(`op:${ean}`, null)?.p; if (op?.price) return { price: op.price, source: 'openprices', n: op.n }; }
+    return null;
+  },
+  // Lance les recherches manquantes puis redessine la liste.
+  warm(items) {
+    const eans = [...new Set(items.map((it) => state.links[it.ingKey]?.ean || it.ean).filter((e) => e && !this.mem.has(e) && !store.get(`op:${e}`, null)))];
+    if (!eans.length) return;
+    Promise.all(eans.slice(0, 12).map((e) => this.open(e))).then(() => { if (state.tab === 'courses') render(); });
+  },
+};
+const fmtEur = (v) => `${v.toFixed(2).replace('.', ',')} €`;
+const PRICE_SRC = { manuel: 'prix saisi', coursesu: 'prix Courses U', openprices: 'prix moyen relevé (Open Prices)' };
+
+// ---------------------------------------------------------------------------
+// Placards, aversions, restes
+// ---------------------------------------------------------------------------
+const DEFAULT_BASIQUES = ['Sel', 'Poivre', 'Huile d\'olive', 'Huile de tournesol', 'Vinaigre', 'Sucre', 'Farine', 'Moutarde', 'Herbes de Provence', 'Thym', 'Laurier', 'Cumin', 'Curry', 'Paprika', 'Bouillon'];
+const keyMatches = (k, p) => !!k && !!p && (k === p || k.startsWith(`${p} `) || p.startsWith(`${k} `));
+const basiques = () => state.placards.filter((x) => x.type === 'basique' && x.ing_key !== '__init__');
+const stocks = () => state.placards.filter((x) => x.type === 'stock' && (!x.until || x.until >= isoDate(state.week)));
+const inPlacard = (k) => basiques().find((p) => keyMatches(k, p.ing_key)) || stocks().find((p) => keyMatches(k, p.ing_key)) || null;
+
+// Familles d'aliments à éviter (allergies, régimes, dégoûts), détectées dans les noms d'ingrédients.
+const EVITE = {
+  gluten: { label: 'Gluten', words: 'ble farine pain pate pates spaghetti semoule boulgour couscous seigle orge epeautre chapelure biscotte brioche pizza tortilla wrap' },
+  lactose: { label: 'Lactose / lait', words: 'lait creme beurre fromage yaourt emmental gruyere comte parmesan mozzarella feta chevre reblochon raclette mascarpone ricotta cheddar skyr' },
+  oeuf: { label: 'Œufs', words: 'oeuf oeufs mayonnaise' },
+  arachide: { label: 'Arachide', words: 'cacahuete arachide' },
+  noix: { label: 'Fruits à coque', words: 'noix noisette amande pistache cajou pecan macadamia' },
+  poisson: { label: 'Poisson', words: 'poisson saumon cabillaud thon sardine maquereau truite colin lieu merlu dorade bar sole' },
+  crustaces: { label: 'Crustacés / fruits de mer', words: 'crevette crabe homard langoustine moule huitre calamar seiche poulpe coquille saint jacques' },
+  soja: { label: 'Soja', words: 'soja tofu tempeh edamame' },
+  sesame: { label: 'Sésame', words: 'sesame tahini' },
+  porc: { label: 'Porc', words: 'porc lardon jambon chorizo saucisson saucisse bacon' },
+  boeuf: { label: 'Bœuf / veau', words: 'boeuf veau steak hache' },
+  viande: { label: 'Viande (végétarien)', words: 'boeuf veau porc poulet dinde canard agneau steak hache viande escalope lardon jambon chorizo saucisse bacon merguez' },
+  champignon: { label: 'Champignons', words: 'champignon cepe girolle shiitake' },
+  piment: { label: 'Piment / épicé', words: 'piment harissa tabasco' },
+  alcool: { label: 'Alcool', words: 'vin biere rhum cognac pastis' },
+};
+function ingredientAvoids(name) {
+  const words = ingKey(name).split(' ');
+  const out = new Set();
+  for (const [k, def] of Object.entries(EVITE)) if (def.words.split(' ').some((w) => words.includes(w))) out.add(k);
+  return out;
+}
+function recipeAvoids(r) {
+  const out = new Set();
+  for (const ing of r.ingredients || []) ingredientAvoids(ing.name).forEach((k) => out.add(k));
+  return out;
+}
+const memberAvoids = (m) => m.evite || [];
+// Mots libres saisis par le membre (préfixe « mot: »), comparés aux noms d'ingrédients.
+function memberConflicts(m, r) {
+  const av = memberAvoids(m);
+  const found = recipeAvoids(r);
+  const hits = av.filter((k) => found.has(k)).map((k) => EVITE[k]?.label || k);
+  const free = av.filter((k) => k.startsWith('mot:')).map((k) => k.slice(4));
+  for (const w of free) if ((r.ingredients || []).some((i) => ingKey(i.name).includes(ingKey(w)))) hits.push(w);
+  return hits;
+}
+function mealConflicts(meal, recipe = recipeById(meal.recipe_id)) {
+  if (!recipe) return [];
+  return mealEaters(meal).map((m) => ({ member: m, hits: memberConflicts(m, recipe) })).filter((x) => x.hits.length);
+}
+const conflictsFor = (members, recipe) => members.map((m) => ({ member: m, hits: memberConflicts(m, recipe) })).filter((x) => x.hits.length);
+const conflictText = (list) => list.map((c) => `${c.member.nom} évite ${c.hits.join(', ')}`).join(' · ');
+const eviteLabel = (k) => (k.startsWith('mot:') ? k.slice(4) : EVITE[k]?.label || k);
+
+// Restes utilisables pour une date donnée (frigo : avant la DLC ; congélateur : toujours).
+const restesFor = (date) => state.restes.filter((x) => Number(x.portions) > 0 && (x.stockage === 'congel' || x.dlc >= isoDate(date)));
+const resteLabel = (x) => `${fmtPortions(Number(x.portions))} · ${x.stockage === 'congel' ? 'congélateur' : 'frigo'} · ${x.stockage === 'congel' ? 'jusqu\'au' : 'à manger avant le'} ${fmtDay(isoToDate(x.dlc))}`;
+
+// Déclarer des portions restantes (depuis un repas du planning ou la fin du mode cuisine).
+function resteSheet({ recipeId, faitLe, mealId, ask = false }) {
+  const r = recipeById(recipeId);
+  if (!r) return;
+  let portions = 1;
+  let stockage = 'frigo';
+  const fait = faitLe || isoDate(new Date());
+  const dlc = () => isoDate(addDays(isoToDate(fait), stockage === 'congel' ? 90 : 3));
+  const el = openSheet(`${sheetHead(ask ? 'Il en reste ?' : 'Portions restantes')}
+    <p class="muted small" style="margin-top:0"><b>${esc(r.title)}</b> — les portions mises de côté seront proposées pour remplir le planning.</p>
+    <div class="row" style="margin-bottom:10px"><span class="grow">Portions restantes</span><div class="stepper"><button data-r="-0.5" aria-label="Moins">−</button><span data-portions>1</span><button data-r="0.5" aria-label="Plus">+</button></div></div>
+    <div class="seg" role="group" style="grid-template-columns:1fr 1fr"><button aria-pressed="true" data-st="frigo">Réfrigérateur</button><button aria-pressed="false" data-st="congel">Congélateur</button></div>
+    <p class="muted small" data-dlc></p>
+    <button class="btn primary block" data-x="save">Enregistrer</button>
+    ${ask ? '<button class="btn block" data-x="no" style="border:0;margin-top:6px">Non, rien ne reste</button>' : ''}`);
+  const draw = () => {
+    $('[data-portions]', el).textContent = fmtPortions(portions);
+    $$('[data-st]', el).forEach((b) => b.setAttribute('aria-pressed', b.dataset.st === stockage));
+    $('[data-dlc]', el).textContent = stockage === 'congel' ? `À consommer de préférence avant le ${fmtDay(isoToDate(dlc()))} (3 mois). Pensez à sortir la boîte la veille.` : `À consommer avant le ${fmtDay(isoToDate(dlc()))} (3 jours au réfrigérateur).`;
+  };
+  draw();
+  el.addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-r],[data-st],[data-x]');
+    if (!b) return;
+    if (b.dataset.r) { portions = clamp(portions + Number(b.dataset.r), 0.5, 30); draw(); }
+    if (b.dataset.st) { stockage = b.dataset.st; draw(); }
+    if (b.dataset.x === 'no') closeSheet();
+    if (b.dataset.x === 'save') {
+      try {
+        await Data.addReste({ recipe_id: r.id, portions, stockage, fait_le: fait, dlc: dlc(), source_meal_id: mealId || null });
+        closeSheet();
+        toast(`${fmtPortions(portions)} de « ${r.title} » mise(s) de côté`);
+        render();
+      } catch (err) { fail(err); }
+    }
+  });
+}
+async function markCooked(recipeId, date = isoDate(new Date())) {
+  const r = recipeById(recipeId);
+  if (!r || r.derniere_cuisson === date) return;
+  try { await Data.saveRecipe({ ...r, derniere_cuisson: date }); } catch (e) { console.warn(e); }
+}
+
+// Basiques permanents (exclus de la liste de courses).
+function openBasiques() {
+  const el = openSheet(`${sheetHead('Basiques du placard')}
+    <p class="muted small" style="margin-top:0">Ces produits sont considérés comme toujours disponibles : ils n'apparaissent pas dans la liste de courses.</p>
+    <form class="row" data-form="basique" style="margin-bottom:10px"><input class="input grow" name="name" placeholder="Ajouter un basique (ex. huile de colza)" required><button class="btn primary">${ICON.plus}</button></form>
+    <div class="chips wrap" data-list style="flex-wrap:wrap"></div>`);
+  const draw = () => {
+    $('[data-list]', el).innerHTML = basiques().map((b) => `<span class="chip">${esc(b.name)} <button type="button" class="icon-btn" style="width:28px;height:28px;margin:-6px -10px -6px 0" data-del="${b.id}" aria-label="Retirer">${ICON.close}</button></span>`).join('') || '<p class="muted">Aucun basique.</p>';
+  };
+  draw();
+  $('form', el).addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = e.target.name.value.trim();
+    if (!name) return;
+    try { await Data.addPlacard({ name: name.charAt(0).toUpperCase() + name.slice(1), ing_key: ingKey(name), type: 'basique' }); e.target.reset(); draw(); if (state.tab === 'courses') render(); } catch (err) { fail(err); }
+  });
+  el.addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-del]');
+    if (!b) return;
+    try { await Data.deletePlacard(b.dataset.del); draw(); if (state.tab === 'courses') render(); } catch (err) { fail(err); }
+  });
+}
+
+// « Que cuisiner avec… » : recettes classées par ingrédients couverts.
+function cookWithSheet() {
+  const el = openSheet(`${sheetHead('Que cuisiner avec…')}
+    <textarea class="input" data-ings rows="2" placeholder="Ingrédients disponibles, séparés par des virgules (ex. courgettes, riz, œufs)"></textarea>
+    <label class="check" style="margin:8px 0"><input type="checkbox" data-use-stock checked> Inclure mes stocks et basiques</label>
+    <div data-results></div>`);
+  const draw = () => {
+    const typed = $('[data-ings]', el).value.split(/[,\n;]+/).map((x) => ingKey(x)).filter(Boolean);
+    const keys = [...typed];
+    if ($('[data-use-stock]', el).checked) keys.push(...basiques().map((b) => b.ing_key), ...stocks().map((b) => b.ing_key));
+    if (!typed.length) { $('[data-results]', el).innerHTML = '<p class="muted small">Saisissez au moins un ingrédient.</p>'; return; }
+    const scored = state.recipes.map((r) => {
+      const ings = (r.ingredients || []).map((i) => ingKey(i.name)).filter(Boolean);
+      const have = ings.filter((k) => keys.some((p) => keyMatches(k, p) || k.split(' ').some((w) => w.length > 3 && p.split(' ').includes(w))));
+      const typedHit = ings.filter((k) => typed.some((p) => keyMatches(k, p) || k.split(' ').some((w) => w.length > 3 && p.split(' ').includes(w)))).length;
+      return { r, cover: ings.length ? have.length / ings.length : 0, typedHit, missing: (r.ingredients || []).filter((i) => !have.includes(ingKey(i.name))).map((i) => i.name) };
+    }).filter((x) => x.typedHit > 0).sort((a, b) => b.typedHit - a.typedHit || b.cover - a.cover);
+    $('[data-results]', el).innerHTML = scored.slice(0, 20).map(({ r, cover, missing }) => `<button class="prod-row" data-act="open-recipe" data-id="${r.id}"><div class="grow"><div class="prod-name">${esc(r.title)}</div>
+      <div class="muted small">${Math.round(cover * 100)} % des ingrédients${missing.length ? ` · il manque : ${esc(missing.slice(0, 4).join(', '))}${missing.length > 4 ? '…' : ''}` : ' · tout est là'}</div></div></button>`).join('')
+      || '<p class="muted">Aucune recette ne contient ces ingrédients.</p>';
+  };
+  el.addEventListener('input', draw);
+  el.addEventListener('change', draw);
+  draw();
+  setTimeout(() => $('[data-ings]', el)?.focus(), 250);
+}
+
+// ---------------------------------------------------------------------------
 // Onglet Recettes
 // ---------------------------------------------------------------------------
 const totalMin = (r) => (Number(r.prep_min) || 0) + (Number(r.cook_min) || 0);
@@ -1456,7 +1931,8 @@ function recipeFilterList() {
   const chip = state.recipeChip;
   return state.recipes.filter((r) => {
     if (q && !norm(`${r.title} ${(r.tags || []).join(' ')} ${(r.ingredients || []).map((i) => i.name).join(' ')}`).includes(q)) return false;
-    if (chip === 'favoris') return r.favorite;
+    if (chip === 'favoris') return r.favorite || r.avis === 'adore';
+    if (chip === 'a_tester') return r.avis === 'a_tester';
     if (chip === 'rapide') return totalMin(r) > 0 && totalMin(r) <= 30;
     if (chip.startsWith('#')) return (r.tags || []).includes(chip.slice(1));
     return true;
@@ -1467,15 +1943,18 @@ function recipeCard(r) {
   return `<button class="recipe-card" data-act="open-recipe" data-id="${r.id}">
     ${img ? `<img class="cover" src="${esc(img)}" alt="" loading="lazy">` : `<div class="cover ph">${ICON.chef}</div>`}
     <div class="body"><h3>${esc(r.title)}</h3><div class="meta">
-      ${totalMin(r) ? `<span>${ICON.clock} ${totalMin(r)} min</span>` : ''}<span>${ICON.users} ${r.servings}</span>${r.favorite ? `<span class="fav">${ICON.heartFill}</span>` : ''}</div></div></button>`;
+      ${totalMin(r) ? `<span>${ICON.clock} ${totalMin(r)} min</span>` : ''}<span>${ICON.users} ${r.servings}</span>${CQ.ready ? nsBadge(recipeNutriScore(r), true) : ''}${r.favorite ? `<span class="fav">${ICON.heartFill}</span>` : ''}${avisBadge(r)}</div></div></button>`;
 }
+const AVIS = { a_tester: ['À tester', 'tag'], adore: ['On adore', 'tag ahead'], jamais: ['Plus jamais', 'tag warn-tag'] };
+const avisBadge = (r) => (r.avis && AVIS[r.avis] ? `<span class="${AVIS[r.avis][1]}">${AVIS[r.avis][0]}</span>` : '');
 function renderRecipes() {
   const tags = [...new Set(state.recipes.flatMap((r) => r.tags || []))].sort();
   const list = recipeFilterList();
-  const chips = [['tous', 'Toutes'], ['favoris', 'Favoris'], ['rapide', '≤ 30 min'], ...tags.map((t) => [`#${t}`, t])];
+  const chips = [['tous', 'Toutes'], ['favoris', 'On adore'], ['a_tester', 'À tester'], ['rapide', '≤ 30 min'], ...tags.map((t) => [`#${t}`, t])];
   return `
     <div class="row" style="margin-bottom:12px">
       <div class="searchbar grow">${ICON.search}<input class="input" type="search" placeholder="Rechercher une recette, un ingrédient…" value="${esc(state.recipeQuery)}" data-input="recipe-q" aria-label="Rechercher"></div>
+      <button class="btn" data-act="cook-with" aria-label="Que cuisiner avec mes ingrédients">${ICON.leaf}</button>
       <button class="btn primary" data-act="new-recipe" aria-label="Nouvelle recette">${ICON.plus}</button>
     </div>
     <div class="chips">${chips.map(([k, l]) => `<button class="chip" aria-pressed="${state.recipeChip === k}" data-act="recipe-chip" data-v="${esc(k)}">${esc(l)}</button>`).join('')}</div>
@@ -1507,7 +1986,9 @@ function recipeNutritionHtml(r) {
     const f = memberFactor(m);
     return `<div class="nt-row"><span>${esc(m.nom)} <span class="muted small">· ${fmtPortions(f)}</span></span><b>${Math.round(p.kcal * f)} kcal</b><span class="pct">${Math.round(((p.kcal * f) / kcalNeed(m)) * 100)} %</span></div>`;
   }).join('');
+  const ns = CQ.ready ? recipeNutriScore(r) : null;
   return `<h3 style="margin:22px 0 6px">Valeurs nutritionnelles</h3>
+    ${ns ? `<div class="row" style="margin-bottom:8px">${nsBadge(ns)}<span class="small"><b>Nutri-Score ${ns.grade}</b> <span class="muted">calculé sur la recette (${ns.score} pt${ns.score > 1 ? 's' : ''})</span></span></div>` : ''}
     <div class="macro-strip">${['kcal', 'prot', 'gluc', 'lip', 'fib'].map((k) => {
       const d = NUTRI_KEYS.find((x) => x.k === k);
       return `<div><b>${fmtN(p[k], d.unit).replace(' ', '&nbsp;')}</b><span>${d.label}</span></div>`;
@@ -1539,6 +2020,10 @@ function openRecipe(id, servingsOverride) {
       <div class="meta" style="margin-bottom:10px">${r.prep_min ? `<span>${ICON.clock} Prépa ${r.prep_min} min</span>` : ''}${r.cook_min ? `<span>${ICON.flame} Cuisson ${r.cook_min} min</span>` : ''}
         ${(r.tags || []).map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</div>
       ${nut ? `<div class="row small" style="margin-bottom:8px">${scoreHtml(nut.avg)}<span class="muted">moyenne de ${nut.n} ingrédient(s) scanné(s)</span></div>` : ''}
+      <div class="chips" style="padding-bottom:4px">${Object.entries(AVIS).map(([k, [l]]) => `<button class="chip" aria-pressed="${r.avis === k}" data-avis="${k}">${l}</button>`).join('')}</div>
+      ${recipeWarnings(r)}
+      <details class="ndetails" ${r.notes ? 'open' : ''}><summary>Notes${r.derniere_cuisson ? ` · dernière fois : ${fmtDay(isoToDate(r.derniere_cuisson))}` : ''}</summary>
+        <textarea class="input" data-notes rows="2" placeholder="Ex. doubler la sauce, 10 min de moins au four…">${esc(r.notes || '')}</textarea></details>
       <button class="btn primary block" data-act="cook-mode" data-id="${r.id}">${ICON.play} Mode cuisine</button>
       <div class="row" style="margin:20px 0 6px"><h3 class="grow" style="margin:0">Ingrédients</h3>
         <div class="stepper"><button data-srv="-1" aria-label="Moins">−</button><span>${fmtPortions(servings)}</span><button data-srv="1" aria-label="Plus">+</button></div></div>
@@ -1549,12 +2034,29 @@ function openRecipe(id, servingsOverride) {
       ${safeUrl(r.source_url) ? `<p class="small"><a href="${esc(safeUrl(r.source_url))}" target="_blank" rel="noopener">Source de la recette</a></p>` : ''}`;
   };
   draw();
-  el.addEventListener('click', (e) => {
+  el.addEventListener('click', async (e) => {
+    const a = e.target.closest('[data-avis]');
+    if (a) {
+      const avis = r.avis === a.dataset.avis ? null : a.dataset.avis;
+      try { Object.assign(r, await Data.saveRecipe({ ...recipeById(r.id), avis })); draw(); render(); } catch (err) { fail(err); }
+      return;
+    }
     const b = e.target.closest('[data-srv]');
     if (!b) return;
     servings = clamp(Math.round(servings) + Number(b.dataset.srv), 1, 50);
     draw();
   });
+  el.addEventListener('change', async (e) => {
+    if (!e.target.matches('[data-notes]')) return;
+    const notes = e.target.value.trim() || null;
+    try { Object.assign(r, await Data.saveRecipe({ ...recipeById(r.id), notes })); toast('Note enregistrée'); } catch (err) { fail(err); }
+  });
+}
+function recipeWarnings(r) {
+  const found = [...recipeAvoids(r)];
+  const cf = conflictsFor(state.members, r);
+  if (!found.length && !cf.length) return '';
+  return `<p class="small" style="margin:0 0 10px"><span class="muted">Contient : ${found.map(eviteLabel).join(', ') || '—'}.</span>${cf.length ? ` <span class="warn">⚠ ${esc(conflictText(cf))}</span>` : ''}</p>`;
 }
 
 function recipeMenu(id) {
@@ -1749,7 +2251,7 @@ async function onEditorClick(e, el) {
         if (!editing) return;
         const name = p.product_name_fr || p.product_name || code;
         const grams = Number(p.serving_quantity) || null;
-        editing.ingredients.push({ name, qty: grams ? String(grams) : '', unit: grams ? 'g' : 'pièce', aisle: guessAisle(name), ean: p.code, score, n: offPer100(p), src: 'off' });
+        editing.ingredients.push({ name, qty: grams ? String(grams) : '', unit: grams ? 'g' : 'pièce', aisle: guessAisle(name), ean: p.code, score: score ?? undefined, n: offPer100(p), src: 'off' });
         drawEditor(el);
         toast('Ingrédient ajouté : indiquez la quantité');
       },
@@ -1969,7 +2471,7 @@ async function cookMode(id) {
     if (!c) return;
     if (c === 'close') return close();
     if (c === 'prev' && i > 0) { stopTimer(); remaining = 0; i--; }
-    if (c === 'next') { if (i === r.steps.length - 1) { close(); toast('Bon appétit !'); return; } stopTimer(); remaining = 0; i++; }
+    if (c === 'next') { if (i === r.steps.length - 1) { close(); markCooked(r.id); resteSheet({ recipeId: r.id, ask: true }); return; } stopTimer(); remaining = 0; i++; }
     if (c === 'timer') {
       if (timer) { stopTimer(); remaining = 0; }
       else {
@@ -2038,9 +2540,10 @@ function renderWeek() {
       const cls = `slot ${isMoving ? 'moving' : mv ? 'target' : ''}`;
       if (!r) return `<button class="${cls}" data-act="slot" data-d="${i}" data-s="${slot}"><span class="when">${slot}</span><span class="add">${ICON.plus} Ajouter un repas</span></button>`;
       const img = safeUrl(r.photo_url);
+      const cf = mealConflicts(m, r);
       return `<button class="${cls}" data-act="slot" data-d="${i}" data-s="${slot}"><span class="when">${slot}</span>
         ${img ? `<img class="sthumb" src="${esc(img)}" alt="" loading="lazy">` : `<span class="sthumb">${ICON.chef}</span>`}
-        <span class="grow"><span class="prod-name" style="font-size:15px">${esc(r.title)}</span><span class="meta">${ICON.users} ${esc(mealWho(m))}</span></span></button>`;
+        <span class="grow"><span class="prod-name" style="font-size:15px">${esc(r.title)}</span><span class="meta">${ICON.users} ${esc(mealWho(m))}${m.reste_id ? '<span class="tag ahead">Reste</span>' : ''}${cf.length ? `<span class="tag warn-tag" title="${esc(conflictText(cf))}">⚠ ${esc(cf.map((c) => c.member.nom).join(', '))}</span>` : ''}</span></span></button>`;
     }).join('');
     return `<div class="day ${isoDate(date) === today ? 'today' : ''}"><h3><span>${d}</span><span class="muted small">${fmtDay(date)}</span></h3>${slots}</div>`;
   }).join('');
@@ -2050,7 +2553,7 @@ function renderWeek() {
     <div class="day-grid">${days}</div>`;
 }
 
-function recipePicker(onPick, { title = 'Choisir une recette' } = {}) {
+function recipePicker(onPick, { title = 'Choisir une recette', eaters = [] } = {}) {
   if (!state.recipes.length) {
     toast('Ajoutez d\'abord des recettes');
     switchTab('recettes');
@@ -2061,11 +2564,14 @@ function recipePicker(onPick, { title = 'Choisir une recette' } = {}) {
     <div id="pick-list"></div>`);
   const draw = (q = '') => {
     const nq = norm(q);
-    const list = state.recipes.filter((r) => !nq || norm(r.title + ' ' + (r.tags || []).join(' ')).includes(nq));
-    $('#pick-list', el).innerHTML = list.map((r) => {
+    const list = state.recipes.filter((r) => !nq || norm(r.title + ' ' + (r.tags || []).join(' ')).includes(nq))
+      .map((r) => ({ r, cf: conflictsFor(eaters, r) }))
+      .sort((a, b) => (a.r.avis === 'jamais') - (b.r.avis === 'jamais') || (a.cf.length > 0) - (b.cf.length > 0));
+    $('#pick-list', el).innerHTML = list.map(({ r, cf }) => {
       const img = safeUrl(r.photo_url);
-      return `<button class="prod-row" data-pick="${r.id}">${img ? `<img class="thumb" src="${esc(img)}" alt="" style="object-fit:cover">` : `<div class="thumb ph">${ICON.chef}</div>`}
-        <div class="grow"><div class="prod-name">${esc(r.title)}</div><div class="meta">${totalMin(r) ? `<span>${ICON.clock} ${totalMin(r)} min</span>` : ''}${r.favorite ? `<span class="fav">${ICON.heartFill}</span>` : ''}</div></div></button>`;
+      return `<button class="prod-row" data-pick="${r.id}" style="${r.avis === 'jamais' ? 'opacity:.55' : ''}">${img ? `<img class="thumb" src="${esc(img)}" alt="" style="object-fit:cover">` : `<div class="thumb ph">${ICON.chef}</div>`}
+        <div class="grow"><div class="prod-name">${esc(r.title)}</div><div class="meta">${totalMin(r) ? `<span>${ICON.clock} ${totalMin(r)} min</span>` : ''}${r.favorite ? `<span class="fav">${ICON.heartFill}</span>` : ''}${avisBadge(r)}${r.derniere_cuisson ? `<span>cuisinée le ${fmtDay(isoToDate(r.derniere_cuisson))}</span>` : ''}</div>
+        ${cf.length ? `<div class="warn small">⚠ ${esc(conflictText(cf))}</div>` : ''}</div></button>`;
     }).join('') || '<p class="muted">Aucune recette.</p>';
   };
   draw();
@@ -2097,17 +2603,39 @@ async function onSlot(day, slot) {
     return render();
   }
   if (!m) {
-    return recipePicker(async (rid) => {
+    const date = addDays(state.week, day);
+    const pick = () => recipePicker(async (rid) => {
       try { await Data.setMeal(day, slot, rid, state.settings.default_servings); render(); } catch (err) { fail(err); }
-    }, { title: `${DAYS[day]} ${slot}` });
+    }, { title: `${DAYS[day]} ${slot}`, eaters: state.members });
+    const dispo = restesFor(date);
+    if (!dispo.length) return pick();
+    // Des restes existent : on les propose avant le choix d'une recette.
+    const el = openSheet(`${sheetHead(`${DAYS[day]} ${slot}`)}<h3 style="margin:0 0 6px">Utiliser un reste</h3>
+      ${dispo.map((x) => { const r = recipeById(x.recipe_id); return r ? `<button class="prod-row" data-reste="${x.id}"><div class="thumb ph">${ICON.flame}</div><div class="grow"><div class="prod-name">${esc(r.title)}</div><div class="muted small">${esc(resteLabel(x))}</div></div></button>` : ''; }).join('')}
+      <button class="btn primary block" style="margin-top:12px" data-x="pick">${ICON.chef} Choisir une recette</button>`);
+    el.addEventListener('click', async (e) => {
+      if (e.target.closest('[data-x="pick"]')) { closeSheet(); return pick(); }
+      const b = e.target.closest('[data-reste]');
+      if (!b) return;
+      const x = state.restes.find((y) => y.id === b.dataset.reste);
+      closeSheet();
+      try {
+        await Data.setMeal(day, slot, x.recipe_id, state.settings.default_servings, { reste_id: x.id });
+        const meal = state.plan.find((y) => y.day === day && y.slot === slot);
+        await Data.updateReste(x.id, { portions: Math.round((Number(x.portions) - mealServings(meal)) * 100) / 100 });
+        render();
+        toast('Reste placé dans le planning');
+      } catch (err) { fail(err); }
+    });
+    return;
   }
   const r = recipeById(m.recipe_id);
   const hasMembers = state.members.length > 0;
   const eatersHtml = () => {
     const ids = mealEaters(m).map((x) => x.id);
     return `<div class="ntable"><div class="nt-title">Qui mange ? <span class="muted small">· ${fmtPortions(mealServings(m))}</span></div>
-      ${state.members.map((x) => `<label class="check" style="display:flex;padding:4px 0"><input type="checkbox" data-eater="${x.id}" ${ids.includes(x.id) ? 'checked' : ''}>
-        <span class="grow">${esc(x.nom)}</span><span class="muted small">${fmtPortions(memberFactor(x))}</span></label>`).join('')}
+      ${state.members.map((x) => { const hits = r ? memberConflicts(x, r) : []; return `<label class="check" style="display:flex;padding:4px 0"><input type="checkbox" data-eater="${x.id}" ${ids.includes(x.id) ? 'checked' : ''}>
+        <span class="grow">${esc(x.nom)}${hits.length ? ` <span class="warn small">⚠ évite ${esc(hits.join(', '))}</span>` : ''}</span><span class="muted small">${fmtPortions(memberFactor(x))}</span></label>`; }).join('')}
       <div class="row" style="margin-top:6px"><span class="grow small"><b>Invités</b> <span class="muted">(1 portion chacun)</span></span>
         <div class="stepper"><button data-g="-1" aria-label="Moins">−</button><span>${m.guests || 0}</span><button data-g="1" aria-label="Plus">+</button></div></div></div>`;
   };
@@ -2115,8 +2643,10 @@ async function onSlot(day, slot) {
     <div class="row" style="margin-bottom:10px"><b class="grow">${esc(r?.title || 'Recette supprimée')}</b>
       ${hasMembers ? '' : `<div class="stepper"><button data-p="-1" aria-label="Moins">−</button><span id="srv">${m.servings} pers.</span><button data-p="1" aria-label="Plus">+</button></div>`}</div>
     ${hasMembers ? `<div id="eaters">${eatersHtml()}</div>` : ''}
+    ${m.reste_id ? '<p class="small"><span class="tag ahead">Reste</span> <span class="muted">Ce repas utilise des portions déjà cuisinées : rien à acheter ni à préparer.</span></p>' : ''}
     <div class="menu-list">
       <button data-m="view">${ICON.chef} Voir la recette</button>
+      ${m.reste_id ? '' : `<button data-m="reste">${ICON.flame} Il en reste ? Mettre des portions de côté</button>`}
       <button data-m="change">${ICON.swap} Changer de recette</button>
       <button data-m="move">${ICON.move} Déplacer / échanger</button>
       <button data-m="del" style="color:var(--danger)">${ICON.trash} Retirer du planning</button></div>`);
@@ -2146,7 +2676,8 @@ async function onSlot(day, slot) {
     if (!act) return;
     closeSheet();
     if (act === 'view' && r) openRecipe(r.id, Math.round(mealServings(m) * 10) / 10);
-    if (act === 'change') recipePicker(async (rid) => { try { await Data.setMeal(day, slot, rid, m.servings, m); render(); } catch (err) { fail(err); } });
+    if (act === 'reste' && r) { markCooked(r.id, isoDate(addDays(state.week, day))); resteSheet({ recipeId: r.id, faitLe: isoDate(addDays(state.week, day)), mealId: m.id }); }
+    if (act === 'change') recipePicker(async (rid) => { try { await Data.setMeal(day, slot, rid, m.servings, { ...m, reste_id: null }); render(); } catch (err) { fail(err); } }, { eaters: mealEaters(m) });
     if (act === 'move') { state.moving = { day, slot }; render(); }
     if (act === 'del') { try { await Data.removeMeals([m.id]); render(); } catch (err) { fail(err); } }
   });
@@ -2178,7 +2709,8 @@ function weekMenu() {
         let n = 0;
         for (let d = 0; d < 7; d++) for (const slot of ['midi', 'soir']) {
           if (state.plan.some((x) => x.day === d && x.slot === slot)) continue;
-          const pool = [...state.recipes].sort((a, b) => (used.get(a.id) || 0) - (used.get(b.id) || 0) || Math.random() - 0.5);
+          const ok = state.recipes.filter((r) => r.avis !== 'jamais' && !conflictsFor(state.members, r).length);
+          const pool = (ok.length ? ok : state.recipes).sort((a, b) => (used.get(a.id) || 0) - (used.get(b.id) || 0) || (a.derniere_cuisson || '').localeCompare(b.derniere_cuisson || '') || Math.random() - 0.5);
           const r = pool[0];
           used.set(r.id, (used.get(r.id) || 0) + 1);
           await Data.setMeal(d, slot, r.id, state.settings.default_servings);
@@ -2210,7 +2742,7 @@ function computeBatch() {
   const byRecipe = new Map();
   for (const m of meals) {
     const r = recipeById(m.recipe_id);
-    if (!r) continue;
+    if (!r || m.reste_id) continue;
     const e = byRecipe.get(r.id) || { r, servings: 0, meals: [] };
     e.servings += mealServings(m);
     e.meals.push(m);
@@ -2249,8 +2781,19 @@ function computeBatch() {
   const total = stepsCount ? sum('prep') + Math.max(ovenMax, parallel) + 15 : 0;
   return { meals, byRecipe, phases, sameDay, mergedIng: [...mergedIng.values()], total, stepsCount };
 }
+function restesCard() {
+  const list = state.restes.filter((x) => Number(x.portions) > 0);
+  if (!list.length) return '';
+  const today = isoDate(new Date());
+  const planned = state.plan.filter((m) => m.reste_id).map((m) => ({ m, x: state.restes.find((y) => y.id === m.reste_id) })).filter((o) => o.x?.stockage === 'congel');
+  return `<div class="phase" style="margin-bottom:12px"><h3>${ICON.flame} Restes à consommer</h3>
+    <ul>${list.map((x) => { const r = recipeById(x.recipe_id); const late = x.stockage === 'frigo' && x.dlc < today; return r ? `<li class="row"><span class="grow"><b>${esc(r.title)}</b> <span class="muted small">${esc(resteLabel(x))}</span>${late ? ' <span class="warn small">dépassé</span>' : ''}</span><button class="icon-btn" data-act="reste-del" data-id="${x.id}" aria-label="Retirer">${ICON.trash}</button></li>` : ''; }).join('')}</ul>
+    ${planned.length ? `<p class="muted small" style="margin:6px 0 0">À sortir du congélateur la veille : ${esc(planned.map(({ m }) => `${DAYS[m.day]} ${m.slot}`).join(', '))}.</p>` : ''}
+    <p class="muted small" style="margin:6px 0 0">Dans le planning, une case vide propose d'abord ces restes.</p></div>`;
+}
 function renderBatch() {
-  if (!state.plan.length) return `<div class="empty">${ICON.flame}<p>Planifiez des repas pour générer votre session de batch cooking.</p><button class="btn primary" data-act="tab" data-tab="planning">Remplir la semaine</button></div>`;
+  const restes = restesCard();
+  if (!state.plan.filter((m) => !m.reste_id).length) return restes + (restes ? '' : `<div class="empty">${ICON.flame}<p>Planifiez des repas pour générer votre session de batch cooking.</p><button class="btn primary" data-act="tab" data-tab="planning">Remplir la semaine</button></div>`);
   const b = computeBatch();
   if (!b.stepsCount) return `<div class="empty">${ICON.flame}<p>Aucune étape n'est marquée « À l'avance » dans les recettes de la semaine.</p><p class="small">Modifiez vos recettes et cochez « À l'avance » sur les étapes à préparer pendant la session.</p></div>`;
   let n = 0;
@@ -2269,7 +2812,7 @@ function renderBatch() {
     const freeze = m.day >= 3;
     return `<li><b>${DAYS[m.day]} ${m.slot}</b> — ${esc(r.title)} (${esc(mealWho(m))}) : ${freeze ? 'au <b>congélateur</b>, à sortir la veille au réfrigérateur' : 'au <b>réfrigérateur</b>, en boîte hermétique (3 jours max)'}</li>`;
   }).join('');
-  return `
+  return `${restes}
     <div class="summary-box"><div><strong>${h ? `${h} h ${String(b.total % 60).padStart(2, '0')}` : `${b.total} min`}</strong><span>durée estimée</span></div>
       <div><strong>${b.byRecipe.size}</strong><span>recettes</span></div><div><strong>${b.meals.length}</strong><span>repas couverts</span></div></div>
     <p class="muted small" style="margin:0 0 12px">Session à faire le dimanche (ou la veille du premier repas). Les étapes de toutes les recettes sont regroupées par type pour enchaîner sans temps mort.</p>
@@ -2302,13 +2845,13 @@ function buildShopping() {
   const items = new Map();
   for (const m of state.plan) {
     const r = recipeById(m.recipe_id);
-    if (!r) continue;
+    if (!r || m.reste_id) continue;
     const f = mealServings(m) / (r.servings || 1);
     for (const ing of r.ingredients || []) {
       const { base, mult } = unitBase(ing.unit);
       const k = ingKey(ing.name);
       const key = `${k}|${base}`;
-      const it = items.get(key) || { key, ingKey: k, name: ing.name, base, qty: 0, noQty: false, aisle: ing.aisle || guessAisle(ing.name), recipes: new Set() };
+      const it = items.get(key) || { key, ingKey: k, name: ing.name, base, qty: 0, noQty: false, aisle: ing.aisle || guessAisle(ing.name), recipes: new Set(), ean: ing.ean || null };
       const q = parseFloat(String(ing.qty).replace(',', '.'));
       if (isFinite(q) && q > 0) it.qty += q * mult * f; else it.noQty = true;
       it.recipes.add(r.title);
@@ -2318,10 +2861,20 @@ function buildShopping() {
   for (const e of state.extras) {
     items.set(`extra:${e.id}`, { key: `extra:${e.id}`, extraId: e.id, ingKey: ingKey(e.name), name: e.name, qtyText: e.qty || '', aisle: e.aisle, recipes: new Set(), checked: e.checked });
   }
+  // Placards : les basiques sont exclus, les stocks « j'en ai » mis de côté pour la semaine.
+  const skippedBasics = [];
+  const inStock = [];
+  for (const it of [...items.values()]) {
+    if (it.extraId) continue;
+    const pl = inPlacard(it.ingKey);
+    if (!pl) continue;
+    items.delete(it.key);
+    (pl.type === 'basique' ? skippedBasics : inStock).push({ ...it, placard: pl });
+  }
   const byAisle = new Map(AISLES.map((a) => [a, []]));
   for (const it of items.values()) (byAisle.get(it.aisle) || byAisle.get('Autres')).push(it);
   for (const l of byAisle.values()) l.sort((a, b) => a.name.localeCompare(b.name, 'fr'));
-  return { byAisle, count: items.size };
+  return { byAisle, count: items.size, skippedBasics, inStock };
 }
 const qtyLabel = (it) => (it.extraId ? it.qtyText : it.qty ? fmtQtyBase(it.qty, it.base) : '');
 const isChecked = (it) => (it.extraId ? !!it.checked : !!state.checks[it.key]);
@@ -2336,27 +2889,40 @@ function renderShopping() {
       <select class="input" name="xaisle" aria-label="Rayon"><option value="">Rayon : automatique</option>${AISLES.map((a) => `<option>${a}</option>`).join('')}</select>
     </form>`;
   if (!state.plan.length && !state.extras.length) return `${addForm}<div class="empty">${ICON.cart}<p>La liste se remplit automatiquement avec les ingrédients des repas planifiés. Vous pouvez aussi ajouter vos propres articles ci-dessus.</p><button class="btn primary" data-act="tab" data-tab="planning">Remplir la semaine</button></div>`;
-  const { byAisle, count } = buildShopping();
-  const done = [...byAisle.values()].flat().filter(isChecked).length;
-  return `${addForm}
+  const { byAisle, count, skippedBasics, inStock } = buildShopping();
+  const all = [...byAisle.values()].flat();
+  const done = all.filter(isChecked).length;
+  Prices.warm(all);
+  let total = 0;
+  let priced = 0;
+  for (const it of all) { const pr = Prices.of(it); if (pr) { total += pr.price; priced++; } }
+  const budgetHtml = `<div class="card" style="padding:12px;margin-bottom:12px"><div class="row"><div class="grow"><div class="muted small">Budget estimé de la semaine</div><b style="font-size:22px">${priced ? fmtEur(total) : '—'}</b></div>
+      <div class="muted small" style="text-align:right">${priced}/${count} article${count > 1 ? 's' : ''} chiffré${priced > 1 ? 's' : ''}${count - priced ? `<br>${count - priced} sans prix` : ''}</div></div>
+      <p class="muted small" style="margin:6px 0 0">Prix mémorisés via ${ICON.link.replace('<svg', '<svg width="12" height="12" style="vertical-align:-2px"')}, sinon prix moyens relevés par la communauté Open Prices pour les produits à code-barres.</p></div>`;
+  const stockHtml = inStock.length ? `<details class="ndetails"><summary>Déjà en stock cette semaine (${inStock.length})</summary>
+      ${inStock.map((it) => `<div class="shop-item done"><span></span><div><div class="nm">${qtyLabel(it) ? `${esc(qtyLabel(it))} · ` : ''}${esc(it.name)}</div><div class="for">${esc([...it.recipes].join(', '))}</div></div>
+        <div class="acts"><button data-act="unstock" data-id="${it.placard.id}">Remettre dans la liste</button></div></div>`).join('')}</details>` : '';
+  const basicsHtml = `<p class="muted small" style="margin:14px 0 0">Basiques non listés${skippedBasics.length ? ` (${esc(skippedBasics.map((x) => x.name).join(', '))})` : ''} · <button class="btn small" data-act="basiques" style="border:0;padding:0 4px;min-height:0;color:var(--primary-strong)">modifier les basiques</button></p>`;
+  return `${addForm}${budgetHtml}
     <div class="card" style="padding:12px;margin-bottom:12px">
       <div class="row"><span style="color:#e30613">${ICON.store}</span><div class="grow"><b>${esc(state.settings.store_name)}</b><div class="muted small">Courses U · ${done}/${count} articles cochés</div></div></div>
       <a class="btn soft block" style="margin-top:10px" href="${esc(cuStore())}" target="_blank" rel="noopener">${ICON.ext} 1. Ouvrir mon magasin sur Courses U</a>
       <p class="muted small" style="margin:8px 0 0">Puis, pour chaque article : <b>U</b> ouvre le produit mémorisé, la loupe lance une recherche, et ${ICON.link.replace('<svg', '<svg width="14" height="14" style="vertical-align:-2px"')} mémorise le produit choisi pour les prochaines fois.</p>
       <div class="grid2" style="margin-top:10px"><button class="btn" data-act="copy-list">${ICON.copy} Copier</button><button class="btn" data-act="share-list">${ICON.share} Partager</button></div>
     </div>
-    ${[...byAisle.entries()].filter(([, l]) => l.length).map(([aisle, list]) => `<div class="aisle"><h3>${esc(aisle)}</h3>
+    ${[...byAisle.entries()].filter(([, l]) => l.length).map(([aisle, list]) => { const sub = list.reduce((t, it) => t + (Prices.of(it)?.price || 0), 0); return `<div class="aisle"><h3>${esc(aisle)}${sub ? ` <span class="muted" style="float:right;text-transform:none;letter-spacing:0">${fmtEur(sub)}</span>` : ''}</h3>
       ${list.map((it) => {
         const link = state.links[it.ingKey];
         const checked = isChecked(it);
+        const pr = Prices.of(it);
         const origin = it.extraId ? '<span class="badge-extra">Ajouté</span>' : esc([...it.recipes].join(', '));
         return `<div class="shop-item ${checked ? 'done' : ''}"><input type="checkbox" ${checked ? 'checked' : ''} data-check="${esc(it.key)}" aria-label="${esc(it.name)}">
-          <div><div class="nm">${qtyLabel(it) ? `${esc(qtyLabel(it))} · ` : ''}${esc(it.name)}</div><div class="for">${link ? `${esc(link.label || 'Produit mémorisé')} · ` : ''}${origin}</div></div>
+          <div><div class="nm">${qtyLabel(it) ? `${esc(qtyLabel(it))} · ` : ''}${esc(it.name)}${pr ? ` <span class="price" title="${PRICE_SRC[pr.source] || ''}">${fmtEur(pr.price)}</span>` : ''}</div><div class="for">${link ? `${esc(link.label || 'Produit mémorisé')} · ` : ''}${origin}</div></div>
           <div class="acts">${link ? `<a class="linked" href="${esc(safeUrl(link.url))}" target="_blank" rel="noopener" aria-label="Ouvrir le produit Courses U">U</a>` : ''}
             <a href="${esc(cuSearch(it.name))}" target="_blank" rel="noopener" aria-label="Rechercher sur Courses U">${ICON.search}</a>
             <button data-act="link-item" data-k="${esc(it.ingKey)}" data-n="${esc(it.name)}" aria-label="Mémoriser un produit">${ICON.link}</button>
-            ${it.extraId ? `<button data-act="del-extra" data-id="${esc(it.extraId)}" aria-label="Retirer l'article">${ICON.trash}</button>` : ''}</div></div>`;
-      }).join('')}</div>`).join('')}`;
+            ${it.extraId ? `<button data-act="del-extra" data-id="${esc(it.extraId)}" aria-label="Retirer l'article">${ICON.trash}</button>` : `<button data-act="have-item" data-k="${esc(it.ingKey)}" data-n="${esc(it.name)}" title="J'en ai déjà">${ICON.check} J'en ai</button>`}</div></div>`;
+      }).join('')}</div>`; }).join('')}${stockHtml}${basicsHtml}`;
 }
 function shoppingText() {
   const { byAisle } = buildShopping();
@@ -2367,7 +2933,8 @@ function shoppingText() {
     lines.push(aisle.toUpperCase());
     for (const it of todo) {
       const link = state.links[it.ingKey];
-      lines.push(`- ${qtyLabel(it) ? `${qtyLabel(it)} ` : ''}${it.name}${link ? ` → ${link.url}` : ''}`);
+      const pr = Prices.of(it);
+      lines.push(`- ${qtyLabel(it) ? `${qtyLabel(it)} ` : ''}${it.name}${pr ? ` (${fmtEur(pr.price)})` : ''}${link ? ` → ${link.url}` : ''}`);
     }
     lines.push('');
   }
@@ -2381,6 +2948,9 @@ function linkItem(k, name) {
     <form class="stack" style="margin-top:12px" data-form="link">
       <label class="field"><span>Lien du produit Courses U</span><input class="input" name="url" type="url" inputmode="url" required placeholder="https://www.coursesu.com/p/…" value="${esc(cur?.url || '')}"></label>
       <label class="field"><span>Nom du produit (facultatif)</span><input class="input" name="label" placeholder="Ex. Oignons jaunes U 1 kg" value="${esc(cur?.label || '')}"></label>
+      <div class="grid2"><label class="field"><span>Prix (€, facultatif)</span><input class="input" name="prix" type="number" step="0.01" min="0" inputmode="decimal" value="${esc(cur?.prix ?? '')}" placeholder="${cur?.prix_source === 'openprices' ? 'auto' : 'ex. 1,89'}"></label>
+        <label class="field"><span>Code-barres (facultatif)</span><input class="input" name="ean" inputmode="numeric" value="${esc(cur?.ean || '')}" placeholder="pour le prix moyen"></label></div>
+      ${cur?.prix ? `<p class="muted small" style="margin:0">Prix actuel : ${fmtEur(Number(cur.prix))} (${PRICE_SRC[cur.prix_source] || 'mémorisé'}${cur.prix_date ? `, ${fmtDay(isoToDate(cur.prix_date))}` : ''}).</p>` : ''}
       <button class="btn primary block">Mémoriser</button>
       ${cur ? '<button type="button" class="btn danger block" data-x="del">Oublier ce produit</button>' : ''}
     </form>`);
@@ -2391,10 +2961,161 @@ function linkItem(k, name) {
     if (!url || !/(^|\.)coursesu\.com$/.test(new URL(url).hostname)) { toast('Collez un lien coursesu.com'); return; }
     let label = form.label.value.trim();
     if (!label) { const m = url.match(/\/p\/([^/]+)\//); label = m ? decodeURIComponent(m[1]).replace(/-+/g, ' ').replace(/^\w/, (c) => c.toUpperCase()) : ''; }
-    try { await Data.saveLink(k, url, label); closeSheet(); render(); toast('Produit mémorisé'); } catch (err) { fail(err); }
+    const manual = parseFloat(form.prix.value.replace(',', '.'));
+    const ean = form.ean.value.trim() || null;
+    const pid = url.match(/\/(\d+)\.html/)?.[1] || null;
+    const extra = { ean, pid };
+    if (manual > 0 && manual !== Number(cur?.prix)) Object.assign(extra, { prix: manual, prix_source: 'manuel', prix_date: isoDate(new Date()) });
+    try {
+      await Data.saveLink(k, url, label, extra);
+      closeSheet(); render(); toast('Produit mémorisé');
+      // En arrière-plan : prix Courses U si possible, sinon prix moyen Open Prices.
+      if (!(manual > 0)) {
+        const cu = await Prices.coursesU(url);
+        if (cu?.price) await Data.saveLink(k, url, label, { prix: cu.price, prix_source: 'coursesu', prix_date: isoDate(new Date()) });
+        else if (ean) await Prices.open(ean);
+        if (state.tab === 'courses') render();
+      }
+    } catch (err) { fail(err); }
   });
   $('[data-x="del"]', el)?.addEventListener('click', async () => {
     try { await Data.deleteLink(k); closeSheet(); render(); } catch (err) { fail(err); }
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Aujourd'hui : repas du jour, restes, calories, « on mange quoi ce soir ? »
+// ---------------------------------------------------------------------------
+function renderToday() {
+  const today = new Date();
+  const di = dayIndex(today);
+  const meals = di >= 0 ? ['midi', 'soir'].map((slot) => ({ slot, m: state.plan.find((x) => x.day === di && x.slot === slot) })) : [];
+  const restes = restesFor(today);
+  const soon = isoDate(addDays(today, 2));
+  const members = state.members;
+  const greet = today.getHours() < 12 ? 'Bonjour' : today.getHours() < 18 ? 'Bon après-midi' : 'Bonsoir';
+  const mealHtml = ({ slot, m }) => {
+    if (!m) return `<button class="slot" data-act="slot" data-d="${di}" data-s="${slot}"><span class="when">${slot}</span><span class="add">${ICON.plus} Ajouter un repas</span></button>`;
+    const r = recipeById(m.recipe_id);
+    if (!r) return '';
+    const img = safeUrl(r.photo_url);
+    const cf = mealConflicts(m, r);
+    return `<div class="slot" style="cursor:default"><span class="when">${slot}</span>
+      ${img ? `<img class="sthumb" src="${esc(img)}" alt="">` : `<span class="sthumb">${ICON.chef}</span>`}
+      <span class="grow"><span class="prod-name" style="font-size:15px">${esc(r.title)}</span><span class="meta">${ICON.users} ${esc(mealWho(m))}${m.reste_id ? '<span class="tag ahead">Reste</span>' : ''}${totalMin(r) && !m.reste_id ? `<span>${ICON.clock} ${totalMin(r)} min</span>` : ''}${cf.length ? `<span class="tag warn-tag">⚠ ${esc(cf.map((c) => c.member.nom).join(', '))}</span>` : ''}</span></span>
+      <span class="row" style="gap:4px"><button class="icon-btn" data-act="open-recipe" data-id="${r.id}" aria-label="Voir">${ICON.chef}</button>${m.reste_id ? '' : `<button class="icon-btn" data-act="cook-mode" data-id="${r.id}" aria-label="Mode cuisine">${ICON.play}</button>`}</span></div>`;
+  };
+  const kcalHtml = members.length ? `<div class="ntable"><div class="nt-title">Calories du jour</div>${members.map((m) => { const md = memberDay(m, today); const nd = needs(m); return `<div class="mbar"><div class="row"><span class="grow">${esc(m.nom)}</span><b>${Math.round(md.total.kcal)}</b><span class="muted small">&nbsp;/ ${nd.kcal} kcal</span></div>${bar(md.total.kcal, nd.kcal)}</div>`; }).join('')}
+      <button class="btn small block soft" data-act="tab" data-tab="suivi" style="margin-top:6px">Voir le suivi détaillé</button></div>` : `<div class="card" style="padding:12px"><p class="muted small" style="margin:0 0 8px">Ajoutez les membres du foyer pour suivre les calories et adapter les portions.</p><button class="btn primary small" data-act="foyer">${ICON.users} Configurer le foyer</button></div>`;
+  return `<p class="muted" style="margin:0 0 10px">${greet} · ${today.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+    <div class="day today">${di >= 0 ? meals.map(mealHtml).join('') : '<p class="muted small">Chargement de la semaine…</p>'}</div>
+    <div class="grid2" style="margin:12px 0"><button class="btn primary" data-act="suggest">${ICON.sparkle} On mange quoi ce soir ?</button><button class="btn" data-act="journal-add" data-slot="${defaultSlot()}">${ICON.plus} Journal</button></div>
+    <div class="grid2" style="margin:0 0 12px"><button class="btn" data-act="scan">${ICON.barcode} Scanner</button><button class="btn" data-act="tab" data-tab="courses">${ICON.cart} Courses</button></div>
+    ${restes.length ? `<div class="phase" style="margin-bottom:12px"><h3>${ICON.flame} Restes à consommer</h3><ul>${restes.map((x) => { const r = recipeById(x.recipe_id); return r ? `<li><b>${esc(r.title)}</b> <span class="muted small">${esc(resteLabel(x))}</span>${x.stockage === 'frigo' && x.dlc <= soon ? ' <span class="warn small">bientôt</span>' : ''}</li>` : ''; }).join('')}</ul></div>` : ''}
+    ${kcalHtml}`;
+}
+// Propose des recettes pour le dîner : restes d'abord, puis rapides, aimées, non cuisinées récemment, sans aversion.
+function suggestSheet() {
+  const today = new Date();
+  const di = dayIndex(today);
+  const slot = today.getHours() < 14 ? 'midi' : 'soir';
+  const existing = di >= 0 && state.plan.find((x) => x.day === di && x.slot === slot);
+  const restes = restesFor(today);
+  const score = (r) => (r.avis === 'adore' || r.favorite ? 3 : 0) + (totalMin(r) && totalMin(r) <= 30 ? 2 : 0) + (r.avis === 'a_tester' ? 1 : 0) + Math.min(3, (Date.now() - new Date(r.derniere_cuisson || '2000-01-01')) / (14 * 864e5)) + Math.random();
+  const cands = state.recipes.filter((r) => r.avis !== 'jamais' && !conflictsFor(state.members, r).length).sort((a, b) => score(b) - score(a)).slice(0, 5);
+  const el = openSheet(`${sheetHead(`On mange quoi ce ${slot === 'midi' ? 'midi' : 'soir'} ?`)}
+    ${existing ? `<p class="muted small" style="margin-top:0">Déjà prévu : <b>${esc(recipeById(existing.recipe_id)?.title || '')}</b>. Choisir ci-dessous le remplacera.</p>` : ''}
+    ${restes.length ? `<h3 style="margin:0 0 6px">Finir un reste</h3>${restes.map((x) => { const r = recipeById(x.recipe_id); return r ? `<button class="prod-row" data-reste="${x.id}"><div class="thumb ph">${ICON.flame}</div><div class="grow"><div class="prod-name">${esc(r.title)}</div><div class="muted small">${esc(resteLabel(x))}</div></div></button>` : ''; }).join('')}` : ''}
+    <h3 style="margin:12px 0 6px">Idées</h3>
+    ${cands.map((r) => `<button class="prod-row" data-rid="${r.id}">${safeUrl(r.photo_url) ? `<img class="thumb" src="${esc(safeUrl(r.photo_url))}" alt="" style="object-fit:cover">` : `<div class="thumb ph">${ICON.chef}</div>`}<div class="grow"><div class="prod-name">${esc(r.title)}</div><div class="meta">${totalMin(r) ? `<span>${ICON.clock} ${totalMin(r)} min</span>` : ''}${avisBadge(r)}${r.derniere_cuisson ? `<span>le ${fmtDay(isoToDate(r.derniere_cuisson))}</span>` : '<span>jamais cuisinée</span>'}</div></div></button>`).join('') || '<p class="muted">Aucune recette compatible. Ajoutez des recettes ou vérifiez les aversions.</p>'}`);
+  el.addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-rid],[data-reste]');
+    if (!b || di < 0) return;
+    closeSheet();
+    try {
+      if (b.dataset.reste) {
+        const x = state.restes.find((y) => y.id === b.dataset.reste);
+        await Data.setMeal(di, slot, x.recipe_id, state.settings.default_servings, { reste_id: x.id });
+        const meal = state.plan.find((y) => y.day === di && y.slot === slot);
+        await Data.updateReste(x.id, { portions: Math.round((Number(x.portions) - mealServings(meal)) * 100) / 100 });
+      } else await Data.setMeal(di, slot, b.dataset.rid, state.settings.default_servings, existing ? { ...existing, reste_id: null } : {});
+      render(); toast(`${slot === 'midi' ? 'Déjeuner' : 'Dîner'} planifié`);
+    } catch (err) { fail(err); }
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Rappels (Web Push)
+// ---------------------------------------------------------------------------
+const VAPID_PUBLIC = 'BGtcjD-H4BoUOSKDxhxrXqjtVqj6m8JHnqBbcOv3kK-BUTulfwV9ewxlZsF8oKogOEKtFFfZhehR6XtzDA8_5rw';
+const PUSH_DEFAULTS = { batch: true, congel: true, courses: true, courses_day: 5, courses_hour: 9, planning: true };
+const Push = {
+  supported: () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window,
+  standaloneHint: () => /iPhone|iPad/.test(navigator.userAgent) && !window.navigator.standalone && !matchMedia('(display-mode: standalone)').matches,
+  async current() {
+    if (!this.supported()) return null;
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    if (!sub) { state.push = null; return null; }
+    const { data } = await db.from('push_abonnements').select('*').eq('endpoint', sub.endpoint).maybeSingle();
+    state.push = data || null;
+    return state.push;
+  },
+  async subscribe() {
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') throw new Error('Notifications refusées par le navigateur');
+    const reg = await navigator.serviceWorker.ready;
+    const key = Uint8Array.from(atob(VAPID_PUBLIC.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(VAPID_PUBLIC.length / 4) * 4, '=')), (c) => c.charCodeAt(0));
+    const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key });
+    const j = sub.toJSON();
+    const row = { endpoint: sub.endpoint, keys: j.keys, prefs: state.push?.prefs || PUSH_DEFAULTS, ua: navigator.userAgent.slice(0, 200), ...own() };
+    const { data, error } = await db.from('push_abonnements').upsert(row, { onConflict: 'endpoint' }).select().single();
+    if (error) throw error;
+    state.push = data;
+  },
+  async unsubscribe() {
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    if (sub) { await db.from('push_abonnements').delete().eq('endpoint', sub.endpoint); await sub.unsubscribe(); }
+    state.push = null;
+  },
+  async savePrefs(prefs) {
+    if (!state.push) return;
+    const { error } = await db.from('push_abonnements').update({ prefs }).eq('endpoint', state.push.endpoint);
+    if (error) throw error;
+    state.push.prefs = prefs;
+  },
+};
+function openRappels() {
+  const el = openSheet(`${sheetHead('Rappels')}<div data-body><div class="spinner"></div></div>`);
+  const draw = async () => {
+    try { await Push.current(); } catch { /* indisponible */ }
+    const on = !!state.push;
+    const pr = { ...PUSH_DEFAULTS, ...(state.push?.prefs || {}) };
+    $('[data-body]', el).innerHTML = !Push.supported()
+      ? '<p class="muted">Les notifications ne sont pas disponibles dans ce navigateur.</p>'
+      : `${Push.standaloneHint() ? '<p class="small warn">Sur iPhone, les rappels fonctionnent uniquement quand l\'app est installée sur l\'écran d\'accueil (Partager › Sur l\'écran d\'accueil), puis ouverte depuis son icône.</p>' : ''}
+      <label class="check" style="display:flex;min-height:48px"><input type="checkbox" data-x="on" ${on ? 'checked' : ''}><span class="grow"><b>Rappels sur cet appareil</b><br><span class="muted small">Notifications même quand l'app est fermée.</span></span></label>
+      ${on ? `<div class="ntable">
+        <label class="check" style="display:flex;padding:6px 0"><input type="checkbox" data-p="batch" ${pr.batch ? 'checked' : ''}><span class="grow">Samedi 18 h : session batch cooking du lendemain</span></label>
+        <label class="check" style="display:flex;padding:6px 0"><input type="checkbox" data-p="congel" ${pr.congel ? 'checked' : ''}><span class="grow">La veille à 19 h : sortir un reste du congélateur</span></label>
+        <label class="check" style="display:flex;padding:6px 0"><input type="checkbox" data-p="planning" ${pr.planning ? 'checked' : ''}><span class="grow">Vendredi 18 h : semaine prochaine encore vide</span></label>
+        <label class="check" style="display:flex;padding:6px 0"><input type="checkbox" data-p="courses" ${pr.courses ? 'checked' : ''}><span class="grow">Liste de courses prête</span></label>
+        <div class="grid2" style="margin:4px 0 0 30px"><select class="input" data-p="courses_day">${DAYS.map((d, i) => `<option value="${i}" ${Number(pr.courses_day) === i ? 'selected' : ''}>${d}</option>`).join('')}</select>
+          <select class="input" data-p="courses_hour">${[7, 8, 9, 10, 11, 12, 14, 17, 18, 19, 20].map((h) => `<option value="${h}" ${Number(pr.courses_hour) === h ? 'selected' : ''}>${h} h</option>`).join('')}</select></div>
+        <button class="btn block" data-act="push-test" style="margin-top:10px">${ICON.sparkle} M'envoyer une notification de test</button></div>` : ''}`;
+  };
+  draw();
+  el.addEventListener('change', async (e) => {
+    const t = e.target;
+    try {
+      if (t.dataset.x === 'on') { if (t.checked) await Push.subscribe(); else await Push.unsubscribe(); toast(t.checked ? 'Rappels activés' : 'Rappels désactivés'); return draw(); }
+      if (t.dataset.p) {
+        const prefs = { ...PUSH_DEFAULTS, ...(state.push?.prefs || {}) };
+        prefs[t.dataset.p] = t.type === 'checkbox' ? t.checked : Number(t.value);
+        await Push.savePrefs(prefs);
+      }
+    } catch (err) { toast(err.message || 'Impossible'); draw(); }
   });
 }
 
@@ -2481,7 +3202,8 @@ function renderSuiviDay() {
   const nav = `<div class="week-nav"><button class="icon-btn" data-act="suivi-day" data-d="-1" aria-label="Jour précédent">${ICON.back}</button>
     <strong>${isToday ? 'Aujourd\'hui' : d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</strong>
     <button class="icon-btn" data-act="suivi-day" data-d="1" aria-label="Jour suivant">${ICON.next}</button>
-    ${isToday ? '' : '<button class="btn small" data-act="suivi-day" data-d="0">Auj.</button>'}</div>`;
+    ${isToday ? '' : '<button class="btn small" data-act="suivi-day" data-d="0">Auj.</button>'}
+    <button class="icon-btn" data-act="journal-copy" aria-label="Copier le journal de la veille" title="Copier hier">${ICON.copy}</button></div>`;
   const perMember = foyer ? `<div class="ntable"><div class="nt-title">Par membre</div>${members.map((m) => {
     const md = memberDay(m, d); const nd = needs(m);
     return `<div class="mbar"><div class="row"><span class="grow">${esc(m.nom)}</span><b>${Math.round(md.total.kcal)}</b><span class="muted small">&nbsp;/ ${nd.kcal} kcal</span></div>${bar(md.total.kcal, nd.kcal)}</div>`;
@@ -2489,7 +3211,9 @@ function renderSuiviDay() {
   const slots = SLOTS.map(([k, label]) => {
     const list = g.entries.filter((e) => e.slot === k);
     const kcal = list.reduce((s, e) => s + e.n.kcal, 0);
+    const habits = members.reduce((t, m) => t + state.favoris.filter((x) => x.slot === k && (!x.member_id || x.member_id === m.id)).length, 0);
     return `<div class="slot-block"><div class="row"><h3 class="grow">${label}</h3>${list.length ? `<span class="muted small">${Math.round(kcal)} kcal</span>` : ''}
+        ${!list.length && habits ? `<button class="btn small soft" data-act="journal-habits" data-slot="${k}">Mes habituels (${habits})</button>` : ''}
         <button class="icon-btn" data-act="journal-add" data-slot="${k}" aria-label="Ajouter au ${label}">${ICON.plus}</button></div>
       ${list.map((e) => `<div class="entry"><div class="grow"><div class="nm">${esc(e.label)}</div><div class="muted small">${foyer ? `${esc(e.member.nom)} · ` : ''}${esc(e.detail)}</div></div>
         <span class="small"><b>${Math.round(e.n.kcal)}</b> kcal</span>
@@ -2516,6 +3240,7 @@ function renderSuiviWeek() {
     <p class="muted small" style="margin:4px 0 12px">Trait horizontal : besoin quotidien (${Math.round(need.kcal)} kcal). Touchez un jour pour le détail.</p>
     ${kcalCard(avg, need, 'Moyenne par jour sur la semaine')}
     <div class="ntable">${macroBars(avg, need)}</div>
+    ${(() => { const all = [...buildShopping().byAisle.values()].flat(); let t = 0; let n = 0; for (const it of all) { const pr = Prices.of(it); if (pr) { t += pr.price; n++; } } return n ? `<div class="ntable"><div class="nt-row"><span>Coût estimé des courses de la semaine</span><b>${fmtEur(t)}</b><span class="pct">${n}/${all.length} art.</span></div></div>` : ''; })()}
     <div class="ntable"><div class="nt-title">Total de la semaine</div>
       ${NUTRI_KEYS.filter((x) => x.main).map((x) => `<div class="nt-row"><span>${x.label}</span><b>${fmtN(avg[x.k] * 7, x.unit)}</b><span class="pct">${Math.round((avg[x.k] / need[x.k]) * 100)} %</span></div>`).join('')}</div>`;
 }
@@ -2524,20 +3249,56 @@ async function goToDay(date) {
   state.day = date;
   if (mondayOf(date).getTime() !== state.week.getTime()) {
     state.week = mondayOf(date);
-    try { await Data.loadWeek(); } catch (e) { fail(e); }
+    try { await Data.loadWeek(); } catch (e) { if (isNetworkError(e)) { state.offline = true; Offline.restoreWeek(); } else fail(e); }
   }
   render();
 }
 
 // Ajout au journal : aliment Ciqual, produit scanné ou recette.
+const journalMember = () => (state.suiviMember !== 'foyer' && memberById(state.suiviMember)) || memberById(state.compte?.member_id) || state.members[0];
+const favKey = (r) => `${r.source}|${r.ref || ''}|${r.label}`;
 function journalAdd(slot) {
   const el = openSheet(`${sheetHead(`Ajouter · ${slotLabel(slot)}`)}
-    <div class="seg" role="group">${[['aliment', 'Aliment'], ['produit', 'Produit'], ['recette', 'Recette']].map(([k, l], i) => `<button aria-pressed="${i === 0}" data-mode="${k}">${l}</button>`).join('')}</div>
+    <div class="seg" role="group" style="grid-template-columns:repeat(4,1fr)">${[['recents', 'Récents'], ['aliment', 'Aliment'], ['produit', 'Produit'], ['recette', 'Recette']].map(([k, l], i) => `<button aria-pressed="${i === 0}" data-mode="${k}">${l}</button>`).join('')}</div>
     <div data-pane></div>`);
   const opts = { slot };
   const pane = $('[data-pane]', el);
+  const member = journalMember();
+  const quickAdd = async (r) => {
+    const date = state.tab === 'suivi' ? state.day : new Date();
+    try {
+      await Data.addJournal({ date: isoDate(date), member_id: member.id, slot, label: r.label, source: r.source, ref: r.ref || null, grams: r.grams ?? null, portions: r.portions ?? null, n: r.n || {} });
+      closeSheet(); toast(`Ajouté : ${Math.round(Number(r.n?.kcal) || 0)} kcal`); if (state.tab === 'suivi') render();
+    } catch (err) { fail(err); }
+  };
   const show = (mode) => {
     $$('[data-mode]', el).forEach((b) => b.setAttribute('aria-pressed', b.dataset.mode === mode));
+    if (mode === 'recents') {
+      pane.innerHTML = '<div class="spinner"></div>';
+      Data.recentJournal(member.id).then((rows) => {
+        const seen = new Map();
+        for (const r of rows) { const k = favKey(r); const e = seen.get(k) || { ...r, count: 0 }; e.count++; seen.set(k, e); }
+        const favs = state.favoris.filter((f) => !f.member_id || f.member_id === member.id);
+        const favOf = (r) => favs.find((f) => favKey(f) === favKey(r));
+        const recents = [...seen.values()].filter((r) => !favOf(r)).sort((a, b) => b.count - a.count).slice(0, 25);
+        const rowHtml = (r, i, kind) => `<div class="prod-row" style="cursor:default;padding:6px 10px"><button class="grow" data-${kind}="${i}" style="border:0;background:none;text-align:left;padding:4px 0;min-height:44px">
+            <div class="prod-name">${esc(r.label)}</div><div class="muted small">${r.grams ? `${fmtNum(Number(r.grams))} g` : r.portions ? fmtPortions(Number(r.portions)) : ''} · ${Math.round(Number(r.n?.kcal) || 0)} kcal${r.count > 1 ? ` · ${r.count} fois` : ''}${kind === 'fav' && r.slot ? ` · ${slotLabel(r.slot)}` : ''}</div></button>
+            <button class="icon-btn ${kind === 'fav' ? 'fav' : ''}" data-star-${kind}="${i}" aria-label="Favori">${kind === 'fav' ? ICON.heartFill : ICON.heart}</button></div>`;
+        pane.innerHTML = `${favs.length ? `<h3 class="section-title" style="margin-top:4px">Mes habituels</h3>${favs.map((r, i) => rowHtml(r, i, 'fav')).join('')}` : ''}
+          <h3 class="section-title" style="margin-top:8px">Récents de ${esc(member.nom)}</h3>${recents.map((r, i) => rowHtml(r, i, 'rec')).join('') || '<p class="muted small">Rien pour l\'instant : les aliments ajoutés apparaîtront ici en un tap.</p>'}`;
+        pane.onclick = async (e) => {
+          const b = e.target.closest('[data-rec],[data-fav],[data-star-rec],[data-star-fav]');
+          if (!b) return;
+          if (b.dataset.rec != null) return quickAdd(recents[Number(b.dataset.rec)]);
+          if (b.dataset.fav != null) return quickAdd(favs[Number(b.dataset.fav)]);
+          try {
+            if (b.dataset.starFav != null) await Data.deleteFavori(favs[Number(b.dataset.starFav)].id);
+            else { const r = recents[Number(b.dataset.starRec)]; await Data.addFavori({ member_id: member.id, slot, label: r.label, source: r.source, ref: r.ref || null, grams: r.grams ?? null, portions: r.portions ?? null, n: r.n || {} }); }
+            show('recents');
+          } catch (err) { fail(err); }
+        };
+      }).catch((e) => { fail(e); show('aliment'); });
+    }
     if (mode === 'aliment') {
       pane.innerHTML = `<div class="searchbar" style="margin-bottom:8px">${ICON.search}<input class="input" type="search" data-food-q placeholder="Ex. pomme, pain complet, yaourt nature…" autofocus></div><div data-food-results class="food-results"></div>`;
       const pick = (a) => { closeSheet(); quantitySheet({ ...opts, label: a.nom, per100: a.n, source: 'ciqual', ref: String(a.code), defaultGrams: 100 }); };
@@ -2546,6 +3307,8 @@ function journalAdd(slot) {
     }
     if (mode === 'produit') {
       pane.innerHTML = `<button class="btn primary block" data-scan>${ICON.barcode} Scanner un produit</button>
+        ${state.perso.length ? `<h3 class="section-title">Mes fiches produit</h3>${state.perso.map((x) => `<button class="prod-row" data-perso="${x.id}"><div class="thumb ph">${ICON.edit}</div><div class="grow"><div class="prod-name">${esc(x.name)}</div><div class="muted small">${esc(x.brand || '')} · ${Math.round(Number(x.n?.kcal) || 0)} kcal/100 g</div></div></button>`).join('')}` : ''}
+        <button class="btn block" data-new-perso style="margin-top:8px">${ICON.plus} Nouvelle fiche produit (étiquette)</button>
         ${state.scans.length ? `<h3 class="section-title">Produits scannés récemment</h3>${state.scans.slice(0, 12).map((s) => `<button class="prod-row" data-ean="${esc(s.ean)}">${safeUrl(s.image_url) ? `<img class="thumb" src="${esc(safeUrl(s.image_url))}" alt="">` : `<div class="thumb ph">${ICON.barcode}</div>`}<div class="grow"><div class="prod-name">${esc(s.name || s.ean)}</div><div class="muted small">${esc((s.brand || '').split(',')[0])}</div></div></button>`).join('')}` : ''}`;
       const fromEan = async (ean) => {
         try {
@@ -2556,7 +3319,12 @@ function journalAdd(slot) {
         } catch (e) { fail(e, 'Open Food Facts ne répond pas'); }
       };
       $('[data-scan]', pane).addEventListener('click', () => Scanner.open(fromEan));
-      pane.onclick = (e) => { const b = e.target.closest('[data-ean]'); if (b) fromEan(b.dataset.ean); };
+      $('[data-new-perso]', pane).addEventListener('click', () => persoSheet({}, (x) => { closeSheet(); quantitySheet({ ...opts, label: x.name, per100: offPer100(persoToProduct(x)), source: 'off', ref: `perso:${x.id}`, defaultGrams: Number(x.serving_g) || 100 }); }));
+      pane.onclick = (e) => {
+        const pp = e.target.closest('[data-perso]');
+        if (pp) { const x = state.perso.find((y) => y.id === pp.dataset.perso); closeSheet(); return quantitySheet({ ...opts, label: x.name, per100: offPer100(persoToProduct(x)), source: 'off', ref: `perso:${x.id}`, defaultGrams: Number(x.serving_g) || 100 }); }
+        const b = e.target.closest('[data-ean]'); if (b) fromEan(b.dataset.ean);
+      };
     }
     if (mode === 'recette') {
       pane.innerHTML = state.recipes.length ? state.recipes.map((r) => `<button class="prod-row" data-rid="${r.id}"><div class="grow"><div class="prod-name">${esc(r.title)}</div>
@@ -2571,7 +3339,33 @@ function journalAdd(slot) {
     }
   };
   el.addEventListener('click', (e) => { const b = e.target.closest('[data-mode]'); if (b) show(b.dataset.mode); });
-  show('aliment');
+  show('recents');
+}
+// Copie les entrées de la veille (membres affichés) sur le jour sélectionné.
+async function copyYesterday() {
+  const members = suiviMembers();
+  const y = isoDate(addDays(state.day, -1));
+  try {
+    const rows = await Data.journalOn(y, members.map((m) => m.id));
+    if (!rows.length) { toast('Rien dans le journal de la veille'); return; }
+    for (const r of rows) await Data.addJournal({ date: isoDate(state.day), member_id: r.member_id, slot: r.slot, label: r.label, source: r.source, ref: r.ref, grams: r.grams, portions: r.portions, n: r.n });
+    toast(`${rows.length} entrée${rows.length > 1 ? 's' : ''} copiée${rows.length > 1 ? 's' : ''}`);
+    render();
+  } catch (e) { fail(e); }
+}
+async function addHabits(slot) {
+  const members = suiviMembers();
+  let n = 0;
+  try {
+    for (const m of members) {
+      for (const f of state.favoris.filter((x) => x.slot === slot && (!x.member_id || x.member_id === m.id))) {
+        await Data.addJournal({ date: isoDate(state.day), member_id: m.id, slot, label: f.label, source: f.source, ref: f.ref, grams: f.grams, portions: f.portions, n: f.n });
+        n++;
+      }
+    }
+    toast(n ? `${n} habituel${n > 1 ? 's' : ''} ajouté${n > 1 ? 's' : ''}` : 'Aucun habituel pour ce repas');
+    render();
+  } catch (e) { fail(e); }
 }
 
 function defaultSlot() {
@@ -2597,6 +3391,7 @@ function quantitySheet(o) {
       <label class="field"><span>Quantité (${unit})</span><input class="input" type="number" name="qty" min="0.1" step="any" inputmode="decimal" value="${def}" required></label>
       <div class="chips">${quick.map((q) => `<button type="button" class="chip" data-q="${q}">${fmtNum(q)}${isRecipe ? '' : ' g'}</button>`).join('')}</div>
       <div data-preview></div>
+      <label class="check"><input type="checkbox" name="fav"> Ajouter à mes habituels (${slotLabel(o.slot || defaultSlot())})</label>
       <button class="btn primary block">Ajouter au journal</button>
     </form>`);
   const f = $('form', el);
@@ -2615,6 +3410,7 @@ function quantitySheet(o) {
     if (!(q > 0)) return;
     try {
       await Data.addJournal({ date: f.date.value, member_id: f.member.value, slot: f.slot.value, label: o.label, source: o.source, ref: o.ref || null, grams: isRecipe ? null : q, portions: isRecipe ? q : null, n });
+      if (f.fav.checked) await Data.addFavori({ member_id: f.member.value, slot: f.slot.value, label: o.label, source: o.source, ref: o.ref || null, grams: isRecipe ? null : q, portions: isRecipe ? q : null, n }).catch(() => {});
       closeSheet();
       toast(`Ajouté : ${Math.round(n.kcal)} kcal`);
       if (state.tab === 'suivi') render();
@@ -2662,12 +3458,17 @@ function memberSheet(m, onDone) {
       <label class="field"><span>Activité physique</span><select class="input" name="activite">${Object.entries(ACTIVITY).map(([k, a]) => `<option value="${k}" ${k === v.activite ? 'selected' : ''}>${a.label}</option>`).join('')}</select></label>
       <label class="field"><span>Objectif</span><select class="input" name="objectif">${Object.entries(OBJECTIF).map(([k, o]) => `<option value="${k}" ${k === v.objectif ? 'selected' : ''}>${o.label}</option>`).join('')}</select></label>
       <div class="kcal-card" data-calc></div>
+      <div class="field"><span>Évite (allergies, régime, dégoûts)</span>
+        <div class="chips" style="flex-wrap:wrap">${Object.entries(EVITE).map(([k, d]) => `<button type="button" class="chip" aria-pressed="${(v.evite || []).includes(k)}" data-evite="${k}">${d.label}</button>`).join('')}</div>
+        <input class="input" name="evite_libre" placeholder="Autres, séparés par des virgules (ex. coriandre, olives)" value="${esc((v.evite || []).filter((k) => k.startsWith('mot:')).map((k) => k.slice(4)).join(', '))}"></div>
       <label class="field"><span>Besoin personnalisé (kcal/jour, facultatif)</span><input class="input" type="number" name="kcal_perso" min="500" max="6000" inputmode="numeric" value="${esc(v.kcal_perso ?? '')}" placeholder="Laisser vide pour le calcul automatique"></label>
       <button class="btn primary block">Enregistrer</button>
       ${m ? '<button type="button" class="btn danger block" data-x="del">Retirer du foyer</button>' : ''}
     </form>`);
   const f = $('form', el);
-  const read = () => ({ ...(m ? { id: m.id } : {}), nom: f.nom.value.trim(), sexe: f.sexe.value, naissance: f.naissance.value, poids_kg: parseFloat(f.poids_kg.value), taille_cm: parseFloat(f.taille_cm.value), activite: f.activite.value, objectif: f.objectif.value, kcal_perso: parseInt(f.kcal_perso.value, 10) || null });
+  const read = () => ({ ...(m ? { id: m.id } : {}), nom: f.nom.value.trim(), sexe: f.sexe.value, naissance: f.naissance.value, poids_kg: parseFloat(f.poids_kg.value), taille_cm: parseFloat(f.taille_cm.value), activite: f.activite.value, objectif: f.objectif.value, kcal_perso: parseInt(f.kcal_perso.value, 10) || null,
+    evite: [...$$('[data-evite][aria-pressed="true"]', f).map((b) => b.dataset.evite), ...f.evite_libre.value.split(',').map((x) => x.trim()).filter(Boolean).map((x) => `mot:${x}`)] });
+  f.addEventListener('click', (e) => { const b = e.target.closest('[data-evite]'); if (b) b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') !== 'true'); });
   const calc = () => {
     const x = read();
     const box = $('[data-calc]', el);
@@ -2702,6 +3503,8 @@ function openSettings() {
     <div class="card row" style="padding:12px;margin-bottom:16px;box-shadow:none;background:var(--surface-2)">
       <div class="grow"><div class="muted small">Connecté en tant que</div><b style="word-break:break-all">${esc(state.user?.email || '')}</b></div>
       <button class="btn small" data-x="logout">Se déconnecter</button></div>
+    <button class="btn block" data-act="basiques" style="margin-bottom:10px">${ICON.cart} Basiques du placard · ${basiques().length}</button>
+    <button class="btn block" data-x="rappels" style="margin-bottom:10px">${ICON.clock} Rappels (notifications)</button>
     <button class="btn soft block" data-x="foyer" style="margin-bottom:16px">${ICON.users} Mon foyer · ${state.members.length ? `${state.members.length} membre${state.members.length > 1 ? 's' : ''}` : 'à configurer'}</button>
     <form class="stack" data-form="settings">
       <h3 style="margin:0">Supermarché</h3>
@@ -2717,6 +3520,7 @@ function openSettings() {
       <label class="btn">${ICON.upload} Importer<input type="file" accept="application/json" data-x="import" hidden></label></div>
     <p class="muted small">Données nutritionnelles : Open Food Facts. Vos recettes, plannings et listes sont privés et liés à votre compte.</p>`);
   $('[data-x="foyer"]', el).addEventListener('click', () => { closeSheet(); openFoyer(); });
+  $('[data-x="rappels"]', el).addEventListener('click', () => openRappels());
   $('[data-x="logout"]', el).addEventListener('click', async () => {
     while (sheets.length) closeSheet();
     await db.auth.signOut();
@@ -2771,18 +3575,33 @@ async function importData(file) {
 function render() {
   const main = $('#main');
   const views = {
-    scan: [APP_NAME, renderScan],
+    aujourdhui: [APP_NAME, renderToday],
+    scan: ['Scanner un produit', renderScan],
     recettes: ['Mes recettes', renderRecipes],
     planning: ['Ma semaine', renderPlanning],
     courses: ['Liste de courses', renderCourses],
     batch: ['Batch cooking', renderBatchTab],
     suivi: ['Suivi nutritionnel', renderSuivi],
   };
-  if (!views[state.tab]) state.tab = 'scan';
+  if (!views[state.tab]) state.tab = 'aujourdhui';
   const [title, view] = views[state.tab];
   $('#title').textContent = title;
-  $$('.tabbar button').forEach((b) => b.setAttribute('aria-current', b.dataset.tab === state.tab ? 'page' : 'false'));
-  main.innerHTML = view();
+  const inMore = ['scan', 'courses', 'batch'].includes(state.tab);
+  $$('.tabbar button').forEach((b) => b.setAttribute('aria-current', b.dataset.tab === state.tab || (b.dataset.tab === 'plus' && inMore) ? 'page' : 'false'));
+  main.innerHTML = (state.offline ? `<div class="offline-banner">${ICON.info} Hors ligne : données du dernier chargement${Queue.size() ? ` · ${Queue.size()} saisie(s) en attente` : ''}</div>` : '') + view();
+}
+function moreMenu() {
+  const el = openSheet(`${sheetHead('Plus')}<div class="menu-list">
+    <button data-t="scan">${ICON.barcode} Scanner un produit</button>
+    <button data-t="courses">${ICON.cart} Liste de courses</button>
+    <button data-t="batch">${ICON.flame} Batch cooking</button>
+    <button data-t="settings">${ICON.sparkle} Paramètres</button></div>`);
+  el.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-t]');
+    if (!b) return;
+    closeSheet();
+    if (b.dataset.t === 'settings') openSettings(); else switchTab(b.dataset.t);
+  });
 }
 function switchTab(tab) {
   state.tab = tab;
@@ -2793,11 +3612,15 @@ function switchTab(tab) {
 }
 
 const ACTIONS = {
-  tab: (b) => { while (sheets.length) closeSheet(); switchTab(b.dataset.tab); },
+  tab: (b) => { while (sheets.length) closeSheet(); if (b.dataset.tab === 'aujourdhui') goToDay(new Date()).then(() => switchTab('aujourdhui')); else switchTab(b.dataset.tab); },
+  more: () => moreMenu(),
+  suggest: () => suggestSheet(),
+  'push-test': async () => { try { const r = await Foyer.invoke('send-reminders', { test: true }); toast(r.sent ? 'Notification de test envoyée' : 'Aucun appareil abonné'); } catch (e) { toast(e.message); } },
   'close-sheet': () => closeSheet(),
   settings: () => openSettings(),
   scan: () => Scanner.open((code) => showProduct(code)),
   'open-product': (b) => showProduct(b.dataset.ean, { record: false }),
+  'open-alt': (b) => showProduct(b.dataset.ean, { record: false, compareTo: compareBase }),
   'retry-product': (b) => { closeSheet(); showProduct(b.dataset.ean); },
   'scan-filter': (b) => { state.scanFilter = b.dataset.v; render(); },
   'clear-scans': async () => { if (await confirmSheet('Effacer tout l\'historique des scans ?', 'Effacer')) { try { await Data.clearScans(); render(); } catch (e) { fail(e); } } },
@@ -2823,7 +3646,7 @@ const ACTIONS = {
     state.week = addDays(state.week, 7 * Number(b.dataset.d));
     state.day = addDays(state.day, 7 * Number(b.dataset.d));
     state.moving = null;
-    try { await Data.loadWeek(); } catch (e) { fail(e); }
+    try { await Data.loadWeek(); } catch (e) { if (isNetworkError(e)) { state.offline = true; Offline.restoreWeek(); } else fail(e); }
     render();
   },
   'week-menu': () => weekMenu(),
@@ -2833,7 +3656,16 @@ const ACTIONS = {
   'suivi-day': (b) => goToDay(b.dataset.d === '0' ? new Date() : addDays(state.day, Number(b.dataset.d))),
   'suivi-open-day': (b) => { state.suiviView = 'jour'; goToDay(addDays(state.week, Number(b.dataset.i))); },
   'journal-add': (b) => journalAdd(b.dataset.slot),
+  'journal-copy': () => copyYesterday(),
+  'journal-habits': (b) => addHabits(b.dataset.slot),
   'journal-del': async (b) => { try { await Data.deleteJournal(b.dataset.id); render(); } catch (e) { fail(e); } },
+  'have-item': async (b) => {
+    try { await Data.addPlacard({ name: b.dataset.n, ing_key: b.dataset.k, type: 'stock', until: isoDate(addDays(state.week, 6)) }); render(); toast('Mis de côté : vous l\'avez déjà'); } catch (e) { fail(e); }
+  },
+  unstock: async (b) => { try { await Data.deletePlacard(b.dataset.id); render(); } catch (e) { fail(e); } },
+  basiques: () => openBasiques(),
+  'cook-with': () => cookWithSheet(),
+  'reste-del': async (b) => { if (await confirmSheet('Retirer ce reste (mangé ou jeté) ?', 'Retirer')) { try { await Data.deleteReste(b.dataset.id); render(); } catch (e) { fail(e); } } },
   'del-extra': async (b) => { try { await Data.deleteExtra(b.dataset.id); render(); } catch (e) { fail(e); } },
   slot: (b) => onSlot(Number(b.dataset.d), b.dataset.s),
   'cancel-move': () => { state.moving = null; render(); },
@@ -3111,12 +3943,32 @@ async function onSession(session) {
   $('#main').innerHTML = '<div class="spinner"></div>';
   try {
     await Foyer.ensure();
+    store.set(`cache:user:${user.id}`, { foyer: state.foyer, compte: state.compte });
     await Promise.all([Data.loadAll(), CQ.load().catch((e) => console.warn('Ciqual', e))]);
     if (state.compte?.member_id && !memberById(state.suiviMember)) state.suiviMember = state.compte.member_id;
     await Data.loadWeek();
+    state.offline = false;
+    Offline.saveAll();
+    Offline.saveWeek();
     state.loaded = true;
+    Queue.flush();
+    const hash = location.hash.replace('#', '');
+    if (['planning', 'courses', 'batch', 'suivi', 'recettes', 'scan'].includes(hash)) { state.tab = hash; history.replaceState(null, '', location.pathname); }
     render();
   } catch (err) {
+    // Hors ligne : on repart du dernier chargement connu.
+    const cu = store.get(`cache:user:${user.id}`, null);
+    if (cu && isNetworkError(err)) {
+      Object.assign(state, cu);
+      if (Offline.restoreAll()) {
+        Offline.restoreWeek();
+        CQ.load().catch(() => {});
+        state.offline = true;
+        state.loaded = true;
+        render();
+        return;
+      }
+    }
     $('#main').innerHTML = `<div class="empty"><p>Impossible de charger vos données.</p><button class="btn primary" onclick="location.reload()">Réessayer</button></div>`;
     console.error(err);
   }
@@ -3126,6 +3978,56 @@ async function onSession(session) {
 // Mises à jour : version.json est relu sans cache ; si la version publiée diffère,
 // la page est rechargée avec une URL nouvelle pour contourner le cache du navigateur.
 // ---------------------------------------------------------------------------
+// Cache local des données (dernier chargement) et file d'attente des saisies hors ligne.
+const Offline = {
+  key: (k) => `cache:${foyer() || 'x'}:${k}`,
+  saveAll() { store.set(this.key('all'), { settings: state.settings, recipes: state.recipes, links: state.links, scans: state.scans.slice(0, 60), members: state.members, placards: state.placards, restes: state.restes, favoris: state.favoris, perso: state.perso }); },
+  saveWeek() { store.set(this.key(`week:${isoDate(state.week)}`), { plan: state.plan, checks: state.checks, extras: state.extras, journal: state.journal }); },
+  restoreAll() { const c = store.get(this.key('all'), null); if (c) Object.assign(state, c); return !!c; },
+  restoreWeek() { const c = store.get(this.key(`week:${isoDate(state.week)}`), null); Object.assign(state, c || { plan: [], checks: {}, extras: [], journal: [] }); return !!c; },
+};
+const Queue = {
+  list: () => store.get('queue', []),
+  size() { return this.list().length; },
+  push(op) { const l = this.list(); l.push({ ...op, t: Date.now() }); store.set('queue', l); },
+  async flush() {
+    const l = this.list();
+    if (!l.length || !navigator.onLine) return;
+    store.set('queue', []);
+    let done = 0;
+    for (const op of l) {
+      try {
+        if (op.type === 'journal') { const { error } = await db.from(T.journal).insert(op.row); if (error) throw error; }
+        if (op.type === 'scan') { const { error } = await db.from(T.scans).insert(op.row); if (error) throw error; }
+        done++;
+      } catch (e) { console.warn('file d\'attente', e); this.push(op); }
+    }
+    if (done) toast(`${done} saisie${done > 1 ? 's' : ''} synchronisée${done > 1 ? 's' : ''}`);
+  },
+};
+const isNetworkError = (e) => !navigator.onLine || /fetch|network|Failed to fetch|Load failed/i.test(String(e?.message || e));
+window.addEventListener('online', async () => { state.offline = false; await Queue.flush(); if (state.user) { state.loaded = false; onSession({ user: state.user }); } });
+window.addEventListener('offline', () => { state.offline = true; if (state.user) render(); });
+
+const SW = {
+  reg: null,
+  async register() {
+    if (!('serviceWorker' in navigator) || !window.isSecureContext) return;
+    try {
+      this.reg = await navigator.serviceWorker.register('sw.js');
+      navigator.serviceWorker.addEventListener('message', (e) => { if (e.data?.type === 'refreshed') location.reload(); });
+    } catch (e) { console.warn('service worker', e); }
+  },
+  // Demande au service worker de recharger le cache de l'app ; vrai si la page sera rechargée par lui.
+  refresh() {
+    if (!navigator.serviceWorker?.controller) return false;
+    navigator.serviceWorker.controller.postMessage({ type: 'refresh' });
+    setTimeout(() => location.reload(), 8000);
+    return true;
+  },
+};
+SW.register();
+
 const Updater = {
   pending: null,
   async check() {
@@ -3145,6 +4047,7 @@ const Updater = {
   },
   reload(version) {
     store.set('updateTried', version);
+    if (SW.refresh()) return;
     location.replace(`${location.pathname}?v=${encodeURIComponent(version)}`);
   },
   banner(version) {
