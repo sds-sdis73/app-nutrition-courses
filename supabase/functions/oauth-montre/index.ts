@@ -16,6 +16,8 @@ const PROVIDERS: Record<string, { auth: string; token: string; scope: string; ex
   withings: { auth: "https://account.withings.com/oauth2_user/authorize2", token: "https://wbsapi.withings.net/v2/oauth2", scope: "user.activity,user.metrics" },
   oura: { auth: "https://cloud.ouraring.com/oauth/authorize", token: "https://api.ouraring.com/oauth/token", scope: "daily personal" },
   strava: { auth: "https://www.strava.com/oauth/authorize", token: "https://www.strava.com/oauth/token", scope: "activity:read_all", extra: { approval_prompt: "auto" } },
+  whoop: { auth: "https://api.prod.whoop.com/oauth/oauth2/auth", token: "https://api.prod.whoop.com/oauth/oauth2/token", scope: "read:cycles read:workout offline" },
+  suunto: { auth: "https://cloudapi-oauth.suunto.com/oauth/authorize", token: "https://cloudapi-oauth.suunto.com/oauth/token", scope: "" },
 };
 const creds = (p: string) => ({ id: Deno.env.get(`${p.toUpperCase()}_CLIENT_ID`) ?? "", secret: Deno.env.get(`${p.toUpperCase()}_CLIENT_SECRET`) ?? "" });
 const redirectUri = (p: string) => `${FN}/callback/${p}`;
@@ -59,7 +61,7 @@ Deno.serve(async (req) => {
     target.searchParams.set("response_type", "code");
     target.searchParams.set("client_id", id);
     target.searchParams.set("redirect_uri", redirectUri(provider));
-    target.searchParams.set("scope", cfg.scope);
+    if (cfg.scope) target.searchParams.set("scope", cfg.scope);
     target.searchParams.set("state", state);
     for (const [k, v] of Object.entries(cfg.extra ?? {})) target.searchParams.set(k, v);
     return Response.redirect(target.toString(), 302);
@@ -80,12 +82,12 @@ Deno.serve(async (req) => {
     const { id, secret } = creds(provider);
     try {
       let tok: Record<string, unknown>;
-      if (provider === "polar") {
+      if (provider === "polar" || provider === "suunto") {
         const r = await fetch(cfg.token, { method: "POST", headers: { Authorization: `Basic ${btoa(`${id}:${secret}`)}`, "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json;charset=UTF-8" }, body: new URLSearchParams({ grant_type: "authorization_code", code, redirect_uri: redirectUri(provider) }) });
         tok = await r.json();
         if (!r.ok) throw new Error(JSON.stringify(tok));
-        // Enregistrement de l'utilisateur AccessLink (409 = déjà enregistré).
-        await fetch("https://www.polaraccesslink.com/v3/users", { method: "POST", headers: { Authorization: `Bearer ${tok.access_token}`, "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ "member-id": st.m }) });
+        // Polar : enregistrement de l'utilisateur AccessLink (409 = déjà enregistré).
+        if (provider === "polar") await fetch("https://www.polaraccesslink.com/v3/users", { method: "POST", headers: { Authorization: `Bearer ${tok.access_token}`, "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ "member-id": st.m }) });
       } else if (provider === "withings") {
         const r = await fetch(cfg.token, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ action: "requesttoken", grant_type: "authorization_code", client_id: id, client_secret: secret, code, redirect_uri: redirectUri(provider) }) });
         const j = await r.json();
@@ -97,7 +99,9 @@ Deno.serve(async (req) => {
         if (!r.ok) throw new Error(JSON.stringify(tok));
       }
       const expiresAt = tok.expires_at ? new Date(Number(tok.expires_at) * 1000) : tok.expires_in ? new Date(Date.now() + Number(tok.expires_in) * 1000) : null;
-      const externalId = String(tok.x_user_id ?? tok.userid ?? (tok.athlete as { id?: number })?.id ?? "");
+      // Suunto : le nom d'utilisateur est dans le JWT (claim « user »), nécessaire pour les webhooks.
+      const jwtUser = provider === "suunto" ? (() => { try { return JSON.parse(atob(String(tok.access_token).split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))).user ?? ""; } catch { return ""; } })() : "";
+      const externalId = String(tok.x_user_id ?? tok.userid ?? (tok.athlete as { id?: number })?.id ?? jwtUser ?? "");
       const { error } = await admin.from("connexions_montres").upsert({
         foyer_id: st.f, member_id: st.m, provider, external_id: externalId, access_token: String(tok.access_token), refresh_token: tok.refresh_token ? String(tok.refresh_token) : null,
         expires_at: expiresAt?.toISOString() ?? null, scope: String(tok.scope ?? cfg.scope), last_error: null,
@@ -124,6 +128,7 @@ Deno.serve(async (req) => {
     const { data: cx } = await admin.from("connexions_montres").select("id, provider, access_token").eq("id", body.id).eq("foyer_id", compte?.foyer_id ?? "").maybeSingle();
     if (!cx) return json({ error: "Connexion introuvable" }, 404);
     if (cx.provider === "strava") await fetch("https://www.strava.com/oauth/revoke", { method: "POST", headers: { Authorization: `Bearer ${cx.access_token}` } }).catch(() => {});
+    if (cx.provider === "whoop") await fetch("https://api.prod.whoop.com/developer/v2/user/access", { method: "DELETE", headers: { Authorization: `Bearer ${cx.access_token}` } }).catch(() => {});
     await admin.from("connexions_montres").delete().eq("id", cx.id);
     return json({ ok: true });
   }

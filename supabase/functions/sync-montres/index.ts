@@ -22,8 +22,12 @@ async function refresh(cx: Cx, admin: ReturnType<typeof createClient>): Promise<
     const j = await r.json();
     if (j.status !== 0) throw new Error(`refresh ${JSON.stringify(j)}`);
     tok = j.body;
+  } else if (cx.provider === "suunto") {
+    const r = await fetch("https://cloudapi-oauth.suunto.com/oauth/token", { method: "POST", headers: { Authorization: `Basic ${btoa(`${id}:${secret}`)}`, "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ grant_type: "refresh_token", refresh_token: cx.refresh_token }) });
+    tok = await r.json();
+    if (!r.ok) throw new Error(`refresh ${JSON.stringify(tok)}`);
   } else {
-    const endpoint = cx.provider === "oura" ? "https://api.ouraring.com/oauth/token" : "https://www.strava.com/oauth/token";
+    const endpoint = { oura: "https://api.ouraring.com/oauth/token", strava: "https://www.strava.com/oauth/token", whoop: "https://api.prod.whoop.com/oauth/oauth2/token" }[cx.provider] ?? "";
     const r = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ grant_type: "refresh_token", refresh_token: cx.refresh_token, client_id: id, client_secret: secret }) });
     tok = await r.json();
     if (!r.ok) throw new Error(`refresh ${JSON.stringify(tok)}`);
@@ -75,6 +79,54 @@ async function fetchStrava(token: string, fromTs: number): Promise<Row[]> {
   return rows;
 }
 
+// WHOOP : un « cycle » physiologique par jour (kilojoules → kcal, pas), plus les entraînements.
+async function fetchWhoop(token: string, fromIso: string): Promise<Row[]> {
+  const h = { Authorization: `Bearer ${token}` };
+  const rows: Row[] = [];
+  const c = await fetch(`https://api.prod.whoop.com/developer/v2/cycle?start=${encodeURIComponent(fromIso)}&limit=10`, { headers: h });
+  if (!c.ok) throw new Error(`whoop ${c.status}`);
+  for (const cy of (await c.json()).records ?? []) {
+    if (cy.score_state !== "SCORED" || !cy.score) continue;
+    const date = localDate(cy.start, cy.timezone_offset);
+    rows.push({ date, source: "whoop", kind: "journee", ref: "", label: "Journée (WHOOP)", kcal: null, kcal_total: Math.round(cy.score.kilojoule / 4.184), steps: cy.step_count ?? null, minutes: null, distance_m: null, raw: { id: cy.id, strain: cy.score.strain } });
+  }
+  const w = await fetch(`https://api.prod.whoop.com/developer/v2/activity/workout?start=${encodeURIComponent(fromIso)}&limit=25`, { headers: h });
+  if (w.ok) {
+    for (const a of (await w.json()).records ?? []) {
+      if (a.score_state !== "SCORED" || !a.score) continue;
+      rows.push({ date: localDate(a.start, a.timezone_offset), source: "whoop", kind: "seance", ref: String(a.id), label: a.sport_name ?? "Entraînement", kcal: Math.round(a.score.kilojoule / 4.184), kcal_total: null, steps: null, minutes: Math.round((new Date(a.end).getTime() - new Date(a.start).getTime()) / 60000) || null, distance_m: a.score.distance_meter != null ? Math.round(a.score.distance_meter) : null, raw: { id: a.id, strain: a.score.strain } });
+    }
+  }
+  return rows;
+}
+const localDate = (isoUtc: string, offset = "+00:00") => { const m = String(offset).match(/([+-])(\d{2}):(\d{2})/); const sign = m?.[1] === "-" ? -1 : 1; const mins = m ? sign * (Number(m[2]) * 60 + Number(m[3])) : 0; return new Date(new Date(isoUtc).getTime() + mins * 60000).toISOString().slice(0, 10); };
+
+// Suunto 247 : statistiques journalières (pas, énergie en joules), groupées par type puis par source.
+// GET https://cloudapi.suunto.com/v2/247/daily-activity-statistics?startdate=…&enddate=… (en-tête Ocp-Apim-Subscription-Key requis).
+async function fetchSuunto(token: string, from: string, to: string): Promise<Row[]> {
+  const key = Deno.env.get("SUUNTO_SUBSCRIPTION_KEY") ?? "";
+  if (!key) throw new Error("secret SUUNTO_SUBSCRIPTION_KEY manquant");
+  const r = await fetch(`https://cloudapi.suunto.com/v2/247/daily-activity-statistics?startdate=${from}T00:00:00&enddate=${to}T23:59:59`, { headers: { Authorization: `Bearer ${token}`, "Ocp-Apim-Subscription-Key": key } });
+  if (!r.ok) throw new Error(`suunto ${r.status}`);
+  const stats = await r.json();
+  const byDate = new Map<string, Row>();
+  for (const st of Array.isArray(stats) ? stats : []) {
+    const name = String(st.Name ?? "").toLowerCase();
+    for (const src of st.Sources ?? []) {
+      for (const smp of src.Samples ?? []) {
+        const date = String(smp.TimeISO8601 ?? "").slice(0, 10);
+        const v = Number(smp.Value);
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !isFinite(v)) continue;
+        const row = byDate.get(date) ?? { date, source: "suunto", kind: "journee" as const, ref: "", label: "Journée (Suunto)", kcal: null, kcal_total: null, steps: null, minutes: null, distance_m: null, raw: {} };
+        if (name === "stepcount") row.steps = Math.max(row.steps ?? 0, Math.round(v));
+        if (name === "energyconsumption") row.kcal_total = Math.max(row.kcal_total ?? 0, Math.round(v / 4184));
+        byDate.set(date, row);
+      }
+    }
+  }
+  return [...byDate.values()];
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   if (req.method !== "POST") return json({ error: "Méthode non autorisée" }, 405);
@@ -97,6 +149,8 @@ Deno.serve(async (req) => {
       if (cx.provider === "withings") rows = await fetchWithings(token, from, to);
       if (cx.provider === "oura") rows = await fetchOura(token, from, to);
       if (cx.provider === "strava") rows = await fetchStrava(token, Math.floor((Date.now() - 2 * 864e5) / 1000));
+      if (cx.provider === "whoop") rows = await fetchWhoop(token, new Date(Date.now() - 2 * 864e5).toISOString());
+      if (cx.provider === "suunto") rows = await fetchSuunto(token, from, to);
       if (rows.length) {
         const { error } = await admin.from("activites").upsert(rows.map((r) => ({ ...r, foyer_id: cx.foyer_id, member_id: cx.member_id })), { onConflict: "member_id,date,source,ref" });
         if (error) throw error;

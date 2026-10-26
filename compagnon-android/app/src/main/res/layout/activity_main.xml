@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:padding="24dp" android:gravity="center_horizontal">
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Nutri Semaine Compagnon" android:textSize="22sp" android:textStyle="bold" android:layout_marginTop="32dp"/>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Envoie automatiquement vos pas et calories (Health Connect) vers Nutri Semaine, pour toutes les montres : Samsung, Garmin, Pixel, Xiaomi, Huawei, Suunto…" android:layout_marginTop="12dp"/>
+    <TextView android:id="@+id/status" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:textSize="15sp"/>
+    <Button android:id="@+id/btnPermissions" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Autoriser l'accès à Health Connect" android:layout_marginTop="20dp"/>
+    <Button android:id="@+id/btnSync" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Envoyer maintenant" android:layout_marginTop="8dp"/>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Appairage manuel (si le lien automatique n'a pas fonctionné) : collez l'adresse d'import." android:layout_marginTop="28dp" android:textSize="13sp"/>
+    <EditText android:id="@+id/inputUrl" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="https://…/import-activite?t=…" android:inputType="textUri"/>
+    <Button android:id="@+id/btnSave" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Enregistrer"/>
+</LinearLayout>

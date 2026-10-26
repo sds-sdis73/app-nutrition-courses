@@ -427,7 +427,7 @@ textarea.input { resize: vertical; min-height: 72px; }
 // ---------------------------------------------------------------------------
 const APP_NAME = 'Nutri Semaine'; // titre provisoire
 // À incrémenter à chaque publication, avec la même valeur dans version.json.
-const APP_VERSION = '2026-10-27.2';
+const APP_VERSION = '2026-10-27.3';
 const SUPABASE_URL = 'https://svugddkrptqpjmywhorb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2dWdkZGtycHRxcGpteXdob3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MjU5NDgsImV4cCI6MjEwODUwMTk0OH0.63RETgf7rbVMquGV-7ooY3qn-Qf31uVCA3ZBfqBvFcI';
 const OFF = 'https://world.openfoodfacts.org/api/v2';
@@ -3422,7 +3422,8 @@ const Push = {
   },
 };
 // Montres & activité : jeton du pont téléphone, guides, connexions OAuth, import CSV.
-const PROVIDERS = { polar: 'Polar', withings: 'Withings', oura: 'Oura', strava: 'Strava' };
+const PROVIDERS = { polar: 'Polar', withings: 'Withings', oura: 'Oura', whoop: 'WHOOP', suunto: 'Suunto', strava: 'Strava' };
+const PROVIDER_NOTE = { strava: 'abonnement Strava requis · séances uniquement', suunto: 'accès partenaire Suunto requis', whoop: 'gratuit', polar: 'gratuit', withings: 'gratuit', oura: 'gratuit' };
 const importUrl = (token) => `${SUPABASE_URL}/functions/v1/import-activite?t=${token}`;
 function openMontres() {
   let memberId = journalMember()?.id;
@@ -3443,7 +3444,11 @@ function openMontres() {
       <div class="card" style="padding:14px;margin:10px 0">
         <div class="nt-title">Pont téléphone (toutes les montres)</div>
         <p class="muted small" style="margin:4px 0 10px">Apple Watch, Garmin, Samsung, Pixel/Fitbit, Xiaomi/Amazfit, Huawei, Suunto, Coros, Polar, Oura, Lotus… : leur application écrit dans <b>Apple Santé</b> (iPhone) ou <b>Health Connect</b> (Android). Une automatisation envoie chaque soir pas et calories à cette adresse personnelle.</p>
-        ${jeton ? `<div class="row"><input class="input grow small" readonly value="${esc(importUrl(jeton.token))}" aria-label="Adresse d'import"><button class="btn small" data-x="copy-url">${ICON.copy}</button></div>
+        ${jeton ? `<div class="grid2" style="margin-bottom:10px">
+            <a class="btn primary" href="intent://pair?t=${esc(jeton.token)}#Intent;scheme=nutrisemaine;package=fr.nutrisemaine.compagnon;S.browser_fallback_url=${encodeURIComponent('https://github.com/sds-sdis73/app-nutrition-courses/tree/main/compagnon-android')};end">${ICON.link} Lier ce téléphone Android</a>
+            <a class="btn primary" href="nutrisemaine://pair?t=${esc(jeton.token)}">${ICON.link} Lier cet iPhone</a></div>
+          <p class="muted small" style="margin:0 0 10px">Avec l'application <b>Nutri Semaine Compagnon</b> installée, un tap suffit : elle demande l'accès santé puis envoie les données toute seule. Sans elle, utilisez les guides ci-dessous.</p>
+          <div class="row"><input class="input grow small" readonly value="${esc(importUrl(jeton.token))}" aria-label="Adresse d'import"><button class="btn small" data-x="copy-url">${ICON.copy}</button></div>
           <p class="muted small" style="margin:6px 0 0">${jeton.last_used_at ? `Dernière réception : ${new Date(jeton.last_used_at).toLocaleString('fr-FR')}${jeton.last_payload?.steps != null ? ` · ${jeton.last_payload.steps} pas` : ''}` : 'Aucune donnée reçue pour l\'instant.'} <button class="btn small" data-x="refresh" style="border:0;padding:0 6px;min-height:0;color:var(--primary-strong)">actualiser</button></p>
           <details class="ndetails"><summary>Guide iPhone / Apple Watch (Raccourci)</summary><pre class="guide">${esc(ios)}</pre>
             <p class="muted small">Alternative sans réglage : l'app « Health Auto Export » (payante) avec une automatisation REST API vers cette adresse, format JSON, métriques pas / énergie active / énergie au repos.</p></details>
@@ -3458,8 +3463,8 @@ L'application reconnaît les champs du plugin (COUNT_TOTAL, ACTIVE_CALORIES_TOTA
       </div>
       <div class="card" style="padding:14px;margin:10px 0">
         <div class="nt-title">Connexion directe au compte</div>
-        <p class="muted small" style="margin:4px 0 10px">Sans passer par le téléphone : Polar, Withings, Oura (gratuit) et Strava (abonnement Strava requis). Garmin et Fitbit n'ouvrent plus d'accès direct : utilisez le pont téléphone.</p>
-        ${Object.entries(PROVIDERS).map(([k, l]) => { const c = cx.find((x) => x.provider === k); return `<div class="nt-row"><span><b>${l}</b>${c ? `<br><span class="muted small">${c.last_error ? `erreur : ${esc(c.last_error)}` : c.last_sync_at ? `synchronisé le ${new Date(c.last_sync_at).toLocaleString('fr-FR')}` : 'connecté, en attente de la première synchro'}</span>` : ''}</span>
+        <p class="muted small" style="margin:4px 0 10px">Sans passer par le téléphone. Garmin, Fitbit/Pixel, Samsung, Xiaomi, Huawei, Coros et Lotus n'ouvrent pas d'accès direct aux particuliers : utilisez le pont téléphone ci-dessus.</p>
+        ${Object.entries(PROVIDERS).map(([k, l]) => { const c = cx.find((x) => x.provider === k); return `<div class="nt-row"><span><b>${l}</b> <span class="muted small">· ${PROVIDER_NOTE[k]}</span>${c ? `<br><span class="muted small">${c.last_error ? `erreur : ${esc(c.last_error)}` : c.last_sync_at ? `synchronisé le ${new Date(c.last_sync_at).toLocaleString('fr-FR')}` : 'connecté, en attente de la première synchro'}</span>` : ''}</span>
           ${c ? `<button class="btn small" data-x="sync">Synchroniser</button><button class="btn small danger" data-x="disconnect" data-id="${c.id}">Déconnecter</button>` : `<button class="btn small primary" data-x="connect" data-p="${k}">Connecter</button>`}</div>`; }).join('')}
       </div>
       <div class="card" style="padding:14px;margin:10px 0">
