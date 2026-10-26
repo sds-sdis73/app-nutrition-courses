@@ -8,6 +8,7 @@ En ligne : https://sds-sdis73.github.io/app-nutrition-courses/
 
 - `index.html` : toute l'application (HTML, CSS et JavaScript, sans étape de build)
 - `version.json` : version publiée, relue par l'app pour se recharger après une mise à jour
+- `aliments.json` : valeurs nutritionnelles de 3 484 aliments, extraites de la table Ciqual 2025 de l'Anses (Licence Ouverte Etalab 2.0), pour 100 g : énergie, protéines, glucides, sucres, lipides, AG saturés, fibres, sel, calcium, fer, vitamine C
 - `manifest.webmanifest`, `icon-*.png`, `apple-touch-icon.png` : installation sur l'écran d'accueil
 - `supabase/functions/` : fonctions serveur déployées sur Supabase
   - `import-recipe` : import d'une recette depuis une URL (JSON-LD schema.org/Recipe)

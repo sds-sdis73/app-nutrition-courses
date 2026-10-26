@@ -62,7 +62,7 @@ img { display: block; max-width: 100%; }
 main { padding: 4px 16px calc(var(--nav-h) + var(--safe-b) + 24px); max-width: 760px; margin: 0 auto; }
 .tabbar {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
-  display: grid; grid-template-columns: repeat(5, 1fr);
+  display: grid; grid-template-columns: repeat(6, 1fr);
   height: calc(var(--nav-h) + var(--safe-b)); padding-bottom: var(--safe-b);
   background: var(--surface); border-top: 1px solid var(--border);
 }
@@ -72,7 +72,7 @@ main { padding: 4px 16px calc(var(--nav-h) + var(--safe-b) + 24px); max-width: 7
 }
 .tabbar button svg { width: 24px; height: 24px; }
 .tabbar button[aria-current="page"] { color: var(--primary-strong); }
-.tabbar button[aria-current="page"] svg { background: var(--primary-soft); border-radius: 999px; padding: 2px 14px; box-sizing: content-box; margin: -2px 0; }
+.tabbar button[aria-current="page"] svg { background: var(--primary-soft); border-radius: 999px; padding: 2px 10px; box-sizing: content-box; margin: -2px 0; }
 body.logged-out .tabbar, body.logged-out [data-act="settings"] { display: none; }
 .auth { max-width: 400px; margin: 4vh auto 0; }
 .auth .logo { width: 72px; height: 72px; border-radius: 20px; background: var(--primary); color: #fff; display: grid; place-items: center; margin: 0 auto 14px; }
@@ -81,6 +81,52 @@ body.logged-out .tabbar, body.logged-out [data-act="settings"] { display: none; 
 .auth > p { text-align: center; margin: 0 0 20px; }
 .extra-form { display: grid; grid-template-columns: 1fr 76px 44px; gap: 6px; }
 .extra-form select { grid-column: 1 / -1; }
+.nutri-link { grid-column: 1 / -1; display: flex; gap: 6px; align-items: center; border: 0; background: none; padding: 0 0 2px; text-align: left; font-size: 13px; color: var(--muted); }
+.nutri-link svg { width: 15px; height: 15px; flex: none; color: var(--primary); }
+.warn { color: var(--mediocre); font-weight: 700; }
+.ntable { background: var(--surface); border-radius: 14px; box-shadow: var(--shadow); padding: 10px 14px; margin: 10px 0; }
+.nt-title { font-weight: 800; margin-bottom: 4px; }
+.nt-row { display: flex; gap: 8px; align-items: baseline; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 15px; }
+.nt-row:last-child { border-bottom: 0; }
+.nt-row > span:first-child { flex: 1; }
+.nt-row.sub > span:first-child { padding-left: 14px; color: var(--muted); }
+.nt-row .pct { min-width: 48px; text-align: right; color: var(--muted); font-size: 13px; }
+.nt-row .pct.over { color: var(--mauvais); font-weight: 700; }
+.macro-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.macro-strip div { background: var(--primary-soft); border-radius: 12px; padding: 8px 4px; text-align: center; }
+.macro-strip b { display: block; font-size: 14px; }
+.macro-strip span { font-size: 11px; color: var(--muted); }
+.ndetails { margin: 8px 0; }
+.ndetails summary { cursor: pointer; font-weight: 700; padding: 8px 0; color: var(--primary-strong); }
+.ing-nutri { list-style: none; padding: 0; margin: 0; }
+.ing-nutri li { padding: 8px 0; border-bottom: 1px solid var(--border); }
+.food-results { max-height: 52vh; overflow-y: auto; }
+.food-row { display: flex; gap: 10px; align-items: center; width: 100%; border: 0; border-bottom: 1px solid var(--border); background: none; text-align: left; padding: 10px 2px; }
+.food-row .grow > * { display: block; }
+.bar { height: 8px; background: var(--surface-2); border-radius: 4px; overflow: hidden; margin-top: 4px; }
+.bar i { display: block; height: 100%; border-radius: 4px; background: var(--sage-light); }
+.bar.ok i { background: var(--primary); } .bar.over i { background: var(--mauvais); } .bar.low i { background: var(--mediocre); }
+.mbar { padding: 6px 0; }
+.mbar.sub .row > span:first-child { padding-left: 14px; color: var(--muted); }
+.kcal-card { background: var(--surface); border-radius: 16px; box-shadow: var(--shadow); padding: 14px; margin: 10px 0; }
+.kcal-card .big { font-size: 28px; }
+.kcal-card .left { text-align: center; background: var(--primary-soft); border-radius: 12px; padding: 6px 10px; }
+.kcal-card .left b { display: block; font-size: 18px; color: var(--primary-strong); }
+.kcal-card .left span { font-size: 11px; color: var(--muted); }
+.kcal-card .left.neg b { color: var(--mauvais); }
+.slot-block { background: var(--surface); border-radius: 16px; box-shadow: var(--shadow); padding: 6px 6px 6px 14px; margin: 10px 0; }
+.slot-block h3 { font-size: 16px; margin: 0; }
+.entry { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid var(--border); }
+.entry .nm { font-weight: 600; }
+.week-chart { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; background: var(--surface); border-radius: 16px; box-shadow: var(--shadow); padding: 12px 8px; }
+.wc-col { border: 0; background: none; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0; }
+.wc-col.today .wc-day { color: var(--primary-strong); font-weight: 800; }
+.wc-val { font-size: 10px; color: var(--muted); height: 14px; }
+.wc-bar { position: relative; width: 70%; height: 140px; background: var(--surface-2); border-radius: 8px; overflow: hidden; display: flex; align-items: flex-end; }
+.wc-bar i { width: 100%; background: var(--primary); border-radius: 8px 8px 0 0; }
+.wc-bar i.over { background: var(--mauvais); } .wc-bar i.low { background: var(--mediocre); }
+.wc-bar em { position: absolute; left: 0; right: 0; height: 2px; background: var(--text); opacity: .55; }
+.wc-day { font-size: 12px; color: var(--muted); font-weight: 600; }
 .badge-extra { font-size: 11px; font-weight: 700; color: var(--primary-strong); background: var(--primary-soft); border-radius: 6px; padding: 1px 6px; }
 
 /* Composants communs */
@@ -330,6 +376,7 @@ textarea.input { resize: vertical; min-height: 72px; }
   <button data-act="tab" data-tab="scan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M10 8v8M13 8v8M17 8v8"/></svg>Scan</button>
   <button data-act="tab" data-tab="recettes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/><path d="M9 7h7M9 11h5"/></svg>Recettes</button>
   <button data-act="tab" data-tab="planning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h3M8 18h3M14 14h2"/></svg>Planning</button>
+  <button data-act="tab" data-tab="suivi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>Suivi</button>
   <button data-act="tab" data-tab="courses"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>Courses</button>
   <button data-act="tab" data-tab="batch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1.1-2.1-.2-4 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.2.4-2.3 1-3.3.3 1.6 1.4 2.8 2.5 2.8z"/></svg>Batch</button>
 </nav>
@@ -343,11 +390,11 @@ textarea.input { resize: vertical; min-height: 72px; }
 // ---------------------------------------------------------------------------
 const APP_NAME = 'Nutri Semaine'; // titre provisoire
 // À incrémenter à chaque publication, avec la même valeur dans version.json.
-const APP_VERSION = '2026-10-25.2';
+const APP_VERSION = '2026-10-26.1';
 const SUPABASE_URL = 'https://svugddkrptqpjmywhorb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2dWdkZGtycHRxcGpteXdob3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MjU5NDgsImV4cCI6MjEwODUwMTk0OH0.63RETgf7rbVMquGV-7ooY3qn-Qf31uVCA3ZBfqBvFcI';
 const OFF = 'https://world.openfoodfacts.org/api/v2';
-const OFF_FIELDS = 'code,product_name,product_name_fr,brands,quantity,image_front_url,image_front_small_url,nutriscore_grade,nutriscore_score,nutriscore_data,nova_group,additives_tags,labels_tags,categories_tags,stores_tags,nutriments';
+const OFF_FIELDS = 'code,product_name,product_name_fr,brands,quantity,serving_quantity,serving_size,image_front_url,image_front_small_url,nutriscore_grade,nutriscore_score,nutriscore_data,nova_group,additives_tags,labels_tags,categories_tags,stores_tags,nutriments';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ---------------------------------------------------------------------------
@@ -457,6 +504,11 @@ const state = {
   plan: [],
   checks: {},
   extras: [],
+  members: [],
+  journal: [],
+  day: new Date(),
+  suiviMember: store.get('suiviMember', null),
+  suiviView: 'jour',
   recipeQuery: '',
   recipeChip: 'tous',
   scanFilter: 'tous',
@@ -476,19 +528,23 @@ const T = {
   links: 'liens_produits',
   checks: 'courses_coches',
   extras: 'courses_ajouts',
+  members: 'foyer_membres',
+  journal: 'journal',
 };
 const PHOTO_BUCKET = 'photos-recettes';
 const me = () => state.user?.id;
 
 const Data = {
   async loadAll() {
-    const [s, r, l, sc] = await Promise.all([
+    const [s, r, l, sc, mb] = await Promise.all([
       db.from(T.settings).select('*').maybeSingle(),
       db.from(T.recipes).select('*').order('updated_at', { ascending: false }),
       db.from(T.links).select('*'),
       db.from(T.scans).select('*').order('scanned_at', { ascending: false }).limit(150),
+      db.from(T.members).select('*').order('ordre').order('created_at'),
     ]);
-    for (const res of [s, r, l, sc]) if (res.error) throw res.error;
+    for (const res of [s, r, l, sc, mb]) if (res.error) throw res.error;
+    state.members = mb.data;
     if (s.data) state.settings = s.data;
     else {
       const ins = await db.from(T.settings).insert({ user_id: me() }).select().single();
@@ -501,15 +557,40 @@ const Data = {
   },
   async loadWeek() {
     const week = isoDate(state.week);
-    const [p, c, x] = await Promise.all([
+    const [p, c, x, j] = await Promise.all([
       db.from(T.plan).select('*').eq('week', week),
       db.from(T.checks).select('*').eq('week', week),
       db.from(T.extras).select('*').eq('week', week).order('created_at'),
+      db.from(T.journal).select('*').gte('date', week).lte('date', isoDate(addDays(state.week, 6))).order('created_at'),
     ]);
-    for (const res of [p, c, x]) if (res.error) throw res.error;
+    for (const res of [p, c, x, j]) if (res.error) throw res.error;
     state.plan = p.data;
     state.checks = Object.fromEntries(c.data.map((r) => [r.item, r.checked]));
     state.extras = x.data;
+    state.journal = j.data;
+  },
+  async saveMember(m) {
+    const { data, error } = await db.from(T.members).upsert({ ...m, user_id: me() }).select().single();
+    if (error) throw error;
+    const i = state.members.findIndex((x) => x.id === data.id);
+    if (i >= 0) state.members[i] = data; else state.members.push(data);
+    return data;
+  },
+  async deleteMember(id) {
+    const { error } = await db.from(T.members).delete().eq('id', id);
+    if (error) throw error;
+    state.members = state.members.filter((x) => x.id !== id);
+    state.journal = state.journal.filter((x) => x.member_id !== id);
+  },
+  async addJournal(entry) {
+    const { data, error } = await db.from(T.journal).insert({ ...entry, user_id: me() }).select().single();
+    if (error) throw error;
+    state.journal.push(data);
+  },
+  async deleteJournal(id) {
+    const { error } = await db.from(T.journal).delete().eq('id', id);
+    if (error) throw error;
+    state.journal = state.journal.filter((x) => x.id !== id);
   },
   async addExtra(name, qty, aisle) {
     const { data, error } = await db.from(T.extras).insert({ user_id: me(), week: isoDate(state.week), name, qty: qty || null, aisle }).select().single();
@@ -542,8 +623,8 @@ const Data = {
     state.recipes = state.recipes.filter((r) => r.id !== id);
     state.plan = state.plan.filter((m) => m.recipe_id !== id);
   },
-  async setMeal(day, slot, recipe_id, servings) {
-    const row = { user_id: me(), week: isoDate(state.week), day, slot, recipe_id, servings };
+  async setMeal(day, slot, recipe_id, servings, extra = {}) {
+    const row = { user_id: me(), week: isoDate(state.week), day, slot, recipe_id, servings, eaters: extra.eaters ?? null, guests: extra.guests ?? 0 };
     const { data, error } = await db.from(T.plan).upsert(row, { onConflict: 'user_id,week,day,slot' }).select().single();
     if (error) throw error;
     state.plan = state.plan.filter((m) => !(m.day === day && m.slot === slot));
@@ -769,6 +850,232 @@ async function findAlternatives(p, current) {
 }
 
 // ---------------------------------------------------------------------------
+// Nutrition : table Ciqual (Anses), quantités en grammes, besoins du foyer
+// ---------------------------------------------------------------------------
+const NUTRI_KEYS = [
+  { k: 'kcal', label: 'Énergie', unit: 'kcal', main: true },
+  { k: 'prot', label: 'Protéines', unit: 'g', main: true },
+  { k: 'gluc', label: 'Glucides', unit: 'g', main: true },
+  { k: 'suc', label: 'dont sucres', unit: 'g', sub: true, max: true },
+  { k: 'lip', label: 'Lipides', unit: 'g', main: true },
+  { k: 'ags', label: 'dont AG saturés', unit: 'g', sub: true, max: true },
+  { k: 'fib', label: 'Fibres', unit: 'g', main: true },
+  { k: 'sel', label: 'Sel', unit: 'g', max: true },
+  { k: 'ca', label: 'Calcium', unit: 'mg' },
+  { k: 'fe', label: 'Fer', unit: 'mg' },
+  { k: 'vitc', label: 'Vitamine C', unit: 'mg' },
+];
+const zeroN = () => Object.fromEntries(NUTRI_KEYS.map(({ k }) => [k, 0]));
+function addN(a, b, f = 1) { for (const { k } of NUTRI_KEYS) a[k] += (Number(b?.[k]) || 0) * f; return a; }
+const scaleN = (n, f) => addN(zeroN(), n, f);
+
+const CQ = {
+  list: [], byCode: new Map(), ready: false, loading: null,
+  load() {
+    if (this.loading) return this.loading;
+    this.loading = fetch('aliments.json').then((r) => r.json()).then((d) => {
+      const idx = Object.fromEntries(d.fields.map((f, i) => [f, i]));
+      this.list = d.aliments.map((a) => {
+        const n = {};
+        for (const { k } of NUTRI_KEYS) n[k] = a[idx[k]] ?? 0;
+        const key = ingKey(a[idx.nom]);
+        return { code: a[idx.code], nom: a[idx.nom], groupe: a[idx.groupe], n, key, words: key.split(' '), noKcal: a[idx.kcal] == null };
+      });
+      this.byCode = new Map(this.list.map((x) => [x.code, x]));
+      this.ready = true;
+    }).catch((e) => { this.loading = null; throw e; });
+    return this.loading;
+  },
+  search(q, limit = 30) {
+    const words = ingKey(q).split(' ').filter((w) => w.length > 1 && !STOP.has(w));
+    if (!words.length) return [];
+    const pref = PREFERRED[ingKey(q)];
+    return this.list
+      .map((a) => ({ a, s: matchScore(words, a) + (a.nom === pref ? 100 : 0) }))
+      .filter((x) => x.s > 0)
+      .sort((x, y) => y.s - x.s)
+      .slice(0, limit)
+      .map((x) => x.a);
+  },
+};
+const STOP = new Set(['de', 'du', 'des', 'la', 'le', 'les', 'l', 'd', 'a', 'au', 'aux', 'en', 'et', 'un', 'une', 'pour', 'avec', 'frais', 'fraiche', 'gros', 'petit', 'petite', 'grosse', 'bio', 'beau', 'belle', 'bien', 'mur', 'mure']);
+const COMPOSITE = /plats composes|sandwich|pizza|feuilletes|soupes|entrees|desserts|viennoiseries|gateaux|biscuits|confiserie|aliments infantiles|sauces/;
+function matchScore(words, a) {
+  let s = 0;
+  let hits = 0;
+  for (const w of words) {
+    if (a.words.includes(w)) { s += 3; hits++; }
+    else if (a.words.some((x) => x.startsWith(w) && w.length >= 4)) { s += 1.5; hits++; }
+  }
+  if (!hits) return 0;
+  if (a.words[0] === words[0]) s += 2.5;
+  if (hits < words.length) s -= (words.length - hits) * 1.5;
+  s -= Math.max(0, a.words.length - words.length) * 0.25;
+  if (/\bcru\b|\bcrue\b/.test(a.key)) s += 1.2;
+  if (/\bnature\b/.test(a.key)) s += 0.4;
+  if (COMPOSITE.test(norm(a.groupe))) s -= 2;
+  if (a.noKcal) s -= 3;
+  // En recette, les légumineuses sont le plus souvent en conserve, prêtes à l'emploi.
+  if (a.groupe === 'légumineuses' && /appertise/.test(a.key)) s += 2;
+  return s;
+}
+// Aliment Ciqual retenu par défaut pour les noms courants mais ambigus.
+const PREFERRED = {
+  farine: 'Farine de blé tendre ou froment T55 (pour pains)',
+  lait: 'Lait demi-écrémé (aliment moyen)',
+  'creme fraiche': 'Crème 30% MG, épaisse, rayon frais',
+  'creme fraiche epaisse': 'Crème 30% MG, épaisse, rayon frais',
+  'creme liquide': 'Crème 30% MG, fluide, UHT',
+  creme: 'Crème 30% MG, fluide, UHT',
+  pain: 'Pain blanc (par ex. : baguette, boule…)',
+  baguette: 'Pain blanc (par ex. : baguette, boule…)',
+  beurre: 'Beurre à 80% MG minimum, doux',
+  'beurre doux': 'Beurre à 80% MG minimum, doux',
+  sucre: 'Sucre blanc',
+};
+const matchCache = new Map();
+function autoMatch(name) {
+  const k = ingKey(name);
+  if (!matchCache.has(k)) {
+    const pref = PREFERRED[k] && CQ.list.find((a) => a.nom === PREFERRED[k]);
+    matchCache.set(k, pref || CQ.search(name, 1)[0] || null);
+  }
+  return matchCache.get(k);
+}
+
+// Poids moyens (g) d'une pièce ou d'une unité ménagère ; modifiables ingrédient par ingrédient.
+const PIECE_G = [
+  ['tomate cerise', 15], ['citron vert', 60], ['pomme de terre', 150], ['patate douce', 250], ['chou fleur', 600], ['cuisse de poulet', 200],
+  ['blanc de poulet', 130], ['filet de poulet', 130], ['escalope', 130], ['steak', 125], ['oignon', 100], ['echalote', 25], ['ail', 5],
+  ['carotte', 100], ['courgette', 200], ['tomate', 120], ['poivron', 150], ['aubergine', 250], ['citron', 100], ['orange', 150],
+  ['pomme', 150], ['poire', 150], ['banane', 120], ['avocat', 170], ['concombre', 300], ['poireau', 150], ['oeuf', 55],
+  ['champignon', 20], ['brocoli', 300], ['salade', 300], ['laitue', 300], ['yaourt', 125], ['saucisse', 60], ['kiwi', 80],
+  ['peche', 150], ['abricot', 45], ['mangue', 300], ['navet', 120], ['betterave', 150], ['fenouil', 250], ['chou', 800],
+];
+const UNIT_G = { 'c. à s.': 15, 'c. à c.': 5, pincée: 0.5, gousse: 5, tranche: 30, botte: 50, sachet: 10, boîte: 400, pot: 125, verre: 200 };
+function defaultUnitGrams(unit, name) {
+  if (unit === 'pièce' || unit === '') {
+    const k = ` ${ingKey(name)} `;
+    const hit = PIECE_G.find(([w]) => k.includes(` ${ingKey(w)} `) || k.includes(` ${ingKey(w)}`));
+    return hit ? hit[1] : 100;
+  }
+  return UNIT_G[unit] ?? 100;
+}
+const MASS_UNITS = { g: 1, kg: 1000, ml: 1, cl: 10, l: 1000 };
+const qtyNum = (q) => { const v = parseFloat(String(q ?? '').replace(',', '.')); return isFinite(v) && v > 0 ? v : null; };
+function ingGrams(ing) {
+  const q = qtyNum(ing.qty);
+  if (q == null) return null;
+  if (ing.unit in MASS_UNITS) return q * MASS_UNITS[ing.unit];
+  return q * (Number(ing.gpu) || defaultUnitGrams(ing.unit || '', ing.name));
+}
+// Valeurs pour 100 g : produit scanné (Open Food Facts) ou aliment Ciqual choisi / reconnu.
+function ingSource(ing) {
+  if (ing.n && ing.src !== 'ciqual') return { type: 'off', label: ing.name, n: ing.n };
+  const a = ing.cq ? CQ.byCode.get(ing.cq) : autoMatch(ing.name);
+  return a ? { type: 'ciqual', label: a.nom, n: a.n, code: a.code, auto: !ing.cq } : null;
+}
+function offPer100(p) {
+  const n = p.nutriments || {};
+  const v = (k, f = 1) => (typeof n[k] === 'number' ? n[k] * f : 0);
+  return { kcal: v('energy-kcal_100g'), prot: v('proteins_100g'), gluc: v('carbohydrates_100g'), suc: v('sugars_100g'), lip: v('fat_100g'), ags: v('saturated-fat_100g'), fib: v('fiber_100g'), sel: v('salt_100g'), ca: v('calcium_100g', 1000), fe: v('iron_100g', 1000), vitc: v('vitamin-c_100g', 1000) };
+}
+function recipeNutrition(r) {
+  const total = zeroN();
+  const lines = (r.ingredients || []).map((ing) => {
+    const g = ingGrams(ing);
+    const src = ingSource(ing);
+    const n = g != null && src ? scaleN(src.n, g / 100) : null;
+    if (n) addN(total, n);
+    return { ing, g, src, n };
+  });
+  const servings = r.servings || 1;
+  return { total, perPortion: scaleN(total, 1 / servings), lines, missing: lines.filter((l) => !l.n).length };
+}
+
+// Besoins : Mifflin-St Jeor (adultes) et équations EER de l'IOM (enfants), repères ANSES/EFSA pour les nutriments.
+const ACTIVITY = {
+  sedentaire: { label: 'Sédentaire', adult: 1.2, boy: 1.0, girl: 1.0 },
+  leger: { label: 'Peu actif', adult: 1.375, boy: 1.06, girl: 1.08 },
+  modere: { label: 'Modérément actif', adult: 1.55, boy: 1.13, girl: 1.16 },
+  actif: { label: 'Actif', adult: 1.725, boy: 1.26, girl: 1.31 },
+  tres_actif: { label: 'Très actif', adult: 1.9, boy: 1.42, girl: 1.56 },
+};
+const OBJECTIF = { perte: { label: 'Perte de poids', f: 0.85 }, maintien: { label: 'Maintien', f: 1 }, prise: { label: 'Prise de poids', f: 1.1 } };
+const REF_KCAL = 2000; // une « portion standard » de recette correspond à un adulte à 2 000 kcal/jour
+function ageOf(m, at = new Date()) {
+  const b = new Date(m.naissance);
+  return Math.max(0, (at - b) / (365.25 * 864e5));
+}
+function computedKcal(m) {
+  const age = ageOf(m);
+  const w = Number(m.poids_kg);
+  const hCm = Number(m.taille_cm);
+  const act = ACTIVITY[m.activite] || ACTIVITY.leger;
+  let kcal;
+  if (age < 3) kcal = 89 * w - 100 + 20;
+  else if (age < 19) {
+    const ht = hCm / 100;
+    const a = Math.floor(age);
+    kcal = m.sexe === 'H'
+      ? 88.5 - 61.9 * a + act.boy * (26.7 * w + 903 * ht) + (a < 9 ? 20 : 25)
+      : 135.3 - 30.8 * a + act.girl * (10 * w + 934 * ht) + (a < 9 ? 20 : 25);
+  } else {
+    kcal = (10 * w + 6.25 * hCm - 5 * age + (m.sexe === 'H' ? 5 : -161)) * act.adult;
+  }
+  return Math.round((kcal * (OBJECTIF[m.objectif]?.f || 1)) / 10) * 10;
+}
+const kcalNeed = (m) => Number(m.kcal_perso) || computedKcal(m);
+function needs(m) {
+  const kcal = kcalNeed(m);
+  const age = ageOf(m);
+  const adult = age >= 18;
+  return {
+    kcal,
+    prot: Math.round((kcal * 0.15) / 4),
+    gluc: Math.round((kcal * 0.5) / 4),
+    suc: Math.round((kcal * 0.1) / 4),
+    lip: Math.round((kcal * 0.35) / 9),
+    ags: Math.round((kcal * 0.12) / 9),
+    fib: Math.round((kcal / 1000) * 14),
+    sel: adult ? 5 : age < 4 ? 2 : age < 7 ? 3 : age < 11 ? 4 : 5,
+    ca: age < 4 ? 450 : age < 11 ? 800 : age < 18 ? 1150 : age < 25 ? 1000 : 950,
+    fe: age < 7 ? 7 : age < 12 ? 8 : m.sexe === 'F' && age >= 12 && age < 50 ? 16 : 11,
+    vitc: age < 4 ? 20 : age < 7 ? 30 : age < 11 ? 45 : age < 15 ? 70 : age < 18 ? 100 : 110,
+  };
+}
+const memberFactor = (m) => kcalNeed(m) / REF_KCAL;
+const memberById = (id) => state.members.find((m) => m.id === id);
+function mealEaters(meal) {
+  if (!state.members.length) return [];
+  if (!Array.isArray(meal.eaters)) return state.members;
+  return state.members.filter((m) => meal.eaters.includes(m.id));
+}
+// Nombre de portions standard d'un repas : somme des parts de chaque mangeur + invités (1 portion chacun).
+function mealServings(meal) {
+  if (!state.members.length) return meal.servings || 1;
+  return Math.max(0.25, mealEaters(meal).reduce((s, m) => s + memberFactor(m), 0) + (meal.guests || 0));
+}
+function mealWho(meal) {
+  if (!state.members.length) return `${meal.servings} pers.`;
+  const eaters = mealEaters(meal);
+  const names = eaters.length === state.members.length ? 'Tout le foyer' : eaters.map((m) => m.nom).join(', ') || 'Personne';
+  return `${names}${meal.guests ? ` + ${meal.guests} invité${meal.guests > 1 ? 's' : ''}` : ''}`;
+}
+const fmtPortions = (n) => `${fmtNum(n)} portion${n >= 2 ? 's' : ''}`;
+const fmtN = (v, unit) => `${unit === 'kcal' ? Math.round(v) : fmtNum(v)} ${unit}`;
+
+// Tableau de valeurs nutritionnelles (avec repères quotidiens si fournis).
+function nutriTable(n, { need, title } = {}) {
+  return `<div class="ntable">${title ? `<div class="nt-title">${esc(title)}</div>` : ''}
+    ${NUTRI_KEYS.map(({ k, label, unit, sub, max }) => {
+      const pct = need?.[k] ? Math.round((n[k] / need[k]) * 100) : null;
+      return `<div class="nt-row ${sub ? 'sub' : ''}"><span>${label}</span><b>${fmtN(n[k] || 0, unit)}</b>${pct != null ? `<span class="pct ${max && pct > 100 ? 'over' : ''}">${pct} %</span>` : ''}</div>`;
+    }).join('')}</div>`;
+}
+const isoToDate = (s) => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+
+// ---------------------------------------------------------------------------
 // Feuilles modales
 // ---------------------------------------------------------------------------
 const sheets = [];
@@ -971,7 +1278,8 @@ async function showProduct(ean, { onPick, record = true } = {}) {
       </div>
       <button class="icon-btn" data-act="close-sheet" aria-label="Fermer">${ICON.close}</button>
     </div>
-    ${onPick ? `<button class="btn primary block" style="margin-top:14px" data-act="pick-product">${ICON.plus} Ajouter comme ingrédient</button>` : ''}
+    ${onPick ? `<button class="btn primary block" style="margin-top:14px" data-act="pick-product">${ICON.plus} Ajouter comme ingrédient</button>`
+      : state.members.length ? `<button class="btn soft block" style="margin-top:14px" data-x="journal">${ICON.plus} Ajouter à mon journal</button>` : ''}
     <div class="analysis">
       ${defects.length ? `<h3>Défauts <span>pour 100 ${isBeverage(p) ? 'ml' : 'g'}</span></h3>${defects.map(critHtml).join('')}` : ''}
       ${qualities.length ? `<h3>Qualités <span>pour 100 ${isBeverage(p) ? 'ml' : 'g'}</span></h3>${qualities.map(critHtml).join('')}` : ''}
@@ -983,9 +1291,15 @@ async function showProduct(ean, { onPick, record = true } = {}) {
         <div class="crit"><div class="ico">${ICON.leaf}</div><div class="lbl">Bio</div><div class="val">${sc.bio}/10</div><div class="sub">${sc.bio ? 'Label bio' : 'Non bio'}</div></div>` : ''}
       ${nova ? `<p class="muted small" style="margin-top:12px">Transformation : NOVA ${p.nova_group} — ${nova}</p>` : ''}
     </div>
+    ${p.nutriments && typeof p.nutriments['energy-kcal_100g'] === 'number' ? `<h3 class="section-title">Valeurs nutritionnelles</h3>
+      ${nutriTable(offPer100(p), { title: `Pour 100 ${isBeverage(p) ? 'ml' : 'g'}` })}
+      ${Number(p.serving_quantity) ? nutriTable(scaleN(offPer100(p), Number(p.serving_quantity) / 100), { title: `Par portion (${esc(p.serving_size || `${p.serving_quantity} g`)})` }) : ''}` : ''}
     <div id="alts"><h3 class="section-title">Alternatives plus saines</h3><div class="spinner"></div></div>
     <p class="muted small">Données : Open Food Facts (licence ODbL). Méthode de notation inspirée de Yuka : 60 % nutrition, 30 % additifs, 10 % bio.</p>`;
   if (onPick) $('[data-act="pick-product"]', el).addEventListener('click', () => { closeSheet(); onPick(p, sc.total); });
+  $('[data-x="journal"]', el)?.addEventListener('click', () => quantitySheet({
+    label: name, per100: offPer100(p), source: 'off', ref: p.code, defaultGrams: Number(p.serving_quantity) || 100,
+  }));
 
   findAlternatives(p, sc.total).then((alts) => {
     const box = $('#alts', el);
@@ -1174,10 +1488,31 @@ function scaleQty(qty, factor) {
   const v = parseFloat(String(qty).replace(',', '.'));
   return isFinite(v) ? fmtNum(v * factor) : qty;
 }
-function recipeNutrition(r) {
+function recipeScoreAvg(r) {
   const scored = (r.ingredients || []).filter((i) => typeof i.score === 'number');
   if (!scored.length) return null;
   return { avg: Math.round(scored.reduce((a, i) => a + i.score, 0) / scored.length), n: scored.length };
+}
+
+function recipeNutritionHtml(r) {
+  const rn = recipeNutrition(r);
+  const p = rn.perPortion;
+  const members = state.members.map((m) => {
+    const f = memberFactor(m);
+    return `<div class="nt-row"><span>${esc(m.nom)} <span class="muted small">· ${fmtPortions(f)}</span></span><b>${Math.round(p.kcal * f)} kcal</b><span class="pct">${Math.round(((p.kcal * f) / kcalNeed(m)) * 100)} %</span></div>`;
+  }).join('');
+  return `<h3 style="margin:22px 0 6px">Valeurs nutritionnelles</h3>
+    <div class="macro-strip">${['kcal', 'prot', 'gluc', 'lip', 'fib'].map((k) => {
+      const d = NUTRI_KEYS.find((x) => x.k === k);
+      return `<div><b>${fmtN(p[k], d.unit).replace(' ', '&nbsp;')}</b><span>${d.label}</span></div>`;
+    }).join('')}</div>
+    <p class="muted small" style="margin:6px 0 10px">Par portion standard (adulte à ${REF_KCAL} kcal/jour). La recette fait ${r.servings} portion(s) : ${Math.round(rn.total.kcal)} kcal au total.</p>
+    ${state.members.length ? `<div class="ntable"><div class="nt-title">Portion de chaque membre du foyer</div>${members}</div>` : ''}
+    <details class="ndetails"><summary>Détail complet par portion</summary>${nutriTable(p)}</details>
+    <details class="ndetails"><summary>Détail par ingrédient${rn.missing ? ` · <span style="color:var(--mediocre)">${rn.missing} non calculé(s)</span>` : ''}</summary>
+      <ul class="ing-nutri">${rn.lines.map((l) => `<li><div class="row"><b class="grow">${esc(l.ing.name)}</b><span>${l.n ? `${Math.round(l.n.kcal)} kcal` : '—'}</span></div>
+        <div class="muted small">${l.g != null ? `${fmtNum(l.g)} g` : 'quantité non précisée'} · ${l.src ? `${l.src.type === 'off' ? 'produit scanné' : `Ciqual : ${esc(l.src.label)}${l.src.auto ? ' (auto)' : ''}`}` : '<span style="color:var(--mediocre)">aliment non reconnu</span>'}</div></li>`).join('')}</ul>
+      <p class="muted small">Pour corriger un aliment ou un poids, modifiez la recette. Source : table Ciqual 2025 (Anses).</p></details>`;
 }
 
 function openRecipe(id, servingsOverride) {
@@ -1188,7 +1523,7 @@ function openRecipe(id, servingsOverride) {
   const el = openSheet(`<div id="rd"></div>`, { full: true });
   const draw = () => {
     const f = servings / (r.servings || 1);
-    const nut = recipeNutrition(r);
+    const nut = recipeScoreAvg(r);
     $('#rd', el).innerHTML = `
       <div class="sheet-head"><button class="icon-btn" data-act="close-sheet" aria-label="Retour">${ICON.back}</button><h2></h2>
         <button class="icon-btn ${r.favorite ? 'fav' : ''}" data-act="toggle-fav" data-id="${r.id}" aria-label="Favori">${r.favorite ? ICON.heartFill : ICON.heart}</button>
@@ -1200,8 +1535,9 @@ function openRecipe(id, servingsOverride) {
       ${nut ? `<div class="row small" style="margin-bottom:8px">${scoreHtml(nut.avg)}<span class="muted">moyenne de ${nut.n} ingrédient(s) scanné(s)</span></div>` : ''}
       <button class="btn primary block" data-act="cook-mode" data-id="${r.id}">${ICON.play} Mode cuisine</button>
       <div class="row" style="margin:20px 0 6px"><h3 class="grow" style="margin:0">Ingrédients</h3>
-        <div class="stepper"><button data-srv="-1" aria-label="Moins">−</button><span>${servings} pers.</span><button data-srv="1" aria-label="Plus">+</button></div></div>
+        <div class="stepper"><button data-srv="-1" aria-label="Moins">−</button><span>${fmtPortions(servings)}</span><button data-srv="1" aria-label="Plus">+</button></div></div>
       <ul class="ing-list">${(r.ingredients || []).map((i) => `<li><span class="q">${esc(scaleQty(i.qty, f))} ${esc(i.unit || '')}</span><span class="grow">${esc(i.name)}</span>${typeof i.score === 'number' ? scoreHtml(i.score) : ''}</li>`).join('') || '<li class="muted">Aucun ingrédient</li>'}</ul>
+      ${recipeNutritionHtml(r)}
       <h3 style="margin:22px 0 6px">Préparation</h3>
       <ol class="step-list">${(r.steps || []).map((s) => `<li>${esc(s.text)}<div class="meta" style="margin-top:4px">${s.min ? `<span>${ICON.clock} ${s.min} min</span>` : ''}${s.ahead ? '<span class="tag ahead">À l\'avance</span>' : ''}</div></li>`).join('') || '<li class="muted">Aucune étape</li>'}</ol>
       ${safeUrl(r.source_url) ? `<p class="small"><a href="${esc(safeUrl(r.source_url))}" target="_blank" rel="noopener">Source de la recette</a></p>` : ''}`;
@@ -1210,7 +1546,7 @@ function openRecipe(id, servingsOverride) {
   el.addEventListener('click', (e) => {
     const b = e.target.closest('[data-srv]');
     if (!b) return;
-    servings = clamp(servings + Number(b.dataset.srv), 1, 50);
+    servings = clamp(Math.round(servings) + Number(b.dataset.srv), 1, 50);
     draw();
   });
 }
@@ -1301,6 +1637,7 @@ function drawEditor(el) {
         <button class="icon-btn" data-ed="ing-del" data-i="${k}" aria-label="Supprimer">${ICON.trash}</button>
         <select class="input aisle" data-g="aisle" aria-label="Rayon">${AISLES.map((a) => `<option ${a === i.aisle ? 'selected' : ''}>${a}</option>`).join('')}</select>
         <span class="score">${typeof i.score === 'number' ? `<span class="lvl-${scoreLevel(i.score).lvl}" title="${i.score}/100"><span class="dot"></span></span>` : ''}</span>
+        ${ingNutriLink(i, k)}
       </div>`).join('')}</div>
       <datalist id="ing-names">${datalist.map((n) => `<option value="${esc(n)}">`).join('')}</datalist>
       <form class="stack" data-ed-form="ing" style="margin-top:10px">
@@ -1391,6 +1728,7 @@ async function onEditorClick(e, el) {
   if (act === 'import') return importFromUrl();
   if (act === 'photo-del') { editing.photo_url = null; drawEditor(el); }
   if (act === 'ing-del') { editing.ingredients.splice(Number(b.dataset.i), 1); drawEditor(el); }
+  if (act === 'ing-nutri') pickIngredientFood(editing.ingredients[Number(b.dataset.i)], () => drawEditor(el));
   if (act === 'step-del') { editing.steps.splice(Number(b.dataset.s), 1); drawEditor(el); }
   if (act === 'step-add') {
     editing.steps.push({ text: '', min: 0, ahead: false, action: 'autre' });
@@ -1404,7 +1742,8 @@ async function onEditorClick(e, el) {
       onPick: (p, score) => {
         if (!editing) return;
         const name = p.product_name_fr || p.product_name || code;
-        editing.ingredients.push({ name, qty: '', unit: 'pièce', aisle: guessAisle(name), ean: p.code, score });
+        const grams = Number(p.serving_quantity) || null;
+        editing.ingredients.push({ name, qty: grams ? String(grams) : '', unit: grams ? 'g' : 'pièce', aisle: guessAisle(name), ean: p.code, score, n: offPer100(p), src: 'off' });
         drawEditor(el);
         toast('Ingrédient ajouté : indiquez la quantité');
       },
@@ -1426,6 +1765,42 @@ document.addEventListener('submit', (e) => {
     nf.qty.focus();
   }
 });
+
+function ingNutriLink(i, k) {
+  if (!CQ.ready) return '';
+  const src = ingSource(i);
+  const g = ingGrams(i);
+  const what = src ? (src.type === 'off' ? 'Produit scanné' : `${esc(src.label)}${src.auto ? ' <i>(auto)</i>' : ''}`) : '<span class="warn">Aliment non reconnu : choisir</span>';
+  return `<button type="button" class="nutri-link" data-ed="ing-nutri" data-i="${k}">${ICON.leaf}<span>${what}${g != null ? ` · ${fmtNum(g)} g` : ''}${src && g != null ? ` · <b>${Math.round((src.n.kcal * g) / 100)} kcal</b>` : ''}</span></button>`;
+}
+
+// Recherche d'un aliment Ciqual dans une feuille ; onPick(aliment).
+function foodSearchList(el, q, onPick) {
+  const box = $('[data-food-results]', el);
+  const list = CQ.search(q, 40);
+  box.innerHTML = list.map((a) => `<button class="food-row" data-code="${a.code}"><span class="grow"><b>${esc(a.nom)}</b><span class="muted small">${esc(a.groupe)}</span></span><span class="small">${Math.round(a.n.kcal)} kcal<span class="muted"> /100 g</span></span></button>`).join('')
+    || '<p class="muted">Aucun aliment trouvé. Essayez un mot plus simple (ex. « riz », « poulet »).</p>';
+  box.onclick = (e) => { const b = e.target.closest('[data-code]'); if (b) onPick(CQ.byCode.get(Number(b.dataset.code))); };
+}
+
+function pickIngredientFood(ing, done) {
+  const massUnit = ing.unit in MASS_UNITS;
+  const unitLabel = ing.unit && ing.unit !== 'pièce' ? ing.unit : 'pièce';
+  const src = ingSource(ing);
+  const el = openSheet(`${sheetHead(ing.name || 'Ingrédient')}
+    <p class="muted small" style="margin-top:0">Actuellement : ${src ? (src.type === 'off' ? 'valeurs du produit scanné' : `Ciqual « ${esc(src.label)} »${src.auto ? ' (choisi automatiquement)' : ''}`) : 'aucun aliment reconnu'}.</p>
+    ${massUnit ? '' : `<label class="field"><span>Poids d'une ${esc(unitLabel)} (g)</span><input class="input" type="number" min="0.1" step="0.1" inputmode="decimal" data-gpu value="${esc(ing.gpu || defaultUnitGrams(ing.unit || '', ing.name))}"></label>`}
+    ${ing.n ? `<button class="btn soft block" style="margin-top:10px" data-x="off">${ICON.barcode} Utiliser les valeurs du produit scanné</button>` : ''}
+    <div class="searchbar" style="margin:12px 0 8px">${ICON.search}<input class="input" type="search" data-food-q value="${esc(ing.name)}" placeholder="Rechercher un aliment (Ciqual)"></div>
+    <div data-food-results class="food-results"></div>
+    ${massUnit ? '' : '<button class="btn primary block" data-x="save" style="margin-top:10px">Enregistrer le poids</button>'}`);
+  const saveGpu = () => { const v = parseFloat($('[data-gpu]', el)?.value); if (v > 0) ing.gpu = v; };
+  const finish = () => { closeSheet(); done(); };
+  foodSearchList(el, ing.name, (a) => { saveGpu(); ing.cq = a.code; ing.src = 'ciqual'; finish(); });
+  $('[data-food-q]', el).addEventListener('input', (e) => foodSearchList(el, e.target.value, (a) => { saveGpu(); ing.cq = a.code; ing.src = 'ciqual'; finish(); }));
+  $('[data-x="off"]', el)?.addEventListener('click', () => { saveGpu(); ing.src = 'off'; finish(); });
+  $('[data-x="save"]', el)?.addEventListener('click', () => { saveGpu(); finish(); });
+}
 
 async function saveEditor(btn) {
   const r = editing;
@@ -1659,7 +2034,7 @@ function renderWeek() {
       const img = safeUrl(r.photo_url);
       return `<button class="${cls}" data-act="slot" data-d="${i}" data-s="${slot}"><span class="when">${slot}</span>
         ${img ? `<img class="sthumb" src="${esc(img)}" alt="" loading="lazy">` : `<span class="sthumb">${ICON.chef}</span>`}
-        <span class="grow"><span class="prod-name" style="font-size:15px">${esc(r.title)}</span><span class="meta">${ICON.users} ${m.servings} pers.</span></span></button>`;
+        <span class="grow"><span class="prod-name" style="font-size:15px">${esc(r.title)}</span><span class="meta">${ICON.users} ${esc(mealWho(m))}</span></span></button>`;
     }).join('');
     return `<div class="day ${isoDate(date) === today ? 'today' : ''}"><h3><span>${d}</span><span class="muted small">${fmtDay(date)}</span></h3>${slots}</div>`;
   }).join('');
@@ -1706,11 +2081,11 @@ async function onSlot(day, slot) {
     const a = state.plan.find((x) => x.day === src.day && x.slot === src.slot);
     try {
       const ids = [a?.id, m?.id].filter(Boolean);
-      const aData = a && { recipe_id: a.recipe_id, servings: a.servings };
-      const bData = m && { recipe_id: m.recipe_id, servings: m.servings };
+      const aData = a && { ...a };
+      const bData = m && { ...m };
       await Data.removeMeals(ids);
-      if (aData) await Data.setMeal(day, slot, aData.recipe_id, aData.servings);
-      if (bData) await Data.setMeal(src.day, src.slot, bData.recipe_id, bData.servings);
+      if (aData) await Data.setMeal(day, slot, aData.recipe_id, aData.servings, aData);
+      if (bData) await Data.setMeal(src.day, src.slot, bData.recipe_id, bData.servings, bData);
       toast(m ? 'Repas échangés' : 'Repas déplacé');
     } catch (err) { fail(err); }
     return render();
@@ -1721,14 +2096,37 @@ async function onSlot(day, slot) {
     }, { title: `${DAYS[day]} ${slot}` });
   }
   const r = recipeById(m.recipe_id);
+  const hasMembers = state.members.length > 0;
+  const eatersHtml = () => {
+    const ids = mealEaters(m).map((x) => x.id);
+    return `<div class="ntable"><div class="nt-title">Qui mange ? <span class="muted small">· ${fmtPortions(mealServings(m))}</span></div>
+      ${state.members.map((x) => `<label class="check" style="display:flex;padding:4px 0"><input type="checkbox" data-eater="${x.id}" ${ids.includes(x.id) ? 'checked' : ''}>
+        <span class="grow">${esc(x.nom)}</span><span class="muted small">${fmtPortions(memberFactor(x))}</span></label>`).join('')}
+      <div class="row" style="margin-top:6px"><span class="grow small"><b>Invités</b> <span class="muted">(1 portion chacun)</span></span>
+        <div class="stepper"><button data-g="-1" aria-label="Moins">−</button><span>${m.guests || 0}</span><button data-g="1" aria-label="Plus">+</button></div></div></div>`;
+  };
   const el = openSheet(`${sheetHead(`${DAYS[day]} ${slot}`)}
     <div class="row" style="margin-bottom:10px"><b class="grow">${esc(r?.title || 'Recette supprimée')}</b>
-      <div class="stepper"><button data-p="-1" aria-label="Moins">−</button><span id="srv">${m.servings} pers.</span><button data-p="1" aria-label="Plus">+</button></div></div>
+      ${hasMembers ? '' : `<div class="stepper"><button data-p="-1" aria-label="Moins">−</button><span id="srv">${m.servings} pers.</span><button data-p="1" aria-label="Plus">+</button></div>`}</div>
+    ${hasMembers ? `<div id="eaters">${eatersHtml()}</div>` : ''}
     <div class="menu-list">
       <button data-m="view">${ICON.chef} Voir la recette</button>
       <button data-m="change">${ICON.swap} Changer de recette</button>
       <button data-m="move">${ICON.move} Déplacer / échanger</button>
       <button data-m="del" style="color:var(--danger)">${ICON.trash} Retirer du planning</button></div>`);
+  const saveEaters = async (patch) => {
+    try {
+      await Data.updateMeal(m.id, patch);
+      Object.assign(m, state.plan.find((x) => x.id === m.id));
+      $('#eaters', el).innerHTML = eatersHtml();
+      render();
+    } catch (err) { fail(err); }
+  };
+  el.addEventListener('change', (e) => {
+    if (!e.target.dataset.eater) return;
+    const ids = $$('[data-eater]', el).filter((c) => c.checked).map((c) => c.dataset.eater);
+    saveEaters({ eaters: ids.length === state.members.length ? null : ids });
+  });
   el.addEventListener('click', async (e) => {
     const p = e.target.closest('[data-p]');
     if (p) {
@@ -1736,11 +2134,13 @@ async function onSlot(day, slot) {
       try { await Data.updateMeal(m.id, { servings: n }); m.servings = n; $('#srv', el).textContent = `${n} pers.`; render(); } catch (err) { fail(err); }
       return;
     }
+    const g = e.target.closest('[data-g]');
+    if (g) return saveEaters({ guests: clamp((m.guests || 0) + Number(g.dataset.g), 0, 30) });
     const act = e.target.closest('[data-m]')?.dataset.m;
     if (!act) return;
     closeSheet();
-    if (act === 'view' && r) openRecipe(r.id, m.servings);
-    if (act === 'change') recipePicker(async (rid) => { try { await Data.setMeal(day, slot, rid, m.servings); render(); } catch (err) { fail(err); } });
+    if (act === 'view' && r) openRecipe(r.id, Math.round(mealServings(m) * 10) / 10);
+    if (act === 'change') recipePicker(async (rid) => { try { await Data.setMeal(day, slot, rid, m.servings, m); render(); } catch (err) { fail(err); } });
     if (act === 'move') { state.moving = { day, slot }; render(); }
     if (act === 'del') { try { await Data.removeMeals([m.id]); render(); } catch (err) { fail(err); } }
   });
@@ -1762,7 +2162,7 @@ function weekMenu() {
         const { data, error } = await db.from(T.plan).select('*').eq('week', isoDate(addDays(state.week, -7)));
         if (error) throw error;
         if (!data.length) { toast('La semaine précédente est vide'); return; }
-        for (const m of data) if (!state.plan.some((x) => x.day === m.day && x.slot === m.slot)) await Data.setMeal(m.day, m.slot, m.recipe_id, m.servings);
+        for (const m of data) if (!state.plan.some((x) => x.day === m.day && x.slot === m.slot)) await Data.setMeal(m.day, m.slot, m.recipe_id, m.servings, m);
         toast('Semaine précédente copiée dans les cases vides');
       }
       if (act === 'random') {
@@ -1806,7 +2206,7 @@ function computeBatch() {
     const r = recipeById(m.recipe_id);
     if (!r) continue;
     const e = byRecipe.get(r.id) || { r, servings: 0, meals: [] };
-    e.servings += m.servings;
+    e.servings += mealServings(m);
     e.meals.push(m);
     byRecipe.set(r.id, e);
   }
@@ -1861,7 +2261,7 @@ function renderBatch() {
     const r = recipeById(m.recipe_id);
     if (!r || !(r.steps || []).some((s) => s.ahead)) return '';
     const freeze = m.day >= 3;
-    return `<li><b>${DAYS[m.day]} ${m.slot}</b> — ${esc(r.title)} (${m.servings} pers.) : ${freeze ? 'au <b>congélateur</b>, à sortir la veille au réfrigérateur' : 'au <b>réfrigérateur</b>, en boîte hermétique (3 jours max)'}</li>`;
+    return `<li><b>${DAYS[m.day]} ${m.slot}</b> — ${esc(r.title)} (${esc(mealWho(m))}) : ${freeze ? 'au <b>congélateur</b>, à sortir la veille au réfrigérateur' : 'au <b>réfrigérateur</b>, en boîte hermétique (3 jours max)'}</li>`;
   }).join('');
   return `
     <div class="summary-box"><div><strong>${h ? `${h} h ${String(b.total % 60).padStart(2, '0')}` : `${b.total} min`}</strong><span>durée estimée</span></div>
@@ -1897,7 +2297,7 @@ function buildShopping() {
   for (const m of state.plan) {
     const r = recipeById(m.recipe_id);
     if (!r) continue;
-    const f = m.servings / (r.servings || 1);
+    const f = mealServings(m) / (r.servings || 1);
     for (const ing of r.ingredients || []) {
       const { base, mult } = unitBase(ing.unit);
       const k = ingKey(ing.name);
@@ -1993,6 +2393,298 @@ function linkItem(k, name) {
 }
 
 // ---------------------------------------------------------------------------
+// Suivi nutritionnel (jour / semaine, par membre ou pour tout le foyer)
+// ---------------------------------------------------------------------------
+const SLOTS = [['petit-dejeuner', 'Petit-déjeuner'], ['midi', 'Déjeuner'], ['gouter', 'Goûter'], ['soir', 'Dîner'], ['collation', 'Collation']];
+const slotLabel = (k) => SLOTS.find(([s]) => s === k)?.[1] || k;
+const nutriCache = new Map();
+function portionN(r) {
+  const key = `${r.id}|${r.updated_at}|${CQ.ready}`;
+  if (!nutriCache.has(key)) nutriCache.set(key, recipeNutrition(r).perPortion);
+  return nutriCache.get(key);
+}
+const dayIndex = (d) => Math.round((mondayOf(d) - state.week) / 864e5) === 0 ? (d.getDay() + 6) % 7 : -1;
+
+// Ce qu'un membre a mangé un jour donné : repas planifiés (sa part) + journal.
+function memberDay(member, date) {
+  const iso = isoDate(date);
+  const di = dayIndex(date);
+  const entries = [];
+  if (di >= 0) {
+    for (const meal of state.plan.filter((x) => x.day === di)) {
+      const r = recipeById(meal.recipe_id);
+      if (!r || !mealEaters(meal).some((x) => x.id === member.id)) continue;
+      const f = memberFactor(member);
+      entries.push({ type: 'plan', slot: meal.slot, label: r.title, detail: `planning · ${fmtPortions(f)}`, n: scaleN(portionN(r), f), member, recipeId: r.id });
+    }
+  }
+  for (const j of state.journal.filter((x) => x.date === iso && x.member_id === member.id)) {
+    entries.push({ type: 'journal', id: j.id, slot: j.slot, label: j.label, detail: j.grams ? `${fmtNum(Number(j.grams))} g` : j.portions ? fmtPortions(Number(j.portions)) : '', n: { ...zeroN(), ...j.n }, member });
+  }
+  const total = entries.reduce((t, e) => addN(t, e.n), zeroN());
+  return { entries, total };
+}
+function suiviMembers() {
+  const id = state.suiviMember;
+  if (id === 'foyer') return state.members;
+  const m = memberById(id) || state.members[0];
+  return m ? [m] : [];
+}
+function groupDay(members, date) {
+  const days = members.map((m) => memberDay(m, date));
+  const need = members.reduce((t, m) => addN(t, needs(m)), zeroN());
+  return { entries: days.flatMap((d) => d.entries), total: days.reduce((t, d) => addN(t, d.total), zeroN()), need };
+}
+
+function bar(value, target, { max = false } = {}) {
+  const pct = target ? (value / target) * 100 : 0;
+  const cls = max ? (pct > 100 ? 'over' : 'ok') : pct >= 90 && pct <= 115 ? 'ok' : pct > 115 ? 'over' : 'low';
+  return `<div class="bar ${cls}"><i style="width:${clamp(pct, 0, 100)}%"></i></div>`;
+}
+function macroBars(total, need) {
+  return NUTRI_KEYS.filter((d) => d.k !== 'kcal').map((d) => `<div class="mbar ${d.sub ? 'sub' : ''}"><div class="row"><span class="grow">${d.label}</span>
+    <b>${fmtNum(total[d.k])}</b><span class="muted small">&nbsp;/ ${d.max ? '≤ ' : ''}${fmtNum(need[d.k])} ${d.unit}</span></div>${bar(total[d.k], need[d.k], { max: d.max })}</div>`).join('');
+}
+function kcalCard(total, need, sub) {
+  const left = Math.round(need.kcal - total.kcal);
+  return `<div class="kcal-card"><div class="row"><div class="grow"><div class="muted small">${esc(sub)}</div>
+      <div><b class="big">${Math.round(total.kcal)}</b> <span class="muted">/ ${Math.round(need.kcal)} kcal</span></div></div>
+      <div class="left ${left < 0 ? 'neg' : ''}"><b>${Math.abs(left)}</b><span>${left < 0 ? 'kcal en trop' : 'kcal restantes'}</span></div></div>
+    ${bar(total.kcal, need.kcal)}</div>`;
+}
+
+function renderSuivi() {
+  if (!state.members.length) {
+    return `<div class="empty">${ICON.users}<p>Ajoutez les membres de votre foyer (âge, sexe, poids, taille, activité) pour calculer les besoins de chacun et suivre calories et nutriments.</p>
+      <button class="btn primary" data-act="foyer">${ICON.plus} Configurer le foyer</button></div>`;
+  }
+  if (!CQ.ready) return '<div class="spinner"></div>';
+  const sel = state.suiviMember === 'foyer' ? 'foyer' : (memberById(state.suiviMember) || state.members[0]).id;
+  const chips = [...state.members.map((m) => [m.id, m.nom]), ['foyer', 'Tout le foyer']]
+    .map(([k, l]) => `<button class="chip" aria-pressed="${sel === k}" data-act="suivi-member" data-v="${k}">${esc(l)}</button>`).join('');
+  const seg = `<div class="seg" role="group" style="grid-template-columns:1fr 1fr">${[['jour', 'Jour'], ['semaine', 'Semaine']].map(([k, l]) => `<button aria-pressed="${state.suiviView === k}" data-act="suivi-view" data-v="${k}">${l}</button>`).join('')}</div>`;
+  return `<div class="chips">${chips}</div>${seg}${state.suiviView === 'jour' ? renderSuiviDay() : renderSuiviWeek()}`;
+}
+
+function renderSuiviDay() {
+  const members = suiviMembers();
+  const d = state.day;
+  const isToday = isoDate(d) === isoDate(new Date());
+  const g = groupDay(members, d);
+  const foyer = members.length > 1;
+  const nav = `<div class="week-nav"><button class="icon-btn" data-act="suivi-day" data-d="-1" aria-label="Jour précédent">${ICON.back}</button>
+    <strong>${isToday ? 'Aujourd\'hui' : d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</strong>
+    <button class="icon-btn" data-act="suivi-day" data-d="1" aria-label="Jour suivant">${ICON.next}</button>
+    ${isToday ? '' : '<button class="btn small" data-act="suivi-day" data-d="0">Auj.</button>'}</div>`;
+  const perMember = foyer ? `<div class="ntable"><div class="nt-title">Par membre</div>${members.map((m) => {
+    const md = memberDay(m, d); const nd = needs(m);
+    return `<div class="mbar"><div class="row"><span class="grow">${esc(m.nom)}</span><b>${Math.round(md.total.kcal)}</b><span class="muted small">&nbsp;/ ${nd.kcal} kcal</span></div>${bar(md.total.kcal, nd.kcal)}</div>`;
+  }).join('')}</div>` : '';
+  const slots = SLOTS.map(([k, label]) => {
+    const list = g.entries.filter((e) => e.slot === k);
+    const kcal = list.reduce((s, e) => s + e.n.kcal, 0);
+    return `<div class="slot-block"><div class="row"><h3 class="grow">${label}</h3>${list.length ? `<span class="muted small">${Math.round(kcal)} kcal</span>` : ''}
+        <button class="icon-btn" data-act="journal-add" data-slot="${k}" aria-label="Ajouter au ${label}">${ICON.plus}</button></div>
+      ${list.map((e) => `<div class="entry"><div class="grow"><div class="nm">${esc(e.label)}</div><div class="muted small">${foyer ? `${esc(e.member.nom)} · ` : ''}${esc(e.detail)}</div></div>
+        <span class="small"><b>${Math.round(e.n.kcal)}</b> kcal</span>
+        ${e.type === 'journal' ? `<button class="icon-btn" data-act="journal-del" data-id="${e.id}" aria-label="Supprimer">${ICON.trash}</button>` : `<button class="icon-btn" data-act="open-recipe" data-id="${e.recipeId}" aria-label="Voir la recette">${ICON.chef}</button>`}</div>`).join('')}</div>`;
+  }).join('');
+  return `${nav}${kcalCard(g.total, g.need, foyer ? 'Total du foyer' : esc(members[0].nom))}
+    <div class="ntable">${macroBars(g.total, g.need)}</div>${perMember}${slots}
+    <p class="muted small">Les repas du planning sont comptés automatiquement selon la part de chacun. Repères : 15 % de protéines, 50 % de glucides, 35 % de lipides (ANSES).</p>`;
+}
+
+function renderSuiviWeek() {
+  const members = suiviMembers();
+  const days = [...Array(7)].map((_, i) => { const date = addDays(state.week, i); return { date, ...groupDay(members, date) }; });
+  const need = days[0].need;
+  const top = Math.max(need.kcal * 1.3, ...days.map((d) => d.total.kcal));
+  const avg = scaleN(days.reduce((t, d) => addN(t, d.total), zeroN()), 1 / 7);
+  const today = isoDate(new Date());
+  return `${weekNav()}
+    <div class="week-chart">${days.map((d, i) => `<button class="wc-col ${isoDate(d.date) === today ? 'today' : ''}" data-act="suivi-open-day" data-i="${i}">
+      <span class="wc-val">${d.total.kcal ? Math.round(d.total.kcal) : ''}</span>
+      <span class="wc-bar"><i class="${d.total.kcal > need.kcal * 1.15 ? 'over' : d.total.kcal >= need.kcal * 0.9 ? 'ok' : 'low'}" style="height:${(d.total.kcal / top) * 100}%"></i>
+        <em style="bottom:${(need.kcal / top) * 100}%"></em></span>
+      <span class="wc-day">${DAYS[i].slice(0, 3)}</span></button>`).join('')}</div>
+    <p class="muted small" style="margin:4px 0 12px">Trait horizontal : besoin quotidien (${Math.round(need.kcal)} kcal). Touchez un jour pour le détail.</p>
+    ${kcalCard(avg, need, 'Moyenne par jour sur la semaine')}
+    <div class="ntable">${macroBars(avg, need)}</div>
+    <div class="ntable"><div class="nt-title">Total de la semaine</div>
+      ${NUTRI_KEYS.filter((x) => x.main).map((x) => `<div class="nt-row"><span>${x.label}</span><b>${fmtN(avg[x.k] * 7, x.unit)}</b><span class="pct">${Math.round((avg[x.k] / need[x.k]) * 100)} %</span></div>`).join('')}</div>`;
+}
+
+async function goToDay(date) {
+  state.day = date;
+  if (mondayOf(date).getTime() !== state.week.getTime()) {
+    state.week = mondayOf(date);
+    try { await Data.loadWeek(); } catch (e) { fail(e); }
+  }
+  render();
+}
+
+// Ajout au journal : aliment Ciqual, produit scanné ou recette.
+function journalAdd(slot) {
+  const el = openSheet(`${sheetHead(`Ajouter · ${slotLabel(slot)}`)}
+    <div class="seg" role="group">${[['aliment', 'Aliment'], ['produit', 'Produit'], ['recette', 'Recette']].map(([k, l], i) => `<button aria-pressed="${i === 0}" data-mode="${k}">${l}</button>`).join('')}</div>
+    <div data-pane></div>`);
+  const opts = { slot };
+  const pane = $('[data-pane]', el);
+  const show = (mode) => {
+    $$('[data-mode]', el).forEach((b) => b.setAttribute('aria-pressed', b.dataset.mode === mode));
+    if (mode === 'aliment') {
+      pane.innerHTML = `<div class="searchbar" style="margin-bottom:8px">${ICON.search}<input class="input" type="search" data-food-q placeholder="Ex. pomme, pain complet, yaourt nature…" autofocus></div><div data-food-results class="food-results"></div>`;
+      const pick = (a) => { closeSheet(); quantitySheet({ ...opts, label: a.nom, per100: a.n, source: 'ciqual', ref: String(a.code), defaultGrams: 100 }); };
+      $('[data-food-q]', pane).addEventListener('input', (e) => foodSearchList(pane, e.target.value, pick));
+      setTimeout(() => $('[data-food-q]', pane)?.focus(), 250);
+    }
+    if (mode === 'produit') {
+      pane.innerHTML = `<button class="btn primary block" data-scan>${ICON.barcode} Scanner un produit</button>
+        ${state.scans.length ? `<h3 class="section-title">Produits scannés récemment</h3>${state.scans.slice(0, 12).map((s) => `<button class="prod-row" data-ean="${esc(s.ean)}">${safeUrl(s.image_url) ? `<img class="thumb" src="${esc(safeUrl(s.image_url))}" alt="">` : `<div class="thumb ph">${ICON.barcode}</div>`}<div class="grow"><div class="prod-name">${esc(s.name || s.ean)}</div><div class="muted small">${esc((s.brand || '').split(',')[0])}</div></div></button>`).join('')}` : ''}`;
+      const fromEan = async (ean) => {
+        try {
+          const p = await fetchProduct(ean);
+          if (!p) { toast('Produit introuvable'); return; }
+          closeSheet();
+          quantitySheet({ ...opts, label: p.product_name_fr || p.product_name || ean, per100: offPer100(p), source: 'off', ref: ean, defaultGrams: Number(p.serving_quantity) || 100 });
+        } catch (e) { fail(e, 'Open Food Facts ne répond pas'); }
+      };
+      $('[data-scan]', pane).addEventListener('click', () => Scanner.open(fromEan));
+      pane.onclick = (e) => { const b = e.target.closest('[data-ean]'); if (b) fromEan(b.dataset.ean); };
+    }
+    if (mode === 'recette') {
+      pane.innerHTML = state.recipes.length ? state.recipes.map((r) => `<button class="prod-row" data-rid="${r.id}"><div class="grow"><div class="prod-name">${esc(r.title)}</div>
+        <div class="muted small">${Math.round(portionN(r).kcal)} kcal par portion standard</div></div></button>`).join('') : '<p class="muted">Aucune recette.</p>';
+      pane.onclick = (e) => {
+        const b = e.target.closest('[data-rid]');
+        if (!b) return;
+        const r = recipeById(b.dataset.rid);
+        closeSheet();
+        quantitySheet({ ...opts, label: r.title, per100: portionN(r), source: 'recette', ref: r.id, portions: true });
+      };
+    }
+  };
+  el.addEventListener('click', (e) => { const b = e.target.closest('[data-mode]'); if (b) show(b.dataset.mode); });
+  show('aliment');
+}
+
+function defaultSlot() {
+  const h = new Date().getHours();
+  return h < 10 ? 'petit-dejeuner' : h < 14 ? 'midi' : h < 18 ? 'gouter' : 'soir';
+}
+// Saisie de la quantité. Pour une recette, per100 = valeurs d'une portion standard et la quantité est en portions.
+function quantitySheet(o) {
+  const member = (o.memberId && memberById(o.memberId)) || (state.suiviMember !== 'foyer' && memberById(state.suiviMember)) || state.members[0];
+  if (!member) { toast('Ajoutez d\'abord les membres du foyer'); openFoyer(); return; }
+  const isRecipe = !!o.portions;
+  const unit = isRecipe ? 'portion(s)' : 'g';
+  const def = isRecipe ? Math.round(memberFactor(member) * 100) / 100 : o.defaultGrams || 100;
+  const quick = isRecipe ? [0.5, 1, 1.5, 2] : [...new Set([50, 100, 150, 200, o.defaultGrams].filter(Boolean))].sort((a, b) => a - b);
+  const date = state.tab === 'suivi' ? state.day : new Date();
+  const el = openSheet(`${sheetHead(o.label)}
+    <form class="stack" data-form="qty">
+      <div class="grid2">
+        <label class="field"><span>Pour</span><select class="input" name="member">${state.members.map((m) => `<option value="${m.id}" ${m.id === member.id ? 'selected' : ''}>${esc(m.nom)}</option>`).join('')}</select></label>
+        <label class="field"><span>Repas</span><select class="input" name="slot">${SLOTS.map(([k, l]) => `<option value="${k}" ${k === (o.slot || defaultSlot()) ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+      </div>
+      <label class="field"><span>Date</span><input class="input" type="date" name="date" value="${isoDate(date)}" required></label>
+      <label class="field"><span>Quantité (${unit})</span><input class="input" type="number" name="qty" min="0.1" step="any" inputmode="decimal" value="${def}" required></label>
+      <div class="chips">${quick.map((q) => `<button type="button" class="chip" data-q="${q}">${fmtNum(q)}${isRecipe ? '' : ' g'}</button>`).join('')}</div>
+      <div data-preview></div>
+      <button class="btn primary block">Ajouter au journal</button>
+    </form>`);
+  const f = $('form', el);
+  const preview = () => {
+    const q = parseFloat(f.qty.value) || 0;
+    const n = scaleN(o.per100, isRecipe ? q : q / 100);
+    $('[data-preview]', el).innerHTML = `<div class="macro-strip">${['kcal', 'prot', 'gluc', 'lip', 'fib'].map((k) => { const d = NUTRI_KEYS.find((x) => x.k === k); return `<div><b>${fmtN(n[k], d.unit).replace(' ', '&nbsp;')}</b><span>${d.label}</span></div>`; }).join('')}</div>`;
+    return { q, n };
+  };
+  preview();
+  f.addEventListener('input', preview);
+  el.addEventListener('click', (e) => { const b = e.target.closest('[data-q]'); if (b) { f.qty.value = b.dataset.q; preview(); } });
+  f.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const { q, n } = preview();
+    if (!(q > 0)) return;
+    try {
+      await Data.addJournal({ date: f.date.value, member_id: f.member.value, slot: f.slot.value, label: o.label, source: o.source, ref: o.ref || null, grams: isRecipe ? null : q, portions: isRecipe ? q : null, n });
+      closeSheet();
+      toast(`Ajouté : ${Math.round(n.kcal)} kcal`);
+      if (state.tab === 'suivi') render();
+    } catch (err) { fail(err); }
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Foyer : membres et besoins
+// ---------------------------------------------------------------------------
+function openFoyer() {
+  const el = openSheet(`${sheetHead('Mon foyer')}<div data-list></div>
+    <button class="btn primary block" data-x="add" style="margin-top:12px">${ICON.plus} Ajouter un membre</button>
+    <p class="muted small">Besoins calculés avec la formule de Mifflin-St Jeor (adultes) et les équations EER de l'IOM (enfants), ajustés selon l'activité et l'objectif. Une « portion standard » de recette correspond à un adulte à ${REF_KCAL} kcal/jour : chacun reçoit une part proportionnelle à ses besoins.</p>`);
+  const draw = () => {
+    $('[data-list]', el).innerHTML = state.members.length ? state.members.map((m) => `<button class="prod-row" data-id="${m.id}">
+      <div class="thumb ph" style="border-radius:50%;font-weight:800;color:var(--primary-strong)">${esc(m.nom.charAt(0).toUpperCase())}</div>
+      <div class="grow"><div class="prod-name">${esc(m.nom)}</div><div class="muted small">${m.sexe === 'F' ? 'Femme' : 'Homme'}${ageOf(m) < 18 ? ' (enfant)' : ''} · ${Math.floor(ageOf(m))} ans · ${ACTIVITY[m.activite]?.label || ''}</div></div>
+      <div style="text-align:right"><b>${kcalNeed(m)}</b><div class="muted small">kcal/j · ${fmtPortions(memberFactor(m))}</div></div></button>`).join('')
+      : '<p class="muted">Aucun membre pour l\'instant.</p>';
+  };
+  draw();
+  el.addEventListener('click', (e) => {
+    if (e.target.closest('[data-x="add"]')) return memberSheet(null, draw);
+    const b = e.target.closest('[data-id]');
+    if (b) memberSheet(memberById(b.dataset.id), draw);
+  });
+}
+function memberSheet(m, onDone) {
+  const v = m || { nom: '', sexe: 'F', naissance: '', poids_kg: '', taille_cm: '', activite: 'leger', objectif: 'maintien', kcal_perso: null };
+  const el = openSheet(`${sheetHead(m ? m.nom : 'Nouveau membre')}
+    <form class="stack" data-form="member">
+      <label class="field"><span>Prénom</span><input class="input" name="nom" value="${esc(v.nom)}" required maxlength="60"></label>
+      <div class="grid2">
+        <label class="field"><span>Sexe</span><select class="input" name="sexe"><option value="F" ${v.sexe === 'F' ? 'selected' : ''}>Femme / fille</option><option value="H" ${v.sexe === 'H' ? 'selected' : ''}>Homme / garçon</option></select></label>
+        <label class="field"><span>Date de naissance</span><input class="input" type="date" name="naissance" value="${esc(v.naissance)}" max="${isoDate(new Date())}" required></label>
+      </div>
+      <div class="grid2">
+        <label class="field"><span>Poids (kg)</span><input class="input" type="number" name="poids_kg" min="2" max="300" step="0.1" inputmode="decimal" value="${esc(v.poids_kg)}" required></label>
+        <label class="field"><span>Taille (cm)</span><input class="input" type="number" name="taille_cm" min="40" max="250" step="0.5" inputmode="decimal" value="${esc(v.taille_cm)}" required></label>
+      </div>
+      <label class="field"><span>Activité physique</span><select class="input" name="activite">${Object.entries(ACTIVITY).map(([k, a]) => `<option value="${k}" ${k === v.activite ? 'selected' : ''}>${a.label}</option>`).join('')}</select></label>
+      <label class="field"><span>Objectif</span><select class="input" name="objectif">${Object.entries(OBJECTIF).map(([k, o]) => `<option value="${k}" ${k === v.objectif ? 'selected' : ''}>${o.label}</option>`).join('')}</select></label>
+      <div class="kcal-card" data-calc></div>
+      <label class="field"><span>Besoin personnalisé (kcal/jour, facultatif)</span><input class="input" type="number" name="kcal_perso" min="500" max="6000" inputmode="numeric" value="${esc(v.kcal_perso ?? '')}" placeholder="Laisser vide pour le calcul automatique"></label>
+      <button class="btn primary block">Enregistrer</button>
+      ${m ? '<button type="button" class="btn danger block" data-x="del">Retirer du foyer</button>' : ''}
+    </form>`);
+  const f = $('form', el);
+  const read = () => ({ ...(m ? { id: m.id } : {}), nom: f.nom.value.trim(), sexe: f.sexe.value, naissance: f.naissance.value, poids_kg: parseFloat(f.poids_kg.value), taille_cm: parseFloat(f.taille_cm.value), activite: f.activite.value, objectif: f.objectif.value, kcal_perso: parseInt(f.kcal_perso.value, 10) || null });
+  const calc = () => {
+    const x = read();
+    const box = $('[data-calc]', el);
+    if (!x.naissance || !(x.poids_kg > 0) || !(x.taille_cm > 0)) { box.innerHTML = '<span class="muted small">Renseignez date de naissance, poids et taille pour calculer les besoins.</span>'; return; }
+    const nd = needs(x);
+    box.innerHTML = `<div class="row"><div class="grow"><div class="muted small">Besoin estimé${x.kcal_perso ? ' (personnalisé)' : ''}</div><b class="big">${nd.kcal}</b> kcal/jour</div>
+      <div class="left"><b>${fmtNum(nd.kcal / REF_KCAL)}</b><span>portion standard</span></div></div>
+      <div class="muted small" style="margin-top:6px">Protéines ${nd.prot} g · Glucides ${nd.gluc} g · Lipides ${nd.lip} g · Fibres ${nd.fib} g</div>
+      ${x.kcal_perso ? `<div class="muted small">Calcul automatique : ${computedKcal(x)} kcal</div>` : ''}`;
+  };
+  calc();
+  f.addEventListener('input', calc);
+  f.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    try {
+      await Data.saveMember({ ...read(), ordre: m ? m.ordre : state.members.length });
+      closeSheet(); onDone?.(); render(); toast('Membre enregistré');
+    } catch (err) { fail(err, 'Enregistrement impossible'); }
+  });
+  $('[data-x="del"]', el)?.addEventListener('click', async () => {
+    if (!(await confirmSheet(`Retirer ${m.nom} du foyer ? Son journal sera supprimé.`, 'Retirer'))) return;
+    try { await Data.deleteMember(m.id); closeSheet(); onDone?.(); render(); } catch (err) { fail(err); }
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Paramètres
 // ---------------------------------------------------------------------------
 function openSettings() {
@@ -2001,6 +2693,7 @@ function openSettings() {
     <div class="card row" style="padding:12px;margin-bottom:16px;box-shadow:none;background:var(--surface-2)">
       <div class="grow"><div class="muted small">Connecté en tant que</div><b style="word-break:break-all">${esc(state.user?.email || '')}</b></div>
       <button class="btn small" data-x="logout">Se déconnecter</button></div>
+    <button class="btn soft block" data-x="foyer" style="margin-bottom:16px">${ICON.users} Mon foyer · ${state.members.length ? `${state.members.length} membre${state.members.length > 1 ? 's' : ''}` : 'à configurer'}</button>
     <form class="stack" data-form="settings">
       <h3 style="margin:0">Supermarché</h3>
       <label class="field"><span>Nom du magasin</span><input class="input" name="store_name" value="${esc(s.store_name)}" required></label>
@@ -2014,6 +2707,7 @@ function openSettings() {
     <div class="grid2"><button class="btn" data-x="export">${ICON.download} Exporter</button>
       <label class="btn">${ICON.upload} Importer<input type="file" accept="application/json" data-x="import" hidden></label></div>
     <p class="muted small">Données nutritionnelles : Open Food Facts. Vos recettes, plannings et listes sont privés et liés à votre compte.</p>`);
+  $('[data-x="foyer"]', el).addEventListener('click', () => { closeSheet(); openFoyer(); });
   $('[data-x="logout"]', el).addEventListener('click', async () => {
     while (sheets.length) closeSheet();
     await db.auth.signOut();
@@ -2073,6 +2767,7 @@ function render() {
     planning: ['Ma semaine', renderPlanning],
     courses: ['Liste de courses', renderCourses],
     batch: ['Batch cooking', renderBatchTab],
+    suivi: ['Suivi nutritionnel', renderSuivi],
   };
   if (!views[state.tab]) state.tab = 'scan';
   const [title, view] = views[state.tab];
@@ -2117,11 +2812,19 @@ const ACTIONS = {
   },
   week: async (b) => {
     state.week = addDays(state.week, 7 * Number(b.dataset.d));
+    state.day = addDays(state.day, 7 * Number(b.dataset.d));
     state.moving = null;
     try { await Data.loadWeek(); } catch (e) { fail(e); }
     render();
   },
   'week-menu': () => weekMenu(),
+  foyer: () => openFoyer(),
+  'suivi-member': (b) => { state.suiviMember = b.dataset.v; store.set('suiviMember', b.dataset.v); render(); },
+  'suivi-view': (b) => { state.suiviView = b.dataset.v; render(); },
+  'suivi-day': (b) => goToDay(b.dataset.d === '0' ? new Date() : addDays(state.day, Number(b.dataset.d))),
+  'suivi-open-day': (b) => { state.suiviView = 'jour'; goToDay(addDays(state.week, Number(b.dataset.i))); },
+  'journal-add': (b) => journalAdd(b.dataset.slot),
+  'journal-del': async (b) => { try { await Data.deleteJournal(b.dataset.id); render(); } catch (e) { fail(e); } },
   'del-extra': async (b) => { try { await Data.deleteExtra(b.dataset.id); render(); } catch (e) { fail(e); } },
   slot: (b) => onSlot(Number(b.dataset.d), b.dataset.s),
   'cancel-move': () => { state.moving = null; render(); },
@@ -2253,7 +2956,7 @@ async function onSession(session) {
   document.body.classList.remove('logged-out');
   $('#main').innerHTML = '<div class="spinner"></div>';
   try {
-    await Data.loadAll();
+    await Promise.all([Data.loadAll(), CQ.load().catch((e) => console.warn('Ciqual', e))]);
     await Data.loadWeek();
     state.loaded = true;
     render();
