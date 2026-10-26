@@ -390,7 +390,7 @@ textarea.input { resize: vertical; min-height: 72px; }
 // ---------------------------------------------------------------------------
 const APP_NAME = 'Nutri Semaine'; // titre provisoire
 // À incrémenter à chaque publication, avec la même valeur dans version.json.
-const APP_VERSION = '2026-10-26.1';
+const APP_VERSION = '2026-10-26.2';
 const SUPABASE_URL = 'https://svugddkrptqpjmywhorb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2dWdkZGtycHRxcGpteXdob3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MjU5NDgsImV4cCI6MjEwODUwMTk0OH0.63RETgf7rbVMquGV-7ooY3qn-Qf31uVCA3ZBfqBvFcI';
 const OFF = 'https://world.openfoodfacts.org/api/v2';
@@ -494,6 +494,9 @@ function fmtNum(n) {
 // ---------------------------------------------------------------------------
 const state = {
   user: null,
+  foyer: null,
+  compte: null,
+  comptes: [],
   authMode: 'login',
   tab: store.get('tab', 'scan'),
   settings: { store_name: 'Super U Porte de Savoie Montmélian', store_slug: 'superu-montmelian', default_servings: 2 },
@@ -533,21 +536,24 @@ const T = {
 };
 const PHOTO_BUCKET = 'photos-recettes';
 const me = () => state.user?.id;
+const foyer = () => state.foyer?.id;
+// Colonnes d'appartenance posées sur chaque ligne créée.
+const own = () => ({ user_id: me(), foyer_id: foyer() });
 
 const Data = {
   async loadAll() {
     const [s, r, l, sc, mb] = await Promise.all([
-      db.from(T.settings).select('*').maybeSingle(),
-      db.from(T.recipes).select('*').order('updated_at', { ascending: false }),
-      db.from(T.links).select('*'),
-      db.from(T.scans).select('*').order('scanned_at', { ascending: false }).limit(150),
-      db.from(T.members).select('*').order('ordre').order('created_at'),
+      db.from(T.settings).select('*').eq('foyer_id', foyer()).maybeSingle(),
+      db.from(T.recipes).select('*').eq('foyer_id', foyer()).order('updated_at', { ascending: false }),
+      db.from(T.links).select('*').eq('foyer_id', foyer()),
+      db.from(T.scans).select('*').eq('foyer_id', foyer()).order('scanned_at', { ascending: false }).limit(150),
+      db.from(T.members).select('*').eq('foyer_id', foyer()).order('ordre').order('created_at'),
     ]);
     for (const res of [s, r, l, sc, mb]) if (res.error) throw res.error;
     state.members = mb.data;
     if (s.data) state.settings = s.data;
     else {
-      const ins = await db.from(T.settings).insert({ user_id: me() }).select().single();
+      const ins = await db.from(T.settings).insert(own()).select().single();
       if (ins.error) throw ins.error;
       state.settings = ins.data;
     }
@@ -558,10 +564,10 @@ const Data = {
   async loadWeek() {
     const week = isoDate(state.week);
     const [p, c, x, j] = await Promise.all([
-      db.from(T.plan).select('*').eq('week', week),
-      db.from(T.checks).select('*').eq('week', week),
-      db.from(T.extras).select('*').eq('week', week).order('created_at'),
-      db.from(T.journal).select('*').gte('date', week).lte('date', isoDate(addDays(state.week, 6))).order('created_at'),
+      db.from(T.plan).select('*').eq('foyer_id', foyer()).eq('week', week),
+      db.from(T.checks).select('*').eq('foyer_id', foyer()).eq('week', week),
+      db.from(T.extras).select('*').eq('foyer_id', foyer()).eq('week', week).order('created_at'),
+      db.from(T.journal).select('*').eq('foyer_id', foyer()).gte('date', week).lte('date', isoDate(addDays(state.week, 6))).order('created_at'),
     ]);
     for (const res of [p, c, x, j]) if (res.error) throw res.error;
     state.plan = p.data;
@@ -570,7 +576,7 @@ const Data = {
     state.journal = j.data;
   },
   async saveMember(m) {
-    const { data, error } = await db.from(T.members).upsert({ ...m, user_id: me() }).select().single();
+    const { data, error } = await db.from(T.members).upsert({ ...m, ...own() }).select().single();
     if (error) throw error;
     const i = state.members.findIndex((x) => x.id === data.id);
     if (i >= 0) state.members[i] = data; else state.members.push(data);
@@ -583,7 +589,7 @@ const Data = {
     state.journal = state.journal.filter((x) => x.member_id !== id);
   },
   async addJournal(entry) {
-    const { data, error } = await db.from(T.journal).insert({ ...entry, user_id: me() }).select().single();
+    const { data, error } = await db.from(T.journal).insert({ ...entry, ...own() }).select().single();
     if (error) throw error;
     state.journal.push(data);
   },
@@ -593,7 +599,7 @@ const Data = {
     state.journal = state.journal.filter((x) => x.id !== id);
   },
   async addExtra(name, qty, aisle) {
-    const { data, error } = await db.from(T.extras).insert({ user_id: me(), week: isoDate(state.week), name, qty: qty || null, aisle }).select().single();
+    const { data, error } = await db.from(T.extras).insert({ ...own(), week: isoDate(state.week), name, qty: qty || null, aisle }).select().single();
     if (error) throw error;
     state.extras.push(data);
   },
@@ -609,7 +615,7 @@ const Data = {
     state.extras = state.extras.filter((x) => x.id !== id);
   },
   async saveRecipe(r) {
-    const row = { ...r, user_id: me(), updated_at: new Date().toISOString() };
+    const row = { ...r, ...own(), updated_at: new Date().toISOString() };
     const { data, error } = await db.from(T.recipes).upsert(row).select().single();
     if (error) throw error;
     const i = state.recipes.findIndex((x) => x.id === data.id);
@@ -624,8 +630,8 @@ const Data = {
     state.plan = state.plan.filter((m) => m.recipe_id !== id);
   },
   async setMeal(day, slot, recipe_id, servings, extra = {}) {
-    const row = { user_id: me(), week: isoDate(state.week), day, slot, recipe_id, servings, eaters: extra.eaters ?? null, guests: extra.guests ?? 0 };
-    const { data, error } = await db.from(T.plan).upsert(row, { onConflict: 'user_id,week,day,slot' }).select().single();
+    const row = { ...own(), week: isoDate(state.week), day, slot, recipe_id, servings, eaters: extra.eaters ?? null, guests: extra.guests ?? 0 };
+    const { data, error } = await db.from(T.plan).upsert(row, { onConflict: 'foyer_id,week,day,slot' }).select().single();
     if (error) throw error;
     state.plan = state.plan.filter((m) => !(m.day === day && m.slot === slot));
     state.plan.push(data);
@@ -643,20 +649,20 @@ const Data = {
     state.plan = state.plan.filter((m) => !ids.includes(m.id));
   },
   async addScan(p, score) {
-    const row = { user_id: me(), ean: p.code, name: p.product_name_fr || p.product_name || null, brand: p.brands || null, image_url: p.image_front_small_url || p.image_front_url || null, score };
+    const row = { ...own(), ean: p.code, name: p.product_name_fr || p.product_name || null, brand: p.brands || null, image_url: p.image_front_small_url || p.image_front_url || null, score };
     await db.from(T.scans).delete().eq('ean', p.code);
     const { data, error } = await db.from(T.scans).insert(row).select().single();
     if (error) throw error;
     state.scans = [data, ...state.scans.filter((s) => s.ean !== p.code)];
   },
   async clearScans() {
-    const { error } = await db.from(T.scans).delete().eq('user_id', me());
+    const { error } = await db.from(T.scans).delete().eq('foyer_id', foyer());
     if (error) throw error;
     state.scans = [];
   },
   async saveLink(ingredient, url, label) {
-    const row = { user_id: me(), ingredient, url, label, updated_at: new Date().toISOString() };
-    const { error } = await db.from(T.links).upsert(row);
+    const row = { ...own(), ingredient, url, label, updated_at: new Date().toISOString() };
+    const { error } = await db.from(T.links).upsert(row, { onConflict: 'foyer_id,ingredient' });
     if (error) throw error;
     state.links[ingredient] = row;
   },
@@ -666,12 +672,12 @@ const Data = {
     delete state.links[ingredient];
   },
   async setCheck(item, checked) {
-    const { error } = await db.from(T.checks).upsert({ user_id: me(), week: isoDate(state.week), item, checked });
+    const { error } = await db.from(T.checks).upsert({ ...own(), week: isoDate(state.week), item, checked }, { onConflict: 'foyer_id,week,item' });
     if (error) throw error;
     state.checks[item] = checked;
   },
   async saveSettings(patch) {
-    const { data, error } = await db.from(T.settings).upsert({ ...patch, user_id: me(), updated_at: new Date().toISOString() }).select().single();
+    const { data, error } = await db.from(T.settings).upsert({ ...patch, ...own(), updated_at: new Date().toISOString() }, { onConflict: 'foyer_id' }).select().single();
     if (error) throw error;
     state.settings = data;
   },
@@ -2159,7 +2165,7 @@ function weekMenu() {
     try {
       if (act === 'today') { state.week = mondayOf(new Date()); await Data.loadWeek(); }
       if (act === 'dup') {
-        const { data, error } = await db.from(T.plan).select('*').eq('week', isoDate(addDays(state.week, -7)));
+        const { data, error } = await db.from(T.plan).select('*').eq('foyer_id', foyer()).eq('week', isoDate(addDays(state.week, -7)));
         if (error) throw error;
         if (!data.length) { toast('La semaine précédente est vide'); return; }
         for (const m of data) if (!state.plan.some((x) => x.day === m.day && x.slot === m.slot)) await Data.setMeal(m.day, m.slot, m.recipe_id, m.servings, m);
@@ -2620,7 +2626,9 @@ function quantitySheet(o) {
 // Foyer : membres et besoins
 // ---------------------------------------------------------------------------
 function openFoyer() {
-  const el = openSheet(`${sheetHead('Mon foyer')}<div data-list></div>
+  const el = openSheet(`${sheetHead('Mon foyer')}
+    <button class="btn soft block" data-x="comptes" style="margin-bottom:12px">${ICON.link} Partage du foyer : code d'invitation, comptes, « je suis… »</button>
+    <h3 style="margin:0 0 6px">Membres</h3><div data-list></div>
     <button class="btn primary block" data-x="add" style="margin-top:12px">${ICON.plus} Ajouter un membre</button>
     <p class="muted small">Besoins calculés avec la formule de Mifflin-St Jeor (adultes) et les équations EER de l'IOM (enfants), ajustés selon l'activité et l'objectif. Une « portion standard » de recette correspond à un adulte à ${REF_KCAL} kcal/jour : chacun reçoit une part proportionnelle à ses besoins.</p>`);
   const draw = () => {
@@ -2633,6 +2641,7 @@ function openFoyer() {
   draw();
   el.addEventListener('click', (e) => {
     if (e.target.closest('[data-x="add"]')) return memberSheet(null, draw);
+    if (e.target.closest('[data-x="comptes"]')) return openFoyerComptes();
     const b = e.target.closest('[data-id]');
     if (b) memberSheet(memberById(b.dataset.id), draw);
   });
@@ -2728,7 +2737,7 @@ function openSettings() {
 }
 async function exportData() {
   try {
-    const [plan] = await Promise.all([db.from(T.plan).select('*')]);
+    const [plan] = await Promise.all([db.from(T.plan).select('*').eq('foyer_id', foyer())]);
     if (plan.error) throw plan.error;
     const data = { app: APP_NAME, version: 1, exported_at: new Date().toISOString(), settings: state.settings, recipes: state.recipes, meal_plan: plan.data, product_links: Object.values(state.links) };
     const a = document.createElement('a');
@@ -2745,10 +2754,10 @@ async function importData(file) {
     if (!(await confirmSheet(`Importer ${d.recipes.length} recette(s) et le planning ? Les éléments existants avec le même identifiant seront remplacés.`, 'Importer', false))) return;
     // Les éléments importés sont rattachés au compte connecté ; les recettes reçoivent de nouveaux identifiants.
     const ids = new Map(d.recipes.map((r) => [r.id, uid()]));
-    if (d.recipes.length) { const r = await db.from(T.recipes).insert(d.recipes.map((x) => ({ ...x, id: ids.get(x.id), user_id: me() }))); if (r.error) throw r.error; }
-    if (d.product_links?.length) { const r = await db.from(T.links).upsert(d.product_links.map(({ id, ...l }) => ({ ...l, user_id: me() }))); if (r.error) throw r.error; }
-    const plan = (d.meal_plan || []).filter((m) => ids.has(m.recipe_id)).map(({ id, ...m }) => ({ ...m, recipe_id: ids.get(m.recipe_id), user_id: me() }));
-    if (plan.length) { const r = await db.from(T.plan).upsert(plan, { onConflict: 'user_id,week,day,slot' }); if (r.error) throw r.error; }
+    if (d.recipes.length) { const r = await db.from(T.recipes).insert(d.recipes.map((x) => ({ ...x, id: ids.get(x.id), ...own() }))); if (r.error) throw r.error; }
+    if (d.product_links?.length) { const r = await db.from(T.links).upsert(d.product_links.map(({ id, ...l }) => ({ ...l, ...own() }))); if (r.error) throw r.error; }
+    const plan = (d.meal_plan || []).filter((m) => ids.has(m.recipe_id)).map(({ id, ...m }) => ({ ...m, recipe_id: ids.get(m.recipe_id), ...own() }));
+    if (plan.length) { const r = await db.from(T.plan).upsert(plan, { onConflict: 'foyer_id,week,day,slot' }); if (r.error) throw r.error; }
     if (d.settings) { const { id, user_id, updated_at, ...s } = d.settings; await Data.saveSettings(s); }
     await Data.loadAll();
     await Data.loadWeek();
@@ -2907,6 +2916,7 @@ function renderAuth() {
       <label class="field"><span>Mot de passe${signup ? ' (6 caractères minimum)' : ''}</span>
         <input class="input" type="password" name="password" minlength="6" maxlength="72" autocomplete="${signup ? 'new-password' : 'current-password'}" required></label>
       <label class="check"><input type="checkbox" data-show-pass> Afficher le mot de passe</label>
+      ${signup ? '' : '<button type="button" class="btn block" data-forgot style="border:0;color:var(--primary-strong)">Mot de passe oublié ?</button>'}
       <button class="btn primary block">${signup ? 'Créer mon compte' : 'Se connecter'}</button>
     </form></section>`;
 }
@@ -2917,6 +2927,13 @@ document.addEventListener('click', (e) => {
   const email = $('[data-form="auth"] [name="email"]')?.value || '';
   renderAuth();
   $('[data-form="auth"] [name="email"]').value = email;
+});
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('[data-forgot]')) return;
+  openSheet(`${sheetHead('Mot de passe oublié')}
+    <p>Par choix, l'application n'envoie pas d'e-mail. Un <b>administrateur de votre foyer</b> (la personne qui l'a créé) peut définir un nouveau mot de passe pour votre compte depuis <b>Paramètres › Mon foyer › Partage du foyer</b>, puis vous le communiquer.</p>
+    <p class="muted small">Si vous êtes seul dans votre foyer, écrivez à la personne qui administre l'application.</p>
+    <button class="btn primary block" data-act="close-sheet">Compris</button>`);
 });
 document.addEventListener('change', (e) => {
   if (e.target.matches('[data-show-pass]')) $('[data-form="auth"] [name="password"]').type = e.target.checked ? 'text' : 'password';
@@ -2946,17 +2963,156 @@ document.addEventListener('submit', async (e) => {
   }
 });
 
+const Foyer = {
+  genCode() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    return Array.from(crypto.getRandomValues(new Uint8Array(8)), (b) => chars[b % chars.length]).join('');
+  },
+  // Rattache le compte à son foyer ; en crée un (et migre les anciennes données) au premier passage.
+  async ensure() {
+    const { data: c, error } = await db.from('foyer_comptes').select('*, foyers(*)').eq('user_id', me()).maybeSingle();
+    if (error) throw error;
+    if (c) {
+      state.foyer = c.foyers;
+      state.compte = c;
+      if (c.email !== state.user.email) db.from('foyer_comptes').update({ email: state.user.email }).eq('user_id', me()).then(() => {});
+      return;
+    }
+    const { data: f, error: e1 } = await db.from('foyers').insert({ nom: 'Mon foyer', code_invitation: this.genCode(), created_by: me() }).select().single();
+    if (e1) throw e1;
+    const { data: cc, error: e2 } = await db.from('foyer_comptes').insert({ foyer_id: f.id, user_id: me(), role: 'admin', email: state.user.email }).select().single();
+    if (e2) throw e2;
+    state.foyer = f;
+    state.compte = cc;
+    await this.migrate(f.id);
+  },
+  async migrate(fid) {
+    const res = await Promise.all([T.recipes, T.plan, T.scans, T.links, T.checks, T.extras, T.members, T.journal]
+      .map((t) => db.from(t).update({ foyer_id: fid }).eq('user_id', me()).is('foyer_id', null)));
+    res.forEach((r, i) => { if (r.error) console.warn('migration', i, r.error); });
+    const { data: s } = await db.from(T.settings).select('user_id').eq('foyer_id', fid).maybeSingle();
+    if (!s) await db.from(T.settings).update({ foyer_id: fid }).eq('user_id', me()).is('foyer_id', null);
+  },
+  async loadComptes() {
+    const { data, error } = await db.from('foyer_comptes').select('*').eq('foyer_id', foyer()).order('created_at');
+    if (error) throw error;
+    state.comptes = data;
+    return data;
+  },
+  async invoke(name, body) {
+    const { data, error } = await db.functions.invoke(name, { body });
+    if (error) {
+      let msg = 'Opération impossible';
+      try { msg = (await error.context.json()).error || msg; } catch { /* réponse non JSON */ }
+      throw new Error(msg);
+    }
+    return data;
+  },
+  isAdmin() { return state.compte?.role === 'admin'; },
+};
+
+// Écran « Mon foyer » : code d'invitation, comptes rattachés, « je suis… », rejoindre, mots de passe.
+function openFoyerComptes() {
+  const el = openSheet(`${sheetHead(state.foyer?.nom || 'Mon foyer')}<div data-body><div class="spinner"></div></div>`);
+  const draw = async () => {
+    try { await Foyer.loadComptes(); } catch (e) { fail(e); }
+    const f = state.foyer;
+    const admin = Foyer.isAdmin();
+    const comptes = state.comptes.map((c) => {
+      const m = memberById(c.member_id);
+      const mine = c.user_id === me();
+      return `<div class="nt-row"><span><b>${esc(c.email || 'compte')}</b>${mine ? ' <span class="badge-extra">moi</span>' : ''}<br><span class="muted small">${c.role === 'admin' ? 'Administrateur' : 'Membre'}${m ? ` · ${esc(m.nom)}` : ''}</span></span>
+        ${!mine && admin ? `<button class="btn small" data-x="pw" data-email="${esc(c.email || '')}">Mot de passe</button>` : ''}</div>`;
+    }).join('');
+    $('[data-body]', el).innerHTML = `
+      <div class="card" style="padding:14px;margin-bottom:12px">
+        <div class="muted small">Code d'invitation du foyer</div>
+        <div class="row"><b style="font-size:26px;letter-spacing:.12em;font-variant-numeric:tabular-nums" class="grow">${esc(f.code_invitation)}</b>
+          <button class="btn small" data-x="share">${ICON.share} Partager</button></div>
+        <p class="muted small" style="margin:6px 0 0">Un proche crée son compte, puis saisit ce code dans Paramètres › Mon foyer › Rejoindre : il verra et modifiera les mêmes recettes, planning et courses.</p>
+      </div>
+      ${admin ? `<form class="row" data-form="foyer-nom" style="margin-bottom:12px"><input class="input grow" name="nom" value="${esc(f.nom)}" maxlength="60" aria-label="Nom du foyer"><button class="btn">Renommer</button></form>` : ''}
+      <label class="field" style="margin-bottom:12px"><span>Je suis…</span><select class="input" data-x="me">
+        <option value="">— non précisé —</option>${state.members.map((m) => `<option value="${m.id}" ${state.compte?.member_id === m.id ? 'selected' : ''}>${esc(m.nom)}</option>`).join('')}</select>
+        <span class="muted small" style="font-weight:400">Le suivi et le journal s'ouvrent sur ce membre.</span></label>
+      <div class="ntable"><div class="nt-title">Comptes du foyer</div>${comptes}</div>
+      <details class="ndetails"><summary>Rejoindre un autre foyer</summary>
+        <p class="muted small">Vos données actuelles resteront dans votre foyer actuel. Saisissez le code reçu :</p>
+        <form class="row" data-form="join"><input class="input grow" name="code" placeholder="Code à 8 caractères" maxlength="10" autocapitalize="characters" required><button class="btn primary">Rejoindre</button></form></details>`;
+  };
+  draw();
+  el.addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-x]');
+    if (!b) return;
+    if (b.dataset.x === 'share') {
+      const text = `Rejoins mon foyer sur ${APP_NAME} : crée un compte sur ${location.origin}${location.pathname} puis saisis le code ${state.foyer.code_invitation} dans Paramètres › Mon foyer.`;
+      if (navigator.share) { try { await navigator.share({ text }); } catch { /* annulé */ } }
+      else { try { await navigator.clipboard.writeText(text); toast('Invitation copiée'); } catch { toast(state.foyer.code_invitation); } }
+    }
+    if (b.dataset.x === 'pw') resetPasswordSheet(b.dataset.email);
+  });
+  el.addEventListener('change', async (e) => {
+    if (!e.target.matches('[data-x="me"]')) return;
+    const member_id = e.target.value || null;
+    try {
+      const { error } = await db.from('foyer_comptes').update({ member_id }).eq('user_id', me());
+      if (error) throw error;
+      state.compte.member_id = member_id;
+      if (member_id) { state.suiviMember = member_id; store.set('suiviMember', member_id); }
+      toast('Enregistré');
+    } catch (err) { fail(err); }
+  });
+  el.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    if (f.dataset.form === 'foyer-nom') {
+      try {
+        const { error } = await db.from('foyers').update({ nom: f.nom.value.trim() || 'Mon foyer' }).eq('id', foyer());
+        if (error) throw error;
+        state.foyer.nom = f.nom.value.trim() || 'Mon foyer';
+        $('h2', el).textContent = state.foyer.nom;
+        toast('Foyer renommé');
+      } catch (err) { fail(err); }
+    }
+    if (f.dataset.form === 'join') {
+      if (!(await confirmSheet('Rejoindre ce foyer ? Vous quitterez votre foyer actuel ; ses données y restent.', 'Rejoindre', false))) return;
+      try {
+        const r = await Foyer.invoke('join-foyer', { code: f.code.value });
+        toast(`Bienvenue dans « ${r.foyer.nom} »`);
+        while (sheets.length) closeSheet();
+        state.loaded = false;
+        onSession({ user: state.user });
+      } catch (err) { toast(err.message); }
+    }
+  });
+}
+function resetPasswordSheet(email) {
+  const el = openSheet(`${sheetHead('Nouveau mot de passe')}
+    <p class="muted small" style="margin-top:0">Définissez un nouveau mot de passe pour <b>${esc(email)}</b>. Communiquez-le lui ensuite.</p>
+    <form class="stack" data-form="pw"><input class="input" name="password" type="text" minlength="6" maxlength="72" placeholder="Au moins 6 caractères" required autocomplete="off">
+    <button class="btn primary block">Enregistrer</button></form>`);
+  $('form', el).addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = $('button', e.target);
+    btn.disabled = true;
+    try { await Foyer.invoke('reset-password', { email, password: e.target.password.value }); closeSheet(); toast('Mot de passe modifié'); }
+    catch (err) { btn.disabled = false; toast(err.message); }
+  });
+}
+
 async function onSession(session) {
   const user = session?.user || null;
   if (user?.id === state.user?.id && state.loaded) return;
   state.user = user;
   state.loaded = false;
-  Object.assign(state, { recipes: [], links: {}, scans: [], plan: [], checks: {}, extras: [], moving: null });
+  Object.assign(state, { foyer: null, compte: null, comptes: [], recipes: [], links: {}, scans: [], plan: [], checks: {}, extras: [], members: [], journal: [], moving: null });
   if (!user) { renderAuth(); return; }
   document.body.classList.remove('logged-out');
   $('#main').innerHTML = '<div class="spinner"></div>';
   try {
+    await Foyer.ensure();
     await Promise.all([Data.loadAll(), CQ.load().catch((e) => console.warn('Ciqual', e))]);
+    if (state.compte?.member_id && !memberById(state.suiviMember)) state.suiviMember = state.compte.member_id;
     await Data.loadWeek();
     state.loaded = true;
     render();
