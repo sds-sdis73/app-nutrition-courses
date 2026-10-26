@@ -3,7 +3,7 @@ import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 import webpush from "npm:web-push@3.6.7";
 
 // Appelée toutes les heures (pg_cron). Envoie les rappels dus à chaque abonnement push, une seule fois (table rappels_envoyes).
-// Types : batch (samedi 18 h, session du lendemain), congel (19 h, sortir un reste pour demain),
+// Types : batch (samedi 18 h, session du lendemain), congel (19 h, sortir un reste pour demain), bilan (20 h, bilan du soir),
 // courses (jour/heure choisis), planning (vendredi 18 h si la semaine prochaine est vide), test (à la demande).
 
 const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type", "Access-Control-Allow-Methods": "POST, OPTIONS" };
@@ -82,6 +82,9 @@ Deno.serve(async (req) => {
       const nextMonday = iso(addDays(mondayOf(local), 7));
       const { count } = await admin.from("planning_repas").select("id", { count: "exact", head: true }).eq("foyer_id", foyerId).eq("week", nextMonday);
       if (!count) messages.push({ type: "planning", key: nextMonday, title: "Semaine prochaine à planifier", body: "Aucun repas n'est encore prévu pour la semaine prochaine. Deux minutes suffisent pour la remplir.", url: "./#planning" });
+    }
+    if (hour === 20 && wantsAny("bilan")) {
+      messages.push({ type: "bilan", key: today, title: "Bilan du soir", body: "Ton compagnon a hâte de faire le bilan de la journée. Un dernier coup d'œil au journal ?", url: "./#suivi" });
     }
     for (const s of list!) {
       const p = s.prefs ?? {};
