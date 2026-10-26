@@ -137,6 +137,34 @@ body.logged-out .tabbar, body.logged-out [data-act="settings"] { display: none; 
 .rings { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 12px; }
 .ring { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .ring b { font-size: 12px; } .ring span { font-size: 11px; }
+.quick3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+.quick3 .btn { min-height: 44px; padding: 0 6px; font-size: 14px; }
+.tl-head { margin: 4px 0 8px; }
+.timeline { list-style: none; margin: 0 0 16px; padding: 0; position: relative; }
+.timeline::before { content: ""; position: absolute; left: 61px; top: 8px; bottom: 8px; width: 2px; background: var(--border); }
+.tl-item, .tl-now { display: grid; grid-template-columns: 44px 36px 1fr; align-items: start; gap: 0; margin-bottom: 10px; position: relative; }
+.tl-time { font-size: 12px; font-weight: 700; color: var(--muted); padding-top: 10px; font-variant-numeric: tabular-nums; }
+.tl-dot { width: 30px; height: 30px; border-radius: 50%; background: var(--surface); border: 2px solid var(--border); display: grid; place-items: center; font-size: 14px; margin-top: 3px; z-index: 1; }
+.tl-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 9px 11px; min-width: 0; box-shadow: var(--shadow); }
+.tl-item.done .tl-dot { border-color: var(--primary); background: var(--primary-soft); }
+.tl-item.next .tl-card { border-color: var(--primary); }
+.tl-item.next .tl-dot { border-color: var(--primary); }
+.tl-item.missed .tl-card { background: var(--surface-2); box-shadow: none; }
+.tl-item.later { opacity: .6; } .tl-item.later .tl-card { box-shadow: none; }
+.tl-item.done .tl-time { color: var(--primary-strong); }
+.tl-check { color: var(--primary-strong); font-weight: 800; margin-left: 6px; }
+.tl-recipe { display: flex; gap: 8px; align-items: center; margin-top: 6px; min-width: 0; }
+.tl-recipe .meta { display: flex; flex-wrap: wrap; gap: 6px; font-size: 12px; color: var(--muted); margin-top: 2px; }
+.tl-recipe b { display: block; font-size: 14px; }
+.tl-list { margin-top: 6px; }
+.tl-food { display: flex; gap: 6px; align-items: center; font-size: 13px; padding: 2px 0; }
+.tl-food .icon-btn { width: 30px; height: 30px; }
+.tl-actions { display: flex; gap: 6px; align-items: center; margin-top: 6px; flex-wrap: wrap; }
+.tl-actions:empty { display: none; }
+.tl-now { margin: 0 0 10px; align-items: center; }
+.tl-now .tl-time { padding: 0; color: #c0503a; }
+.tl-now .tl-dot { width: 12px; height: 12px; margin: 0 0 0 9px; background: #c0503a; border: 0; }
+.tl-now-line { font-size: 12px; font-weight: 800; color: #c0503a; text-transform: uppercase; letter-spacing: .04em; border-top: 2px dashed #e5a99c; padding-top: 2px; }
 .famille { display: flex; gap: 10px; overflow-x: auto; margin-top: 12px; padding: 4px 0; }
 .fam { border: 0; background: var(--surface); border-radius: 14px; padding: 6px 10px; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 12px; font-weight: 700; color: var(--muted); flex: none; }
 .fam.on { background: var(--primary-soft); color: var(--primary-strong); }
@@ -427,7 +455,7 @@ textarea.input { resize: vertical; min-height: 72px; }
 // ---------------------------------------------------------------------------
 const APP_NAME = 'Nutri Semaine'; // titre provisoire
 // À incrémenter à chaque publication, avec la même valeur dans version.json.
-const APP_VERSION = '2026-10-27.4';
+const APP_VERSION = '2026-10-27.5';
 const SUPABASE_URL = 'https://svugddkrptqpjmywhorb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2dWdkZGtycHRxcGpteXdob3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MjU5NDgsImV4cCI6MjEwODUwMTk0OH0.63RETgf7rbVMquGV-7ooY3qn-Qf31uVCA3ZBfqBvFcI';
 const OFF = 'https://world.openfoodfacts.org/api/v2';
@@ -554,8 +582,7 @@ const state = {
   favoris: [],
   perso: [],
   activites: [],
-  jetons: [],
-  connexions: [],
+  eau: [],
   compagnons: [],
   bilans: [],
   day: new Date(),
@@ -587,7 +614,7 @@ const T = {
   favoris: 'aliments_favoris',
   perso: 'produits_perso',
   activites: 'activites',
-  jetons: 'jetons_import',
+  eau: 'hydratation',
   compagnons: 'compagnons',
   bilans: 'bilans',
 };
@@ -599,7 +626,7 @@ const own = () => ({ user_id: me(), foyer_id: foyer() });
 
 const Data = {
   async loadAll() {
-    const [s, r, l, sc, mb, pl, rs, fv, pp, jt, cx, cp] = await Promise.all([
+    const [s, r, l, sc, mb, pl, rs, fv, pp, cp] = await Promise.all([
       db.from(T.settings).select('*').eq('foyer_id', foyer()).maybeSingle(),
       db.from(T.recipes).select('*').eq('foyer_id', foyer()).order('updated_at', { ascending: false }),
       db.from(T.links).select('*').eq('foyer_id', foyer()),
@@ -609,15 +636,11 @@ const Data = {
       db.from(T.restes).select('*').eq('foyer_id', foyer()).order('dlc'),
       db.from(T.favoris).select('*').eq('foyer_id', foyer()).order('created_at'),
       db.from(T.perso).select('*').eq('foyer_id', foyer()).order('name'),
-      db.from(T.jetons).select('*').eq('foyer_id', foyer()),
-      db.rpc('mes_connexions_montres'),
       db.from(T.compagnons).select('*').eq('foyer_id', foyer()),
     ]);
-    for (const res of [s, r, l, sc, mb, pl, rs, fv, pp, jt, cx, cp]) if (res.error) throw res.error;
+    for (const res of [s, r, l, sc, mb, pl, rs, fv, pp, cp]) if (res.error) throw res.error;
     state.favoris = fv.data;
     state.perso = pp.data;
-    state.jetons = jt.data;
-    state.connexions = cx.data || [];
     state.compagnons = cp.data;
     state.members = mb.data;
     state.placards = pl.data;
@@ -635,15 +658,17 @@ const Data = {
   },
   async loadWeek() {
     const week = isoDate(state.week);
-    const [p, c, x, j, ac, bl] = await Promise.all([
+    const [p, c, x, j, ac, bl, eu] = await Promise.all([
       db.from(T.plan).select('*').eq('foyer_id', foyer()).eq('week', week),
       db.from(T.checks).select('*').eq('foyer_id', foyer()).eq('week', week),
       db.from(T.extras).select('*').eq('foyer_id', foyer()).eq('week', week).order('created_at'),
       db.from(T.journal).select('*').eq('foyer_id', foyer()).gte('date', week).lte('date', isoDate(addDays(state.week, 6))).order('created_at'),
       db.from(T.activites).select('*').eq('foyer_id', foyer()).gte('date', isoDate(addDays(state.week, -7))).lte('date', isoDate(addDays(state.week, 6))).order('date'),
       db.from(T.bilans).select('*').eq('foyer_id', foyer()).gte('date', isoDate(addDays(state.week, -7))).lte('date', isoDate(addDays(state.week, 6))),
+      db.from(T.eau).select('*').eq('foyer_id', foyer()).gte('date', isoDate(addDays(state.week, -7))).lte('date', isoDate(addDays(state.week, 6))).order('heure'),
     ]);
-    for (const res of [p, c, x, j, ac, bl]) if (res.error) throw res.error;
+    for (const res of [p, c, x, j, ac, bl, eu]) if (res.error) throw res.error;
+    state.eau = eu.data;
     state.activites = ac.data;
     state.bilans = bl.data;
     state.plan = p.data;
@@ -760,32 +785,25 @@ const Data = {
     state.activites = [...state.activites.filter((a) => a.id !== data.id), data];
     return data;
   },
+  async updateActivite(id, patch) {
+    const { data, error } = await db.from(T.activites).update(patch).eq('id', id).select().single();
+    if (error) throw error;
+    state.activites = state.activites.map((a) => (a.id === id ? data : a));
+  },
+  async addEau(row) {
+    const { data, error } = await db.from(T.eau).insert({ ...own(), ...row }).select().single();
+    if (error) throw error;
+    state.eau.push(data);
+  },
+  async deleteEau(id) {
+    const { error } = await db.from(T.eau).delete().eq('id', id);
+    if (error) throw error;
+    state.eau = state.eau.filter((x) => x.id !== id);
+  },
   async deleteActivite(id) {
     const { error } = await db.from(T.activites).delete().eq('id', id);
     if (error) throw error;
     state.activites = state.activites.filter((a) => a.id !== id);
-  },
-  async createJeton(member_id, label) {
-    const token = Array.from(crypto.getRandomValues(new Uint8Array(24)), (b) => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'[b % 62]).join('');
-    const { data, error } = await db.from(T.jetons).insert({ ...own(), token, member_id, label }).select().single();
-    if (error) throw error;
-    state.jetons.push(data);
-    return data;
-  },
-  async deleteJeton(token) {
-    const { error } = await db.from(T.jetons).delete().eq('token', token);
-    if (error) throw error;
-    state.jetons = state.jetons.filter((j) => j.token !== token);
-  },
-  async refreshJetons() {
-    const { data, error } = await db.from(T.jetons).select('*').eq('foyer_id', foyer());
-    if (error) throw error;
-    state.jetons = data;
-  },
-  async refreshConnexions() {
-    const { data, error } = await db.rpc('mes_connexions_montres');
-    if (error) throw error;
-    state.connexions = data || [];
   },
   async addFavori(row) {
     const { data, error } = await db.from(T.favoris).insert({ ...own(), ...row }).select().single();
@@ -1338,7 +1356,7 @@ const kcalNeed = (m) => Number(m.kcal_perso) || computedKcal(m);
 // Activités manuelles : MET (dépense = MET × poids × heures).
 const MET = [['Marche tranquille', 3], ['Marche rapide', 4.3], ['Randonnée', 6], ['Course à pied (9 km/h)', 8.8], ['Course à pied (12 km/h)', 11.5], ['Vélo loisir', 5.8], ['Vélo soutenu', 8.5], ['Natation', 7], ['Musculation', 5], ['Yoga / Pilates', 3], ['Fitness / cardio', 7], ['Danse', 5.5], ['Football', 7], ['Tennis / padel', 7.3], ['Basket', 6.5], ['Escalade', 7.5], ['Ski', 6.5], ['Jardinage', 3.8], ['Ménage', 3.3], ['Bricolage', 4], ['Jeux avec les enfants', 4], ['Marche avec poussette', 3.5], ['Vélo d\'appartement', 6.8], ['Rameur', 7], ['Corde à sauter', 11], ['Boxe', 9], ['Équitation', 5.5], ['Golf', 4.8], ['Trottinette', 4], ['Autre (modéré)', 5]];
 function needs(m, date) {
-  const kcal = (date && measuredNeed(m, date)) || kcalNeed(m);
+  const kcal = kcalNeed(m);
   const age = ageOf(m);
   const adult = age >= 18;
   return {
@@ -1355,7 +1373,7 @@ function needs(m, date) {
     vitc: age < 4 ? 20 : age < 7 ? 30 : age < 11 ? 45 : age < 15 ? 70 : age < 18 ? 100 : 110,
   };
 }
-// Dépense énergétique : journée mesurée par la montre (kcal_total) sinon métabolisme de base × 1,2 + séances.
+// Dépense énergétique estimée : métabolisme de base × 1,2 + activités saisies et faites.
 function bmrOf(m) {
   const age = ageOf(m);
   const w = Number(m.poids_kg);
@@ -1365,28 +1383,21 @@ function bmrOf(m) {
 }
 const dayActs = (memberId, iso) => state.activites.filter((a) => a.member_id === memberId && a.date === iso);
 function expense(m, date) {
-  const iso = isoDate(date);
-  const acts = dayActs(m.id, iso);
-  // Plusieurs sources le même jour (montre + import) : on garde la plus récente, sans additionner.
-  const days = acts.filter((a) => a.kind === 'journee').sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
-  const seances = acts.filter((a) => a.kind === 'seance');
-  const day = days.find((a) => a.kcal_total != null) || days[0];
-  const active = (Number(day?.kcal) || 0) + seances.reduce((s, a) => s + (Number(a.kcal) || 0), 0);
-  const steps = Number(day?.steps) || 0;
-  const minutes = (Number(day?.minutes) || 0) + seances.reduce((s, a) => s + (Number(a.minutes) || 0), 0);
-  const measured = day?.kcal_total != null;
-  const total = measured ? Math.round(Number(day.kcal_total) + seances.filter((x) => x.source === 'manuel').reduce((s, a) => s + (Number(a.kcal) || 0), 0)) : Math.round(bmrOf(m) * 1.2 + active);
-  return { total, active: Math.round(active), steps, minutes, measured, seances, sources: day ? [day.source] : [] };
+  const seances = dayActs(m.id, isoDate(date)).filter((a) => a.kind === 'seance' && a.statut !== 'prevu');
+  const active = seances.reduce((t, a) => t + (Number(a.kcal) || 0), 0);
+  const minutes = seances.reduce((t, a) => t + (Number(a.minutes) || 0), 0);
+  return { total: Math.round(bmrOf(m) * 1.2 + active), active: Math.round(active), minutes, seances };
 }
-// Besoin du jour ajusté à la dépense mesurée (si le membre l'a demandé) : moyenne des 7 derniers jours mesurés.
-function measuredNeed(m, date) {
-  if (!m.ajuster_objectif) return null;
-  const vals = [];
-  for (let i = 0; i < 7; i++) { const e = expense(m, addDays(date, -i)); if (e.measured) vals.push(e.total); }
-  if (!vals.length) return null;
-  const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
-  return Math.round((avg * (OBJECTIF[m.objectif]?.f || 1)) / 10) * 10;
+// Hydratation : repères EFSA pour les boissons (≈ 80 % de l'eau totale), + 500 ml par heure d'activité faite.
+function waterGoal(m, date = new Date()) {
+  if (Number(m.objectif_eau_ml)) return Number(m.objectif_eau_ml);
+  const age = ageOf(m);
+  const base = age >= 14 ? (m.sexe === 'H' ? 2000 : 1600) : age >= 9 ? (m.sexe === 'H' ? 1700 : 1500) : age >= 4 ? 1300 : 1000;
+  return Math.round((base + (expense(m, date).minutes / 60) * 500) / 50) * 50;
 }
+const waterDay = (m, date) => state.eau.filter((x) => x.member_id === m.id && x.date === isoDate(date));
+const waterTotal = (m, date) => waterDay(m, date).reduce((t, x) => t + x.ml, 0);
+const fmtL = (ml) => (ml >= 1000 ? `${fmtNum(ml / 1000)} L` : `${ml} ml`);
 const memberFactor = (m) => kcalNeed(m) / REF_KCAL;
 const memberById = (id) => state.members.find((m) => m.id === id);
 function mealEaters(meal) {
@@ -3167,7 +3178,8 @@ function dayCriteria(m, date) {
     { key: 'sucres', label: 'Sucres sous le repère', ok: t.kcal > 0 && t.suc <= nd.suc, detail: `${fmtNum(t.suc)} / ≤ ${nd.suc} g` },
     { key: 'sel', label: 'Sel sous le repère', ok: t.kcal > 0 && t.sel <= nd.sel, detail: `${fmtNum(t.sel)} / ≤ ${nd.sel} g` },
     { key: 'journal', label: 'Journée renseignée', ok: md.entries.length >= 3, detail: `${md.entries.length} entrée(s)` },
-    { key: 'bouge', label: 'Bouger', ok: ex.steps >= (Number(m.objectif_pas) || 8000) || ex.active >= (Number(m.objectif_kcal_actives) || 300), detail: `${ex.steps.toLocaleString('fr-FR')} pas · ${ex.active} kcal actives`, na: !ex.measured && !ex.seances.length && !ex.steps },
+    { key: 'bouge', label: 'Bouger', ok: ex.active >= (Number(m.objectif_kcal_actives) || 300), detail: `${ex.active} / ${Number(m.objectif_kcal_actives) || 300} kcal actives`, na: !ex.seances.length },
+    { key: 'eau', label: 'Bien hydraté·e', ok: waterTotal(m, date) >= waterGoal(m, date) * 0.9, detail: `${fmtL(waterTotal(m, date))} / ${fmtL(waterGoal(m, date))}`, na: !waterDay(m, date).length },
   ];
   const counted = items.filter((i) => !i.na);
   const score = counted.filter((i) => i.ok).length;
@@ -3300,54 +3312,123 @@ function ring(value, max, color, label, sub) {
   const r = 26; const circ = 2 * Math.PI * r;
   return `<div class="ring"><svg viewBox="0 0 64 64" width="72" height="72"><circle cx="32" cy="32" r="${r}" stroke="var(--surface-2)" stroke-width="7" fill="none"/>
     <circle cx="32" cy="32" r="${r}" stroke="${color}" stroke-width="7" fill="none" stroke-linecap="round" stroke-dasharray="${(pct * circ).toFixed(1)} ${circ.toFixed(1)}" transform="rotate(-90 32 32)"/>
-    <text x="32" y="36" text-anchor="middle" font-size="13" font-weight="800" fill="var(--text)">${Math.round(value)}</text></svg><b>${label}</b><span class="muted small">${sub}</span></div>`;
+    <text x="32" y="36" text-anchor="middle" font-size="13" font-weight="800" fill="var(--text)">${value < 10 && value % 1 ? fmtNum(Math.round(value * 10) / 10) : Math.round(value)}</text></svg><b>${label}</b><span class="muted small">${sub}</span></div>`;
 }
 
 // ---------------------------------------------------------------------------
-// Aujourd'hui : repas du jour, restes, calories, « on mange quoi ce soir ? »
+// Aujourd'hui : fil chronologique de la journée du membre choisi (repas, eau, activités, rappels).
 // ---------------------------------------------------------------------------
+const SLOT_TIME = { 'petit-dejeuner': '07:30', collation: '10:30', midi: '12:30', gouter: '16:30', soir: '19:30' };
+const WATER_POINTS = [['10:00', 0.25], ['13:00', 0.5], ['16:30', 0.7], ['19:30', 0.85], ['21:30', 1]];
 function renderToday() {
   const today = new Date();
+  const iso = isoDate(today);
   const di = dayIndex(today);
-  const meals = di >= 0 ? ['midi', 'soir'].map((slot) => ({ slot, m: state.plan.find((x) => x.day === di && x.slot === slot) })) : [];
-  const restes = restesFor(today);
-  const soon = isoDate(addDays(today, 2));
+  const now = nowHM();
   const members = state.members;
   const greet = today.getHours() < 12 ? 'Bonjour' : today.getHours() < 18 ? 'Bon après-midi' : 'Bonsoir';
-  const mealHtml = ({ slot, m }) => {
-    if (!m) return `<button class="slot" data-act="slot" data-d="${di}" data-s="${slot}"><span class="when">${slot}</span><span class="add">${ICON.plus} Ajouter un repas</span></button>`;
-    const r = recipeById(m.recipe_id);
-    if (!r) return '';
-    const img = safeUrl(r.photo_url);
-    const cf = mealConflicts(m, r);
-    return `<div class="slot" style="cursor:default"><span class="when">${slot}</span>
-      ${img ? `<img class="sthumb" src="${esc(img)}" alt="">` : `<span class="sthumb">${ICON.chef}</span>`}
-      <span class="grow"><span class="prod-name" style="font-size:15px">${esc(r.title)}</span><span class="meta">${ICON.users} ${esc(mealWho(m))}${m.reste_id ? '<span class="tag ahead">Reste</span>' : ''}${totalMin(r) && !m.reste_id ? `<span>${ICON.clock} ${totalMin(r)} min</span>` : ''}${cf.length ? `<span class="tag warn-tag">⚠ ${esc(cf.map((c) => c.member.nom).join(', '))}</span>` : ''}</span></span>
-      <span class="row" style="gap:4px"><button class="icon-btn" data-act="open-recipe" data-id="${r.id}" aria-label="Voir">${ICON.chef}</button>${m.reste_id ? '' : `<button class="icon-btn" data-act="cook-mode" data-id="${r.id}" aria-label="Mode cuisine">${ICON.play}</button>`}</span></div>`;
-  };
-  const kcalHtml = members.length ? `<div class="ntable"><div class="nt-title">Calories du jour</div>${members.map((m) => { const md = memberDay(m, today); const nd = needs(m, today); return `<div class="mbar"><div class="row"><span class="grow">${esc(m.nom)}</span><b>${Math.round(md.total.kcal)}</b><span class="muted small">&nbsp;/ ${nd.kcal} kcal</span></div>${bar(md.total.kcal, nd.kcal)}</div>`; }).join('')}
-      <button class="btn small block soft" data-act="tab" data-tab="suivi" style="margin-top:6px">Voir le suivi détaillé</button></div>` : `<div class="card" style="padding:12px"><p class="muted small" style="margin:0 0 8px">Ajoutez les membres du foyer pour suivre les calories et adapter les portions.</p><button class="btn primary small" data-act="foyer">${ICON.users} Configurer le foyer</button></div>`;
   const me = journalMember();
+  const head = `<p class="muted" style="margin:0 0 10px">${greet} · ${today.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</p>`;
+  if (!me) return `${head}<div class="card" style="padding:12px"><p class="muted small" style="margin:0 0 8px">Ajoutez les membres du foyer pour suivre repas, hydratation et activités.</p><button class="btn primary small" data-act="foyer">${ICON.users} Configurer le foyer</button></div>`;
   const c = companionOf(me);
-  let hero = '';
-  if (me) {
-    const mood = c ? companionMood(me, c) : 'content';
-    const nd = needs(me, today);
-    const eaten = memberDay(me, today).total.kcal;
-    const ex = expense(me, today);
-    hero = `<div class="hero">
-      <div class="hero-top">${c ? companionSvg(c, mood, 128) : `<button class="btn soft" data-act="adopt">${ICON.sparkle} Adopter un compagnon</button>`}
+  const md = memberDay(me, today);
+  const nd = needs(me, today);
+  const ex = expense(me, today);
+  const water = waterTotal(me, today);
+  const wGoal = waterGoal(me, today);
+  const past = (t) => t <= now;
+  const kcalOf = (list) => Math.round(list.reduce((t, e) => t + (e.n.kcal || 0), 0));
+  const eatenSoFar = kcalOf(md.entries.filter((e) => e.type === 'journal' || past(SLOT_TIME[e.slot] || '12:00')));
+  const items = [];
+
+  // Repas
+  for (const [slot, label] of SLOTS) {
+    const entries = md.entries.filter((e) => e.slot === slot);
+    if (slot === 'collation' && !entries.length) continue;
+    // Collation : placée à l'heure réelle de la première saisie.
+    const first = slot === 'collation' && state.journal.find((j) => entries.some((e) => e.id === j.id))?.created_at;
+    const t = first ? new Date(first).toTimeString().slice(0, 5) : SLOT_TIME[slot];
+    const meal = di >= 0 && ['midi', 'soir'].includes(slot) ? state.plan.find((x) => x.day === di && x.slot === slot && mealEaters(x).some((y) => y.id === me.id)) : null;
+    const r = meal && recipeById(meal.recipe_id);
+    const done = entries.some((e) => e.type === 'journal') || (r && past(t));
+    let body = '';
+    if (r) {
+      const img = safeUrl(r.photo_url);
+      body += `<div class="tl-recipe">${img ? `<img class="sthumb" src="${esc(img)}" alt="">` : `<span class="sthumb">${ICON.chef}</span>`}
+        <span class="grow"><b>${esc(r.title)}</b><span class="meta">${ICON.users} ${esc(mealWho(meal))}${meal.reste_id ? '<span class="tag ahead">Reste</span>' : ''}${totalMin(r) && !meal.reste_id ? `<span>${ICON.clock} ${totalMin(r)} min</span>` : ''}</span></span>
+        <button class="icon-btn" data-act="open-recipe" data-id="${r.id}" aria-label="Voir la recette">${ICON.chef}</button>${!meal.reste_id && !past(t) ? `<button class="icon-btn" data-act="cook-mode" data-id="${r.id}" aria-label="Mode cuisine">${ICON.play}</button>` : ''}</div>`;
+    }
+    const journal = entries.filter((e) => e.type === 'journal');
+    if (journal.length) body += `<div class="tl-list">${journal.map((e) => `<div class="tl-food"><span class="grow">${esc(e.label)}${e.detail ? ` <span class="muted">· ${esc(e.detail)}</span>` : ''}</span><b>${Math.round(e.n.kcal || 0)}</b><button class="icon-btn" data-act="journal-del" data-id="${e.id}" aria-label="Supprimer">${ICON.trash}</button></div>`).join('')}</div>`;
+    let actions = '';
+    if (!entries.length && past(t)) actions = `<span class="muted small grow">Rien de noté</span><button class="btn small soft" data-act="journal-add" data-slot="${slot}">${ICON.plus} Noter</button>`;
+    else if (!entries.length && ['midi', 'soir'].includes(slot) && di >= 0) actions = `<button class="btn small primary" data-act="suggest">${ICON.sparkle} Une idée ?</button><button class="btn small soft" data-act="slot" data-d="${di}" data-s="${slot}">Planifier</button>`;
+    else if (!entries.length) actions = `<span class="muted small grow">À venir</span><button class="btn small soft" data-act="journal-add" data-slot="${slot}">${ICON.plus} Noter</button>`;
+    else actions = `<button class="btn small" data-act="journal-add" data-slot="${slot}" style="margin-left:auto">${ICON.plus} Ajouter</button>`;
+    const k = kcalOf(entries);
+    items.push({ t, kind: 'repas', state: done ? 'done' : past(t) ? 'missed' : 'next', icon: slot === 'petit-dejeuner' ? '☕' : slot === 'gouter' || slot === 'collation' ? '🍎' : '🍽️',
+      title: label, side: k ? `${k} kcal` : '', body: body + `<div class="tl-actions">${actions}</div>` });
+  }
+
+  // Activités
+  for (const a of dayActs(me.id, iso).filter((x) => x.kind === 'seance')) {
+    const t = a.heure || '18:00';
+    const planned = a.statut === 'prevu';
+    items.push({ t, kind: 'sport', state: planned ? (past(t) ? 'missed' : 'next') : 'done', icon: '🏃', title: esc(a.label || 'Activité'),
+      side: `${Math.round(Number(a.kcal) || 0)} kcal`,
+      body: `<div class="tl-actions"><span class="muted small grow">${a.minutes ? `${a.minutes} min · ` : ''}${planned ? (past(t) ? 'prévue, c\'est fait ?' : 'prévue') : 'faite'}</span>${planned ? `<button class="btn small primary" data-act="activite-done" data-id="${a.id}">C'est fait</button>` : ''}<button class="icon-btn" data-act="activite-del" data-id="${a.id}" aria-label="Supprimer">${ICON.trash}</button></div>` });
+  }
+
+  // Hydratation : repères au fil de la journée, avec les boissons de la plage
+  const drinks = waterDay(me, today);
+  let prev = '00:00';
+  for (const [t, frac] of WATER_POINTS) {
+    const inWin = drinks.filter((x) => x.heure > prev && x.heure <= t);
+    const upTo = drinks.filter((x) => x.heure <= t).reduce((s2, x) => s2 + x.ml, 0);
+    const target = Math.round((wGoal * frac) / 50) * 50;
+    const isNext = !past(t) && past(prev);
+    prev = t;
+    if (!past(t) && !isNext) { items.push({ t, kind: 'eau', state: 'later', icon: '💧', title: `Hydratation`, side: `objectif ${fmtL(target)}`, body: '' }); continue; }
+    const ok = upTo >= target * 0.9;
+    items.push({ t, kind: 'eau', state: isNext ? 'next' : ok ? 'done' : 'missed', icon: '💧', title: isNext ? `D'ici ${t.replace(':00', ' h').replace(':', ' h ')}` : 'Hydratation',
+      side: `${fmtL(upTo)} / ${fmtL(target)}`,
+      body: `<div class="tl-actions">${inWin.length ? `<span class="muted small grow">${inWin.map((x) => `${x.heure} ${x.ml} ml`).join(' · ')}</span>` : `<span class="muted small grow">${isNext ? `Encore ${fmtL(Math.max(0, target - upTo))}` : 'Aucune boisson notée'}</span>`}${isNext || !ok ? `<button class="btn small soft" data-act="eau-add" data-ml="250">+250 ml</button>` : ''}</div>` });
+  }
+
+  // Rappels : reste à sortir du congélateur pour demain, restes du frigo à finir
+  const tomorrow = dayIndex(addDays(today, 1));
+  if (tomorrow >= 0) for (const meal of state.plan.filter((x) => x.day === tomorrow && x.reste_id)) {
+    const rs = state.restes.find((x) => x.id === meal.reste_id);
+    const r = rs && rs.stockage === 'congel' && recipeById(rs.recipe_id);
+    if (r) items.push({ t: '19:00', kind: 'rappel', state: past('19:00') ? 'missed' : 'next', icon: '❄️', title: 'Sortir du congélateur', side: '', body: `<p class="muted small" style="margin:0">${esc(r.title)} pour ${meal.slot === 'midi' ? 'le déjeuner' : 'le dîner'} de demain.</p>` });
+  }
+  const frigo = restesFor(today).filter((x) => x.stockage === 'frigo' && x.dlc <= iso);
+  for (const x of frigo) { const r = recipeById(x.recipe_id); if (r) items.push({ t: '12:00', kind: 'rappel', state: 'next', icon: '🥡', title: 'Reste à finir aujourd\'hui', side: '', body: `<p class="muted small" style="margin:0">${esc(r.title)} · ${esc(resteLabel(x))}</p>` }); }
+
+  // Bilan du soir
+  const cr = dayCriteria(me, today);
+  const okCount = cr.items.filter((x) => x.ok).length;
+  items.push({ t: '21:45', kind: 'bilan', state: past('21:45') ? 'done' : 'later', icon: '🌙', title: 'Bilan de la journée', side: `${okCount} / ${cr.items.length}`,
+    body: `<div class="tl-actions"><span class="muted small grow">${cr.items.filter((x) => x.ok).map((x) => x.label).slice(0, 3).join(' · ') || 'Les objectifs se remplissent au fil des repas'}</span><button class="btn small" data-act="tab" data-tab="suivi">Détail</button></div>` });
+
+  items.sort((a, b) => a.t.localeCompare(b.t) || (a.kind === 'repas' ? -1 : 1));
+  const nowIdx = items.findIndex((x) => x.t > now);
+  const nowMark = `<li class="tl-now"><span class="tl-time">${now}</span><span class="tl-dot"></span><span class="tl-now-line">Maintenant</span></li>`;
+  const li = (x) => `<li class="tl-item ${x.kind} ${x.state}"><span class="tl-time">${x.t}</span><span class="tl-dot">${x.icon}</span>
+    <div class="tl-card"><div class="row"><b class="grow">${x.title}</b>${x.side ? `<span class="small muted">${x.side}</span>` : ''}${x.state === 'done' ? '<span class="tl-check">✓</span>' : ''}</div>${x.body}</div></li>`;
+  const timeline = items.map((x, i) => (i === nowIdx ? nowMark : '') + li(x)).join('') + (nowIdx < 0 ? nowMark : '');
+
+  const mood = c ? companionMood(me, c) : 'content';
+  const hero = `<div class="hero">
+      <div class="hero-top">${c ? companionSvg(c, mood, 112) : `<button class="btn soft" data-act="adopt">${ICON.sparkle} Adopter un compagnon</button>`}
         <div class="grow">${c ? `<div class="bubble">${esc(c.messages === false ? `${c.nom} veille sur ${me.nom}.` : pick(mood, c))}</div>
           <div class="row small" style="margin-top:8px;gap:12px"><span><b>${c.coquillages}</b> 🐚</span><span><b>${c.serie}</b> jour${c.serie > 1 ? 's' : ''} de suite</span><button class="btn small" data-act="boutique" style="margin-left:auto">Boutique</button></div>` : `<p class="muted small" style="margin:0">Un compagnon pour ${esc(me.nom)} : il fête les objectifs atteints sans excès et ne gronde jamais.</p>`}</div></div>
-      <div class="rings">${ring(eaten, nd.kcal, 'var(--primary)', `${Math.round(eaten)} / ${nd.kcal} kcal`, 'mangé')}${ring(ex.active, Number(me.objectif_kcal_actives) || 300, '#dd8a3e', `${ex.active} / ${me.objectif_kcal_actives || 300} kcal`, 'dépensé (actif)')}${ring(ex.steps, Number(me.objectif_pas) || 8000, '#6a7fd1', `${ex.steps.toLocaleString('fr-FR')} pas`, `/ ${(me.objectif_pas || 8000).toLocaleString('fr-FR')}`)}</div>
+      <div class="rings">${ring(eatenSoFar, nd.kcal, 'var(--primary)', `${eatenSoFar} / ${nd.kcal} kcal`, 'mangé')}${ring(ex.active, Number(me.objectif_kcal_actives) || 300, '#dd8a3e', `${ex.active} / ${me.objectif_kcal_actives || 300} kcal`, 'activité')}${ring(water / 1000, wGoal / 1000, '#4a90c8', `${fmtL(water)} / ${fmtL(wGoal)}`, 'eau')}</div>
       ${members.length > 1 ? `<div class="famille">${members.map((x) => { const cx = companionOf(x); return `<button class="fam ${x.id === me.id ? 'on' : ''}" data-act="famille" data-m="${x.id}">${cx ? companionSvg(cx, 'content', 40) : `<span class="thumb ph" style="width:40px;height:40px;border-radius:50%">${esc(x.nom[0])}</span>`}<span>${esc(x.nom)}</span></button>`; }).join('')}</div>` : ''}</div>`;
-  }
-  return `<p class="muted" style="margin:0 0 10px">${greet} · ${today.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
-    ${hero}
-    <div class="day today">${di >= 0 ? meals.map(mealHtml).join('') : '<p class="muted small">Chargement de la semaine…</p>'}</div>
-    <div class="grid2" style="margin:12px 0"><button class="btn primary" data-act="suggest">${ICON.sparkle} On mange quoi ce soir ?</button><button class="btn" data-act="journal-add" data-slot="${defaultSlot()}">${ICON.plus} Journal</button></div>
-    ${restes.length ? `<div class="phase" style="margin-bottom:12px"><h3>${ICON.flame} Restes à consommer</h3><ul>${restes.map((x) => { const r = recipeById(x.recipe_id); return r ? `<li><b>${esc(r.title)}</b> <span class="muted small">${esc(resteLabel(x))}</span>${x.stockage === 'frigo' && x.dlc <= soon ? ' <span class="warn small">bientôt</span>' : ''}</li>` : ''; }).join('')}</ul></div>` : ''}
-    ${kcalHtml}`;
+  return `${head}${hero}
+    <div class="quick3"><button class="btn" data-act="journal-add" data-slot="${defaultSlot()}">🍽️ Repas</button><button class="btn" data-act="eau-add" data-ml="250">💧 +250 ml</button><button class="btn" data-act="activite-add">🏃 Activité</button></div>
+    <h3 class="tl-head">La journée de ${esc(me.nom)}</h3>
+    <ol class="timeline">${timeline}</ol>`;
 }
 // Propose des recettes pour le dîner : restes d'abord, puis rapides, aimées, non cuisinées récemment, sans aversion.
 function suggestSheet() {
@@ -3421,110 +3502,6 @@ const Push = {
     state.push.prefs = prefs;
   },
 };
-// Montres & activité : jeton du pont téléphone, guides, connexions OAuth, import CSV.
-const PROVIDERS = { polar: 'Polar', withings: 'Withings', oura: 'Oura', whoop: 'WHOOP', suunto: 'Suunto', strava: 'Strava' };
-const PROVIDER_NOTE = { strava: 'abonnement Strava requis · séances uniquement', suunto: 'accès partenaire Suunto requis', whoop: 'gratuit', polar: 'gratuit', withings: 'gratuit', oura: 'gratuit' };
-const importUrl = (token) => `${SUPABASE_URL}/functions/v1/import-activite?t=${token}`;
-function openMontres() {
-  let memberId = journalMember()?.id;
-  const el = openSheet(`${sheetHead('Montres & activité')}<div data-body></div>`, { full: true });
-  const draw = () => {
-    const m = memberById(memberId) || state.members[0];
-    if (!m) { $('[data-body]', el).innerHTML = `<p class="muted">Ajoutez d'abord un membre du foyer.</p><button class="btn primary" data-act="foyer">Configurer le foyer</button>`; return; }
-    memberId = m.id;
-    const jeton = state.jetons.find((j) => j.member_id === m.id);
-    const cx = state.connexions.filter((c) => c.member_id === m.id);
-    const ios = jeton ? `Raccourcis › Automatisation › Nouvelle › « Heure de la journée » (21:00, tous les jours, exécuter immédiatement) › actions :
-1. « Rechercher des échantillons de santé » : Type = Pas, Filtre « Date de début est aujourd'hui », Regrouper par Jour → renommer la variable « Pas ».
-2. Idem avec Énergie active → « Actives » ; Énergie au repos → « Repos » ; Minutes d'exercice → « Minutes ».
-3. « Texte » : {"date":"<Date actuelle, format AAAA-MM-JJ>","steps":<Pas>,"active_kcal":<Actives>,"resting_kcal":<Repos>,"exercise_min":<Minutes>}
-4. « Obtenir le contenu de l'URL » : URL ci-dessous, Méthode POST, Corps « Fichier » = le Texte (ou JSON avec les 5 champs).` : '';
-    $('[data-body]', el).innerHTML = `
-      ${state.members.length > 1 ? `<div class="chips">${state.members.map((x) => `<button class="chip" aria-pressed="${x.id === m.id}" data-m="${x.id}">${esc(x.nom)}</button>`).join('')}</div>` : ''}
-      <div class="card" style="padding:14px;margin:10px 0">
-        <div class="nt-title">Pont téléphone (toutes les montres)</div>
-        <p class="muted small" style="margin:4px 0 10px">Apple Watch, Garmin, Samsung, Pixel/Fitbit, Xiaomi/Amazfit, Huawei, Suunto, Coros, Polar, Oura, Lotus… : leur application écrit dans <b>Apple Santé</b> (iPhone) ou <b>Health Connect</b> (Android). Une automatisation envoie chaque soir pas et calories à cette adresse personnelle.</p>
-        ${jeton ? `<div class="row"><input class="input grow small" readonly value="${esc(importUrl(jeton.token))}" aria-label="Adresse d'import"><button class="btn small" data-x="copy-url">${ICON.copy}</button></div>
-          <p class="muted small" style="margin:6px 0 0">${jeton.last_used_at ? `Dernière réception : ${new Date(jeton.last_used_at).toLocaleString('fr-FR')}${jeton.last_payload?.steps != null ? ` · ${jeton.last_payload.steps} pas` : ''}` : 'Aucune donnée reçue pour l\'instant.'} <button class="btn small" data-x="refresh" style="border:0;padding:0 6px;min-height:0;color:var(--primary-strong)">actualiser</button></p>
-          <details class="ndetails"><summary>Guide iPhone / Apple Watch (Raccourci)</summary><pre class="guide">${esc(ios)}</pre>
-            <p class="muted small">Alternative sans réglage : l'app « Health Auto Export » (payante) avec une automatisation REST API vers cette adresse, format JSON, métriques pas / énergie active / énergie au repos.</p></details>
-          <details class="ndetails"><summary>Guide Android / Health Connect (Tasker)</summary><pre class="guide">1. Installer Tasker (3,49 €) et le plugin gratuit « Health Connect » (RafhaanShah) ; dans Health Connect, autoriser le plugin à lire Pas, Calories actives, Calories totales.
-2. Vérifier que l'app de la montre (Garmin Connect, Samsung Health, Google Health, Zepp, Huawei Health, Suunto, Coros, Polar Flow…) partage ses données avec Health Connect.
-3. Tasker › Profil « Heure 21:00 » › Tâche :
-   a. Plugin Health Connect › Aggregate : Steps, ActiveCaloriesBurned, TotalCaloriesBurned, période « aujourd'hui » → variable %hc.
-   b. HTTP Request : méthode POST, URL ci-dessus avec « &source=health-connect », Headers « Content-Type: application/json », Body = %hc.
-L'application reconnaît les champs du plugin (COUNT_TOTAL, ACTIVE_CALORIES_TOTAL, ENERGY_TOTAL).</pre></details>
-          <button class="btn small block danger" data-x="revoke" style="margin-top:8px">Révoquer cette adresse</button>`
-        : `<button class="btn primary block" data-x="create">${ICON.plus} Créer mon adresse d'import</button>`}
-      </div>
-      <div class="card" style="padding:14px;margin:10px 0">
-        <div class="nt-title">Connexion directe au compte</div>
-        <p class="muted small" style="margin:4px 0 10px">Sans passer par le téléphone. Garmin, Fitbit/Pixel, Samsung, Xiaomi, Huawei, Coros et Lotus n'ouvrent pas d'accès direct aux particuliers : utilisez le pont téléphone ci-dessus.</p>
-        ${Object.entries(PROVIDERS).map(([k, l]) => { const c = cx.find((x) => x.provider === k); return `<div class="nt-row"><span><b>${l}</b> <span class="muted small">· ${PROVIDER_NOTE[k]}</span>${c ? `<br><span class="muted small">${c.last_error ? `erreur : ${esc(c.last_error)}` : c.last_sync_at ? `synchronisé le ${new Date(c.last_sync_at).toLocaleString('fr-FR')}` : 'connecté, en attente de la première synchro'}</span>` : ''}</span>
-          ${c ? `<button class="btn small" data-x="sync">Synchroniser</button><button class="btn small danger" data-x="disconnect" data-id="${c.id}">Déconnecter</button>` : `<button class="btn small primary" data-x="connect" data-p="${k}">Connecter</button>`}</div>`; }).join('')}
-      </div>
-      <div class="card" style="padding:14px;margin:10px 0">
-        <div class="nt-title">Import d'un fichier CSV</div>
-        <p class="muted small" style="margin:4px 0 10px">Exports Garmin Connect, Samsung Health, Apple Santé, Lotus SmarTime ou tout tableau avec des colonnes date / pas / calories.</p>
-        <label class="btn block">${ICON.upload} Choisir un fichier CSV<input type="file" accept=".csv,text/csv" data-x="csv" hidden></label>
-      </div>`;
-  };
-  draw();
-  el.addEventListener('click', async (e) => {
-    const chip = e.target.closest('[data-m]');
-    if (chip) { memberId = chip.dataset.m; return draw(); }
-    const b = e.target.closest('[data-x]');
-    if (!b) return;
-    const x = b.dataset.x;
-    try {
-      if (x === 'create') { await Data.createJeton(memberId, 'téléphone'); draw(); toast('Adresse créée : copiez-la dans votre automatisation'); }
-      if (x === 'copy-url') { const j = state.jetons.find((k) => k.member_id === memberId); await navigator.clipboard.writeText(importUrl(j.token)); toast('Adresse copiée'); }
-      if (x === 'refresh') { await Data.refreshJetons(); await Data.loadWeek(); draw(); }
-      if (x === 'revoke') { if (await confirmSheet('Révoquer cette adresse ? Les automatisations qui l\'utilisent cesseront de fonctionner.', 'Révoquer')) { await Data.deleteJeton(state.jetons.find((k) => k.member_id === memberId).token); draw(); } }
-      if (x === 'connect') {
-        const { data: { session } } = await db.auth.getSession();
-        location.href = `${SUPABASE_URL}/functions/v1/oauth-montre?action=start&provider=${b.dataset.p}&member=${memberId}&access_token=${encodeURIComponent(session.access_token)}&back=${encodeURIComponent(location.origin + location.pathname)}`;
-      }
-      if (x === 'disconnect') { await Foyer.invoke('oauth-montre', { action: 'disconnect', id: b.dataset.id }); await Data.refreshConnexions(); draw(); toast('Déconnecté'); }
-      if (x === 'sync') { toast('Synchronisation…'); await Foyer.invoke('sync-montres', { member_id: memberId }); await Data.refreshConnexions(); await Data.loadWeek(); draw(); toast('Synchronisation terminée'); }
-    } catch (err) { toast(err.message || 'Impossible'); }
-  });
-  el.addEventListener('change', (e) => { if (e.target.dataset.x === 'csv' && e.target.files[0]) importActivitesCsv(e.target.files[0], memberId); });
-}
-// CSV d'activité : détection des colonnes date / pas / calories actives / calories totales / distance, puis confirmation.
-async function importActivitesCsv(file, memberId) {
-  const text = await file.text();
-  const lines = text.split(/\r?\n/).filter((l) => l.trim());
-  if (lines.length < 2) { toast('Fichier vide'); return; }
-  const sep = [';', ',', '\t'].sort((a, b) => lines[0].split(b).length - lines[0].split(a).length)[0];
-  const cells = (l) => l.split(sep).map((c) => c.replace(/^"|"$/g, '').trim());
-  const head = cells(lines[0]).map((h) => norm(h));
-  const col = (re) => head.findIndex((h) => re.test(h));
-  const ci = { date: col(/date|jour|day|time|start/), steps: col(/pas|step/), active: col(/(actif|active).*(cal|kcal)|cal.*actives?/), total: col(/total.*(cal|kcal)|cal.*total|^calories?$|^kcal$|calories brulees|calories burned/), dist: col(/distance/) };
-  if (ci.date < 0 || (ci.steps < 0 && ci.active < 0 && ci.total < 0)) { toast('Colonnes date et pas/calories introuvables'); return; }
-  const rows = [];
-  for (const l of lines.slice(1)) {
-    const c = cells(l);
-    const raw = c[ci.date] || '';
-    let date = null;
-    if (/^\d{12,13}$/.test(raw)) date = isoDate(new Date(Number(raw)));
-    else { const m = raw.match(/(\d{4})-(\d{2})-(\d{2})/) || raw.match(/(\d{2})\/(\d{2})\/(\d{4})/); if (m) date = m[0].includes('/') ? `${m[3]}-${m[2]}-${m[1]}` : m[0]; }
-    if (!date) continue;
-    const n = (i) => (i >= 0 ? parseFloat(String(c[i]).replace(/\s/g, '').replace(',', '.')) : NaN);
-    const steps = n(ci.steps); const active = n(ci.active); const total = n(ci.total); const dist = n(ci.dist);
-    if ([steps, active, total].every((v) => !isFinite(v))) continue;
-    rows.push({ member_id: memberId, date, source: 'csv', kind: 'journee', ref: '', label: `Import ${file.name.slice(0, 40)}`, steps: isFinite(steps) ? Math.round(steps) : null, kcal: isFinite(active) ? Math.round(active) : null, kcal_total: isFinite(total) ? Math.round(total) : null, distance_m: isFinite(dist) ? Math.round(dist < 500 ? dist * 1000 : dist) : null });
-  }
-  if (!rows.length) { toast('Aucune ligne exploitable'); return; }
-  const sample = rows[rows.length - 1];
-  if (!(await confirmSheet(`${rows.length} jour(s) détecté(s) (ex. ${sample.date} : ${sample.steps ?? '—'} pas, ${sample.kcal_total ?? sample.kcal ?? '—'} kcal). Importer pour ${memberById(memberId)?.nom} ?`, 'Importer', false))) return;
-  try {
-    const { error } = await db.from(T.activites).upsert(rows.map((r) => ({ ...own(), ...r })), { onConflict: 'member_id,date,source,ref' });
-    if (error) throw error;
-    await Data.loadWeek(); render(); toast(`${rows.length} jour(s) importé(s)`);
-  } catch (err) { fail(err, 'Import impossible'); }
-}
-
 function openRappels() {
   const el = openSheet(`${sheetHead('Rappels')}<div data-body><div class="spinner"></div></div>`);
   const draw = async () => {
@@ -3667,27 +3644,63 @@ function renderSuiviDay() {
 
 // Dépense du jour : pas, kcal actives, total, solde ; séances avec suppression ; ajout manuel.
 function expenseBlock(members, date) {
-  const exps = members.map((m) => ({ m, e: expense(m, date) }));
-  const total = exps.reduce((t, x) => t + x.e.total, 0);
-  const active = exps.reduce((t, x) => t + x.e.active, 0);
-  const steps = exps.reduce((t, x) => t + x.e.steps, 0);
-  const stepGoal = members.reduce((t, m) => t + (Number(m.objectif_pas) || 8000), 0);
+  const total = members.reduce((t, m) => t + expense(m, date).total, 0);
+  const active = members.reduce((t, m) => t + expense(m, date).active, 0);
   const activeGoal = members.reduce((t, m) => t + (Number(m.objectif_kcal_actives) || 300), 0);
   const eaten = members.reduce((t, m) => t + memberDay(m, date).total.kcal, 0);
+  const water = members.reduce((t, m) => t + waterTotal(m, date), 0);
+  const waterG = members.reduce((t, m) => t + waterGoal(m, date), 0);
   const solde = Math.round(eaten - total);
-  const measured = exps.some((x) => x.e.measured);
-  const seances = exps.flatMap((x) => x.e.seances.map((a) => ({ ...a, who: x.m.nom })));
-  return `<div class="ntable"><div class="row"><div class="nt-title grow" style="margin:0">Dépense ${measured ? '<span class="muted small">· montre</span>' : '<span class="muted small">· estimée</span>'}</div>
-      <button class="btn small soft" data-act="activite-add">${ICON.plus} Activité</button></div>
+  const seances = members.flatMap((m) => dayActs(m.id, isoDate(date)).filter((a) => a.kind === 'seance').map((a) => ({ ...a, who: m.nom })));
+  return `<div class="ntable"><div class="row"><div class="nt-title grow" style="margin:0">Activité & hydratation</div>
+      <button class="btn small soft" data-act="eau-sheet">💧 Eau</button><button class="btn small soft" data-act="activite-add">${ICON.plus} Activité</button></div>
     <div class="macro-strip" style="grid-template-columns:repeat(4,1fr);margin:8px 0">
-      <div><b>${Math.round(total)}</b><span>kcal dépensées</span></div><div><b>${active}</b><span>kcal actives</span></div><div><b>${steps.toLocaleString('fr-FR')}</b><span>pas</span></div>
+      <div><b>${Math.round(total)}</b><span>kcal dépensées</span></div><div><b>${active}</b><span>kcal actives</span></div><div><b>${fmtL(water)}</b><span>bu</span></div>
       <div style="${solde > 0 ? 'background:#fdebd0' : ''}"><b>${solde > 0 ? '+' : ''}${solde}</b><span>solde</span></div></div>
-    <div class="mbar"><div class="row"><span class="grow">Pas</span><b>${steps.toLocaleString('fr-FR')}</b><span class="muted small">&nbsp;/ ${stepGoal.toLocaleString('fr-FR')}</span></div>${bar(steps, stepGoal)}</div>
     <div class="mbar"><div class="row"><span class="grow">Calories actives</span><b>${active}</b><span class="muted small">&nbsp;/ ${activeGoal} kcal</span></div>${bar(active, activeGoal)}</div>
-    ${seances.length ? seances.map((a) => `<div class="entry"><div class="grow"><div class="nm">${esc(a.label || 'Activité')}</div><div class="muted small">${members.length > 1 ? `${esc(a.who)} · ` : ''}${a.minutes ? `${a.minutes} min · ` : ''}${esc(a.source)}</div></div><span class="small"><b>${Math.round(Number(a.kcal) || 0)}</b> kcal</span>${a.source === 'manuel' ? `<button class="icon-btn" data-act="activite-del" data-id="${a.id}" aria-label="Supprimer">${ICON.trash}</button>` : ''}</div>`).join('') : ''}
-    ${!measured ? '<p class="muted small" style="margin:6px 0 0">Sans montre connectée, la dépense est estimée (métabolisme de base × 1,2 + activités saisies). Reliez une montre dans Paramètres › Montres & activité.</p>' : ''}</div>`;
+    <div class="mbar"><div class="row"><span class="grow">Hydratation</span><b>${fmtL(water)}</b><span class="muted small">&nbsp;/ ${fmtL(waterG)}</span></div>${bar(water, waterG)}</div>
+    ${seances.map((a) => `<div class="entry"><div class="grow"><div class="nm">${esc(a.label || 'Activité')}${a.statut === 'prevu' ? ' <span class="tag">prévue</span>' : ''}</div><div class="muted small">${members.length > 1 ? `${esc(a.who)} · ` : ''}${a.heure ? `${a.heure} · ` : ''}${a.minutes ? `${a.minutes} min` : ''}</div></div><span class="small"><b>${Math.round(Number(a.kcal) || 0)}</b> kcal</span>${a.statut === 'prevu' ? `<button class="btn small soft" data-act="activite-done" data-id="${a.id}">Faite</button>` : ''}<button class="icon-btn" data-act="activite-del" data-id="${a.id}" aria-label="Supprimer">${ICON.trash}</button></div>`).join('')}
+    <p class="muted small" style="margin:6px 0 0">Dépense estimée : métabolisme de base × 1,2 + activités faites (les activités prévues ne comptent qu'une fois validées).</p></div>`;
 }
-function activiteSheet(member) {
+const nowHM = () => { const d = new Date(); return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
+// Hydratation : ajout rapide et liste des boissons du jour.
+async function addWater(ml, member = journalMember()) {
+  if (!member) { toast('Ajoutez d\'abord un membre'); return; }
+  try { await Data.addEau({ member_id: member.id, date: isoDate(new Date()), heure: nowHM(), ml }); toast(`+${ml} ml 💧`); render(); } catch (e) { fail(e); }
+}
+function eauSheet() {
+  const m = journalMember();
+  if (!m) return;
+  const el = openSheet(`${sheetHead(`Hydratation · ${m.nom}`)}<div data-body></div>`);
+  const draw = () => {
+    const list = waterDay(m, new Date());
+    const tot = waterTotal(m, new Date());
+    const goal = waterGoal(m);
+    $('[data-body]', el).innerHTML = `<div class="mbar"><div class="row"><span class="grow">Aujourd'hui</span><b>${fmtL(tot)}</b><span class="muted small">&nbsp;/ ${fmtL(goal)}</span></div>${bar(tot, goal)}</div>
+      <div class="grid3" style="margin:10px 0">${[[150, 'Tasse'], [250, 'Verre'], [500, 'Bouteille']].map(([ml, l]) => `<button class="btn" data-ml="${ml}">${l}<br><span class="muted small">${ml} ml</span></button>`).join('')}</div>
+      <form class="row" data-form="eau" style="gap:6px"><input class="input grow" type="number" name="ml" min="10" max="3000" step="10" inputmode="numeric" placeholder="Autre (ml)"><input class="input" type="time" name="heure" value="${nowHM()}" style="width:110px"><button class="btn primary" aria-label="Ajouter">${ICON.plus}</button></form>
+      <div class="ntable" style="margin-top:10px">${list.map((x) => `<div class="nt-row"><span>${x.heure}</span><b>${x.ml} ml</b><button class="icon-btn" data-del="${x.id}" aria-label="Supprimer">${ICON.trash}</button></div>`).join('') || '<p class="muted small" style="margin:0">Aucune boisson notée aujourd\'hui.</p>'}</div>
+      <p class="muted small">Eau, thé, café, lait, soupe comptent. L'objectif augmente les jours d'activité.</p>`;
+  };
+  draw();
+  el.addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-ml],[data-del]');
+    if (!b) return;
+    try {
+      if (b.dataset.ml) await Data.addEau({ member_id: m.id, date: isoDate(new Date()), heure: nowHM(), ml: Number(b.dataset.ml) });
+      else await Data.deleteEau(b.dataset.del);
+      draw(); render();
+    } catch (err) { fail(err); }
+  });
+  el.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    const ml = parseInt(f.ml.value, 10);
+    if (!(ml > 0)) return;
+    try { await Data.addEau({ member_id: m.id, date: isoDate(new Date()), heure: f.heure.value || nowHM(), ml }); f.ml.value = ''; draw(); render(); } catch (err) { fail(err); }
+  });
+}
+function activiteSheet(member, prefill) {
   const m = member || journalMember();
   if (!m) { toast('Ajoutez d\'abord un membre'); return; }
   const el = openSheet(`${sheetHead('Ajouter une activité')}
@@ -3697,7 +3710,9 @@ function activiteSheet(member) {
       <label class="field"><span>Activité</span><select class="input" name="type">${MET.map(([l, v], i) => `<option value="${i}">${l}</option>`).join('')}</select></label>
       <div class="grid2"><label class="field"><span>Durée (min)</span><input class="input" type="number" name="minutes" min="1" max="600" inputmode="numeric" value="30" required></label>
         <label class="field"><span>Intensité</span><select class="input" name="intensite"><option value="0.8">Tranquille</option><option value="1" selected>Normale</option><option value="1.25">Soutenue</option></select></label></div>
-      <label class="field"><span>Calories (calculées, modifiables)</span><input class="input" type="number" name="kcal" min="0" inputmode="numeric"></label>
+      <div class="grid2"><label class="field"><span>Heure</span><input class="input" type="time" name="heure" value="${nowHM()}" required></label>
+        <label class="field"><span>Calories (calculées)</span><input class="input" type="number" name="kcal" min="0" inputmode="numeric"></label></div>
+      <div class="seg" role="group" style="grid-template-columns:1fr 1fr;margin:0"><button type="button" data-st="fait" aria-pressed="true">Déjà faite</button><button type="button" data-st="prevu" aria-pressed="false">Prévue</button></div>
       <button class="btn primary block">Enregistrer</button></form>`);
   const f = $('form', el);
   const calc = () => {
@@ -3705,13 +3720,24 @@ function activiteSheet(member) {
     const met = MET[Number(f.type.value)][1] * Number(f.intensite.value);
     f.kcal.value = Math.round(met * (Number(mm.poids_kg) || 70) * (Number(f.minutes.value) || 0) / 60);
   };
+  let statut = 'fait';
+  let manual = false;
+  const autoStatut = () => {
+    if (manual) return;
+    const future = f.date.value > isoDate(new Date()) || (f.date.value === isoDate(new Date()) && f.heure.value > nowHM());
+    statut = future ? 'prevu' : 'fait';
+    $$('[data-st]', el).forEach((b) => b.setAttribute('aria-pressed', b.dataset.st === statut));
+  };
+  if (prefill?.heure) f.heure.value = prefill.heure;
   calc();
-  f.addEventListener('input', (e) => { if (e.target.name !== 'kcal') calc(); });
+  autoStatut();
+  el.addEventListener('click', (e) => { const b = e.target.closest('[data-st]'); if (!b) return; statut = b.dataset.st; manual = true; $$('[data-st]', el).forEach((x) => x.setAttribute('aria-pressed', x === b)); });
+  f.addEventListener('input', (e) => { if (e.target.name !== 'kcal') calc(); if (['date', 'heure'].includes(e.target.name)) autoStatut(); });
   f.addEventListener('submit', async (e) => {
     e.preventDefault();
     try {
-      await Data.addActivite({ member_id: f.member.value, date: f.date.value, source: 'manuel', kind: 'seance', ref: uid(), label: MET[Number(f.type.value)][0], kcal: Number(f.kcal.value) || 0, minutes: Number(f.minutes.value) || null });
-      closeSheet(); toast(`${f.kcal.value} kcal dépensées ajoutées`); render();
+      await Data.addActivite({ member_id: f.member.value, date: f.date.value, heure: f.heure.value, statut, source: 'manuel', kind: 'seance', ref: uid(), label: MET[Number(f.type.value)][0], kcal: Number(f.kcal.value) || 0, minutes: Number(f.minutes.value) || null });
+      closeSheet(); toast(statut === 'prevu' ? 'Activité prévue' : `${f.kcal.value} kcal dépensées ajoutées`); render();
     } catch (err) { fail(err); }
   });
 }
@@ -3734,7 +3760,7 @@ function renderSuiviWeek() {
     ${kcalCard(avg, need, 'Moyenne par jour sur la semaine')}
     <div class="ntable">${macroBars(avg, need)}</div>
     ${(() => { const all = [...buildShopping().byAisle.values()].flat(); let t = 0; let n = 0; for (const it of all) { const pr = Prices.of(it); if (pr) { t += pr.price; n++; } } return n ? `<div class="ntable"><div class="nt-row"><span>Coût estimé des courses de la semaine</span><b>${fmtEur(t)}</b><span class="pct">${n}/${all.length} art.</span></div></div>` : ''; })()}
-    ${(() => { const bl = state.bilans.filter((b) => members.some((m) => m.id === b.member_id) && b.date >= isoDate(state.week) && b.date <= isoDate(addDays(state.week, 6))); if (!bl.length) return ''; const cible = bl.filter((b) => b.criteres?.cible).length; const keys = ['cible', 'proteines', 'fibres', 'sucres', 'sel', 'journal', 'bouge']; const labels = { cible: 'calories dans la cible', proteines: 'protéines', fibres: 'fibres', sucres: 'sucres maîtrisés', sel: 'sel maîtrisé', journal: 'journée renseignée', bouge: 'activité' }; const top = keys.map((k) => [k, bl.filter((b) => b.criteres?.[k]).length]).sort((a, b) => b[1] - a[1]).slice(0, 3); const best = Math.max(0, ...members.map((m) => companionOf(m)?.meilleure_serie || 0)); return `<div class="ntable victoires"><div class="nt-title">🏅 Petites victoires</div><div class="nt-row"><span>Jours dans la cible cette semaine</span><b>${cible} / ${bl.length}</b></div><div class="nt-row"><span>Meilleure série</span><b>${best} jour${best > 1 ? 's' : ''}</b></div><div class="nt-row"><span>Points forts</span><b class="small">${top.filter((t) => t[1]).map((t) => labels[t[0]]).join(', ') || '—'}</b></div></div>`; })()}
+    ${(() => { const bl = state.bilans.filter((b) => members.some((m) => m.id === b.member_id) && b.date >= isoDate(state.week) && b.date <= isoDate(addDays(state.week, 6))); if (!bl.length) return ''; const cible = bl.filter((b) => b.criteres?.cible).length; const keys = ['cible', 'proteines', 'fibres', 'sucres', 'sel', 'journal', 'bouge', 'eau']; const labels = { cible: 'calories dans la cible', proteines: 'protéines', fibres: 'fibres', sucres: 'sucres maîtrisés', sel: 'sel maîtrisé', journal: 'journée renseignée', bouge: 'activité', eau: 'hydratation' }; const top = keys.map((k) => [k, bl.filter((b) => b.criteres?.[k]).length]).sort((a, b) => b[1] - a[1]).slice(0, 3); const best = Math.max(0, ...members.map((m) => companionOf(m)?.meilleure_serie || 0)); return `<div class="ntable victoires"><div class="nt-title">🏅 Petites victoires</div><div class="nt-row"><span>Jours dans la cible cette semaine</span><b>${cible} / ${bl.length}</b></div><div class="nt-row"><span>Meilleure série</span><b>${best} jour${best > 1 ? 's' : ''}</b></div><div class="nt-row"><span>Points forts</span><b class="small">${top.filter((t) => t[1]).map((t) => labels[t[0]]).join(', ') || '—'}</b></div></div>`; })()}
     <div class="ntable"><div class="nt-title">Total de la semaine</div>
       ${NUTRI_KEYS.filter((x) => x.main).map((x) => `<div class="nt-row"><span>${x.label}</span><b>${fmtN(avg[x.k] * 7, x.unit)}</b><span class="pct">${Math.round((avg[x.k] / need[x.k]) * 100)} %</span></div>`).join('')}</div>`;
 }
@@ -3955,16 +3981,15 @@ function memberSheet(m, onDone) {
       <div class="field"><span>Évite (allergies, régime, dégoûts)</span>
         <div class="chips" style="flex-wrap:wrap">${Object.entries(EVITE).map(([k, d]) => `<button type="button" class="chip" aria-pressed="${(v.evite || []).includes(k)}" data-evite="${k}">${d.label}</button>`).join('')}</div>
         <input class="input" name="evite_libre" placeholder="Autres, séparés par des virgules (ex. coriandre, olives)" value="${esc((v.evite || []).filter((k) => k.startsWith('mot:')).map((k) => k.slice(4)).join(', '))}"></div>
-      <div class="grid2"><label class="field"><span>Objectif de pas / jour</span><input class="input" type="number" name="objectif_pas" min="1000" max="50000" step="500" inputmode="numeric" value="${esc(v.objectif_pas ?? 8000)}"></label>
-        <label class="field"><span>Objectif kcal actives / jour</span><input class="input" type="number" name="objectif_kcal_actives" min="50" max="3000" step="50" inputmode="numeric" value="${esc(v.objectif_kcal_actives ?? 300)}"></label></div>
-      <label class="check"><input type="checkbox" name="ajuster_objectif" ${v.ajuster_objectif ? 'checked' : ''}> Ajuster le besoin calorique à la dépense mesurée par la montre (moyenne 7 jours)</label>
+      <div class="grid2"><label class="field"><span>Objectif kcal actives / jour</span><input class="input" type="number" name="objectif_kcal_actives" min="50" max="3000" step="50" inputmode="numeric" value="${esc(v.objectif_kcal_actives ?? 300)}"></label>
+        <label class="field"><span>Objectif d'eau (ml, vide = auto)</span><input class="input" type="number" name="objectif_eau_ml" min="300" max="5000" step="50" inputmode="numeric" value="${esc(v.objectif_eau_ml ?? '')}" placeholder="auto"></label></div>
       <label class="field"><span>Besoin personnalisé (kcal/jour, facultatif)</span><input class="input" type="number" name="kcal_perso" min="500" max="6000" inputmode="numeric" value="${esc(v.kcal_perso ?? '')}" placeholder="Laisser vide pour le calcul automatique"></label>
       <button class="btn primary block">Enregistrer</button>
       ${m ? '<button type="button" class="btn danger block" data-x="del">Retirer du foyer</button>' : ''}
     </form>`);
   const f = $('form', el);
   const read = () => ({ ...(m ? { id: m.id } : {}), nom: f.nom.value.trim(), sexe: f.sexe.value, naissance: f.naissance.value, poids_kg: parseFloat(f.poids_kg.value), taille_cm: parseFloat(f.taille_cm.value), activite: f.activite.value, objectif: f.objectif.value, kcal_perso: parseInt(f.kcal_perso.value, 10) || null,
-    objectif_pas: parseInt(f.objectif_pas.value, 10) || 8000, objectif_kcal_actives: parseInt(f.objectif_kcal_actives.value, 10) || 300, ajuster_objectif: f.ajuster_objectif.checked,
+    objectif_kcal_actives: parseInt(f.objectif_kcal_actives.value, 10) || 300, objectif_eau_ml: parseInt(f.objectif_eau_ml.value, 10) || null,
     evite: [...$$('[data-evite][aria-pressed="true"]', f).map((b) => b.dataset.evite), ...f.evite_libre.value.split(',').map((x) => x.trim()).filter(Boolean).map((x) => `mot:${x}`)] });
   f.addEventListener('click', (e) => { const b = e.target.closest('[data-evite]'); if (b) b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') !== 'true'); });
   const calc = () => {
@@ -4003,7 +4028,6 @@ function openSettings() {
       <button class="btn small" data-x="logout">Se déconnecter</button></div>
     <button class="btn block" data-act="basiques" style="margin-bottom:10px">${ICON.cart} Basiques du placard · ${basiques().length}</button>
     <button class="btn block" data-x="rappels" style="margin-bottom:10px">${ICON.clock} Rappels (notifications)</button>
-    <button class="btn block" data-x="montres" style="margin-bottom:10px">${ICON.flame} Montres & activité</button>
     <button class="btn block" data-act="compagnon" style="margin-bottom:10px">${ICON.sparkle} Mon compagnon</button>
     <button class="btn soft block" data-x="foyer" style="margin-bottom:16px">${ICON.users} Mon foyer · ${state.members.length ? `${state.members.length} membre${state.members.length > 1 ? 's' : ''}` : 'à configurer'}</button>
     <form class="stack" data-form="settings">
@@ -4021,7 +4045,6 @@ function openSettings() {
     <p class="muted small">Données nutritionnelles : Open Food Facts. Vos recettes, plannings et listes sont privés et liés à votre compte.</p>`);
   $('[data-x="foyer"]', el).addEventListener('click', () => { closeSheet(); openFoyer(); });
   $('[data-x="rappels"]', el).addEventListener('click', () => openRappels());
-  $('[data-x="montres"]', el).addEventListener('click', () => openMontres());
   $('[data-x="logout"]', el).addEventListener('click', async () => {
     while (sheets.length) closeSheet();
     await db.auth.signOut();
@@ -4143,13 +4166,15 @@ const ACTIONS = {
   'suivi-open-day': (b) => { state.suiviView = 'jour'; goToDay(addDays(state.week, Number(b.dataset.i))); },
   'journal-add': (b) => journalAdd(b.dataset.slot),
   'journal-copy': () => copyYesterday(),
-  'activite-add': () => activiteSheet(),
+  'activite-add': (b) => activiteSheet(null, b.dataset.heure ? { heure: b.dataset.heure } : null),
+  'activite-done': async (b) => { try { await Data.updateActivite(b.dataset.id, { statut: 'fait' }); toast('Bravo, activité faite !'); render(); } catch (e) { fail(e); } },
+  'eau-sheet': () => eauSheet(),
+  'eau-add': (b) => addWater(Number(b.dataset.ml)),
   adopt: () => adoptSheet(journalMember()),
   boutique: () => boutiqueSheet(journalMember()),
   compagnon: () => compagnonSettings(),
   famille: (b) => { state.suiviMember = b.dataset.m; store.set('suiviMember', b.dataset.m); render(); },
   'activite-del': async (b) => { try { await Data.deleteActivite(b.dataset.id); render(); } catch (e) { fail(e); } },
-  montres: () => openMontres(),
   'journal-habits': (b) => addHabits(b.dataset.slot),
   'journal-del': async (b) => { try { await Data.deleteJournal(b.dataset.id); render(); } catch (e) { fail(e); } },
   'have-item': async (b) => {
@@ -4446,9 +4471,8 @@ async function onSession(session) {
     state.loaded = true;
     Queue.flush();
     const qs = new URLSearchParams(location.search);
-    if (qs.get('montre')) setTimeout(() => toast(qs.get('montre') === 'ok' ? `${PROVIDERS[qs.get('provider')] || 'Montre'} connecté : première synchronisation en cours` : qs.get('detail') || 'Connexion impossible'), 600);
     const hash = location.hash.replace('#', '');
-    if (['planning', 'courses', 'batch', 'suivi', 'recettes', 'scan', 'aujourdhui'].includes(hash) || qs.get('montre')) { if (hash) state.tab = hash; history.replaceState(null, '', location.pathname); }
+    if (['planning', 'courses', 'batch', 'suivi', 'recettes', 'scan', 'aujourdhui'].includes(hash) ) { if (hash) state.tab = hash; history.replaceState(null, '', location.pathname); }
     render();
     evaluateYesterday().catch((e) => console.warn('bilan', e));
   } catch (err) {
