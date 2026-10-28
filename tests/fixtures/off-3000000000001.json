@@ -1,0 +1,16 @@
+{
+  "status": 1,
+  "status_verbose": "product found",
+  "code": "3000000000001",
+  "product": {
+    "code": "3000000000001",
+    "product_name": "Biscuits sans valeurs renseignées",
+    "product_name_fr": "Biscuits sans valeurs renseignées",
+    "brands": "Test",
+    "quantity": "200 g",
+    "additives_tags": [],
+    "labels_tags": [],
+    "categories_tags": ["en:biscuits"],
+    "nutriments": {}
+  }
+}

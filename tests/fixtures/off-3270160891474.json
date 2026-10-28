@@ -1,0 +1,33 @@
+{
+  "status": 1,
+  "status_verbose": "product found",
+  "code": "3270160891474",
+  "product": {
+    "code": "3270160891474",
+    "product_name": "Lasagnes à la bolognaise",
+    "product_name_fr": "Lasagnes à la bolognaise",
+    "brands": "Test Surgelés",
+    "quantity": "300 g",
+    "serving_quantity": 300,
+    "serving_size": "300 g",
+    "nutriscore_grade": "c",
+    "nova_group": 4,
+    "additives_tags": ["en:e415"],
+    "labels_tags": [],
+    "categories_tags": ["en:meals", "en:lasagnes", "en:beef-lasagnes"],
+    "categories_hierarchy": ["en:meals", "en:lasagnes", "en:beef-lasagnes"],
+    "compared_to_category": "en:beef-lasagnes",
+    "stores_tags": ["super-u"],
+    "ingredients_text_fr": "Pâtes, viande de bœuf, sauce tomate, béchamel, fromage, épaississant : gomme xanthane.",
+    "nutriments": {
+      "energy-kcal_100g": 135,
+      "proteins_100g": 6.5,
+      "carbohydrates_100g": 12,
+      "sugars_100g": 2.8,
+      "fat_100g": 6.2,
+      "saturated-fat_100g": 2.9,
+      "fiber_100g": 1.2,
+      "salt_100g": 0.9
+    }
+  }
+}

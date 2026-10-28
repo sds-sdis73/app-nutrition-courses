@@ -11,6 +11,7 @@ En ligne : https://sds-sdis73.github.io/app-nutrition-courses/
 - `version.json` : version publiée, relue par l'app pour se recharger après une mise à jour
 - `aliments.json` : valeurs nutritionnelles de 3 484 aliments, extraites de la table Ciqual 2025 de l'Anses (Licence Ouverte Etalab 2.0), pour 100 g : énergie, protéines, glucides, sucres, lipides, AG saturés, fibres, sel, calcium, fer, vitamine C
 - `plats.json` : 566 plats (petit-déjeuner, plats, sandwichs et burgers, pizzas, salades, soupes, desserts…) avec une portion type et les valeurs pour 100 g : plats issus de Ciqual 2025 et plats du quotidien calculés à partir d'ingrédients Ciqual (bo bun, poke bowl, burger maison…)
+- `tests/` : suite de tests automatisés (voir ci-dessous) ; `tools/build-plats.py` : génération de `plats.json`
 - `manifest.webmanifest`, `icon-*.png`, `apple-touch-icon.png` : installation sur l'écran d'accueil
 - `supabase/functions/` : fonctions serveur déployées sur Supabase
   - `import-recipe` : import d'une recette depuis une URL (JSON-LD schema.org/Recipe)
@@ -19,6 +20,10 @@ En ligne : https://sds-sdis73.github.io/app-nutrition-courses/
   - `reset-password` : nouveau mot de passe défini par un administrateur du foyer (pas d'e-mail)
   - `send-reminders` : rappels push (appelée toutes les heures par `pg_cron`)
   - `prix-coursesu` : tentative de lecture d'un prix sur coursesu.com (le site bloque souvent ; repli sur Open Prices)
+
+## Tests
+
+`npm install` puis `npm test` : tests unitaires (fonctions de calcul chargées dans Node) et scénarios de bout en bout (Chrome piloté par playwright-core, compte Supabase dédié, date figée, réponses réseau fixes). Détails, variables et limites dans `tests/README.md`. La base de plats se régénère avec `python3 tools/build-plats.py aliments.json plats.json`.
 
 ## Publier une mise à jour
 

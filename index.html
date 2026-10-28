@@ -591,7 +591,7 @@ h1, h2, h3, .sheet-head h2, .section-title, .tl-head { font-weight: 800; letter-
 // ---------------------------------------------------------------------------
 const APP_NAME = 'Miam & moi';
 // À incrémenter à chaque publication, avec la même valeur dans version.json.
-const APP_VERSION = '2026-10-28.4';
+const APP_VERSION = '2026-10-28.5';
 const SUPABASE_URL = 'https://svugddkrptqpjmywhorb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2dWdkZGtycHRxcGpteXdob3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MjU5NDgsImV4cCI6MjEwODUwMTk0OH0.63RETgf7rbVMquGV-7ooY3qn-Qf31uVCA3ZBfqBvFcI';
 const OFF = 'https://world.openfoodfacts.org/api/v2';
@@ -835,14 +835,16 @@ const Data = {
       Rewards.journal(data);
     } catch (e) {
       if (!isNetworkError(e)) throw e;
-      Queue.push({ type: 'journal', row });
-      state.journal.push({ ...row, id: `local:${uid()}` });
+      const lid = `local:${uid()}`;
+      Queue.push({ type: 'journal', row, lid });
+      state.journal.push({ ...row, id: lid });
       state.offline = true;
       toast('Hors ligne : saisie enregistrée, elle sera synchronisée');
     }
     Offline.saveWeek();
   },
   async deleteJournal(id) {
+    if (String(id).startsWith('local:')) { Queue.remove(id); state.journal = state.journal.filter((x) => x.id !== id); Offline.saveWeek(); return; }
     const { error } = await db.from(T.journal).delete().eq('id', id);
     if (error) throw error;
     state.journal = state.journal.filter((x) => x.id !== id);
@@ -889,11 +891,11 @@ const Data = {
     const { data, error } = await db.from(T.plan).update(patch).eq('id', id).select().single();
     if (error) throw error;
     const i = state.plan.findIndex((m) => m.id === id);
-    state.plan[i] = data;
+    if (i >= 0) state.plan[i] = data; else state.plan.push(data);
   },
-  async removeMeals(ids) {
+  async removeMeals(ids, { keepRestes = false } = {}) {
     if (!ids.length) return;
-    const back = state.plan.filter((m) => ids.includes(m.id) && m.reste_id).map((m) => ({ reste_id: m.reste_id, portions: mealServings(m) }));
+    const back = keepRestes ? [] : state.plan.filter((m) => ids.includes(m.id) && m.reste_id).map((m) => ({ reste_id: m.reste_id, portions: mealServings(m) }));
     const { error } = await db.from(T.plan).delete().in('id', ids);
     if (error) throw error;
     state.plan = state.plan.filter((m) => !ids.includes(m.id));
@@ -1004,7 +1006,11 @@ const Data = {
     return data;
   },
   async updateReste(id, patch) {
-    if (patch.portions != null && patch.portions <= 0.05) return this.deleteReste(id);
+    // Reste épuisé : supprimé, sauf s'il est encore utilisé par un repas planifié (le rappel « sortir du congélateur » en a besoin).
+    if (patch.portions != null && patch.portions <= 0.05) {
+      if (!state.plan.some((m) => m.reste_id === id)) return this.deleteReste(id);
+      patch = { ...patch, portions: 0 };
+    }
     const { data, error } = await db.from(T.restes).update(patch).eq('id', id).select().single();
     if (error) throw error;
     const i = state.restes.findIndex((x) => x.id === id);
@@ -1316,7 +1322,7 @@ const CQ = {
       });
       this.byCode = new Map(this.list.map((x) => [x.code, x]));
       this.ready = true;
-    }).catch((e) => { this.loading = null; throw e; });
+    }).catch((e) => { this.loading = null; this.failed = true; throw e; });
     return this.loading;
   },
   search(q, limit = 30) {
@@ -1367,7 +1373,7 @@ const PL = {
         return { id: a[idx.id], nom: a[idx.nom], cat: a[idx.cat], portion: a[idx.portion], src: a[idx.src], groupe: '', n, key, words: key.split(' '), noKcal: false };
       });
       this.ready = true;
-    }).catch((e) => { this.loading = null; throw e; });
+    }).catch((e) => { this.loading = null; this.failed = true; throw e; });
     return this.loading;
   },
   search(q, cat, limit = 60) {
@@ -1498,7 +1504,8 @@ const ACTIVITY = {
 const OBJECTIF = { perte: { label: 'Perte de poids', f: 0.85 }, maintien: { label: 'Maintien', f: 1 }, prise: { label: 'Prise de poids', f: 1.1 } };
 const REF_KCAL = 2000; // une « portion standard » de recette correspond à un adulte à 2 000 kcal/jour
 function ageOf(m, at = new Date()) {
-  const b = new Date(m.naissance);
+  const b = new Date(m?.naissance || '');
+  if (Number.isNaN(b.getTime())) return 30;
   return Math.max(0, (at - b) / (365.25 * 864e5));
 }
 function computedKcal(m) {
@@ -2056,7 +2063,7 @@ const Prices = {
       this.mem.set(ean, p);
       store.set(`op:${ean}`, { t: Date.now(), p });
       return p;
-    } catch { return null; } finally { this.pending.delete(ean); }
+    } catch { this.mem.set(ean, { price: null, n: 0, source: 'openprices', failed: Date.now() }); return null; } finally { this.pending.delete(ean); }
   },
   // Lecture serveur du prix Courses U (souvent bloquée par le site : résultat nul possible).
   async coursesU(url) {
@@ -2078,7 +2085,7 @@ const Prices = {
   warm(items) {
     const eans = [...new Set(items.map((it) => state.links[it.ingKey]?.ean || it.ean).filter((e) => e && !this.mem.has(e) && !store.get(`op:${e}`, null)))];
     if (!eans.length) return;
-    Promise.all(eans.slice(0, 12).map((e) => this.open(e))).then(() => { if (state.tab === 'courses') render(); });
+    Promise.all(eans.slice(0, 12).map((e) => this.open(e))).then((res) => { if (state.tab === 'courses' && res.some((p) => p?.price)) render(); });
   },
 };
 const fmtEur = (v) => `${v.toFixed(2).replace('.', ',')} €`;
@@ -2376,6 +2383,7 @@ function recipeWarnings(r) {
 
 function recipeMenu(id) {
   const r = recipeById(id);
+  if (!r) return;
   const el = openSheet(`${sheetHead(r.title)}<div class="menu-list">
     <button data-m="edit">${ICON.edit} Modifier</button>
     <button data-m="dup">${ICON.copy} Dupliquer</button>
@@ -2737,8 +2745,8 @@ function importFromUrl() {
       r.prep_min = data.prep_min || 0;
       r.cook_min = data.cook_min || 0;
       r.source_url = data.source_url;
-      r.ingredients = data.ingredients.map(parseIngredientLine);
-      r.steps = data.steps.map((text) => { const action = detectAction(text); return { text, min: 0, action, ahead: AHEAD_DEFAULT.has(action) && action !== 'cuisson' }; });
+      r.ingredients = (data.ingredients || []).map(parseIngredientLine);
+      r.steps = (data.steps || []).map((text) => { const action = detectAction(text); return { text, min: 0, action, ahead: AHEAD_DEFAULT.has(action) && action !== 'cuisson' }; });
       closeSheet();
       if (editing) { drawEditor(topSheet()); toast('Recette importée : vérifiez les quantités'); }
       else openEditor(r, { fromImport: true });
@@ -2786,7 +2794,7 @@ async function cookMode(id) {
     if (!c) return;
     if (c === 'close') return close();
     if (c === 'prev' && i > 0) { stopTimer(); remaining = 0; i--; }
-    if (c === 'next') { if (i === r.steps.length - 1) { close(); markCooked(r.id); resteSheet({ recipeId: r.id, ask: true }); return; } stopTimer(); remaining = 0; i++; }
+    if (c === 'next') { if (i === r.steps.length - 1) { close(); markCooked(r.id).then(() => render()).catch(() => {}); resteSheet({ recipeId: r.id, ask: true }); return; } stopTimer(); remaining = 0; i++; }
     if (c === 'timer') {
       if (timer) { stopTimer(); remaining = 0; }
       else {
@@ -2841,6 +2849,8 @@ function weekNav({ menu = false } = {}) {
 }
 const renderPlanning = () => weekNav({ menu: true }) + renderWeek();
 const renderCourses = () => weekNav() + renderShopping();
+// Texte « x/y articles cochés », recalculé après chaque coche sans redessiner la liste.
+function checkedCountText() { const all = [...buildShopping().byAisle.values()].flat(); return `${all.filter(isChecked).length}/${all.length} articles cochés`; }
 const renderBatchTab = () => weekNav() + renderBatch();
 
 function renderWeek() {
@@ -2910,7 +2920,7 @@ async function onSlot(day, slot) {
       const ids = [a?.id, m?.id].filter(Boolean);
       const aData = a && { ...a };
       const bData = m && { ...m };
-      await Data.removeMeals(ids);
+      await Data.removeMeals(ids, { keepRestes: true });
       if (aData) await Data.setMeal(day, slot, aData.recipe_id, aData.servings, aData);
       if (bData) await Data.setMeal(src.day, src.slot, bData.recipe_id, bData.servings, bData);
       toast(m ? 'Repas échangés' : 'Repas déplacé');
@@ -2937,7 +2947,7 @@ async function onSlot(day, slot) {
       try {
         await Data.setMeal(day, slot, x.recipe_id, state.settings.default_servings, { reste_id: x.id });
         const meal = state.plan.find((y) => y.day === day && y.slot === slot);
-        await Data.updateReste(x.id, { portions: Math.round((Number(x.portions) - mealServings(meal)) * 100) / 100 });
+        await Data.updateReste(x.id, { portions: Math.max(0, Math.round((Number(x.portions) - mealServings(meal)) * 100) / 100) });
         render();
         toast('Reste placé dans le planning');
       } catch (err) { fail(err); }
@@ -2991,8 +3001,13 @@ async function onSlot(day, slot) {
     if (!act) return;
     closeSheet();
     if (act === 'view' && r) openRecipe(r.id, Math.round(mealServings(m) * 10) / 10);
-    if (act === 'reste' && r) { markCooked(r.id, isoDate(addDays(state.week, day))); resteSheet({ recipeId: r.id, faitLe: isoDate(addDays(state.week, day)), mealId: m.id }); }
-    if (act === 'change') recipePicker(async (rid) => { try { await Data.setMeal(day, slot, rid, m.servings, { ...m, reste_id: null }); render(); } catch (err) { fail(err); } }, { eaters: mealEaters(m) });
+    if (act === 'reste' && r) { markCooked(r.id, isoDate(addDays(state.week, day))).then(() => render()).catch(() => {}); resteSheet({ recipeId: r.id, faitLe: isoDate(addDays(state.week, day)), mealId: m.id }); }
+    if (act === 'change') recipePicker(async (rid) => {
+      try {
+        if (m.reste_id) { const x = state.restes.find((y) => y.id === m.reste_id); if (x) await Data.updateReste(x.id, { portions: Math.round((Number(x.portions) + mealServings(m)) * 100) / 100 }).catch(() => {}); }
+        await Data.setMeal(day, slot, rid, m.servings, { ...m, reste_id: null }); render();
+      } catch (err) { fail(err); }
+    }, { eaters: mealEaters(m) });
     if (act === 'move') { state.moving = { day, slot }; render(); }
     if (act === 'del') { try { await Data.removeMeals([m.id]); render(); } catch (err) { fail(err); } }
   });
@@ -3009,7 +3024,7 @@ function weekMenu() {
     if (!act) return;
     closeSheet();
     try {
-      if (act === 'today') { state.week = mondayOf(new Date()); await Data.loadWeek(); }
+      if (act === 'today') { state.week = mondayOf(new Date()); state.day = new Date(); await Data.loadWeek(); }
       if (act === 'dup') {
         const { data, error } = await db.from(T.plan).select('*').eq('foyer_id', foyer()).eq('week', isoDate(addDays(state.week, -7)));
         if (error) throw error;
@@ -3025,7 +3040,7 @@ function weekMenu() {
         for (let d = 0; d < 7; d++) for (const slot of ['midi', 'soir']) {
           if (state.plan.some((x) => x.day === d && x.slot === slot)) continue;
           const ok = state.recipes.filter((r) => r.avis !== 'jamais' && !conflictsFor(state.members, r).length);
-          const pool = (ok.length ? ok : state.recipes).sort((a, b) => (used.get(a.id) || 0) - (used.get(b.id) || 0) || (a.derniere_cuisson || '').localeCompare(b.derniere_cuisson || '') || Math.random() - 0.5);
+          const pool = [...(ok.length ? ok : state.recipes)].sort((a, b) => (used.get(a.id) || 0) - (used.get(b.id) || 0) || (a.derniere_cuisson || '').localeCompare(b.derniere_cuisson || '') || Math.random() - 0.5);
           const r = pool[0];
           used.set(r.id, (used.get(r.id) || 0) + 1);
           await Data.setMeal(d, slot, r.id, state.settings.default_servings);
@@ -3220,7 +3235,7 @@ function renderShopping() {
   const basicsHtml = `<p class="muted small" style="margin:14px 0 0">Basiques non listés${skippedBasics.length ? ` (${esc(skippedBasics.map((x) => x.name).join(', '))})` : ''} · <button class="btn small" data-act="basiques" style="border:0;padding:0 4px;min-height:0;color:var(--primary-strong)">modifier les basiques</button></p>`;
   return `${addForm}${budgetHtml}
     <div class="card" style="padding:12px;margin-bottom:12px">
-      <div class="row"><span style="color:#e30613">${ICON.store}</span><div class="grow"><b>${esc(state.settings.store_name)}</b><div class="muted small">Courses U · ${done}/${count} articles cochés</div></div></div>
+      <div class="row"><span style="color:#e30613">${ICON.store}</span><div class="grow"><b>${esc(state.settings.store_name)}</b><div class="muted small">Courses U · <span data-checked-count>${checkedCountText()}</span></div></div></div>
       <a class="btn soft block" style="margin-top:10px" href="${esc(cuStore())}" target="_blank" rel="noopener">${ICON.ext} 1. Ouvrir mon magasin sur Courses U</a>
       <p class="muted small" style="margin:8px 0 0">Puis, pour chaque article : <b>U</b> ouvre le produit mémorisé, la loupe lance une recherche, et ${ICON.link.replace('<svg', '<svg width="14" height="14" style="vertical-align:-2px"')} mémorise le produit choisi pour les prochaines fois.</p>
       <div class="grid2" style="margin-top:10px"><button class="btn" data-act="copy-list">${ICON.copy} Copier</button><button class="btn" data-act="share-list">${ICON.share} Partager</button></div>
@@ -3396,6 +3411,7 @@ const Pet = {
     if (this.timer) return;
     this.timer = setInterval(() => this.idle(), 6500);
   },
+  stop() { clearInterval(this.timer); this.timer = null; this.greeted = false; this.queue = []; this.lines = []; },
   idle() {
     const sc = this.el();
     if (!sc || document.hidden || sheets.length) return;
@@ -3570,14 +3586,27 @@ function companionMood(m, c) {
 async function evaluateYesterday() {
   const y = addDays(new Date(), -1);
   const iso = isoDate(y);
-  if (mondayOf(y).getTime() !== state.week.getTime()) return; // les données de la veille ne sont pas chargées (autre semaine affichée)
+  const todo = state.members.filter((m) => companionOf(m) && !state.bilans.some((b) => b.member_id === m.id && b.date === iso));
+  if (!todo.length) return;
+  // La veille peut appartenir à la semaine précédente (lundi) : on charge alors son journal et son planning à part.
+  let swap = null;
+  if (mondayOf(y).getTime() !== state.week.getTime()) {
+    const wk = isoDate(mondayOf(y));
+    const [j, p] = await Promise.all([
+      db.from(T.journal).select('*').eq('foyer_id', foyer()).eq('date', iso),
+      db.from(T.plan).select('*').eq('foyer_id', foyer()).eq('week', wk),
+    ]);
+    if (j.error || p.error) return;
+    swap = { week: state.week, plan: state.plan, journal: state.journal };
+    Object.assign(state, { week: mondayOf(y), plan: p.data, journal: j.data });
+  }
+  const crits = new Map();
+  try { for (const m of todo) crits.set(m.id, dayCriteria(m, y)); } finally { if (swap) Object.assign(state, swap); }
   const results = [];
-  for (const m of state.members) {
+  for (const m of todo) {
     const c = companionOf(m);
-    if (!c) continue;
-    if (state.bilans.some((b) => b.member_id === m.id && b.date === iso)) continue;
-    const cr = dayCriteria(m, y);
-    if (cr.empty) continue;
+    const cr = crits.get(m.id);
+    if (!cr || cr.empty) continue;
     const serie = cr.score >= 3 ? (c.serie || 0) + 1 : 0;
     try {
       await Data.saveBilan({ member_id: m.id, date: iso, score: cr.score, criteres: Object.fromEntries(cr.items.map((i) => [i.key, i.ok])), coquillages: cr.shells });
@@ -3667,12 +3696,12 @@ function boutiqueSheet(m, tab = 'friandises') {
       if (b.dataset.buy) {
         const prix = b.dataset.kind === 'fond' ? FONDS.find((f) => `fond:${f[0]}` === b.dataset.buy)[2] : ACCESSOIRES.find((a) => a[0] === b.dataset.buy)[2];
         if (cc.coquillages < prix) return;
-        const patch = { coquillages: cc.coquillages - prix, accessoires: [...cc.accessoires, b.dataset.buy] };
+        const patch = { coquillages: cc.coquillages - prix, accessoires: [...(cc.accessoires || []), b.dataset.buy] };
         if (b.dataset.kind === 'fond') patch.fond = b.dataset.buy.slice(5);
         await Data.saveCompagnon({ ...cc, ...patch });
         Pet.play('achat', b.dataset.kind === 'fond' ? 'Waouh, quel nouveau décor !' : 'Je suis trop beau·belle comme ça !');
       } else if (b.dataset.fond) await Data.saveCompagnon({ ...cc, fond: b.dataset.fond });
-      else { const k = b.dataset.wear; const acc = cc.accessoires.map((a) => (a.replace(/^!/, '') === k ? (a.startsWith('!') ? k : `!${k}`) : a)); await Data.saveCompagnon({ ...cc, accessoires: acc }); }
+      else { const k = b.dataset.wear; const acc = (cc.accessoires || []).map((a) => (a.replace(/^!/, '') === k ? (a.startsWith('!') ? k : `!${k}`) : a)); await Data.saveCompagnon({ ...cc, accessoires: acc }); }
       draw(); render();
     } catch (err) { fail(err); }
   });
@@ -3837,7 +3866,8 @@ function suggestSheet() {
   const today = new Date();
   const di = dayIndex(today);
   const slot = today.getHours() < 14 ? 'midi' : 'soir';
-  const existing = di >= 0 && state.plan.find((x) => x.day === di && x.slot === slot);
+  if (di < 0) { toast('Revenez à la semaine en cours pour planifier ce repas'); return; }
+  const existing = state.plan.find((x) => x.day === di && x.slot === slot);
   const restes = restesFor(today);
   const score = (r) => (r.avis === 'adore' || r.favorite ? 3 : 0) + (totalMin(r) && totalMin(r) <= 30 ? 2 : 0) + (r.avis === 'a_tester' ? 1 : 0) + Math.min(3, (Date.now() - new Date(r.derniere_cuisson || '2000-01-01')) / (14 * 864e5)) + Math.random();
   const cands = state.recipes.filter((r) => r.avis !== 'jamais' && !conflictsFor(state.members, r).length).sort((a, b) => score(b) - score(a)).slice(0, 5);
@@ -3848,14 +3878,14 @@ function suggestSheet() {
     ${cands.map((r) => `<button class="prod-row" data-rid="${r.id}">${safeUrl(r.photo_url) ? `<img class="thumb" src="${esc(safeUrl(r.photo_url))}" alt="" style="object-fit:cover">` : `<div class="thumb ph">${ICON.chef}</div>`}<div class="grow"><div class="prod-name">${esc(r.title)}</div><div class="meta">${totalMin(r) ? `<span>${ICON.clock} ${totalMin(r)} min</span>` : ''}${avisBadge(r)}${r.derniere_cuisson ? `<span>le ${fmtDay(isoToDate(r.derniere_cuisson))}</span>` : '<span>jamais cuisinée</span>'}</div></div></button>`).join('') || '<p class="muted">Aucune recette compatible. Ajoutez des recettes ou vérifiez les aversions.</p>'}`);
   el.addEventListener('click', async (e) => {
     const b = e.target.closest('[data-rid],[data-reste]');
-    if (!b || di < 0) return;
+    if (!b) return;
     closeSheet();
     try {
       if (b.dataset.reste) {
         const x = state.restes.find((y) => y.id === b.dataset.reste);
         await Data.setMeal(di, slot, x.recipe_id, state.settings.default_servings, { reste_id: x.id });
         const meal = state.plan.find((y) => y.day === di && y.slot === slot);
-        await Data.updateReste(x.id, { portions: Math.round((Number(x.portions) - mealServings(meal)) * 100) / 100 });
+        await Data.updateReste(x.id, { portions: Math.max(0, Math.round((Number(x.portions) - mealServings(meal)) * 100) / 100) });
       } else await Data.setMeal(di, slot, b.dataset.rid, state.settings.default_servings, existing ? { ...existing, reste_id: null } : {});
       render(); toast(`${slot === 'midi' ? 'Déjeuner' : 'Dîner'} planifié`);
     } catch (err) { fail(err); }
@@ -4004,7 +4034,7 @@ function renderSuivi() {
     return `<div class="empty">${ICON.users}<p>Ajoutez les membres de votre foyer (âge, sexe, poids, taille, activité) pour calculer les besoins de chacun et suivre calories et nutriments.</p>
       <button class="btn primary" data-act="foyer">${ICON.plus} Configurer le foyer</button></div>`;
   }
-  if (!CQ.ready) return '<div class="spinner"></div>';
+  if (!CQ.ready) return CQ.failed ? `<div class="empty"><p>La table des aliments n'a pas pu être chargée.</p><button class="btn primary" data-act="cq-retry">Réessayer</button></div>` : '<div class="spinner"></div>';
   const sel = state.suiviMember === 'foyer' ? 'foyer' : (memberById(state.suiviMember) || state.members[0]).id;
   const chips = [...state.members.map((m) => [m.id, m.nom]), ['foyer', 'Tout le foyer']]
     .map(([k, l]) => `<button class="chip" aria-pressed="${sel === k}" data-act="suivi-member" data-v="${k}">${esc(l)}</button>`).join('');
@@ -4117,7 +4147,9 @@ function activiteSheet(member, prefill) {
       <div class="seg" role="group" style="grid-template-columns:1fr 1fr;margin:0"><button type="button" data-st="fait" aria-pressed="true">Déjà faite</button><button type="button" data-st="prevu" aria-pressed="false">Prévue</button></div>
       <button class="btn primary block">Enregistrer</button></form>`);
   const f = $('form', el);
+  let kcalManual = false;
   const calc = () => {
+    if (kcalManual) return;
     const mm = memberById(f.member.value) || m;
     const met = MET[Number(f.type.value)][1] * Number(f.intensite.value);
     f.kcal.value = Math.round(met * (Number(mm.poids_kg) || 70) * (Number(f.minutes.value) || 0) / 60);
@@ -4134,7 +4166,12 @@ function activiteSheet(member, prefill) {
   calc();
   autoStatut();
   el.addEventListener('click', (e) => { const b = e.target.closest('[data-st]'); if (!b) return; statut = b.dataset.st; manual = true; $$('[data-st]', el).forEach((x) => x.setAttribute('aria-pressed', x === b)); });
-  f.addEventListener('input', (e) => { if (e.target.name !== 'kcal') calc(); if (['date', 'heure'].includes(e.target.name)) autoStatut(); });
+  f.addEventListener('input', (e) => {
+    if (e.target.name === 'kcal') kcalManual = f.kcal.value !== '';
+    else if (['type', 'minutes', 'intensite', 'member'].includes(e.target.name)) { kcalManual = false; calc(); }
+    if (['date', 'heure'].includes(e.target.name)) autoStatut();
+  });
+  f.addEventListener('change', (e) => { if (['type', 'intensite', 'member'].includes(e.target.name)) { kcalManual = false; calc(); } });
   f.addEventListener('submit', async (e) => {
     e.preventDefault();
     try {
@@ -4180,6 +4217,7 @@ async function goToDay(date) {
 const journalMember = () => (state.suiviMember !== 'foyer' && memberById(state.suiviMember)) || memberById(state.compte?.member_id) || state.members[0];
 const favKey = (r) => `${r.source}|${r.ref || ''}|${r.label}`;
 function journalAdd(slot) {
+  if (!journalMember()) { toast('Ajoutez d\'abord les membres du foyer'); openFoyer(); return; }
   const el = openSheet(`${sheetHead(`Ajouter · ${slotLabel(slot)}`)}
     <button class="btn primary block scan-top" data-scan-top>${ICON.barcode} Scanner un code-barres</button>
     <p class="muted small" style="margin:6px 0 12px;text-align:center">Produit ou plat préparé : surgelé, barquette, conserve, boisson…</p>
@@ -4250,7 +4288,9 @@ function journalAdd(slot) {
         box.innerHTML = list.map((a) => `<button class="food-row" data-plat="${esc(a.id)}"><span class="grow"><b>${esc(a.nom)}</b><span class="muted small">${esc(a.cat)} · 1 portion = ${a.portion} g</span></span><span class="small"><b>${Math.round((a.n.kcal * a.portion) / 100)}</b> kcal<span class="muted"> /portion</span></span></button>`).join('')
           || '<p class="muted">Aucun plat trouvé. Essayez un autre mot, ou l\'onglet Aliment pour les ingrédients.</p>';
       };
-      PL.load().then(draw).catch((e) => { fail(e, 'Liste des plats indisponible'); });
+      const loadPlats = () => { box.innerHTML = '<div class="spinner"></div>'; PL.failed = false; PL.load().then(draw).catch(() => { box.innerHTML = '<p class="muted">La liste des plats n\'a pas pu être chargée.</p><button class="btn block" type="button" data-pl-retry>Réessayer</button>'; }); };
+      loadPlats();
+      pane.addEventListener('click', (e) => { if (e.target.closest('[data-pl-retry]')) loadPlats(); });
       $('[data-plat-q]', pane).addEventListener('input', () => PL.ready && draw());
       pane.onclick = (e) => {
         const c = e.target.closest('[data-cat]');
@@ -4263,6 +4303,12 @@ function journalAdd(slot) {
       };
     }
     if (mode === 'aliment') {
+      if (!CQ.ready) {
+        pane.innerHTML = CQ.failed ? '<p class="muted">La table des aliments n\'a pas pu être chargée.</p><button class="btn block" type="button" data-cq-retry>Réessayer</button>' : '<div class="spinner"></div>';
+        pane.onclick = (e) => { if (e.target.closest('[data-cq-retry]')) { CQ.failed = false; show('aliment'); CQ.load().then(() => show('aliment')).catch(() => show('aliment')); } };
+        if (!CQ.failed) CQ.load().then(() => show('aliment')).catch(() => show('aliment'));
+        return;
+      }
       pane.innerHTML = `<div class="searchbar" style="margin-bottom:8px">${ICON.search}<input class="input" type="search" data-food-q placeholder="Ex. pomme, pain complet, yaourt nature…" autofocus></div><div data-food-results class="food-results"></div>`;
       const pick = (a) => { closeSheet(); quantitySheet({ ...opts, label: a.nom, per100: a.n, source: 'ciqual', ref: String(a.code), defaultGrams: 100 }); };
       $('[data-food-q]', pane).addEventListener('input', (e) => foodSearchList(pane, e.target.value, pick));
@@ -4329,7 +4375,7 @@ function defaultSlot() {
 }
 // Saisie de la quantité. Pour une recette, per100 = valeurs d'une portion standard et la quantité est en portions.
 function quantitySheet(o) {
-  const member = (o.memberId && memberById(o.memberId)) || (state.suiviMember !== 'foyer' && memberById(state.suiviMember)) || state.members[0];
+  const member = (o.memberId && memberById(o.memberId)) || journalMember();
   if (!member) { toast('Ajoutez d\'abord les membres du foyer'); openFoyer(); return; }
   const isRecipe = !!o.portions;
   const unit = isRecipe ? 'portion(s)' : 'g';
@@ -4483,7 +4529,7 @@ function openSettings() {
   $('[data-x="rappels"]', el).addEventListener('click', () => openRappels());
   $('[data-x="logout"]', el).addEventListener('click', async () => {
     while (sheets.length) closeSheet();
-    await db.auth.signOut();
+    await db.auth.signOut({ scope: 'local' }); // cet appareil seulement : les autres téléphones du foyer restent connectés
   });
   const form = $('form', el);
   form.addEventListener('submit', async (e) => {
@@ -4559,7 +4605,7 @@ function switchTab(tab) {
 }
 
 const ACTIONS = {
-  tab: (b) => { while (sheets.length) closeSheet(); if (b.dataset.tab === 'aujourdhui') goToDay(new Date()).then(() => switchTab('aujourdhui')); else switchTab(b.dataset.tab); },
+  tab: (b) => { while (sheets.length) closeSheet(); if (b.dataset.tab === 'aujourdhui') { state.tab = 'aujourdhui'; state.moving = null; store.set('tab', 'aujourdhui'); goToDay(new Date()).then(() => window.scrollTo({ top: 0 })); } else switchTab(b.dataset.tab); },
   suggest: () => suggestSheet(),
   'push-test': async () => { try { const r = await Foyer.invoke('send-reminders', { test: true }); toast(r.sent ? 'Notification de test envoyée' : 'Aucun appareil abonné'); } catch (e) { toast(e.message); } },
   'close-sheet': () => closeSheet(),
@@ -4579,6 +4625,7 @@ const ACTIONS = {
   'cook-mode': (b) => cookMode(b.dataset.id),
   'toggle-fav': async (b) => {
     const r = recipeById(b.dataset.id);
+    if (!r) return;
     try {
       await Data.saveRecipe({ ...r, favorite: !r.favorite });
       b.classList.toggle('fav', !r.favorite);
@@ -4615,6 +4662,7 @@ const ACTIONS = {
   famille: (b) => { state.suiviMember = b.dataset.m; store.set('suiviMember', b.dataset.m); render(); },
   'activite-del': async (b) => { try { await Data.deleteActivite(b.dataset.id); render(); } catch (e) { fail(e); } },
   'journal-habits': (b) => addHabits(b.dataset.slot),
+  'cq-retry': () => { CQ.failed = false; render(); CQ.load().then(() => render()).catch(() => render()); },
   'journal-del': async (b) => { try { await Data.deleteJournal(b.dataset.id); render(); } catch (e) { fail(e); } },
   'have-item': async (b) => {
     try { await Data.addPlacard({ name: b.dataset.n, ing_key: b.dataset.k, type: 'stock', until: isoDate(addDays(state.week, 6)) }); render(); toast('Mis de côté : vous l\'avez déjà'); } catch (e) { fail(e); }
@@ -4678,11 +4726,14 @@ document.addEventListener('change', async (e) => {
   try {
     if (k.startsWith('extra:')) await Data.setExtraChecked(k.slice(6), e.target.checked);
     else await Data.setCheck(k, e.target.checked);
+    $$('[data-checked-count]').forEach((el) => { el.textContent = checkedCountText(); });
   } catch (err) { e.target.checked = !e.target.checked; row?.classList.toggle('done', e.target.checked); fail(err); }
 });
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
-  if (Scanner.el) Scanner.close();
+  const cook = $('.cook');
+  if (cook) $('[data-c="close"]', cook)?.click();
+  else if (Scanner.el) Scanner.close();
   else if (sheets.length) closeSheet();
 });
 
@@ -4895,7 +4946,7 @@ async function onSession(session) {
   state.user = user;
   state.loaded = false;
   Object.assign(state, { foyer: null, compte: null, comptes: [], recipes: [], links: {}, scans: [], plan: [], checks: {}, extras: [], members: [], journal: [], moving: null });
-  if (!user) { renderAuth(); return; }
+  if (!user) { Pet.stop(); renderAuth(); return; }
   document.body.classList.remove('logged-out');
   $('#main').innerHTML = '<div class="spinner"></div>';
   try {
@@ -4905,10 +4956,10 @@ async function onSession(session) {
     if (state.compte?.member_id && !memberById(state.suiviMember)) state.suiviMember = state.compte.member_id;
     await Data.loadWeek();
     state.offline = false;
+    if (await Queue.flush().catch(() => 0)) await Data.loadWeek();
     Offline.saveAll();
     Offline.saveWeek();
     state.loaded = true;
-    Queue.flush();
     const qs = new URLSearchParams(location.search);
     const hash = location.hash.replace('#', '');
     if (['planning', 'courses', 'batch', 'suivi', 'recettes', 'scan', 'aujourdhui'].includes(hash) ) { if (hash) state.tab = hash; history.replaceState(null, '', location.pathname); }
@@ -4950,23 +5001,31 @@ const Queue = {
   list: () => store.get('queue', []),
   size() { return this.list().length; },
   push(op) { const l = this.list(); l.push({ ...op, t: Date.now() }); store.set('queue', l); },
+  remove(lid) { store.set('queue', this.list().filter((op) => op.lid !== lid)); },
+  flushing: null,
+  // Envoie les saisies en attente une par une ; chacune n'est retirée de la file qu'après succès. Renvoie le nombre envoyé.
   async flush() {
-    const l = this.list();
-    if (!l.length || !navigator.onLine) return;
-    store.set('queue', []);
-    let done = 0;
-    for (const op of l) {
-      try {
-        if (op.type === 'journal') { const { error } = await db.from(T.journal).insert(op.row); if (error) throw error; }
-        if (op.type === 'scan') { const { error } = await db.from(T.scans).insert(op.row); if (error) throw error; }
-        done++;
-      } catch (e) { console.warn('file d\'attente', e); this.push(op); }
-    }
-    if (done) toast(`${done} saisie${done > 1 ? 's' : ''} synchronisée${done > 1 ? 's' : ''}`);
+    if (this.flushing) return this.flushing;
+    this.flushing = (async () => {
+      let done = 0;
+      for (const op of this.list()) {
+        if (!navigator.onLine) break;
+        try {
+          if (op.type === 'journal') { const { error } = await db.from(T.journal).insert(op.row); if (error) throw error; }
+          if (op.type === 'scan') { const { error } = await db.from(T.scans).insert(op.row); if (error) throw error; }
+          store.set('queue', this.list().filter((x) => x.t !== op.t));
+          if (op.lid) state.journal = state.journal.filter((x) => x.id !== op.lid);
+          done++;
+        } catch (e) { console.warn('file d\'attente', e); if (isNetworkError(e)) break; }
+      }
+      if (done) toast(`${done} saisie${done > 1 ? 's' : ''} synchronisée${done > 1 ? 's' : ''}`);
+      return done;
+    })();
+    try { return await this.flushing; } finally { this.flushing = null; }
   },
 };
 const isNetworkError = (e) => !navigator.onLine || /fetch|network|Failed to fetch|Load failed/i.test(String(e?.message || e));
-window.addEventListener('online', async () => { state.offline = false; await Queue.flush(); if (state.user) { state.loaded = false; onSession({ user: state.user }); } });
+window.addEventListener('online', () => { state.offline = false; if (state.user) { state.loaded = false; onSession({ user: state.user }); } });
 window.addEventListener('offline', () => { state.offline = true; if (state.user) render(); });
 
 const SW = {

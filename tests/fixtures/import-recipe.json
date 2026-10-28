@@ -1,0 +1,9 @@
+{
+  "title": "Gratin de courgettes importé",
+  "servings": 4,
+  "prep_min": 15,
+  "cook_min": 35,
+  "source_url": "https://exemple.test/gratin-courgettes",
+  "ingredients": ["3 courgettes", "2 œufs", "20 cl de crème fraîche", "100 g d'emmental râpé", "sel"],
+  "steps": ["Laver et couper les courgettes en rondelles.", "Mélanger les œufs et la crème.", "Enfourner 35 min à 180 °C."]
+}

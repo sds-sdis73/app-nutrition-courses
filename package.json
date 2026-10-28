@@ -1,0 +1,15 @@
+{
+  "name": "miam-et-moi",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Miam & moi : tests automatisés (unitaires et bout en bout). L'application elle-même est index.html, sans étape de build.",
+  "scripts": {
+    "test": "node tests/run.js",
+    "test:unit": "node tests/run.js --unit",
+    "test:e2e": "node tests/run.js --e2e",
+    "test:seed": "node tests/run.js --seed"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.63.0"
+  }
+}
