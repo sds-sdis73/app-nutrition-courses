@@ -21,6 +21,12 @@ En ligne : https://sds-sdis73.github.io/app-nutrition-courses/
   - `send-reminders` : rappels push (appelée toutes les heures par `pg_cron`)
   - `prix-coursesu` : tentative de lecture d'un prix sur coursesu.com (le site bloque souvent ; repli sur Open Prices)
 
+## Widget iPhone
+
+`widget/miam-et-moi.js` est un script pour l'app gratuite **Scriptable** (aucune publication sur l'App Store). Il affiche le compagnon, les calories, l'eau et l'activité du jour, avec les boutons Noter (ouvre l'app avec `?action=noter`) et +250 ml (enregistré directement par le widget). Le mode d'emploi est dans l'app : Paramètres › Widget iPhone. Les calories viennent de la table `resume_jour`, mise à jour par l'app à chaque affichage de l'accueil.
+
+Adresses d'action reconnues par l'app : `?action=noter`, `?action=eau`, `?action=activite`, `?action=peser`.
+
 ## Tests
 
 `npm install` puis `npm test` : tests unitaires (fonctions de calcul chargées dans Node) et scénarios de bout en bout (Chrome piloté par playwright-core, compte Supabase dédié, date figée, réponses réseau fixes). Détails, variables et limites dans `tests/README.md`. La base de plats se régénère avec `python3 tools/build-plats.py aliments.json plats.json`.
@@ -34,7 +40,7 @@ Les fonctions de `supabase/functions/` se déploient séparément sur le projet 
 
 ## Données
 
-Tables Supabase (toutes protégées par RLS, partagées par foyer) : `foyers`, `foyer_comptes`, `foyer_membres`, `recettes`, `planning_repas`, `restes`, `placards`, `historique_scans`, `liens_produits`, `courses_coches`, `courses_ajouts`, `journal`, `activites`, `hydratation`, `compagnons`, `bilans`, `gains` (coquillages gagnés, un par membre/jour/clé via la fonction SQL `gagner`), `aliments_favoris`, `produits_perso`, `reglages`, `push_abonnements`, `rappels_envoyes`, `config_app` (clés VAPID, service role uniquement).
+Tables Supabase (toutes protégées par RLS, partagées par foyer) : `foyers`, `foyer_comptes`, `foyer_membres`, `recettes`, `planning_repas`, `restes`, `placards`, `historique_scans`, `liens_produits`, `courses_coches`, `courses_ajouts`, `journal`, `activites`, `hydratation`, `compagnons`, `bilans`, `pesees` (suivi du poids), `resume_jour` (résumé pour le widget) — ces deux tables se créent avec `supabase/migrations/2026-10-28_pesees_resume_jour.sql` —, `gains` (coquillages gagnés, un par membre/jour/clé via la fonction SQL `gagner`), `aliments_favoris`, `produits_perso`, `reglages`, `push_abonnements`, `rappels_envoyes`, `config_app` (clés VAPID, service role uniquement).
 
 Sources externes : Open Food Facts (produits, alternatives), Open Prices (prix moyens par code-barres), table Ciqual 2025 de l'Anses (aliments génériques).
 

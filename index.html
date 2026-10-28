@@ -153,6 +153,18 @@ body.logged-out .tabbar, body.logged-out [data-act="settings"] { display: none; 
 .ring b { font-size: 12px; } .ring span { font-size: 11px; }
 .chips.wrap { flex-wrap: wrap; overflow: visible; }
 .scan-top { min-height: 52px; font-size: 17px; }
+.nlp textarea { min-height: 64px; resize: none; }
+.nlp-review { margin-top: 10px; }
+.nlp-line { display: flex; gap: 6px; align-items: center; padding: 6px 0; border-bottom: 1px dashed var(--border); }
+.nlp-line select { min-height: 38px; padding: 6px 8px; font-size: 14px; width: 100%; }
+.nlp-line input[type=number] { width: 72px; min-height: 38px; padding: 6px 8px; flex: none; }
+.quickkcal { margin: 10px 0 12px; }
+.quickkcal summary { cursor: pointer; font-weight: 700; color: var(--primary-strong); font-size: 14px; }
+.tl-edit { border: 0; background: none; padding: 0; text-align: left; font: inherit; color: inherit; cursor: pointer; min-width: 0; }
+.tl-edit:hover { text-decoration: underline; }
+.weight .wspark { width: 100%; height: 70px; display: block; margin-top: 6px; }
+.weight .advice { margin-top: 10px; padding: 10px; border-radius: 14px; background: var(--mango-soft); border: 2px dashed var(--ink); }
+.steps { padding-left: 20px; margin: 8px 0 14px; } .steps li { margin-bottom: 8px; }
 .seg5 button { font-size: 13px; padding: 0 2px; }
 .plat-cats { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 6px; margin-bottom: 4px; }
 .plat-cats .chip { flex: none; }
@@ -591,7 +603,7 @@ h1, h2, h3, .sheet-head h2, .section-title, .tl-head { font-weight: 800; letter-
 // ---------------------------------------------------------------------------
 const APP_NAME = 'Miam & moi';
 // À incrémenter à chaque publication, avec la même valeur dans version.json.
-const APP_VERSION = '2026-10-28.5';
+const APP_VERSION = '2026-10-28.6';
 const SUPABASE_URL = 'https://svugddkrptqpjmywhorb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2dWdkZGtycHRxcGpteXdob3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MjU5NDgsImV4cCI6MjEwODUwMTk0OH0.63RETgf7rbVMquGV-7ooY3qn-Qf31uVCA3ZBfqBvFcI';
 const OFF = 'https://world.openfoodfacts.org/api/v2';
@@ -721,6 +733,8 @@ const state = {
   eau: [],
   compagnons: [],
   bilans: [],
+  pesees: [],
+  peseesOk: false,
   day: new Date(),
   suiviMember: store.get('suiviMember', null),
   suiviView: 'jour',
@@ -753,6 +767,8 @@ const T = {
   eau: 'hydratation',
   compagnons: 'compagnons',
   bilans: 'bilans',
+  pesees: 'pesees',
+  resume: 'resume_jour',
 };
 const PHOTO_BUCKET = 'photos-recettes';
 const me = () => state.user?.id;
@@ -791,6 +807,7 @@ const Data = {
     state.recipes = r.data;
     state.links = Object.fromEntries(l.data.map((x) => [x.ingredient, x]));
     state.scans = sc.data;
+    await Data.loadPesees().catch(() => { state.peseesOk = false; });
   },
   async loadWeek() {
     const week = isoDate(state.week);
@@ -975,6 +992,37 @@ const Data = {
     const { data, error } = await db.from(T.journal).select('label,source,ref,grams,portions,n,slot,date').eq('foyer_id', foyer()).eq('member_id', memberId).order('created_at', { ascending: false }).limit(limit);
     if (error) throw error;
     return data;
+  },
+  async updateJournal(id, patch) {
+    const { data, error } = await db.from(T.journal).update(patch).eq('id', id).select().single();
+    if (error) throw error;
+    const inWeek = data.date >= isoDate(state.week) && data.date <= isoDate(addDays(state.week, 6));
+    state.journal = state.journal.filter((x) => x.id !== id);
+    if (inWeek) state.journal.push(data);
+    Offline.saveWeek();
+    return data;
+  },
+  // Pesées : table facultative (créée par supabase/migrations/2026-10-28_pesees_resume_jour.sql) ; sans elle, le suivi du poids reste masqué.
+  async loadPesees() {
+    const { data, error } = await db.from(T.pesees).select('*').eq('foyer_id', foyer()).gte('date', isoDate(addDays(new Date(), -180))).order('date');
+    if (error) { state.peseesOk = false; state.pesees = []; return; }
+    state.peseesOk = true;
+    state.pesees = data;
+  },
+  async addPesee(member_id, date, poids_kg) {
+    const { data, error } = await db.from(T.pesees).upsert({ ...own(), member_id, date, poids_kg }, { onConflict: 'member_id,date' }).select().single();
+    if (error) throw error;
+    state.pesees = [...state.pesees.filter((x) => !(x.member_id === member_id && x.date === date)), data].sort((a, b) => a.date.localeCompare(b.date));
+    // Le dernier poids alimente le calcul des besoins.
+    const m = memberById(member_id);
+    const last = state.pesees.filter((x) => x.member_id === member_id).pop();
+    if (m && last?.id === data.id && Number(m.poids_kg) !== Number(poids_kg)) await Data.saveMember({ ...m, poids_kg: Number(poids_kg) });
+    return data;
+  },
+  async deletePesee(id) {
+    const { error } = await db.from(T.pesees).delete().eq('id', id);
+    if (error) throw error;
+    state.pesees = state.pesees.filter((x) => x.id !== id);
   },
   async journalOn(date, memberIds) {
     const { data, error } = await db.from(T.journal).select('*').eq('foyer_id', foyer()).eq('date', date).in('member_id', memberIds);
@@ -1385,6 +1433,111 @@ const PL = {
 };
 const platCatFor = (slot) => (slot === 'petit-dejeuner' ? 'Petit-déjeuner' : slot === 'gouter' || slot === 'collation' ? 'Goûter' : 'Plats');
 
+// Saisie en texte libre : « 2 œufs, une tartine beurrée et un café » → lignes Ciqual / plats, à vérifier avant d'ajouter.
+// Analyse 100 % locale : découpage, quantités (chiffres et mots), unités ménagères, recherche dans les plats et la table Ciqual.
+const NLP_NUM = { un: 1, une: 1, deux: 2, trois: 3, quatre: 4, cinq: 5, six: 6, sept: 7, huit: 8, neuf: 9, dix: 10, douze: 12, quelques: 3, demi: 0.5, 'une demi': 0.5, 'un demi': 0.5, 'la moitie d': 0.5, 'la moitie de': 0.5, 'un quart de': 0.25 };
+const NLP_UNITS = { bol: 250, bols: 250, assiette: 300, assiettes: 300, tasse: 150, tasses: 150, mug: 250, mugs: 250, verre: 200, verres: 200, canette: 330, canettes: 330, bouteille: 500, bouteilles: 500, carre: 5, carres: 5, poignee: 30, poignees: 30, tranche: 30, tranches: 30, morceau: 30, morceaux: 30, cuillere: 15, cuilleres: 15, part: 0, parts: 0, portion: 0, portions: 0 };
+const NLP_PREF = {
+  cafe: 'Café, non instantané, sans sucres ajoutés, prêt à boire', expresso: 'Café expresso, non instantané, sans sucres ajoutés, prêt à boire', the: 'Thé infusé, sans sucres ajoutés',
+  oeuf: 'Oeuf dur', oeufs: 'Oeuf dur', 'oeuf dur': 'Oeuf dur', 'oeufs durs': 'Oeuf dur', 'oeuf au plat': 'Oeuf au plat, sans matière grasse', 'oeufs brouilles': 'Oeuf brouillé, avec matière grasse',
+  'jus d orange': "Jus d'orange, pur jus", yaourt: 'Yaourt ou lait fermenté, nature', yaourts: 'Yaourt ou lait fermenté, nature', pomme: 'Pomme, chair et peau, crue', pommes: 'Pomme, chair et peau, crue',
+  banane: 'Banane, chair sans peau, crue', bananes: 'Banane, chair sans peau, crue', riz: 'Riz blanc, cuit, sans sel ajouté', pates: 'Pâtes sèches, standard, cuites, sans sel ajouté',
+  pain: 'Pain blanc (par ex. : baguette, boule…)', baguette: 'Pain blanc (par ex. : baguette, boule…)', lait: 'Lait demi-écrémé (aliment moyen)', beurre: 'Beurre à 80% MG minimum, doux',
+  confiture: 'Confiture de fraise (extra ou classique)', croissant: 'Croissant pur beurre, artisanal', 'pain au chocolat': 'Pain au chocolat, artisanal', chocolatine: 'Pain au chocolat, artisanal',
+  coca: 'Cola, sucré', 'coca cola': 'Cola, sucré', soda: 'Cola, sucré', 'chocolat chaud': 'Chocolat chaud, boisson instantanée, sucrée, prête à boire (reconstituée avec du lait demi-écrémé)',
+  steak: 'Boeuf, steak ou bifteck grillé/poêlé', jambon: 'Jambon cuit, supérieur', 'jambon blanc': 'Jambon cuit, supérieur', cereales: 'Céréales pour petit déjeuner (aliment moyen)',
+  sucre: 'Sucre blanc', biscuit: 'Biscuit sec petit beurre', biscuits: 'Biscuit sec petit beurre', fromage: 'Emmental ou emmenthal', emmental: 'Emmental ou emmenthal', camembert: 'Camembert, sans précision sur le type de lait (pasteurisé ou cru)', comte: 'Comté',
+  vin: 'Vin rouge', 'vin rouge': 'Vin rouge', biere: 'Bière "coeur de marché" (4-5° alcool)', compote: 'Compote de pomme, sans précision sur la teneur en sucres ni sur le rayon (aliment moyen)', 'steak hache': 'Boeuf, steak haché 15% MG cuit', frites: 'Frites de pommes de terre, surgelées, rôties/cuites au four', salade: 'Salade verte, crue, sans assaisonnement',
+};
+// Plats privilégiés pour les mots courants (noms exacts de plats.json).
+const NLP_PREF_PLAT = { kebab: 'Sandwich grec ou kebab, pita, crudités', lasagnes: 'Lasagnes ou canellonis à la viande (bolognaise)', lasagne: 'Lasagnes ou canellonis à la viande (bolognaise)', 'croque monsieur': 'Croque-monsieur', 'croque madame': 'Croque-madame', hamburger: 'Hamburger, de restauration rapide', burger: 'Burger maison', pizza: 'Pizza au fromage ou pizza margherita', couscous: 'Couscous à la viande', quiche: 'Quiche lorraine' };
+// Poids d'une pièce (g) pour les aliments comptés à l'unité, en plus de ceux des recettes.
+const NLP_PIECE = { croissant: 60, 'pain au chocolat': 70, chocolatine: 70, brioche: 50, biscuit: 8, biscuits: 8, 'carre de chocolat': 5, tartine: 40, oeuf: 55, oeufs: 55, clementine: 60, mandarine: 60, fraise: 15, fraises: 15, noix: 5, amande: 1.2, amandes: 1.2, sucre: 5, camembert: 30, fromage: 30, 'tranche de jambon': 40, jambon: 40, yaourt: 125, yaourts: 125, compote: 100 };
+// Unités ménagères dont le poids dépend de l'aliment (bol de céréales ≠ bol de soupe).
+const NLP_UNIT_FOOD = { 'bol|cereales': 40, 'bols|cereales': 40, 'bol|muesli': 50, 'bol|flocons d avoine': 50, 'bol|riz': 200, 'tranche|jambon': 40, 'tranches|jambon': 40, 'tranche|pain': 30, 'tranches|pain': 30, 'tranche|fromage': 25, 'tranches|fromage': 25, 'carre|chocolat': 5, 'carres|chocolat': 5 };
+
+// Expressions courantes décomposées en plusieurs aliments (grammes par unité).
+const NLP_COMBOS = {
+  'tartine beurree': [['pain', 40], ['beurre', 8]], 'tartines beurrees': [['pain', 40], ['beurre', 8]], 'tartine de pain beurree': [['pain', 40], ['beurre', 8]],
+  'tartine beurre confiture': [['pain', 40], ['beurre', 8], ['confiture', 15]], 'tartine beurre et confiture': [['pain', 40], ['beurre', 8], ['confiture', 15]], 'tartine': [['pain', 40]], 'tartines': [['pain', 40]],
+  'cafe au lait': [['cafe', 150], ['lait', 50]], 'cafe creme': [['cafe', 150], ['lait', 50]], 'cafe sucre': [['cafe', 150], ['sucre', 5]], 'the sucre': [['the', 200], ['sucre', 5]],
+};
+const NLP_WATER = /^(eau|verres? d eau|bouteilles? d eau|eau plate|eau gazeuse|eau petillante)$/;
+function nlpFind(name) {
+  const k = ingKey(name);
+  const words = k.split(' ').filter((w) => w.length > 1 && !STOP.has(w));
+  const ali = words.length ? CQ.search(name, 6).map((a) => ({ kind: 'aliment', food: a, s: matchScore(words, a) })).filter((x) => x.s > 0) : [];
+  const pla = words.length && PL.ready ? PL.search(name, null, 6).map((a) => ({ kind: 'plat', food: a, s: matchScore(words, a) })).filter((x) => x.s > 0).map((x) => ({ ...x, s: x.s + 0.3 })) : [];
+  let all = [...ali, ...pla].sort((x, y) => y.s - x.s);
+  const n0 = norm(name).replace(/\s+/g, ' ').trim();
+  const prefName = NLP_PREF[n0] || NLP_PREF[k];
+  const platName = NLP_PREF_PLAT[n0] || NLP_PREF_PLAT[k];
+  const prefA = prefName && CQ.list.find((a) => a.nom === prefName);
+  const prefP = platName && PL.list.find((a) => a.nom === platName);
+  const pref = prefA ? { kind: 'aliment', food: prefA, s: 99 } : prefP ? { kind: 'plat', food: prefP, s: 99 } : null;
+  if (pref) all = [pref, ...all.filter((x) => x.food !== pref.food)];
+  // Un résultat doit couvrir au moins la moitié des mots saisis, sinon il est jugé non reconnu.
+  const best = all[0] && (all[0].s >= 99 || all[0].s >= Math.max(3, words.length * 1.5)) ? all[0] : null;
+  return { best, alts: all.slice(0, 8) };
+}
+function nlpDefaultGrams(found, name) {
+  if (found.kind === 'plat') return found.food.portion;
+  const g = norm(found.food.groupe || '');
+  if (/boisson|eaux|laits/.test(g)) return /cafe|the|infus/.test(norm(found.food.nom)) ? 150 : 200;
+  const k = ingKey(name);
+  if (NLP_PIECE[k] != null) return NLP_PIECE[k];
+  const hit = Object.keys(NLP_PIECE).find((w) => k.startsWith(`${w} `) || k.endsWith(` ${w}`));
+  return hit ? NLP_PIECE[hit] : defaultUnitGrams('pièce', name);
+}
+function parseMeal(text) {
+  // Les virgules décimales (« 1,5 kg ») ne séparent pas les éléments.
+  const src = String(text || '').replace(/(\d),(\d)/g, '$1.$2');
+  const parts = src.split(/\s*(?:,|;|\+|\n|\bet\b|\bavec\b|\bpuis\b|\bplus\b)\s*/i).map((x) => x.replace(/\s+/g, ' ').trim()).filter(Boolean);
+  const out = [];
+  for (const raw0 of parts) {
+    const raw = raw0.replace(/(\d)\.(\d)/g, '$1,$2');
+    let t = ` ${raw0.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/œ/g, 'oe').replace(/[^a-z0-9.½¼¾ ]+/g, ' ')} `.replace(/\s+/g, ' ');
+    let qty = null;
+    for (const [w, v] of Object.entries(NLP_NUM).sort((a, b) => b[0].length - a[0].length)) {
+      if (t.startsWith(` ${w} `)) { qty = v; t = ` ${t.slice(w.length + 2)}`; break; }
+    }
+    const num = t.match(/^ (\d+(?:[.,]\d+)?|½|¼|¾)\s*/);
+    if (num && qty == null) { qty = num[1] === '½' ? 0.5 : num[1] === '¼' ? 0.25 : num[1] === '¾' ? 0.75 : parseFloat(num[1].replace(',', '.')); t = ` ${t.slice(num[0].length)}`; }
+    if (/^ demi /.test(t)) { qty = (qty || 1) * 0.5; t = ` ${t.slice(6)}`; }
+    // Unités de masse et de volume, puis unités ménagères.
+    let grams = null;
+    let unitG = null;
+    let unitW = '';
+    const mass = t.match(/^ (kg|g|grammes?|ml|cl|dl|l|litres?)\b\s*/);
+    if (mass && qty != null) {
+      const u = mass[1];
+      grams = qty * (u === 'kg' ? 1000 : /^l|litre/.test(u) ? 1000 : u === 'cl' ? 10 : u === 'dl' ? 100 : 1);
+      t = ` ${t.slice(mass[0].length)}`;
+    } else {
+      const hu = t.match(/^ ([a-z]+)\s+/);
+      if (hu && hu[1] in NLP_UNITS) { unitG = NLP_UNITS[hu[1]]; unitW = hu[1]; t = ` ${t.slice(hu[0].length)}`; }
+    }
+    t = t.replace(/^ (de la|de l|des|du|de|d|le|la|les|l|mon|ma|mes|un|une)\s+/, ' ').trim();
+    if (!t) continue;
+    if (unitW && NLP_UNIT_FOOD[`${unitW}|${t}`] != null) unitG = NLP_UNIT_FOOD[`${unitW}|${t}`];
+    if (NLP_WATER.test(t) || (unitG && t === 'eau')) { out.push({ text: raw, kind: 'eau', ml: Math.round(grams || (qty || 1) * (unitG || 200)) }); continue; }
+    const combo = NLP_COMBOS[t];
+    if (combo) {
+      for (const [name, g] of combo) {
+        const f = nlpFind(name);
+        if (f.best) out.push({ text: raw, kind: f.best.kind, food: f.best.food, grams: Math.round(g * (qty || 1)), alts: f.alts });
+      }
+      continue;
+    }
+    const f = nlpFind(t);
+    if (!f.best) { out.push({ text: raw, kind: 'inconnu', name: t, alts: f.alts }); continue; }
+    const base = unitG === 0 ? (f.best.kind === 'plat' ? f.best.food.portion : 150) : unitG;
+    if (grams == null) grams = (qty ?? 1) * (base ?? nlpDefaultGrams(f.best, t));
+    out.push({ text: raw, kind: f.best.kind, food: f.best.food, grams: Math.round(grams), alts: f.alts });
+  }
+  return out;
+}
+
 // Aliment Ciqual retenu par défaut pour les noms courants mais ambigus.
 const PREFERRED = {
   farine: 'Farine de blé tendre ou froment T55 (pour pains)',
@@ -1572,6 +1725,50 @@ function expense(m, date) {
   const minutes = seances.reduce((t, a) => t + (Number(a.minutes) || 0), 0);
   return { total: Math.round(bmrOf(m) * 1.2 + active), active: Math.round(active), minutes, seances };
 }
+// Poids : tendance lissée (moyenne mobile exponentielle) et pente en kg/semaine sur les 28 derniers jours (régression linéaire).
+function weightTrend(list) {
+  const pts = [...list].filter((x) => Number(x.poids_kg) > 0).sort((a, b) => a.date.localeCompare(b.date));
+  if (!pts.length) return null;
+  let ema = Number(pts[0].poids_kg);
+  const smooth = pts.map((x) => { ema += 0.25 * (Number(x.poids_kg) - ema); return { date: x.date, kg: Number(x.poids_kg), trend: Math.round(ema * 10) / 10 }; });
+  const last = pts[pts.length - 1];
+  const t0 = isoToDate(last.date).getTime();
+  const recent = pts.filter((x) => (t0 - isoToDate(x.date).getTime()) / 864e5 <= 28);
+  const xs = recent.map((x) => (isoToDate(x.date).getTime() - t0) / 864e5);
+  const ys = recent.map((x) => Number(x.poids_kg));
+  const span = recent.length ? -Math.min(...xs) : 0;
+  let slopeWeek = null;
+  if (recent.length >= 4 && span >= 14) {
+    const mx = xs.reduce((a, b) => a + b, 0) / xs.length;
+    const my = ys.reduce((a, b) => a + b, 0) / ys.length;
+    const num = xs.reduce((t, x, i) => t + (x - mx) * (ys[i] - my), 0);
+    const den = xs.reduce((t, x) => t + (x - mx) ** 2, 0);
+    slopeWeek = den ? Math.round((num / den) * 7 * 100) / 100 : 0;
+  }
+  return { last: Number(last.poids_kg), lastDate: last.date, trend: smooth[smooth.length - 1].trend, slopeWeek, n: recent.length, span, points: smooth };
+}
+// Conseil doux : ±100 kcal seulement si la tendance de 2 semaines s'écarte nettement de l'objectif.
+function weightAdvice(m, list) {
+  const t = weightTrend(list);
+  if (!t || t.slopeWeek == null) return null;
+  const s = t.slopeWeek;
+  let delta = 0;
+  let why = '';
+  if (m.objectif === 'perte') {
+    if (s > -0.1) { delta = -100; why = 'Le poids ne baisse pas depuis 2 semaines.'; }
+    else if (s < -1) { delta = 100; why = 'Le poids baisse vite (plus de 1 kg par semaine) : mieux vaut ralentir.'; }
+  } else if (m.objectif === 'prise') {
+    if (s < 0.05) { delta = 100; why = 'Le poids ne monte pas depuis 2 semaines.'; }
+    else if (s > 0.6) { delta = -100; why = 'Le poids monte vite : on peut lever le pied.'; }
+  } else if (Math.abs(s) > 0.3) {
+    delta = s > 0 ? -100 : 100;
+    why = s > 0 ? 'Le poids monte doucement depuis 2 semaines.' : 'Le poids descend doucement depuis 2 semaines.';
+  }
+  if (!delta) return null;
+  const kcal = clamp(Math.round((kcalNeed(m) + delta) / 10) * 10, 900, 5000);
+  return { delta, kcal, why, slopeWeek: s };
+}
+
 // Hydratation : repères EFSA pour les boissons (≈ 80 % de l'eau totale), + 500 ml par heure d'activité faite.
 function waterGoal(m, date = new Date()) {
   if (Number(m.objectif_eau_ml)) return Number(m.objectif_eau_ml);
@@ -3775,12 +3972,15 @@ function renderToday() {
         <button class="icon-btn" data-act="open-recipe" data-id="${r.id}" aria-label="Voir la recette">${ICON.chef}</button>${!meal.reste_id && !past(t) ? `<button class="icon-btn" data-act="cook-mode" data-id="${r.id}" aria-label="Mode cuisine">${ICON.play}</button>` : ''}</div>`;
     }
     const journal = entries.filter((e) => e.type === 'journal');
-    if (journal.length) body += `<div class="tl-list">${journal.map((e) => `<div class="tl-food"><span class="grow">${esc(e.label)}${e.detail ? ` <span class="muted">· ${esc(e.detail)}</span>` : ''}</span><b>${Math.round(e.n.kcal || 0)}</b><button class="icon-btn" data-act="journal-del" data-id="${e.id}" aria-label="Supprimer">${ICON.trash}</button></div>`).join('')}</div>`;
+    if (journal.length) body += `<div class="tl-list">${journal.map((e) => `<div class="tl-food"><button class="grow tl-edit" data-act="journal-edit" data-id="${e.id}" aria-label="Corriger ${esc(e.label)}">${esc(e.label)}${e.detail ? ` <span class="muted">· ${esc(e.detail)}</span>` : ''}</button><b>${Math.round(e.n.kcal || 0)}</b><button class="icon-btn" data-act="journal-del" data-id="${e.id}" aria-label="Supprimer">${ICON.trash}</button></div>`).join('')}</div>`;
     let actions = '';
     const late = past(lateAfter(slot, t));
-    if (!entries.length && late) actions = `<span class="muted small grow">Rien de noté</span><button class="btn small soft" data-act="journal-add" data-slot="${slot}">${ICON.plus} Noter</button>`;
-    else if (!entries.length && ['midi', 'soir'].includes(slot) && di >= 0) actions = `<button class="btn small primary" data-act="journal-add" data-slot="${slot}">${ICON.plus} Noter</button><button class="btn small" data-act="suggest">${ICON.sparkle} Une idée ?</button><button class="btn small soft" data-act="slot" data-d="${di}" data-s="${slot}">Planifier</button>`;
-    else if (!entries.length) actions = `<span class="muted small grow">${past(t) ? 'À noter quand tu veux' : 'À venir'}</span><button class="btn small soft" data-act="journal-add" data-slot="${slot}">${ICON.plus} Noter</button>`;
+    const yIso = isoDate(addDays(today, -1));
+    const ySure = mondayOf(addDays(today, -1)).getTime() === state.week.getTime();
+    const likeY = !entries.length && (!ySure || state.journal.some((j) => j.date === yIso && j.member_id === me.id && j.slot === slot)) ? `<button class="btn small" data-act="journal-like-yesterday" data-slot="${slot}">↺ Comme hier</button>` : '';
+    if (!entries.length && late) actions = `<span class="muted small grow">Rien de noté</span>${likeY}<button class="btn small soft" data-act="journal-add" data-slot="${slot}">${ICON.plus} Noter</button>`;
+    else if (!entries.length && ['midi', 'soir'].includes(slot) && di >= 0) actions = `<button class="btn small primary" data-act="journal-add" data-slot="${slot}">${ICON.plus} Noter</button>${likeY}<button class="btn small" data-act="suggest">${ICON.sparkle} Une idée ?</button><button class="btn small soft" data-act="slot" data-d="${di}" data-s="${slot}">Planifier</button>`;
+    else if (!entries.length) actions = `<span class="muted small grow">${past(t) ? 'À noter quand tu veux' : 'À venir'}</span>${likeY}<button class="btn small soft" data-act="journal-add" data-slot="${slot}">${ICON.plus} Noter</button>`;
     else actions = `<button class="btn small" data-act="journal-add" data-slot="${slot}" style="margin-left:auto">${ICON.plus} Ajouter</button>`;
     const k = kcalOf(entries);
     items.push({ t, kind: 'repas', state: done ? 'done' : late ? 'missed' : 'next', icon: slot === 'petit-dejeuner' ? '☕' : slot === 'gouter' || slot === 'collation' ? '🍎' : '🍽️',
@@ -3855,12 +4055,62 @@ function renderToday() {
   const hero = `<div class="hero hero-pet">${scene}
       <div class="rings">${ring(eatenSoFar, nd.kcal, 'var(--primary)', `${eatenSoFar} / ${nd.kcal} kcal`, 'mangé')}${ring(ex.active, Number(me.objectif_kcal_actives) || 300, 'var(--mango-strong)', `${ex.active} / ${me.objectif_kcal_actives || 300} kcal`, 'activité')}${ring(water / 1000, wGoal / 1000, 'var(--sky)', `${fmtL(water)} / ${fmtL(wGoal)}`, 'eau')}</div>
       ${members.length > 1 ? `<div class="famille">${members.map((x) => { const cx = companionOf(x); return `<button class="fam ${x.id === me.id ? 'on' : ''}" data-act="famille" data-m="${x.id}">${cx ? companionSvg(cx, 'content', 40) : `<span class="thumb ph" style="width:40px;height:40px;border-radius:50%">${esc(x.nom[0])}</span>`}<span>${esc(x.nom)}</span></button>`; }).join('')}</div>` : ''}</div>`;
+  WidgetSync.schedule(me, { date: iso, nom: me.nom, kcal: eatenSoFar, besoin: nd.kcal, actif: ex.active, actifObj: Number(me.objectif_kcal_actives) || 300, eau: water, eauObj: wGoal,
+    prochain: nextMeal ? `${nextMeal.slot === 'midi' ? 'Midi' : 'Soir'} : ${recipeById(nextMeal.recipe_id)?.title || ''}` : '',
+    compagnon: c ? { nom: c.nom, espece: c.espece, coquillages: c.coquillages, serie: c.serie, humeur: mood, message: c.messages === false ? '' : pick(mood, c) } : null });
   if (c && !Pet.greeted) { Pet.greeted = true; Pet.play('hello', `${greet} ${me.nom} ! ${today.getHours() < 11 ? 'Bien dormi ?' : 'Content·e de te voir !'}`); }
   return `${head}${hero}
     <div class="quick3"><button class="btn" data-act="journal-add" data-slot="${defaultSlot()}">🍽️ Repas</button><button class="btn" data-act="eau-add" data-ml="250">💧 +250 ml</button><button class="btn" data-act="activite-add">🏃 Activité</button></div>
     <h3 class="tl-head">La journée de ${esc(me.nom)}</h3>
     <ol class="timeline">${timeline}</ol>`;
 }
+// Widget iPhone (Scriptable) : l'app publie le résumé du jour dans resume_jour (table facultative), au plus toutes les 4 s et seulement s'il change.
+const WidgetSync = {
+  last: '', timer: null, off: false,
+  schedule(m, data) {
+    if (this.off || state.offline || !m) return;
+    const json = JSON.stringify(data);
+    if (json === this.last) return;
+    clearTimeout(this.timer);
+    this.timer = setTimeout(async () => {
+      try {
+        const { error } = await db.from(T.resume).upsert({ ...own(), member_id: m.id, date: data.date, data: { ...data, maj: new Date().toISOString() }, updated_at: new Date().toISOString() }, { onConflict: 'member_id,date' });
+        if (error) { if (/relation|does not exist|schema cache/i.test(error.message)) this.off = true; return; }
+        this.last = json;
+      } catch { /* hors ligne : on réessaiera au prochain affichage */ }
+    }, 4000);
+  },
+};
+const WIDGET_URL = 'widget/miam-et-moi.js';
+function widgetSheet() {
+  const el = openSheet(`${sheetHead('Widget iPhone')}
+    <p class="muted small" style="margin-top:0">Le widget affiche ton compagnon, les calories, l'eau et l'activité du jour sur l'écran d'accueil, avec des boutons Noter et +250 ml. Il passe par l'app gratuite <b>Scriptable</b> : rien à publier sur l'App Store.</p>
+    <ol class="steps">
+      <li>Installe <b>Scriptable</b> depuis l'App Store (gratuit).</li>
+      <li>Touche <b>Copier le script</b> ci-dessous.</li>
+      <li>Dans Scriptable : <b>+</b> en haut à droite, colle le texte, nomme le script <b>Miam &amp; moi</b>, puis touche ▶︎. Saisis ton e-mail et ton mot de passe Miam &amp; moi (ils restent dans le trousseau de ton iPhone).</li>
+      <li>Sur l'écran d'accueil : appui long, <b>+</b>, <b>Scriptable</b>, taille <b>moyenne</b>, puis appui long sur le widget › <b>Modifier le widget</b> › Script : <b>Miam &amp; moi</b>.</li>
+    </ol>
+    <button class="btn primary block" data-x="copy">Copier le script</button>
+    <p class="muted small">Le widget se met à jour quand iOS le décide (en général toutes les 15 à 30 minutes) et à chaque ouverture de Miam &amp; moi. « +250 ml » s'enregistre directement depuis le widget ; « Noter » ouvre l'app.</p>`);
+  $('[data-x="copy"]', el).addEventListener('click', async () => {
+    try {
+      const txt = await (await fetch(WIDGET_URL, { cache: 'no-store' })).text();
+      await navigator.clipboard.writeText(txt);
+      toast('Script copié : colle-le dans Scriptable');
+    } catch { window.open(WIDGET_URL, '_blank'); }
+  });
+}
+// Actions demandées par adresse (widget, raccourcis) : ?action=noter | eau | activite | peser
+function runUrlAction(action) {
+  if (!action) return;
+  state.tab = 'aujourdhui'; render();
+  if (action === 'noter') journalAdd(defaultSlot());
+  if (action === 'eau') addWater(250);
+  if (action === 'activite') activiteSheet();
+  if (action === 'peser') { switchTab('suivi'); peseeSheet(); }
+}
+
 // Propose des recettes pour le dîner : restes d'abord, puis rapides, aimées, non cuisinées récemment, sans aversion.
 function suggestSheet() {
   const today = new Date();
@@ -4042,6 +4292,55 @@ function renderSuivi() {
   return `<div class="chips">${chips}</div>${seg}${state.suiviView === 'jour' ? renderSuiviDay() : renderSuiviWeek()}`;
 }
 
+// Suivi du poids : dernière pesée, tendance, courbe, conseil d'ajustement de l'objectif.
+function weightCard(m) {
+  if (!state.peseesOk || !m) return '';
+  const list = state.pesees.filter((x) => x.member_id === m.id);
+  const t = weightTrend(list);
+  if (!t) return `<div class="ntable weight"><div class="row"><div class="nt-title grow" style="margin:0">⚖️ Poids</div><button class="btn small primary" data-act="pesee">Me peser</button></div>
+    <p class="muted small" style="margin:6px 0 0">Une pesée par semaine suffit : la courbe montre la tendance et l'objectif s'ajuste en douceur si besoin.</p></div>`;
+  const pts = t.points.slice(-30);
+  const lo = Math.min(...pts.map((p) => Math.min(p.kg, p.trend))) - 0.5;
+  const hi = Math.max(...pts.map((p) => Math.max(p.kg, p.trend))) + 0.5;
+  const W = 300; const H = 70;
+  const x = (i) => (pts.length === 1 ? W / 2 : 8 + (i * (W - 16)) / (pts.length - 1));
+  const y = (v) => 6 + ((hi - v) * (H - 12)) / (hi - lo || 1);
+  const spark = `<svg class="wspark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
+    <polyline fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linejoin="round" points="${pts.map((p, i) => `${x(i).toFixed(1)},${y(p.trend).toFixed(1)}`).join(' ')}"/>
+    ${pts.map((p, i) => `<circle cx="${x(i).toFixed(1)}" cy="${y(p.kg).toFixed(1)}" r="3" fill="var(--mango-strong)" stroke="var(--ink)" stroke-width="1"/>`).join('')}</svg>`;
+  const s = t.slopeWeek;
+  const trendTxt = s == null ? `Tendance après 2 semaines et 4 pesées (${t.n} pour l'instant)` : `${s > 0 ? '+' : ''}${fmtNum(s)} kg/semaine sur 4 semaines`;
+  const adv = weightAdvice(m, list);
+  const later = store.get(`weightLater:${m.id}`, null);
+  const showAdv = adv && !(later && (Date.now() - isoToDate(later).getTime()) / 864e5 < 14) && Number(m.kcal_perso) !== adv.kcal;
+  return `<div class="ntable weight"><div class="row"><div class="nt-title grow" style="margin:0">⚖️ Poids</div><button class="btn small primary" data-act="pesee">Me peser</button></div>
+    <div class="row" style="margin-top:6px;align-items:baseline"><b style="font-size:24px">${fmtNum(t.last)} kg</b><span class="muted small grow">&nbsp;le ${fmtDay(isoToDate(t.lastDate))}</span><span class="small">tendance <b>${fmtNum(t.trend)} kg</b></span></div>
+    ${spark}<p class="muted small" style="margin:2px 0 0">${trendTxt}</p>
+    ${showAdv ? `<div class="advice"><p class="small" style="margin:0">${esc(adv.why)} On peut ajuster l'objectif de ${adv.delta > 0 ? '+' : ''}${adv.delta} kcal, sans rien changer d'autre.</p>
+      <div class="row" style="gap:6px;margin-top:8px"><button class="btn small primary" data-act="weight-apply" data-m="${m.id}" data-kcal="${adv.kcal}">Passer à ${adv.kcal} kcal/jour</button><button class="btn small" data-act="weight-later" data-m="${m.id}">Plus tard</button></div></div>` : ''}</div>`;
+}
+function peseeSheet() {
+  const m = journalMember();
+  if (!m) return;
+  if (!state.peseesOk) { toast('Le suivi du poids n\'est pas encore activé sur ce foyer'); return; }
+  const el = openSheet(`${sheetHead(`Pesée · ${m.nom}`)}<div data-body></div>`);
+  const draw = () => {
+    const list = state.pesees.filter((x) => x.member_id === m.id).slice(-6).reverse();
+    $('[data-body]', el).innerHTML = `<form class="stack" data-form="pesee"><div class="grid2">
+        <label class="field"><span>Poids (kg)</span><input class="input" type="number" name="kg" min="2" max="400" step="0.1" inputmode="decimal" value="${esc(list[0]?.poids_kg ?? m.poids_kg ?? '')}" required></label>
+        <label class="field"><span>Date</span><input class="input" type="date" name="date" value="${isoDate(new Date())}" required></label></div>
+        <button class="btn primary block">Enregistrer</button></form>
+      ${list.length ? `<div class="ntable" style="margin-top:12px">${list.map((x) => `<div class="nt-row"><span>${fmtDay(isoToDate(x.date))}</span><b>${fmtNum(Number(x.poids_kg))} kg</b><button class="icon-btn" data-del="${x.id}" aria-label="Supprimer">${ICON.trash}</button></div>`).join('')}</div>` : ''}
+      <p class="muted small">Conseil : même balance, le matin à jeun. Les variations d'un jour à l'autre sont normales ; seule la tendance compte.</p>`;
+  };
+  draw();
+  el.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    try { await Data.addPesee(m.id, f.date.value, Math.round(parseFloat(f.kg.value) * 10) / 10); toast('Pesée enregistrée'); closeSheet(); render(); } catch (err) { fail(err); }
+  });
+  el.addEventListener('click', async (e) => { const b = e.target.closest('[data-del]'); if (!b) return; try { await Data.deletePesee(b.dataset.del); draw(); render(); } catch (err) { fail(err); } });
+}
 function renderSuiviDay() {
   const members = suiviMembers();
   const d = state.day;
@@ -4064,11 +4363,12 @@ function renderSuiviDay() {
     return `<div class="slot-block"><div class="row"><h3 class="grow">${label}</h3>${list.length ? `<span class="muted small">${Math.round(kcal)} kcal</span>` : ''}
         ${!list.length && habits ? `<button class="btn small soft" data-act="journal-habits" data-slot="${k}">Mes habituels (${habits})</button>` : ''}
         <button class="icon-btn" data-act="journal-add" data-slot="${k}" aria-label="Ajouter au ${label}">${ICON.plus}</button></div>
-      ${list.map((e) => `<div class="entry"><div class="grow"><div class="nm">${esc(e.label)}</div><div class="muted small">${foyer ? `${esc(e.member.nom)} · ` : ''}${esc(e.detail)}</div></div>
+      ${list.map((e) => `<div class="entry"><div class="grow">${e.type === 'journal' ? `<button class="nm tl-edit" data-act="journal-edit" data-id="${e.id}">${esc(e.label)}</button>` : `<div class="nm">${esc(e.label)}</div>`}<div class="muted small">${foyer ? `${esc(e.member.nom)} · ` : ''}${esc(e.detail)}</div></div>
         <span class="small"><b>${Math.round(e.n.kcal)}</b> kcal</span>
         ${e.type === 'journal' ? `<button class="icon-btn" data-act="journal-del" data-id="${e.id}" aria-label="Supprimer">${ICON.trash}</button>` : `<button class="icon-btn" data-act="open-recipe" data-id="${e.recipeId}" aria-label="Voir la recette">${ICON.chef}</button>`}</div>`).join('')}</div>`;
   }).join('');
   return `${nav}${kcalCard(g.total, g.need, foyer ? 'Total du foyer' : esc(members[0].nom))}
+    ${foyer ? '' : weightCard(members[0])}
     ${expenseBlock(members, d)}
     <div class="ntable">${macroBars(g.total, g.need)}</div>${perMember}${slots}
     <p class="muted small">Les repas du planning sont comptés automatiquement selon la part de chacun. Repères : 15 % de protéines, 50 % de glucides, 35 % de lipides (ANSES).</p>`;
@@ -4189,6 +4489,7 @@ function renderSuiviWeek() {
   const avg = scaleN(days.reduce((t, d) => addN(t, d.total), zeroN()), 1 / 7);
   const today = isoDate(new Date());
   return `${weekNav()}
+    ${members.length === 1 ? weightCard(members[0]) : ''}
     <div class="week-chart">${days.map((d, i) => `<button class="wc-col ${isoDate(d.date) === today ? 'today' : ''}" data-act="suivi-open-day" data-i="${i}">
       <span class="wc-val">${state.bilans.some((b) => b.date === isoDate(d.date) && b.criteres?.cible && members.some((m) => m.id === b.member_id)) ? '⭐' : d.total.kcal ? Math.round(d.total.kcal) : ''}</span>
       <span class="wc-bar"><i class="${d.total.kcal > need.kcal * 1.15 ? 'over' : d.total.kcal >= need.kcal * 0.9 ? 'ok' : 'low'}" style="height:${(d.total.kcal / top) * 100}%"></i>
@@ -4219,8 +4520,12 @@ const favKey = (r) => `${r.source}|${r.ref || ''}|${r.label}`;
 function journalAdd(slot) {
   if (!journalMember()) { toast('Ajoutez d\'abord les membres du foyer'); openFoyer(); return; }
   const el = openSheet(`${sheetHead(`Ajouter · ${slotLabel(slot)}`)}
-    <button class="btn primary block scan-top" data-scan-top>${ICON.barcode} Scanner un code-barres</button>
-    <p class="muted small" style="margin:6px 0 12px;text-align:center">Produit ou plat préparé : surgelé, barquette, conserve, boisson…</p>
+    <form class="nlp" data-form="nlp"><textarea class="input" name="txt" rows="2" placeholder="Décris ton repas : 2 œufs, une tartine beurrée et un café" aria-label="Décrire le repas"></textarea>
+      <div class="row" style="gap:6px;margin-top:6px"><button class="btn primary grow">${ICON.sparkle} Analyser</button><button class="btn" type="button" data-scan-top aria-label="Scanner un code-barres">${ICON.barcode} Scanner</button></div></form>
+    <div data-nlp-review></div>
+    <details class="quickkcal"><summary>Juste les calories</summary><form class="row" data-form="quick-kcal" style="gap:6px;margin-top:8px">
+      <input class="input" name="kcal" type="number" min="1" max="5000" inputmode="numeric" placeholder="kcal" style="width:96px" required>
+      <input class="input grow" name="label" maxlength="80" placeholder="Libellé (facultatif)"><button class="btn primary">Ajouter</button></form></details>
     <div class="seg seg5" role="group" style="grid-template-columns:repeat(5,1fr)">${[['recents', 'Récents'], ['plat', 'Plats'], ['aliment', 'Aliment'], ['produit', 'Produit'], ['recette', 'Recette']].map(([k, l], i) => `<button aria-pressed="${i === 0}" data-mode="${k}">${l}</button>`).join('')}</div>
     <div data-pane></div>`);
   const opts = { slot };
@@ -4249,6 +4554,78 @@ function journalAdd(slot) {
     } catch (e) { fail(e, 'Open Food Facts ne répond pas'); }
   };
   $('[data-scan-top]', el).addEventListener('click', () => Scanner.open(fromEan));
+  const date = () => isoDate(state.tab === 'suivi' ? state.day : new Date());
+  // Ajout rapide : seulement des calories (macros inconnues).
+  $('[data-form="quick-kcal"]', el).addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    const kcal = parseInt(f.kcal.value, 10);
+    if (!(kcal > 0)) return;
+    try {
+      await Data.addJournal({ date: date(), member_id: member.id, slot, label: f.label.value.trim() || 'Ajout rapide', source: 'ciqual', ref: 'rapide', grams: null, portions: null, n: { ...zeroN(), kcal } });
+      closeSheet(); toast(`Ajouté : ${kcal} kcal`); render();
+    } catch (err) { fail(err); }
+  });
+  // Texte libre : analyse puis liste à vérifier.
+  const review = $('[data-nlp-review]', el);
+  let lines = [];
+  const nOf = (l) => scaleN(l.food.n, l.grams / 100);
+  const drawReview = () => {
+    if (!lines.length) { review.innerHTML = ''; return; }
+    const total = lines.filter((l) => l.food).reduce((t, l) => t + nOf(l).kcal, 0);
+    review.innerHTML = `<div class="ntable nlp-review">${lines.map((l, i) => l.kind === 'eau'
+      ? `<div class="nlp-line"><span class="grow">💧 <b>Eau</b> <span class="muted small">« ${esc(l.text)} » · ajoutée à l'hydratation</span></span><input class="input" type="number" data-ml="${i}" value="${l.ml}" min="10" max="3000" aria-label="Millilitres"><span class="small">ml</span><button class="icon-btn" type="button" data-rm="${i}" aria-label="Retirer">${ICON.trash}</button></div>`
+      : `<div class="nlp-line"><div class="grow" style="min-width:0"><div class="muted small">« ${esc(l.text)} »</div>
+          <select class="input" data-pick="${i}" aria-label="Aliment reconnu">${l.food ? '' : '<option value="">— non reconnu, choisir —</option>'}${(l.alts.length ? l.alts : l.food ? [{ kind: l.kind, food: l.food }] : []).map((a, j) => `<option value="${j}" ${l.food && a.food === l.food ? 'selected' : ''}>${a.kind === 'plat' ? '🍽️ ' : ''}${esc(a.food.nom)}</option>`).join('')}</select></div>
+        <input class="input" type="number" data-g="${i}" value="${l.grams || ''}" min="1" max="3000" inputmode="numeric" aria-label="Grammes" ${l.food ? '' : 'disabled'}><span class="small">g</span>
+        <b class="small" data-k="${i}" style="width:44px;text-align:right">${l.food ? Math.round(nOf(l).kcal) : '—'}</b><button class="icon-btn" type="button" data-rm="${i}" aria-label="Retirer">${ICON.trash}</button></div>`).join('')}
+      <div class="row" style="margin-top:8px"><span class="grow small">Total <b data-total>${Math.round(total)} kcal</b> · <span class="muted">estimation à vérifier</span></span><button class="btn primary" type="button" data-nlp-add ${lines.some((l) => l.food || l.kind === 'eau') ? '' : 'disabled'}>Tout ajouter</button></div></div>`;
+  };
+  $('[data-form="nlp"]', el).addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const txt = e.target.txt.value.trim();
+    if (!txt) return;
+    review.innerHTML = '<div class="spinner"></div>';
+    try { await Promise.all([CQ.load(), PL.load().catch(() => {})]); } catch { review.innerHTML = '<p class="muted small">La table des aliments n\'a pas pu être chargée.</p>'; return; }
+    lines = parseMeal(txt).map((l) => (l.kind === 'inconnu' ? { ...l, food: null, grams: null } : l));
+    if (!lines.length) { review.innerHTML = '<p class="muted small">Rien reconnu. Essaie avec des mots simples, séparés par des virgules.</p>'; return; }
+    drawReview();
+  });
+  review.addEventListener('change', (e) => {
+    const t = e.target;
+    if (t.dataset.pick != null) {
+      const l = lines[Number(t.dataset.pick)];
+      const a = l.alts[Number(t.value)];
+      if (!a) return;
+      const wasPlat = l.kind === 'plat';
+      l.kind = a.kind; l.food = a.food;
+      if (!l.grams || wasPlat !== (a.kind === 'plat')) l.grams = a.kind === 'plat' ? a.food.portion : nlpDefaultGrams(a, l.text);
+      drawReview();
+    }
+    // Quantité modifiée : mise à jour sur place (redessiner pendant la perte de focus ferait perdre le toucher sur « Tout ajouter »).
+    if (t.dataset.g != null) {
+      const i = Number(t.dataset.g);
+      lines[i].grams = Math.max(1, parseInt(t.value, 10) || 1);
+      const k = $(`[data-k="${i}"]`, review); if (k) k.textContent = Math.round(nOf(lines[i]).kcal);
+      const tot = $('[data-total]', review); if (tot) tot.textContent = `${Math.round(lines.filter((l) => l.food).reduce((s2, l) => s2 + nOf(l).kcal, 0))} kcal`;
+    }
+    if (t.dataset.ml != null) { lines[Number(t.dataset.ml)].ml = Math.max(10, parseInt(t.value, 10) || 10); }
+  });
+  review.addEventListener('click', async (e) => {
+    const rm = e.target.closest('[data-rm]');
+    if (rm) { lines.splice(Number(rm.dataset.rm), 1); drawReview(); return; }
+    if (!e.target.closest('[data-nlp-add]')) return;
+    try {
+      let n = 0;
+      for (const l of lines) {
+        if (l.kind === 'eau') { await Data.addEau({ member_id: member.id, date: date(), heure: nowHM(), ml: l.ml }); n++; continue; }
+        if (!l.food) continue;
+        await Data.addJournal({ date: date(), member_id: member.id, slot, label: l.food.nom, source: 'ciqual', ref: l.kind === 'plat' ? `plat:${l.food.id}` : String(l.food.code), grams: l.grams, portions: null, n: nOf(l) });
+        n++;
+      }
+      closeSheet(); toast(`${n} élément${n > 1 ? 's' : ''} ajouté${n > 1 ? 's' : ''}`); render();
+    } catch (err) { fail(err); }
+  });
   const show = (mode) => {
     $$('[data-mode]', el).forEach((b) => b.setAttribute('aria-pressed', b.dataset.mode === mode));
     if (mode === 'recents') {
@@ -4341,6 +4718,49 @@ function journalAdd(slot) {
   };
   el.addEventListener('click', (e) => { const b = e.target.closest('[data-mode]'); if (b) show(b.dataset.mode); });
   show('recents');
+}
+// Corriger une entrée du journal : quantité, repas, date (valeurs recalculées à partir de la quantité d'origine).
+function journalEdit(id) {
+  if (String(id).startsWith('local:')) { toast('Modification possible après la synchronisation'); return; }
+  const j = state.journal.find((x) => x.id === id);
+  if (!j) return;
+  const isPortion = j.portions != null && j.grams == null;
+  const base = Number(isPortion ? j.portions : j.grams) || null;
+  const el = openSheet(`${sheetHead('Corriger l\'entrée')}
+    <form class="stack" data-form="jedit"><p style="margin:0"><b>${esc(j.label)}</b></p>
+      <div class="grid2"><label class="field"><span>Repas</span><select class="input" name="slot">${SLOTS.map(([k, l]) => `<option value="${k}" ${k === j.slot ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+        <label class="field"><span>Date</span><input class="input" type="date" name="date" value="${esc(j.date)}" required></label></div>
+      ${base ? `<label class="field"><span>Quantité (${isPortion ? 'portions' : 'g'})</span><input class="input" type="number" name="qty" min="0.1" step="any" inputmode="decimal" value="${base}" required></label>`
+        : `<label class="field"><span>Calories</span><input class="input" type="number" name="kcal" min="1" max="5000" inputmode="numeric" value="${Math.round(Number(j.n?.kcal) || 0)}" required></label>`}
+      <div data-preview class="muted small"></div>
+      <button class="btn primary block">Enregistrer</button>
+      <button type="button" class="btn danger block" data-x="del">Supprimer l'entrée</button></form>`);
+  const f = $('form', el);
+  const newN = () => (base ? scaleN({ ...zeroN(), ...j.n }, (parseFloat(f.qty.value) || 0) / base) : { ...zeroN(), ...j.n, kcal: parseInt(f.kcal.value, 10) || 0 });
+  const prev = () => { $('[data-preview]', el).textContent = `${Math.round(newN().kcal)} kcal · ${fmtNum(newN().prot)} g de protéines`; };
+  prev();
+  f.addEventListener('input', prev);
+  f.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const patch = { slot: f.slot.value, date: f.date.value, n: newN() };
+    if (base) patch[isPortion ? 'portions' : 'grams'] = parseFloat(f.qty.value);
+    try { await Data.updateJournal(id, patch); closeSheet(); toast('Entrée corrigée'); render(); } catch (err) { fail(err); }
+  });
+  $('[data-x="del"]', el).addEventListener('click', async () => { try { await Data.deleteJournal(id); closeSheet(); render(); } catch (err) { fail(err); } });
+}
+// « Comme hier » : recopie ce que le membre a noté hier au même repas.
+async function likeYesterday(slot) {
+  const m = journalMember();
+  if (!m) return;
+  const today = isoDate(new Date());
+  const y = isoDate(addDays(new Date(), -1));
+  try {
+    const rows = (await Data.journalOn(y, [m.id])).filter((r) => r.slot === slot);
+    if (!rows.length) { toast(`Rien de noté hier au ${slotLabel(slot).toLowerCase()}`); return; }
+    for (const r of rows) await Data.addJournal({ date: today, member_id: m.id, slot, label: r.label, source: r.source, ref: r.ref, grams: r.grams, portions: r.portions, n: r.n });
+    toast(`${rows.length} élément${rows.length > 1 ? 's' : ''} repris d'hier`);
+    render();
+  } catch (e) { fail(e); }
 }
 // Copie les entrées de la veille (membres affichés) sur le jour sélectionné.
 async function copyYesterday() {
@@ -4510,6 +4930,7 @@ function openSettings() {
       <button class="btn small" data-x="logout">Se déconnecter</button></div>
     <button class="btn block" data-act="basiques" style="margin-bottom:10px">${ICON.cart} Basiques du placard · ${basiques().length}</button>
     <button class="btn block" data-x="rappels" style="margin-bottom:10px">${ICON.clock} Rappels (notifications)</button>
+    <button class="btn block" data-act="widget-help" style="margin-bottom:10px">📱 Widget iPhone</button>
     <button class="btn block" data-act="compagnon" style="margin-bottom:10px">${ICON.sparkle} Mon compagnon</button>
     <button class="btn soft block" data-x="foyer" style="margin-bottom:16px">${ICON.users} Mon foyer · ${state.members.length ? `${state.members.length} membre${state.members.length > 1 ? 's' : ''}` : 'à configurer'}</button>
     <form class="stack" data-form="settings">
@@ -4663,6 +5084,12 @@ const ACTIONS = {
   'activite-del': async (b) => { try { await Data.deleteActivite(b.dataset.id); render(); } catch (e) { fail(e); } },
   'journal-habits': (b) => addHabits(b.dataset.slot),
   'cq-retry': () => { CQ.failed = false; render(); CQ.load().then(() => render()).catch(() => render()); },
+  'journal-edit': (b) => journalEdit(b.dataset.id),
+  'journal-like-yesterday': (b) => likeYesterday(b.dataset.slot),
+  'pesee': () => peseeSheet(),
+  'weight-apply': async (b) => { const m = memberById(b.dataset.m); if (!m) return; try { await Data.saveMember({ ...m, kcal_perso: Number(b.dataset.kcal) }); toast(`Objectif ajusté : ${b.dataset.kcal} kcal/jour`); render(); } catch (e) { fail(e); } },
+  'weight-later': (b) => { store.set(`weightLater:${b.dataset.m}`, isoDate(new Date())); render(); },
+  'widget-help': () => widgetSheet(),
   'journal-del': async (b) => { try { await Data.deleteJournal(b.dataset.id); render(); } catch (e) { fail(e); } },
   'have-item': async (b) => {
     try { await Data.addPlacard({ name: b.dataset.n, ing_key: b.dataset.k, type: 'stock', until: isoDate(addDays(state.week, 6)) }); render(); toast('Mis de côté : vous l\'avez déjà'); } catch (e) { fail(e); }
@@ -4963,7 +5390,10 @@ async function onSession(session) {
     const qs = new URLSearchParams(location.search);
     const hash = location.hash.replace('#', '');
     if (['planning', 'courses', 'batch', 'suivi', 'recettes', 'scan', 'aujourdhui'].includes(hash) ) { if (hash) state.tab = hash; history.replaceState(null, '', location.pathname); }
+    const urlAction = qs.get('action');
+    if (urlAction) history.replaceState(null, '', location.pathname);
     render();
+    runUrlAction(urlAction);
     evaluateYesterday().catch((e) => console.warn('bilan', e)).finally(() => Rewards.daily().catch(() => {}));
     Pet.start();
   } catch (err) {
