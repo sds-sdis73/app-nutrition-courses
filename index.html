@@ -152,6 +152,7 @@ body.logged-out .tabbar, body.logged-out [data-act="settings"] { display: none; 
 .ring { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .ring b { font-size: 12px; } .ring span { font-size: 11px; }
 .chips.wrap { flex-wrap: wrap; overflow: visible; }
+.scan-top { min-height: 52px; font-size: 17px; }
 .seg5 button { font-size: 13px; padding: 0 2px; }
 .plat-cats { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 6px; margin-bottom: 4px; }
 .plat-cats .chip { flex: none; }
@@ -590,7 +591,7 @@ h1, h2, h3, .sheet-head h2, .section-title, .tl-head { font-weight: 800; letter-
 // ---------------------------------------------------------------------------
 const APP_NAME = 'Miam & moi';
 // À incrémenter à chaque publication, avec la même valeur dans version.json.
-const APP_VERSION = '2026-10-28.3';
+const APP_VERSION = '2026-10-28.4';
 const SUPABASE_URL = 'https://svugddkrptqpjmywhorb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2dWdkZGtycHRxcGpteXdob3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MjU5NDgsImV4cCI6MjEwODUwMTk0OH0.63RETgf7rbVMquGV-7ooY3qn-Qf31uVCA3ZBfqBvFcI';
 const OFF = 'https://world.openfoodfacts.org/api/v2';
@@ -4180,6 +4181,8 @@ const journalMember = () => (state.suiviMember !== 'foyer' && memberById(state.s
 const favKey = (r) => `${r.source}|${r.ref || ''}|${r.label}`;
 function journalAdd(slot) {
   const el = openSheet(`${sheetHead(`Ajouter · ${slotLabel(slot)}`)}
+    <button class="btn primary block scan-top" data-scan-top>${ICON.barcode} Scanner un code-barres</button>
+    <p class="muted small" style="margin:6px 0 12px;text-align:center">Produit ou plat préparé : surgelé, barquette, conserve, boisson…</p>
     <div class="seg seg5" role="group" style="grid-template-columns:repeat(5,1fr)">${[['recents', 'Récents'], ['plat', 'Plats'], ['aliment', 'Aliment'], ['produit', 'Produit'], ['recette', 'Recette']].map(([k, l], i) => `<button aria-pressed="${i === 0}" data-mode="${k}">${l}</button>`).join('')}</div>
     <div data-pane></div>`);
   const opts = { slot };
@@ -4192,6 +4195,22 @@ function journalAdd(slot) {
       closeSheet(); toast(`Ajouté : ${Math.round(Number(r.n?.kcal) || 0)} kcal`); render();
     } catch (err) { fail(err); }
   };
+  const fromPerso = (x) => quantitySheet({ ...opts, label: x.name, per100: offPer100(persoToProduct(x)), source: 'off', ref: `perso:${x.id}`, defaultGrams: Number(x.serving_g) || 100 });
+  // Code-barres scanné ou saisi : fiche perso d'abord, sinon Open Food Facts, sinon création d'une fiche à partir de l'étiquette.
+  const fromEan = async (ean) => {
+    const perso = state.perso.find((x) => x.ean === ean);
+    if (perso) { closeSheet(); return fromPerso(perso); }
+    try {
+      const p = await fetchProduct(ean);
+      if (!p || !offPer100(p).kcal) {
+        toast(p ? 'Valeurs nutritionnelles absentes : recopiez l\'étiquette' : 'Produit inconnu : recopiez l\'étiquette en 30 secondes');
+        return persoSheet({ ean, name: p?.product_name_fr || p?.product_name || '' }, (x) => { closeSheet(); fromPerso(x); });
+      }
+      closeSheet();
+      quantitySheet({ ...opts, label: p.product_name_fr || p.product_name || ean, per100: offPer100(p), source: 'off', ref: ean, defaultGrams: Number(p.serving_quantity) || 100 });
+    } catch (e) { fail(e, 'Open Food Facts ne répond pas'); }
+  };
+  $('[data-scan-top]', el).addEventListener('click', () => Scanner.open(fromEan));
   const show = (mode) => {
     $$('[data-mode]', el).forEach((b) => b.setAttribute('aria-pressed', b.dataset.mode === mode));
     if (mode === 'recents') {
@@ -4254,14 +4273,6 @@ function journalAdd(slot) {
         ${state.perso.length ? `<h3 class="section-title">Mes fiches produit</h3>${state.perso.map((x) => `<button class="prod-row" data-perso="${x.id}"><div class="thumb ph">${ICON.edit}</div><div class="grow"><div class="prod-name">${esc(x.name)}</div><div class="muted small">${esc(x.brand || '')} · ${Math.round(Number(x.n?.kcal) || 0)} kcal/100 g</div></div></button>`).join('')}` : ''}
         <button class="btn block" data-new-perso style="margin-top:8px">${ICON.plus} Nouvelle fiche produit (étiquette)</button>
         ${state.scans.length ? `<h3 class="section-title">Produits scannés récemment</h3>${state.scans.slice(0, 12).map((s) => `<button class="prod-row" data-ean="${esc(s.ean)}">${safeUrl(s.image_url) ? `<img class="thumb" src="${esc(safeUrl(s.image_url))}" alt="">` : `<div class="thumb ph">${ICON.barcode}</div>`}<div class="grow"><div class="prod-name">${esc(s.name || s.ean)}</div><div class="muted small">${esc((s.brand || '').split(',')[0])}</div></div></button>`).join('')}` : ''}`;
-      const fromEan = async (ean) => {
-        try {
-          const p = await fetchProduct(ean);
-          if (!p) { toast('Produit introuvable'); return; }
-          closeSheet();
-          quantitySheet({ ...opts, label: p.product_name_fr || p.product_name || ean, per100: offPer100(p), source: 'off', ref: ean, defaultGrams: Number(p.serving_quantity) || 100 });
-        } catch (e) { fail(e, 'Open Food Facts ne répond pas'); }
-      };
       $('[data-scan]', pane).addEventListener('click', () => Scanner.open(fromEan));
       $('[data-new-perso]', pane).addEventListener('click', () => persoSheet({}, (x) => { closeSheet(); quantitySheet({ ...opts, label: x.name, per100: offPer100(persoToProduct(x)), source: 'off', ref: `perso:${x.id}`, defaultGrams: Number(x.serving_g) || 100 }); }));
       pane.onclick = (e) => {
