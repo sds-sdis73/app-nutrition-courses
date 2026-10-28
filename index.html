@@ -590,7 +590,7 @@ h1, h2, h3, .sheet-head h2, .section-title, .tl-head { font-weight: 800; letter-
 // ---------------------------------------------------------------------------
 const APP_NAME = 'Miam & moi';
 // À incrémenter à chaque publication, avec la même valeur dans version.json.
-const APP_VERSION = '2026-10-28.2';
+const APP_VERSION = '2026-10-28.3';
 const SUPABASE_URL = 'https://svugddkrptqpjmywhorb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2dWdkZGtycHRxcGpteXdob3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MjU5NDgsImV4cCI6MjEwODUwMTk0OH0.63RETgf7rbVMquGV-7ooY3qn-Qf31uVCA3ZBfqBvFcI';
 const OFF = 'https://world.openfoodfacts.org/api/v2';
@@ -3749,7 +3749,7 @@ function renderToday() {
     let actions = '';
     const late = past(lateAfter(slot, t));
     if (!entries.length && late) actions = `<span class="muted small grow">Rien de noté</span><button class="btn small soft" data-act="journal-add" data-slot="${slot}">${ICON.plus} Noter</button>`;
-    else if (!entries.length && ['midi', 'soir'].includes(slot) && di >= 0) actions = `<button class="btn small primary" data-act="suggest">${ICON.sparkle} Une idée ?</button><button class="btn small soft" data-act="slot" data-d="${di}" data-s="${slot}">Planifier</button>`;
+    else if (!entries.length && ['midi', 'soir'].includes(slot) && di >= 0) actions = `<button class="btn small primary" data-act="journal-add" data-slot="${slot}">${ICON.plus} Noter</button><button class="btn small" data-act="suggest">${ICON.sparkle} Une idée ?</button><button class="btn small soft" data-act="slot" data-d="${di}" data-s="${slot}">Planifier</button>`;
     else if (!entries.length) actions = `<span class="muted small grow">${past(t) ? 'À noter quand tu veux' : 'À venir'}</span><button class="btn small soft" data-act="journal-add" data-slot="${slot}">${ICON.plus} Noter</button>`;
     else actions = `<button class="btn small" data-act="journal-add" data-slot="${slot}" style="margin-left:auto">${ICON.plus} Ajouter</button>`;
     const k = kcalOf(entries);
