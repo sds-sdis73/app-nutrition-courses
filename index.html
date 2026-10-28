@@ -138,13 +138,16 @@ body.logged-out .tabbar, body.logged-out [data-act="settings"] { display: none; 
 .rings { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 12px; }
 .ring { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .ring b { font-size: 12px; } .ring span { font-size: 11px; }
+.chips.wrap { flex-wrap: wrap; overflow: visible; }
+.seg5 button { font-size: 13px; padding: 0 2px; }
+.plat-cats { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 6px; margin-bottom: 4px; }
+.plat-cats .chip { flex: none; }
 .quick3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
 .quick3 .btn { min-height: 44px; padding: 0 6px; font-size: 14px; }
 .tl-head { margin: 4px 0 8px; }
 .timeline { list-style: none; margin: 0 0 16px; padding: 0; position: relative; }
-.timeline::before { content: ""; position: absolute; left: 61px; top: 8px; bottom: 8px; width: 2px; background: var(--border); }
-.tl-item, .tl-now { display: grid; grid-template-columns: 44px 36px 1fr; align-items: start; gap: 0; margin-bottom: 10px; position: relative; }
-.tl-time { font-size: 12px; font-weight: 700; color: var(--muted); padding-top: 10px; font-variant-numeric: tabular-nums; }
+.timeline::before { content: ""; position: absolute; left: 15px; top: 8px; bottom: 8px; width: 2px; background: var(--border); }
+.tl-item, .tl-now { display: grid; grid-template-columns: 40px minmax(0, 1fr); align-items: start; gap: 0; margin-bottom: 10px; position: relative; }
 .tl-dot { width: 30px; height: 30px; border-radius: 50%; background: var(--surface); border: 2px solid var(--border); display: grid; place-items: center; font-size: 14px; margin-top: 3px; z-index: 1; }
 .tl-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 9px 11px; min-width: 0; box-shadow: var(--shadow); }
 .tl-item.done .tl-dot { border-color: var(--primary); background: var(--primary-soft); }
@@ -152,19 +155,20 @@ body.logged-out .tabbar, body.logged-out [data-act="settings"] { display: none; 
 .tl-item.next .tl-dot { border-color: var(--primary); }
 .tl-item.missed .tl-card { background: var(--surface-2); box-shadow: none; }
 .tl-item.later { opacity: .6; } .tl-item.later .tl-card { box-shadow: none; }
-.tl-item.done .tl-time { color: var(--primary-strong); }
 .tl-check { color: var(--primary-strong); font-weight: 800; margin-left: 6px; }
 .tl-recipe { display: flex; gap: 8px; align-items: center; margin-top: 6px; min-width: 0; }
+.tl-recipe .sthumb { width: 48px; height: 48px; flex: none; border-radius: 10px; object-fit: cover; display: grid; place-items: center; }
 .tl-recipe .meta { display: flex; flex-wrap: wrap; gap: 6px; font-size: 12px; color: var(--muted); margin-top: 2px; }
 .tl-recipe b { display: block; font-size: 14px; }
 .tl-list { margin-top: 6px; }
 .tl-food { display: flex; gap: 6px; align-items: center; font-size: 13px; padding: 2px 0; }
 .tl-food .icon-btn { width: 30px; height: 30px; }
+.tl-food .grow, .tl-card .grow, .tl-recipe .grow { min-width: 0; overflow-wrap: anywhere; }
+.tl-food .icon-btn, .tl-food b { flex: none; }
 .tl-actions { display: flex; gap: 6px; align-items: center; margin-top: 6px; flex-wrap: wrap; }
 .tl-actions:empty { display: none; }
 .tl-now { margin: 0 0 10px; align-items: center; }
-.tl-now .tl-time { padding: 0; color: #c0503a; }
-.tl-now .tl-dot { width: 12px; height: 12px; margin: 0 0 0 9px; background: #c0503a; border: 0; }
+.tl-now .tl-dot { width: 12px; height: 12px; margin: 0 0 0 10px; background: #c0503a; border: 0; }
 .tl-now-line { font-size: 12px; font-weight: 800; color: #c0503a; text-transform: uppercase; letter-spacing: .04em; border-top: 2px dashed #e5a99c; padding-top: 2px; }
 .famille { display: flex; gap: 10px; overflow-x: auto; margin-top: 12px; padding: 4px 0; }
 .fam { border: 0; background: var(--surface); border-radius: 14px; padding: 6px 10px; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 12px; font-weight: 700; color: var(--muted); flex: none; }
@@ -186,9 +190,9 @@ body.logged-out .tabbar, body.logged-out [data-act="settings"] { display: none; 
 @keyframes twinkle { 50% { opacity: .25; } }
 @keyframes drift { to { transform: translateX(40px); } }
 .scene-top { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; gap: 6px; z-index: 3; }
-.chip { background: rgba(255,255,255,.88); border-radius: 999px; padding: 4px 10px; font-weight: 800; font-size: 13px; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
-.chip.name { margin-left: auto; }
-.chip.pop { animation: pop .5s ease; }
+.pill { background: rgba(255,255,255,.88); border-radius: 999px; padding: 4px 10px; font-weight: 800; font-size: 13px; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+.pill.name { margin-left: auto; }
+.pill.pop { animation: pop .5s ease; }
 @keyframes pop { 40% { transform: scale(1.25); } }
 .scene-bubble { position: absolute; top: 46px; left: 50%; transform: translateX(-50%); width: calc(100% - 36px); max-width: 330px; z-index: 3; background: #fff; border-radius: 16px; padding: 9px 12px; font-size: 15px; line-height: 1.35; text-align: center; box-shadow: 0 3px 12px rgba(0,0,0,.14); transition: opacity .22s; color: #26302a; }
 .scene-bubble::after { content: ""; position: absolute; bottom: -8px; left: 50%; margin-left: -8px; border: 8px solid transparent; border-top-color: #fff; border-bottom: 0; }
@@ -513,7 +517,7 @@ textarea.input { resize: vertical; min-height: 72px; }
 // ---------------------------------------------------------------------------
 const APP_NAME = 'Miam & moi';
 // À incrémenter à chaque publication, avec la même valeur dans version.json.
-const APP_VERSION = '2026-10-27.8';
+const APP_VERSION = '2026-10-28.1';
 const SUPABASE_URL = 'https://svugddkrptqpjmywhorb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2dWdkZGtycHRxcGpteXdob3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MjU5NDgsImV4cCI6MjEwODUwMTk0OH0.63RETgf7rbVMquGV-7ooY3qn-Qf31uVCA3ZBfqBvFcI';
 const OFF = 'https://world.openfoodfacts.org/api/v2';
@@ -1274,6 +1278,33 @@ function matchScore(words, a) {
   if (a.groupe === 'légumineuses' && /appertise/.test(a.key)) s += 2;
   return s;
 }
+// Plats (plats.json) : plats Ciqual et plats du quotidien composés d'ingrédients Ciqual, valeurs pour 100 g et portion type.
+const PLAT_CATS = ['Petit-déjeuner', 'Plats', 'Sandwichs & burgers', 'Pizzas, tartes & crêpes', 'Salades', 'Soupes', 'Entrées & apéro', 'Goûter', 'Viennoiseries', 'Desserts & pâtisseries'];
+const PL = {
+  list: [], ready: false, loading: null,
+  load() {
+    if (this.loading) return this.loading;
+    this.loading = fetch('plats.json').then((r) => r.json()).then((d) => {
+      const idx = Object.fromEntries(d.fields.map((f, i) => [f, i]));
+      this.list = d.plats.map((a) => {
+        const n = {};
+        for (const { k } of NUTRI_KEYS) n[k] = a[idx[k]] ?? 0;
+        const key = ingKey(a[idx.nom]);
+        return { id: a[idx.id], nom: a[idx.nom], cat: a[idx.cat], portion: a[idx.portion], src: a[idx.src], groupe: '', n, key, words: key.split(' '), noKcal: false };
+      });
+      this.ready = true;
+    }).catch((e) => { this.loading = null; throw e; });
+    return this.loading;
+  },
+  search(q, cat, limit = 60) {
+    const words = ingKey(q).split(' ').filter((w) => w.length > 1 && !STOP.has(w));
+    const pool = cat ? this.list.filter((a) => a.cat === cat) : this.list;
+    if (!words.length) return [...pool].sort((a, b) => (a.src === b.src ? a.nom.localeCompare(b.nom, 'fr') : a.src === 'compose' ? -1 : 1)).slice(0, limit);
+    return pool.map((a) => ({ a, s: matchScore(words, a) + (a.src === 'compose' ? 0.5 : 0) })).filter((x) => x.s > 0).sort((x, y) => y.s - x.s).slice(0, limit).map((x) => x.a);
+  },
+};
+const platCatFor = (slot) => (slot === 'petit-dejeuner' ? 'Petit-déjeuner' : slot === 'gouter' || slot === 'collation' ? 'Goûter' : 'Plats');
+
 // Aliment Ciqual retenu par défaut pour les noms courants mais ambigus.
 const PREFERRED = {
   farine: 'Farine de blé tendre ou froment T55 (pour pains)',
@@ -1416,7 +1447,17 @@ function computedKcal(m) {
 }
 const kcalNeed = (m) => Number(m.kcal_perso) || computedKcal(m);
 // Activités manuelles : MET (dépense = MET × poids × heures).
-const MET = [['Marche tranquille', 3], ['Marche rapide', 4.3], ['Randonnée', 6], ['Course à pied (9 km/h)', 8.8], ['Course à pied (12 km/h)', 11.5], ['Vélo loisir', 5.8], ['Vélo soutenu', 8.5], ['Natation', 7], ['Musculation', 5], ['Yoga / Pilates', 3], ['Fitness / cardio', 7], ['Danse', 5.5], ['Football', 7], ['Tennis / padel', 7.3], ['Basket', 6.5], ['Escalade', 7.5], ['Ski', 6.5], ['Jardinage', 3.8], ['Ménage', 3.3], ['Bricolage', 4], ['Jeux avec les enfants', 4], ['Marche avec poussette', 3.5], ['Vélo d\'appartement', 6.8], ['Rameur', 7], ['Corde à sauter', 11], ['Boxe', 9], ['Équitation', 5.5], ['Golf', 4.8], ['Trottinette', 4], ['Autre (modéré)', 5]];
+const MET_CATS = {
+  'Cardio & fitness': [['CrossFit', 8], ['HIIT / circuit training', 8], ['Fitness / cardio', 7], ['Musculation', 5], ['Musculation intense', 6], ['Body pump / renforcement', 6], ['Spinning / RPM', 8.5], ['Vélo d\'appartement', 6.8], ['Rameur', 7], ['Elliptique', 5], ['Step', 8.5], ['Zumba', 6.5], ['Corde à sauter', 11], ['Yoga / Pilates', 3], ['Stretching', 2.3], ['Gym douce', 3]],
+  'Course & marche': [['Marche tranquille', 3], ['Marche rapide', 4.3], ['Marche nordique', 4.8], ['Randonnée', 6], ['Course à pied (9 km/h)', 8.8], ['Course à pied (12 km/h)', 11.5], ['Trail', 9], ['Marche avec poussette', 3.5]],
+  'Vélo, glisse & plein air': [['Vélo loisir', 5.8], ['Vélo soutenu', 8.5], ['VTT', 8.5], ['Trottinette', 4], ['Roller', 7.5], ['Skateboard', 5], ['Ski', 6.5], ['Ski de fond', 9], ['Snowboard', 5.3], ['Patinage', 7], ['Surf', 3], ['Paddle', 6], ['Kayak / canoë', 5], ['Équitation', 5.5], ['Escalade', 7.5], ['Golf', 4.8]],
+  'Dans l\'eau': [['Natation', 7], ['Natation intense', 9.8], ['Aquagym', 5.3], ['Aquabike', 6]],
+  'Sports collectifs': [['Football', 7], ['Basket', 6.5], ['Handball', 8], ['Rugby', 8.3], ['Volley', 4], ['Hockey', 8]],
+  'Raquettes': [['Tennis / padel', 7.3], ['Badminton', 5.5], ['Squash', 7.3], ['Ping-pong', 4]],
+  'Combat & danse': [['Boxe', 9], ['Kickboxing', 7.3], ['Judo / karaté / taekwondo', 10.3], ['Escrime', 6], ['Danse', 5.5]],
+  'Au quotidien': [['Jardinage', 3.8], ['Ménage', 3.3], ['Bricolage', 4], ['Jeux avec les enfants', 4], ['Autre (modéré)', 5]],
+};
+const MET = Object.entries(MET_CATS).flatMap(([cat, l]) => l.map(([label, v]) => [label, v, cat]));
 function needs(m, date) {
   const kcal = kcalNeed(m);
   const age = ageOf(m);
@@ -3528,7 +3569,7 @@ function boutiqueSheet(m, tab = 'friandises') {
       accessoires: ACCESSOIRES.map(([k, l, prix]) => card(companionSvg({ ...cc, accessoires: [k] }, 'content', 70), l, has.includes(k) ? `<button class="btn small ${worn(cc).includes(k) ? 'primary' : 'soft'}" data-wear="${k}">${worn(cc).includes(k) ? 'Porté ✓' : 'Mettre'}</button>` : price(k, prix, 'accessoire'))).join(''),
       fonds: FONDS.map(([k, l, prix]) => card(`<span class="bq-fond">${sceneSvg(k, 'jour')}</span>`, l, prix === 0 || has.includes(`fond:${k}`) ? `<button class="btn small ${cc.fond === k ? 'primary' : 'soft'}" data-fond="${k}">${cc.fond === k ? 'Choisi ✓' : 'Choisir'}</button>` : price(`fond:${k}`, prix, 'fond'))).join(''),
     };
-    $('[data-body]', el).innerHTML = `<div class="scene scene-mini">${sceneSvg(cc.fond || 'jardin')}<div class="comp-walk still">${companionSvg(cc, 'content', 120)}</div><div class="scene-top"><span class="chip">${cc.coquillages} 🐚</span></div></div>
+    $('[data-body]', el).innerHTML = `<div class="scene scene-mini">${sceneSvg(cc.fond || 'jardin')}<div class="comp-walk still">${companionSvg(cc, 'content', 120)}</div><div class="scene-top"><span class="pill">${cc.coquillages} 🐚</span></div></div>
       <div class="seg bq-tabs" role="tablist" style="margin:10px 0">${[['friandises', '🍓 Friandises'], ['accessoires', '🎀 Tenues'], ['fonds', '🏞️ Décors']].map(([k, l]) => `<button data-tab-shop="${k}" aria-pressed="${k === tab}">${l}</button>`).join('')}</div>
       <div class="bq-grid">${panes[tab]}</div>
       <p class="muted small">Gagner des coquillages : visite du jour +5, chaque repas noté +3, chaque verre d'eau +1 (objectif d'eau +5), activité faite +5, câlins +1, et le bilan du soir (2 par objectif, +5 si les calories sont dans la cible).</p>`;
@@ -3588,7 +3629,10 @@ function ring(value, max, color, label, sub) {
 // Aujourd'hui : fil chronologique de la journée du membre choisi (repas, eau, activités, rappels).
 // ---------------------------------------------------------------------------
 const SLOT_TIME = { 'petit-dejeuner': '07:30', collation: '10:30', midi: '12:30', gouter: '16:30', soir: '19:30' };
-const WATER_POINTS = [['10:00', 0.25], ['13:00', 0.5], ['16:30', 0.7], ['19:30', 0.85], ['21:30', 1]];
+const WATER_POINTS = [['10:00', 0.25, 'Matinée'], ['13:00', 0.5, 'Midi'], ['16:30', 0.7, 'Après-midi'], ['19:30', 0.85, 'Soirée'], ['21:30', 1, 'Avant de dormir']];
+// Délai après l'horaire indicatif avant de considérer un repas comme « rien de noté » (chacun mange à son rythme).
+const plusMin = (t, m) => { const [h, mi] = t.split(':').map(Number); const x = Math.min(23 * 60 + 59, h * 60 + mi + m); return `${String(Math.floor(x / 60)).padStart(2, '0')}:${String(x % 60).padStart(2, '0')}`; };
+const lateAfter = (slot, t) => (slot === 'petit-dejeuner' ? '11:00' : plusMin(t, 150));
 function renderToday() {
   const today = new Date();
   const iso = isoDate(today);
@@ -3630,12 +3674,13 @@ function renderToday() {
     const journal = entries.filter((e) => e.type === 'journal');
     if (journal.length) body += `<div class="tl-list">${journal.map((e) => `<div class="tl-food"><span class="grow">${esc(e.label)}${e.detail ? ` <span class="muted">· ${esc(e.detail)}</span>` : ''}</span><b>${Math.round(e.n.kcal || 0)}</b><button class="icon-btn" data-act="journal-del" data-id="${e.id}" aria-label="Supprimer">${ICON.trash}</button></div>`).join('')}</div>`;
     let actions = '';
-    if (!entries.length && past(t)) actions = `<span class="muted small grow">Rien de noté</span><button class="btn small soft" data-act="journal-add" data-slot="${slot}">${ICON.plus} Noter</button>`;
+    const late = past(lateAfter(slot, t));
+    if (!entries.length && late) actions = `<span class="muted small grow">Rien de noté</span><button class="btn small soft" data-act="journal-add" data-slot="${slot}">${ICON.plus} Noter</button>`;
     else if (!entries.length && ['midi', 'soir'].includes(slot) && di >= 0) actions = `<button class="btn small primary" data-act="suggest">${ICON.sparkle} Une idée ?</button><button class="btn small soft" data-act="slot" data-d="${di}" data-s="${slot}">Planifier</button>`;
-    else if (!entries.length) actions = `<span class="muted small grow">À venir</span><button class="btn small soft" data-act="journal-add" data-slot="${slot}">${ICON.plus} Noter</button>`;
+    else if (!entries.length) actions = `<span class="muted small grow">${past(t) ? 'À noter quand tu veux' : 'À venir'}</span><button class="btn small soft" data-act="journal-add" data-slot="${slot}">${ICON.plus} Noter</button>`;
     else actions = `<button class="btn small" data-act="journal-add" data-slot="${slot}" style="margin-left:auto">${ICON.plus} Ajouter</button>`;
     const k = kcalOf(entries);
-    items.push({ t, kind: 'repas', state: done ? 'done' : past(t) ? 'missed' : 'next', icon: slot === 'petit-dejeuner' ? '☕' : slot === 'gouter' || slot === 'collation' ? '🍎' : '🍽️',
+    items.push({ t, kind: 'repas', state: done ? 'done' : late ? 'missed' : 'next', icon: slot === 'petit-dejeuner' ? '☕' : slot === 'gouter' || slot === 'collation' ? '🍎' : '🍽️',
       title: label, side: k ? `${k} kcal` : '', body: body + `<div class="tl-actions">${actions}</div>` });
   }
 
@@ -3651,17 +3696,17 @@ function renderToday() {
   // Hydratation : repères au fil de la journée, avec les boissons de la plage
   const drinks = waterDay(me, today);
   let prev = '00:00';
-  for (const [t, frac] of WATER_POINTS) {
+  for (const [t, frac, moment] of WATER_POINTS) {
     const inWin = drinks.filter((x) => x.heure > prev && x.heure <= t);
     const upTo = drinks.filter((x) => x.heure <= t).reduce((s2, x) => s2 + x.ml, 0);
     const target = Math.round((wGoal * frac) / 50) * 50;
     const isNext = !past(t) && past(prev);
     prev = t;
-    if (!past(t) && !isNext) { items.push({ t, kind: 'eau', state: 'later', icon: '💧', title: `Hydratation`, side: `objectif ${fmtL(target)}`, body: '' }); continue; }
+    if (!past(t) && !isNext) { items.push({ t, kind: 'eau', state: 'later', icon: '💧', title: `Hydratation · ${moment}`, side: `objectif ${fmtL(target)}`, body: '' }); continue; }
     const ok = upTo >= target * 0.9;
-    items.push({ t, kind: 'eau', state: isNext ? 'next' : ok ? 'done' : 'missed', icon: '💧', title: isNext ? `D'ici ${t.replace(':00', ' h').replace(':', ' h ')}` : 'Hydratation',
+    items.push({ t, kind: 'eau', state: isNext ? 'next' : ok ? 'done' : 'missed', icon: '💧', title: `Hydratation · ${moment}`,
       side: `${fmtL(upTo)} / ${fmtL(target)}`,
-      body: `<div class="tl-actions">${inWin.length ? `<span class="muted small grow">${inWin.map((x) => `${x.heure} ${x.ml} ml`).join(' · ')}</span>` : `<span class="muted small grow">${isNext ? `Encore ${fmtL(Math.max(0, target - upTo))}` : 'Aucune boisson notée'}</span>`}${isNext || !ok ? `<button class="btn small soft" data-act="eau-add" data-ml="250">+250 ml</button>` : ''}</div>` });
+      body: `<div class="tl-actions">${inWin.length ? `<span class="muted small grow">${inWin.length} boisson${inWin.length > 1 ? 's' : ''} · ${fmtL(inWin.reduce((s2, x) => s2 + x.ml, 0))}</span>` : `<span class="muted small grow">${isNext ? `Encore ${fmtL(Math.max(0, target - upTo))}` : 'Aucune boisson notée'}</span>`}${isNext || !ok ? `<button class="btn small soft" data-act="eau-add" data-ml="250">+250 ml</button>` : ''}</div>` });
   }
 
   // Rappels : reste à sortir du congélateur pour demain, restes du frigo à finir
@@ -3680,10 +3725,12 @@ function renderToday() {
   items.push({ t: '21:45', kind: 'bilan', state: past('21:45') ? 'done' : 'later', icon: '🌙', title: 'Bilan de la journée', side: `${okCount} / ${cr.items.length}`,
     body: `<div class="tl-actions"><span class="muted small grow">${cr.items.filter((x) => x.ok).map((x) => x.label).slice(0, 3).join(' · ') || 'Les objectifs se remplissent au fil des repas'}</span><button class="btn small" data-act="tab" data-tab="suivi">Détail</button></div>` });
 
-  items.sort((a, b) => a.t.localeCompare(b.t) || (a.kind === 'repas' ? -1 : 1));
+  // Ce qui est déjà fait passe avant « Maintenant », même si l'horaire indicatif est plus tard (repas noté en avance).
+  for (const x of items) { x.ord = x.t; if (x.state === 'done' && x.t > now) x.t = now; }
+  items.sort((a, b) => a.t.localeCompare(b.t) || a.ord.localeCompare(b.ord) || (a.kind === 'repas' ? -1 : 1));
   const nowIdx = items.findIndex((x) => x.t > now);
-  const nowMark = `<li class="tl-now"><span class="tl-time">${now}</span><span class="tl-dot"></span><span class="tl-now-line">Maintenant</span></li>`;
-  const li = (x) => `<li class="tl-item ${x.kind} ${x.state}"><span class="tl-time">${x.t}</span><span class="tl-dot">${x.icon}</span>
+  const nowMark = '<li class="tl-now"><span class="tl-dot"></span><span class="tl-now-line">Maintenant</span></li>';
+  const li = (x) => `<li class="tl-item ${x.kind} ${x.state}"><span class="tl-dot">${x.icon}</span>
     <div class="tl-card"><div class="row"><b class="grow">${x.title}</b>${x.side ? `<span class="small muted">${x.side}</span>` : ''}${x.state === 'done' ? '<span class="tl-check">✓</span>' : ''}</div>${x.body}</div></li>`;
   const timeline = items.map((x, i) => (i === nowIdx ? nowMark : '') + li(x)).join('') + (nowIdx < 0 ? nowMark : '');
 
@@ -3696,7 +3743,7 @@ function renderToday() {
     nextAct ? `${nextAct.label} à ${nextAct.heure} : je viens avec toi !` : '',
     c.coquillages >= 20 ? `On a ${c.coquillages} coquillages… un petit tour à la boutique ?` : ''].filter(Boolean) : [];
   const scene = c ? `<div class="scene" data-scene>${sceneSvg(c.fond || 'jardin')}
-      <div class="scene-top"><span class="chip" data-shells>${c.coquillages} 🐚</span><span class="chip">🔥 ${c.serie} j</span><span class="chip name">${esc(c.nom)}</span></div>
+      <div class="scene-top"><span class="pill" data-shells>${c.coquillages} 🐚</span><span class="pill">🔥 ${c.serie} j</span><span class="pill name">${esc(c.nom)}</span></div>
       ${c.messages === false ? '' : `<div class="scene-bubble" data-bubble>${esc(pick(mood, c))}</div>`}
       <div class="comp-walk"><button class="comp-tap" data-act="pet" aria-label="Faire un câlin à ${esc(c.nom)}">${companionSvg(c, mood, 190)}</button></div></div>
     <div class="pet-actions"><button class="btn" data-act="nourrir">🍓 Nourrir</button><button class="btn" data-act="boutique">🎀 Boutique</button></div>`
@@ -3988,7 +4035,7 @@ function activiteSheet(member, prefill) {
     <form class="stack" data-form="activite">
       <div class="grid2"><label class="field"><span>Pour</span><select class="input" name="member">${state.members.map((x) => `<option value="${x.id}" ${x.id === m.id ? 'selected' : ''}>${esc(x.nom)}</option>`).join('')}</select></label>
         <label class="field"><span>Date</span><input class="input" type="date" name="date" value="${isoDate(state.tab === 'suivi' ? state.day : new Date())}" required></label></div>
-      <label class="field"><span>Activité</span><select class="input" name="type">${MET.map(([l, v], i) => `<option value="${i}">${l}</option>`).join('')}</select></label>
+      <label class="field"><span>Activité</span><select class="input" name="type">${Object.keys(MET_CATS).map((cat) => `<optgroup label="${esc(cat)}">${MET.map(([l, , c], i) => (c === cat ? `<option value="${i}">${esc(l)}</option>` : '')).join('')}</optgroup>`).join('')}</select></label>
       <div class="grid2"><label class="field"><span>Durée (min)</span><input class="input" type="number" name="minutes" min="1" max="600" inputmode="numeric" value="30" required></label>
         <label class="field"><span>Intensité</span><select class="input" name="intensite"><option value="0.8">Tranquille</option><option value="1" selected>Normale</option><option value="1.25">Soutenue</option></select></label></div>
       <div class="grid2"><label class="field"><span>Heure</span><input class="input" type="time" name="heure" value="${nowHM()}" required></label>
@@ -4060,7 +4107,7 @@ const journalMember = () => (state.suiviMember !== 'foyer' && memberById(state.s
 const favKey = (r) => `${r.source}|${r.ref || ''}|${r.label}`;
 function journalAdd(slot) {
   const el = openSheet(`${sheetHead(`Ajouter · ${slotLabel(slot)}`)}
-    <div class="seg" role="group" style="grid-template-columns:repeat(4,1fr)">${[['recents', 'Récents'], ['aliment', 'Aliment'], ['produit', 'Produit'], ['recette', 'Recette']].map(([k, l], i) => `<button aria-pressed="${i === 0}" data-mode="${k}">${l}</button>`).join('')}</div>
+    <div class="seg seg5" role="group" style="grid-template-columns:repeat(5,1fr)">${[['recents', 'Récents'], ['plat', 'Plats'], ['aliment', 'Aliment'], ['produit', 'Produit'], ['recette', 'Recette']].map(([k, l], i) => `<button aria-pressed="${i === 0}" data-mode="${k}">${l}</button>`).join('')}</div>
     <div data-pane></div>`);
   const opts = { slot };
   const pane = $('[data-pane]', el);
@@ -4069,7 +4116,7 @@ function journalAdd(slot) {
     const date = state.tab === 'suivi' ? state.day : new Date();
     try {
       await Data.addJournal({ date: isoDate(date), member_id: member.id, slot, label: r.label, source: r.source, ref: r.ref || null, grams: r.grams ?? null, portions: r.portions ?? null, n: r.n || {} });
-      closeSheet(); toast(`Ajouté : ${Math.round(Number(r.n?.kcal) || 0)} kcal`); if (state.tab === 'suivi') render();
+      closeSheet(); toast(`Ajouté : ${Math.round(Number(r.n?.kcal) || 0)} kcal`); render();
     } catch (err) { fail(err); }
   };
   const show = (mode) => {
@@ -4099,6 +4146,29 @@ function journalAdd(slot) {
           } catch (err) { fail(err); }
         };
       }).catch((e) => { fail(e); show('aliment'); });
+    }
+    if (mode === 'plat') {
+      let cat = platCatFor(slot);
+      pane.innerHTML = `<div class="searchbar" style="margin-bottom:8px">${ICON.search}<input class="input" type="search" data-plat-q placeholder="Ex. lasagnes, poke bowl, croque-monsieur…"></div>
+        <div class="chips plat-cats">${PLAT_CATS.map((c) => `<button type="button" class="chip" data-cat="${esc(c)}" aria-pressed="${c === cat}">${esc(c)}</button>`).join('')}</div><div data-plat-results class="food-results"><div class="spinner"></div></div>`;
+      const box = $('[data-plat-results]', pane);
+      const draw = () => {
+        const q = $('[data-plat-q]', pane).value;
+        const list = PL.search(q, q.trim() ? null : cat);
+        box.innerHTML = list.map((a) => `<button class="food-row" data-plat="${esc(a.id)}"><span class="grow"><b>${esc(a.nom)}</b><span class="muted small">${esc(a.cat)} · 1 portion = ${a.portion} g</span></span><span class="small"><b>${Math.round((a.n.kcal * a.portion) / 100)}</b> kcal<span class="muted"> /portion</span></span></button>`).join('')
+          || '<p class="muted">Aucun plat trouvé. Essayez un autre mot, ou l\'onglet Aliment pour les ingrédients.</p>';
+      };
+      PL.load().then(draw).catch((e) => { fail(e, 'Liste des plats indisponible'); });
+      $('[data-plat-q]', pane).addEventListener('input', () => PL.ready && draw());
+      pane.onclick = (e) => {
+        const c = e.target.closest('[data-cat]');
+        if (c) { cat = c.dataset.cat; $('[data-plat-q]', pane).value = ''; $$('[data-cat]', pane).forEach((x) => x.setAttribute('aria-pressed', x === c)); draw(); return; }
+        const b = e.target.closest('[data-plat]');
+        if (!b) return;
+        const a = PL.list.find((x) => x.id === b.dataset.plat);
+        closeSheet();
+        quantitySheet({ ...opts, label: a.nom, per100: a.n, source: 'ciqual', ref: `plat:${a.id}`, defaultGrams: a.portion, portionG: a.portion });
+      };
     }
     if (mode === 'aliment') {
       pane.innerHTML = `<div class="searchbar" style="margin-bottom:8px">${ICON.search}<input class="input" type="search" data-food-q placeholder="Ex. pomme, pain complet, yaourt nature…" autofocus></div><div data-food-results class="food-results"></div>`;
@@ -4180,7 +4250,8 @@ function quantitySheet(o) {
   const isRecipe = !!o.portions;
   const unit = isRecipe ? 'portion(s)' : 'g';
   const def = isRecipe ? Math.round(memberFactor(member) * 100) / 100 : o.defaultGrams || 100;
-  const quick = isRecipe ? [0.5, 1, 1.5, 2] : [...new Set([50, 100, 150, 200, o.defaultGrams].filter(Boolean))].sort((a, b) => a - b);
+  const quick = isRecipe ? [0.5, 1, 1.5, 2] : o.portionG ? [0.5, 1, 1.5, 2].map((k) => Math.round(o.portionG * k)) : [...new Set([50, 100, 150, 200, o.defaultGrams].filter(Boolean))].sort((a, b) => a - b);
+  const chipLabel = (q) => (isRecipe ? fmtNum(q) : o.portionG ? `${{ 0.5: '½ portion', 1: '1 portion', 1.5: '1,5 portion', 2: '2 portions' }[Math.round((q / o.portionG) * 2) / 2] || ''} <span class="muted">${q} g</span>` : `${fmtNum(q)} g`);
   const date = state.tab === 'suivi' ? state.day : new Date();
   const el = openSheet(`${sheetHead(o.label)}
     <form class="stack" data-form="qty">
@@ -4190,7 +4261,7 @@ function quantitySheet(o) {
       </div>
       <label class="field"><span>Date</span><input class="input" type="date" name="date" value="${isoDate(date)}" required></label>
       <label class="field"><span>Quantité (${unit})</span><input class="input" type="number" name="qty" min="0.1" step="any" inputmode="decimal" value="${def}" required></label>
-      <div class="chips">${quick.map((q) => `<button type="button" class="chip" data-q="${q}">${fmtNum(q)}${isRecipe ? '' : ' g'}</button>`).join('')}</div>
+      <div class="chips${o.portionG ? ' wrap' : ''}">${quick.map((q) => `<button type="button" class="chip" data-q="${q}">${chipLabel(q)}</button>`).join('')}</div>
       <div data-preview></div>
       <label class="check"><input type="checkbox" name="fav"> Ajouter à mes habituels (${slotLabel(o.slot || defaultSlot())})</label>
       <button class="btn primary block">Ajouter au journal</button>
@@ -4214,7 +4285,7 @@ function quantitySheet(o) {
       if (f.fav.checked) await Data.addFavori({ member_id: f.member.value, slot: f.slot.value, label: o.label, source: o.source, ref: o.ref || null, grams: isRecipe ? null : q, portions: isRecipe ? q : null, n }).catch(() => {});
       closeSheet();
       toast(`Ajouté : ${Math.round(n.kcal)} kcal`);
-      if (state.tab === 'suivi') render();
+      render();
     } catch (err) { fail(err); }
   });
 }

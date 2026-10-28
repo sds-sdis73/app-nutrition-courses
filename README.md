@@ -10,6 +10,7 @@ En ligne : https://sds-sdis73.github.io/app-nutrition-courses/
 - `sw.js` : service worker (ouverture hors ligne, cache des fichiers de l'app, réception des notifications)
 - `version.json` : version publiée, relue par l'app pour se recharger après une mise à jour
 - `aliments.json` : valeurs nutritionnelles de 3 484 aliments, extraites de la table Ciqual 2025 de l'Anses (Licence Ouverte Etalab 2.0), pour 100 g : énergie, protéines, glucides, sucres, lipides, AG saturés, fibres, sel, calcium, fer, vitamine C
+- `plats.json` : 566 plats (petit-déjeuner, plats, sandwichs et burgers, pizzas, salades, soupes, desserts…) avec une portion type et les valeurs pour 100 g : plats issus de Ciqual 2025 et plats du quotidien calculés à partir d'ingrédients Ciqual (bo bun, poke bowl, burger maison…)
 - `manifest.webmanifest`, `icon-*.png`, `apple-touch-icon.png` : installation sur l'écran d'accueil
 - `supabase/functions/` : fonctions serveur déployées sur Supabase
   - `import-recipe` : import d'une recette depuis une URL (JSON-LD schema.org/Recipe)
@@ -34,6 +35,6 @@ Sources externes : Open Food Facts (produits, alternatives), Open Prices (prix m
 
 ## Activités et hydratation
 
-Saisie manuelle uniquement (pas de synchronisation de montre) : chaque activité a une heure et un statut « prévue » ou « faite » ; seules les activités faites comptent dans la dépense (métabolisme de base × 1,2 + MET × poids × durée). L'eau se note par verre, tasse ou bouteille (table `hydratation`) ; l'objectif suit les repères EFSA, augmenté de 500 ml par heure d'activité, ou la valeur saisie pour le membre.
+Saisie manuelle uniquement (pas de synchronisation de montre), parmi environ 70 activités classées par catégorie (CrossFit, HIIT, sports collectifs, raquettes, glisse…) : chaque activité a une heure et un statut « prévue » ou « faite » ; seules les activités faites comptent dans la dépense (métabolisme de base × 1,2 + MET × poids × durée). L'eau se note par verre, tasse ou bouteille (table `hydratation`) ; l'objectif suit les repères EFSA, augmenté de 500 ml par heure d'activité, ou la valeur saisie pour le membre.
 
-L'écran Aujourd'hui présente la journée du membre choisi sous forme de fil chronologique : repas (petit-déjeuner, déjeuner, goûter, dîner, collations), points d'hydratation, activités, rappels de restes et bilan du soir, avec un repère « maintenant ».
+L'écran Aujourd'hui présente la journée du membre choisi sous forme de fil chronologique : repas (petit-déjeuner, déjeuner, goûter, dîner, collations), points d'hydratation, activités, rappels de restes et bilan du soir, avec un repère « maintenant », sans horaires affichés (chacun mange à son rythme).

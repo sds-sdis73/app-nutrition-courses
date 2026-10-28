@@ -1,6 +1,6 @@
 /* Service worker Miam & moi : ouverture hors ligne, cache des fichiers de l'app, notifications push. */
-const CACHE = 'miam-shell-v2';
-const SHELL = ['./', './index.html', './manifest.webmanifest', './aliments.json', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png',
+const CACHE = 'miam-shell-v3';
+const SHELL = ['./', './index.html', './manifest.webmanifest', './aliments.json', './plats.json', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png',
   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js',
   'https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/umd/zxing-browser.min.js'];
 
@@ -29,7 +29,7 @@ self.addEventListener('fetch', (e) => {
   if (!isShell(url) && !sameOriginPage(req) && !/cdn\.jsdelivr\.net/.test(url.host)) return;
   if (url.pathname.endsWith('version.json')) return;
   const key = req.mode === 'navigate' ? './index.html' : req.url.split('?')[0];
-  const big = url.pathname.endsWith('aliments.json') || /cdn\.jsdelivr\.net/.test(url.host);
+  const big = /(aliments|plats)\.json$/.test(url.pathname) || /cdn\.jsdelivr\.net/.test(url.host);
   e.respondWith((async () => {
     const cache = await caches.open(CACHE);
     const cached = await cache.match(key);
