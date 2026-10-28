@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#f8f9f5">
+<meta name="theme-color" content="#fff3d1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@500;600;700;800&display=swap">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Miam &amp; moi">
@@ -14,26 +17,36 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/umd/zxing-browser.min.js" defer></script>
 <style>
-/* Thème clair unique, tons vert sauge */
+/* Thème « Pop gourmand » : vanille, fraise, menthe, mangue et réglisse ; contours épais et boutons en relief */
 :root {
-  --bg: #f8f9f5;
+  --bg: #fff3d1;
   --surface: #ffffff;
-  --surface-2: #f1f4ee;
-  --text: #2b332d;
-  --muted: #6b7a6e;
-  --border: #e1e7dd;
-  --primary: #5f8a67;
-  --primary-strong: #4a6f51;
-  --primary-soft: #e9f0e6;
-  --sage-light: #a9c2a6;
+  --surface-2: #fff8e6;
+  --text: #27233a;
+  --ink: #27233a;
+  --muted: #6e6680;
+  --border: #efd9a3;
+  --primary: #dc3a3a;
+  --primary-strong: #b52a2d;
+  --primary-soft: #ffe1dc;
+  --sage-light: #ff9e94;
   --on-primary: #ffffff;
+  --mint: #06d6a0;
+  --mint-soft: #d9f7e8;
+  --mango: #ffd166;
+  --mango-strong: #ffb703;
+  --mango-soft: #fff0c2;
+  --sky: #3aa6ff;
+  --ring-track: #ffe7c7;
+  --pop-shadow: #f2c35b;
+  --display: "Baloo 2", "Nunito", system-ui, sans-serif;
   --danger: #c4553f;
   --excellent: #2e8b57;
   --bon: #8cc15a;
   --mediocre: #eea84a;
   --mauvais: #dd5b3e;
-  --shadow: 0 4px 18px rgba(60, 80, 62, .08);
-  --radius: 16px;
+  --shadow: 0 4px 0 var(--pop-shadow);
+  --radius: 18px;
   --nav-h: 64px;
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-t: env(safe-area-inset-top, 0px);
@@ -43,7 +56,7 @@
 html, body { margin: 0; }
 body {
   background: var(--bg); color: var(--text);
-  font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font: 16px/1.45 "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   min-height: 100vh; overflow-x: hidden;
 }
 button, input, select, textarea { font: inherit; color: inherit; }
@@ -130,7 +143,7 @@ body.logged-out .tabbar, body.logged-out [data-act="settings"] { display: none; 
 .wc-bar i.over { background: var(--mauvais); } .wc-bar i.low { background: var(--mediocre); }
 .wc-bar em { position: absolute; left: 0; right: 0; height: 2px; background: var(--text); opacity: .55; }
 .wc-day { font-size: 12px; color: var(--muted); font-weight: 600; }
-.hero { background: linear-gradient(160deg, #eef4ea, #fff 70%); border-radius: 22px; box-shadow: var(--shadow); padding: 14px; margin-bottom: 12px; border: 1px solid var(--border); }
+.hero { background: var(--surface); border-radius: 22px; box-shadow: var(--shadow); padding: 14px; margin-bottom: 12px; border: 1px solid var(--border); }
 .hero-top { display: flex; gap: 12px; align-items: center; }
 .bubble { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 10px 12px; font-size: 15px; line-height: 1.35; }
 .bubble::before { content: ""; position: absolute; left: -8px; top: 18px; border: 8px solid transparent; border-right-color: var(--border); border-left: 0; }
@@ -490,6 +503,66 @@ textarea.input { resize: vertical; min-height: 72px; }
 .shop-item .acts .linked { background: #e30613; border-color: #e30613; color: #fff; }
 .shop-item .acts svg { width: 18px; height: 18px; }
 @media (min-width: 700px) { .day-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } .day-grid .day + .day { margin-top: 0; } }
+
+/* ---------- Pop gourmand : composants ---------- */
+h1, h2, h3, .topbar h1, .sheet-head h2, .section-title, .tl-head, .tl-card .row > b, .ring svg text, .scene-bubble, .bubble { font-family: var(--display); }
+h1, h2, h3, .sheet-head h2, .section-title, .tl-head { font-weight: 800; letter-spacing: -.005em; }
+.topbar h1 { color: var(--primary); font-weight: 800; font-size: 26px; }
+.btn { border: 2px solid var(--ink); border-radius: 16px; box-shadow: 0 3px 0 var(--ink); font-weight: 800; transition: transform .08s, box-shadow .08s; }
+.btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 0 0 var(--ink); }
+.btn.primary { background: var(--primary); border-color: var(--ink); color: var(--on-primary); }
+.btn.soft { background: var(--mango-soft); border-color: var(--ink); color: var(--ink); }
+.btn.small { box-shadow: 0 2px 0 var(--ink); }
+.btn.small:active:not(:disabled) { transform: translateY(2px); }
+.btn:disabled { box-shadow: none; }
+.quick3 .btn:first-child { background: var(--primary); color: var(--on-primary); }
+.quick3 .btn:nth-child(2) { background: #dff1ff; }
+.quick3 .btn:nth-child(3) { background: var(--mango-soft); }
+.pet-actions .btn:first-child { background: var(--mint-soft); }
+.card, .ntable, .kcal-card, .slot-block, .day, .tl-card, .hero { border: 2px solid var(--ink); }
+.hero { box-shadow: 0 5px 0 var(--ink); border-radius: 24px; }
+.scene { border: 2px solid var(--ink); }
+.day.today { outline: 3px solid var(--primary); outline-offset: 2px; }
+.icon-btn:hover { background: var(--mango-soft); }
+.chip { border: 2px solid var(--ink); font-weight: 800; }
+.chip[aria-pressed="true"] { background: var(--primary); border-color: var(--ink); color: var(--on-primary); }
+.seg { background: var(--mango-soft); border: 2px solid var(--ink); border-radius: 16px; }
+.seg button { color: var(--ink); opacity: .75; border-radius: 11px; }
+.seg button[aria-pressed="true"] { background: var(--primary); color: var(--on-primary); opacity: 1; box-shadow: 0 2px 0 var(--ink); }
+.input, select.input, textarea.input { border: 2px solid var(--border); background: var(--surface); border-radius: 14px; }
+.input:focus { border-color: var(--ink); box-shadow: 0 0 0 3px var(--mango); }
+.tabbar { border-top: 2px solid var(--ink); }
+.tabbar button[aria-current="page"] { color: var(--primary-strong); }
+.tabbar button[aria-current="page"] svg { background: var(--primary); color: var(--on-primary); box-shadow: 0 2px 0 var(--ink); }
+.pill { background: var(--ink); color: var(--mango); box-shadow: none; }
+.scene-bubble { border: 2px solid var(--ink); font-weight: 700; font-size: 16px; box-shadow: 0 3px 0 var(--ink); }
+.scene-bubble::before { content: ""; position: absolute; bottom: -11px; left: 50%; margin-left: -10px; border: 10px solid transparent; border-top-color: var(--ink); border-bottom: 0; }
+.bubble { border: 2px solid var(--ink); }
+.fam { border: 2px solid transparent; }
+.fam.on { background: var(--primary-soft); color: var(--primary-strong); border-color: var(--ink); }
+.ring b { font-weight: 800; }
+.timeline::before { background: repeating-linear-gradient(var(--ink) 0 6px, transparent 6px 12px); opacity: .35; }
+.tl-dot { background: var(--mango); border: 2px solid var(--ink); }
+.tl-item.done .tl-dot { background: var(--mint); border-color: var(--ink); }
+.tl-item.done .tl-card { background: var(--mint-soft); }
+.tl-item.next .tl-card { border-color: var(--ink); box-shadow: 0 4px 0 var(--primary); }
+.tl-item.next .tl-dot { border-color: var(--ink); background: var(--primary-soft); }
+.tl-item.missed .tl-card { background: var(--surface-2); border-style: dashed; box-shadow: none; }
+.tl-check { color: #0a8f6a; }
+.tl-now .tl-dot { background: var(--primary); }
+.tl-now .tl-now-line { color: var(--primary); border-top-color: var(--primary); }
+.tag.ahead { background: var(--mint-soft); color: #08765a; }
+.toast { background: var(--ink); color: var(--mango); font-weight: 700; border-radius: 14px; }
+.macro-strip div { border: 2px solid var(--ink); background: var(--mango-soft); }
+.bar { background: var(--ring-track); height: 10px; border-radius: 6px; }
+.bar.ok i { background: var(--mint); }
+.bq-item { border: 2px solid var(--ink); box-shadow: 0 3px 0 var(--pop-shadow); }
+.prod-row { border: 2px solid var(--ink); box-shadow: 0 3px 0 var(--pop-shadow); }
+.sheet { border-top: 2px solid var(--ink); }
+.btn[style*="border:0"], .btn[style*="border: 0"] { box-shadow: none; }
+.btn[style*="border:0"]:active, .btn[style*="border: 0"]:active { transform: none; }
+.logo.logo-img { background: none; padding: 0; overflow: hidden; border: 2px solid var(--ink); box-shadow: 0 4px 0 var(--ink); }
+.logo.logo-img img { width: 100%; height: 100%; display: block; }
 </style>
 </head>
 <body>
@@ -517,7 +590,7 @@ textarea.input { resize: vertical; min-height: 72px; }
 // ---------------------------------------------------------------------------
 const APP_NAME = 'Miam & moi';
 // À incrémenter à chaque publication, avec la même valeur dans version.json.
-const APP_VERSION = '2026-10-28.1';
+const APP_VERSION = '2026-10-28.2';
 const SUPABASE_URL = 'https://svugddkrptqpjmywhorb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2dWdkZGtycHRxcGpteXdob3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MjU5NDgsImV4cCI6MjEwODUwMTk0OH0.63RETgf7rbVMquGV-7ooY3qn-Qf31uVCA3ZBfqBvFcI';
 const OFF = 'https://world.openfoodfacts.org/api/v2';
@@ -3287,7 +3360,7 @@ function sceneSvg(fond = 'jardin', period = periodOf()) {
   const astre = night ? '<circle cx="330" cy="52" r="18" fill="#f4f1de"/><circle cx="338" cy="46" r="15" fill="' + sky[0] + '"/>' : period === 'matin' ? '<circle cx="64" cy="96" r="24" fill="#ffd36b"/>' : period === 'soir' ? '<circle cx="300" cy="112" r="28" fill="#ff9a5a" opacity=".9"/>' : '<circle cx="322" cy="52" r="26" fill="#ffe07a"/><circle cx="322" cy="52" r="36" fill="#ffe07a" opacity=".25"/>';
   const clouds = night ? '' : '<g class="clouds" fill="#fff" opacity=".85"><ellipse cx="90" cy="48" rx="34" ry="11"/><ellipse cx="110" cy="40" rx="20" ry="10"/><ellipse cx="230" cy="74" rx="28" ry="9"/></g>';
   const land = {
-    jardin: '<path d="M0 170q70-40 150-10t140-12 110 8V290H0z" fill="#a9cf98"/><path d="M0 205q100-26 200-6t200-4V290H0z" fill="#86b874"/><rect x="44" y="120" width="10" height="70" rx="4" fill="#8a6a4f"/><circle cx="49" cy="112" r="30" fill="#6fa463"/><circle cx="32" cy="124" r="18" fill="#6fa463"/><circle cx="66" cy="124" r="18" fill="#7cb06e"/><g stroke="#e9dcc4" stroke-width="4"><path d="M300 205v-34M326 205v-34M352 205v-34M378 205v-34"/><path d="M292 180h100M292 194h100" stroke-width="3"/></g>' + [[110, 250, '#f4a3b5'], [150, 262, '#f0c04a'], [250, 255, '#fff'], [290, 268, '#f4a3b5'], [350, 250, '#f0c04a'], [70, 270, '#fff']].map(([x, y, col]) => `<circle cx="${x}" cy="${y}" r="5" fill="${col}"/><circle cx="${x}" cy="${y}" r="2" fill="#e8a33d"/>`).join(''),
+    jardin: '<path d="M0 170q70-40 150-10t140-12 110 8V290H0z" fill="#7ee0b5"/><path d="M0 205q100-26 200-6t200-4V290H0z" fill="#4cc38a"/><rect x="44" y="120" width="10" height="70" rx="4" fill="#8a6a4f"/><circle cx="49" cy="112" r="30" fill="#6fa463"/><circle cx="32" cy="124" r="18" fill="#6fa463"/><circle cx="66" cy="124" r="18" fill="#7cb06e"/><g stroke="#e9dcc4" stroke-width="4"><path d="M300 205v-34M326 205v-34M352 205v-34M378 205v-34"/><path d="M292 180h100M292 194h100" stroke-width="3"/></g>' + [[110, 250, '#f4a3b5'], [150, 262, '#f0c04a'], [250, 255, '#fff'], [290, 268, '#f4a3b5'], [350, 250, '#f0c04a'], [70, 270, '#fff']].map(([x, y, col]) => `<circle cx="${x}" cy="${y}" r="5" fill="${col}"/><circle cx="${x}" cy="${y}" r="2" fill="#e8a33d"/>`).join(''),
     plage: '<rect y="165" width="400" height="50" fill="#5fb0d3"/><path class="wave" d="M-20 180q20-6 40 0t40 0 40 0 40 0 40 0 40 0 40 0 40 0 40 0 40 0 40 0" stroke="#fff" stroke-width="3" fill="none" opacity=".7"/><path d="M0 205q100-14 200 0t200-4V290H0z" fill="#f1dcae"/><path d="M340 140v100" stroke="#8a6a4f" stroke-width="4"/><path d="M296 150q44-44 88 0z" fill="#dd5b3e"/><path d="M318 150q22-44 44 0z" fill="#fff" opacity=".8"/><circle cx="80" cy="262" r="6" fill="#f4a3b5"/><path d="M110 250l8 6-8 6" fill="#f0c04a"/>',
     foret: '<path d="M0 190V290H400V190z" fill="#79a565"/>' + [20, 75, 140, 200, 265, 330, 385].map((x, i) => `<path d="M${x} ${70 + (i % 3) * 14}l-30 ${110 - (i % 3) * 10}h60z" fill="#5d8a5a"/>`).join('') + [50, 160, 310, 370].map((x) => `<path d="M${x} 120l-34 100h68z" fill="#3f6b45"/><rect x="${x - 4}" y="220" width="8" height="12" fill="#6b4f3a"/>`).join('') + '<path d="M0 222q200-12 400 0V290H0z" fill="#6c9858"/><rect x="236" y="246" width="6" height="12" fill="#f6e9d6"/><path d="M228 248q11-14 22 0z" fill="#dd5b3e"/><circle cx="235" cy="244" r="1.6" fill="#fff"/><circle cx="244" cy="245" r="1.6" fill="#fff"/>',
     montagne: '<path d="M-10 200L90 70l60 70 60-90 90 110 50-50 70 90z" fill="#8a9bb0"/><path d="M90 70l-22 28 14-4 8 8 10-12 12 10zM210 50l-24 30 14-4 10 10 10-10 12 8z" fill="#fff"/><path d="M0 205q100-30 200-8t200 0V290H0z" fill="#93bf7d"/><path d="M0 238q120-16 240 0t160 0V290H0z" fill="#7fae6c"/>',
@@ -3620,8 +3693,8 @@ function compagnonSettings() {
 function ring(value, max, color, label, sub) {
   const pct = max ? clamp(value / max, 0, 1) : 0;
   const r = 26; const circ = 2 * Math.PI * r;
-  return `<div class="ring"><svg viewBox="0 0 64 64" width="72" height="72"><circle cx="32" cy="32" r="${r}" stroke="var(--surface-2)" stroke-width="7" fill="none"/>
-    <circle cx="32" cy="32" r="${r}" stroke="${color}" stroke-width="7" fill="none" stroke-linecap="round" stroke-dasharray="${(pct * circ).toFixed(1)} ${circ.toFixed(1)}" transform="rotate(-90 32 32)"/>
+  return `<div class="ring"><svg viewBox="0 0 64 64" width="72" height="72"><circle cx="32" cy="32" r="${r}" stroke="var(--ring-track)" stroke-width="9" fill="none"/>
+    <circle cx="32" cy="32" r="${r}" stroke="${color}" stroke-width="9" fill="none" stroke-linecap="round" stroke-dasharray="${(pct * circ).toFixed(1)} ${circ.toFixed(1)}" transform="rotate(-90 32 32)"/>
     <text x="32" y="36" text-anchor="middle" font-size="13" font-weight="800" fill="var(--text)">${value < 10 && value % 1 ? fmtNum(Math.round(value * 10) / 10) : Math.round(value)}</text></svg><b>${label}</b><span class="muted small">${sub}</span></div>`;
 }
 
@@ -3750,7 +3823,7 @@ function renderToday() {
     : `<div class="scene">${sceneSvg('jardin')}<div class="scene-bubble">Un compagnon pour ${esc(me.nom)} ? Il t'encourage et ne gronde jamais.</div><div class="comp-walk still" style="opacity:.9">${companionSvg({ espece: 'loutre' }, 'matin', 170)}</div></div>
     <div class="pet-actions" style="grid-template-columns:1fr"><button class="btn primary" data-act="adopt">${ICON.sparkle} Adopter un compagnon · ${WELCOME_SHELLS} 🐚 offerts</button></div>`;
   const hero = `<div class="hero hero-pet">${scene}
-      <div class="rings">${ring(eatenSoFar, nd.kcal, 'var(--primary)', `${eatenSoFar} / ${nd.kcal} kcal`, 'mangé')}${ring(ex.active, Number(me.objectif_kcal_actives) || 300, '#dd8a3e', `${ex.active} / ${me.objectif_kcal_actives || 300} kcal`, 'activité')}${ring(water / 1000, wGoal / 1000, '#4a90c8', `${fmtL(water)} / ${fmtL(wGoal)}`, 'eau')}</div>
+      <div class="rings">${ring(eatenSoFar, nd.kcal, 'var(--primary)', `${eatenSoFar} / ${nd.kcal} kcal`, 'mangé')}${ring(ex.active, Number(me.objectif_kcal_actives) || 300, 'var(--mango-strong)', `${ex.active} / ${me.objectif_kcal_actives || 300} kcal`, 'activité')}${ring(water / 1000, wGoal / 1000, 'var(--sky)', `${fmtL(water)} / ${fmtL(wGoal)}`, 'eau')}</div>
       ${members.length > 1 ? `<div class="famille">${members.map((x) => { const cx = companionOf(x); return `<button class="fam ${x.id === me.id ? 'on' : ''}" data-act="famille" data-m="${x.id}">${cx ? companionSvg(cx, 'content', 40) : `<span class="thumb ph" style="width:40px;height:40px;border-radius:50%">${esc(x.nom[0])}</span>`}<span>${esc(x.nom)}</span></button>`; }).join('')}</div>` : ''}</div>`;
   if (c && !Pet.greeted) { Pet.greeted = true; Pet.play('hello', `${greet} ${me.nom} ! ${today.getHours() < 11 ? 'Bien dormi ?' : 'Content·e de te voir !'}`); }
   return `${head}${hero}
@@ -4610,7 +4683,7 @@ function renderAuth() {
   document.body.classList.add('logged-out');
   $('#title').textContent = '';
   $('#main').innerHTML = `<section class="auth">
-    <div class="logo">${ICON.leaf}</div>
+    <div class="logo logo-img"><img src="icon-192.png" alt="" width="76" height="76"></div>
     <h2>${esc(APP_NAME)}</h2>
     <p class="muted">${signup ? 'Créez votre compte pour retrouver vos données sur tous vos appareils.' : 'Connectez-vous pour accéder à votre espace.'}</p>
     <div class="seg" role="group" style="grid-template-columns:1fr 1fr">
