@@ -42,6 +42,18 @@ module.exports = {
       await page.click('.seg2 [data-v="courses"]');
       assert.equal(await page.$eval('#title', (e) => e.textContent), 'Liste de courses');
     } },
+    { name: 'compte sans « je suis » : choix du membre directement dans Forme', fn: async ({ page }) => {
+      const id = await page.evaluate(() => state.compte.member_id);
+      await page.evaluate(() => { state.compte.member_id = null; state.forme = Forme.blank(); });
+      await H.openTab(page, 'forme');
+      await page.waitForSelector('[data-form="forme-moi"]');
+      await page.selectOption('[data-form="forme-moi"] [name="m"]', id);
+      await page.click('[data-form="forme-moi"] button.primary');
+      await page.waitForSelector('[data-form="forme-q"]');
+      assert.equal(await page.evaluate(() => state.compte.member_id), id);
+      const { data } = await page.evaluate(async () => db.from('foyer_comptes').select('member_id').eq('user_id', me()).single());
+      assert.equal(data.member_id, id, 'lien enregistré côté serveur');
+    } },
     { name: 'questionnaire de départ en 3 écrans (cas type : reprise, montagne, matériel à la maison)', fn: async ({ page }) => {
       await H.openTab(page, 'forme');
       await page.waitForSelector('[data-form="forme-q"]');

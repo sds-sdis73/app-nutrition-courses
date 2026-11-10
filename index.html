@@ -609,7 +609,7 @@ h1, h2, h3, .sheet-head h2, .section-title, .tl-head { font-weight: 800; letter-
 // ---------------------------------------------------------------------------
 const APP_NAME = 'Miam & moi';
 // À incrémenter à chaque publication, avec la même valeur dans version.json.
-const APP_VERSION = '2026-11-10.1';
+const APP_VERSION = '2026-11-10.2';
 const SUPABASE_URL = 'https://svugddkrptqpjmywhorb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2dWdkZGtycHRxcGpteXdob3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MjU5NDgsImV4cCI6MjEwODUwMTk0OH0.63RETgf7rbVMquGV-7ooY3qn-Qf31uVCA3ZBfqBvFcI';
 const OFF = 'https://world.openfoodfacts.org/api/v2';
@@ -5345,11 +5345,9 @@ function openFoyerComptes() {
     if (!e.target.matches('[data-x="me"]')) return;
     const member_id = e.target.value || null;
     try {
-      const { error } = await db.from('foyer_comptes').update({ member_id }).eq('user_id', me());
-      if (error) throw error;
-      state.compte.member_id = member_id;
-      if (member_id) { state.suiviMember = member_id; store.set('suiviMember', member_id); }
+      await formeSetMe(member_id);
       toast('Enregistré');
+      render();
     } catch (err) { fail(err); }
   });
   el.addEventListener('submit', async (e) => {

@@ -678,7 +678,10 @@ function renderForme() {
   const m = Forme.member();
   const amb = F.profil?.prefs?.ambiance || store.get('forme:amb', FORME_AMB_DEFAULT);
   const wrap = (inner) => `<div class="forme" data-amb="${esc(amb)}">${inner}</div>`;
-  if (!m) return wrap(`<div class="card f-pad"><h3>Qui es-tu dans le foyer ?</h3><p class="muted">Le module Forme suit les séances de <b>ton</b> membre. Indique d'abord quel membre du foyer tu es (Foyer › Comptes › « Je suis »).</p><button class="btn primary" data-act="foyer">${ICON.users} Choisir mon membre</button></div>`);
+  if (!m) return wrap(state.members.length
+    ? `<form class="card f-pad stack" data-form="forme-moi"><h3>Qui es-tu dans le foyer ?</h3><p class="muted">Le module Forme suit les séances de <b>ton</b> membre, visibles de toi seul·e.</p>
+      ${fField('Je suis', `<select class="input" name="m" required>${state.members.map((x) => `<option value="${x.id}">${esc(x.nom)}</option>`).join('')}</select>`)}<button class="btn primary">C'est moi</button></form>`
+    : `<div class="card f-pad"><h3>Ajoute d'abord ton profil</h3><p class="muted">Crée ton membre dans le foyer (âge, poids, taille), puis reviens ici.</p><button class="btn primary" data-act="foyer">${ICON.users} Configurer le foyer</button></div>`);
   if (F.user !== me() || F.ok === null) { Forme.load().then(() => { if (state.tab === 'forme') render(); }); return wrap('<div class="spinner"></div>'); }
   if (F.ok === false) return wrap(F.err ? `<div class="card f-pad"><p>Impossible de charger le module Forme.</p><p class="muted small">${esc(F.err)}</p><button class="btn" data-act="forme-reload">Réessayer</button></div>`
     : '<div class="card f-pad"><h3>Module Forme bientôt prêt</h3><p class="muted">Le serveur n\'a pas encore les tables du module. Elles seront créées par l\'administrateur (fichier <code>supabase/migrations/2026-11-10_module_forme.sql</code>), puis tout s\'active ici automatiquement.</p><button class="btn" data-act="forme-reload">Vérifier à nouveau</button></div>');
@@ -1381,6 +1384,7 @@ async function formeOnSubmit(e) {
   const F = state.forme;
   try {
     if (k === 'forme-q') return await fSubmitQ(f);
+    if (k === 'forme-moi') { await formeSetMe(f.m.value); toast(`C'est noté : tu es ${memberById(f.m.value)?.nom}`); return render(); }
     if (k === 'forme-dispos') return await fSubmitDispos(f);
     if (k === 'forme-gen') {
       const fd = new FormData(f);
@@ -1421,6 +1425,17 @@ async function formeOnSubmit(e) {
       return render();
     }
   } catch (err) { fail(err); }
+}
+
+// Relie le compte connecté à son membre du foyer (« je suis »), puis charge son module.
+async function formeSetMe(member_id) {
+  const { error } = await db.from('foyer_comptes').update({ member_id: member_id || null }).eq('user_id', me());
+  if (error) throw error;
+  state.compte.member_id = member_id || null;
+  if (member_id) { state.suiviMember = member_id; store.set('suiviMember', member_id); }
+  store.set(`cache:user:${me()}`, { foyer: state.foyer, compte: state.compte });
+  state.forme = { ...Forme.blank(), view: state.forme.view };
+  if (member_id) await Forme.load(true);
 }
 
 // Branché par le script principal, une fois ACTIONS, T et state définis.
