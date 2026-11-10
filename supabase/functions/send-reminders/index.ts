@@ -5,6 +5,7 @@ import webpush from "npm:web-push@3.6.7";
 // Appelée toutes les heures (pg_cron). Envoie les rappels dus à chaque abonnement push, une seule fois (table rappels_envoyes).
 // Types : batch (samedi 18 h, session du lendemain), congel (19 h, sortir un reste pour demain), bilan (20 h, bilan du soir),
 // courses (jour/heure choisis), planning (vendredi 18 h si la semaine prochaine est vide), test (à la demande).
+// Module Forme (par compte, jamais au reste du foyer) : seance (1 h avant une séance prévue), dispos (dimanche 18 h).
 
 const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type", "Access-Control-Allow-Methods": "POST, OPTIONS" };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...CORS, "Content-Type": "application/json" } });
@@ -56,7 +57,7 @@ Deno.serve(async (req) => {
   let sent = 0;
 
   for (const [foyerId, list] of byFoyer) {
-    const messages: { type: string; key: string; title: string; body: string; url?: string }[] = [];
+    const messages: { type: string; key: string; title: string; body: string; url?: string; user?: string }[] = [];
     const wantsAny = (k: string) => list!.some((s) => (s.prefs ?? {})[k] !== false);
 
     if (hour === 19 && wantsAny("congel")) {
@@ -95,11 +96,31 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Forme : rappels personnels (les tables peuvent ne pas exister encore : erreurs ignorées).
+    const users = [...new Set(list!.map((s) => s.user_id).filter(Boolean))];
+    const nextHour = `${String((hour + 1) % 24).padStart(2, "0")}:`;
+    for (const uid of users) {
+      const subsU = list!.filter((s) => s.user_id === uid);
+      if (subsU.some((s) => (s.prefs ?? {}).seance !== false)) {
+        const { data: ss } = await admin.from("forme_seances").select("id, heure, prevu, type").eq("user_id", uid).eq("date", today).eq("statut", "prevu");
+        for (const x of ss ?? []) if (String(x.heure ?? "").startsWith(nextHour)) messages.push({ type: "seance", key: `${uid}:${x.id}`, user: uid, title: "Séance dans une heure", body: `${x.prevu?.titre ?? "Ta séance"} à ${x.heure}. Fais ton check-in avant de partir.`, url: "./#forme" });
+      }
+      if (dow === 6 && hour === 18 && subsU.some((s) => (s.prefs ?? {}).dispos !== false)) {
+        const { data: pr } = await admin.from("forme_profil").select("member_id, questionnaire_fait_le").eq("user_id", uid).maybeSingle();
+        if (pr?.questionnaire_fait_le) {
+          const nextMonday = iso(addDays(mondayOf(local), 7));
+          const { data: w } = await admin.from("forme_semaines").select("dispos").eq("member_id", pr.member_id).eq("lundi", nextMonday).maybeSingle();
+          if (!(w?.dispos ?? []).length) messages.push({ type: "dispos", key: `${uid}:${nextMonday}`, user: uid, title: "Ta semaine Forme", body: "Coche tes disponibilités de la semaine : ton plan se prépare en 10 secondes.", url: "./#forme" });
+        }
+      }
+    }
+
     for (const msg of messages) {
       const { error } = await admin.from("rappels_envoyes").insert({ foyer_id: foyerId, type: msg.type, key: msg.key });
       if (error) continue; // déjà envoyé
       for (const s of list!) {
         if ((s.prefs ?? {})[msg.type] === false) continue;
+        if (msg.user && s.user_id !== msg.user) continue;
         try { await webpush.sendNotification({ endpoint: s.endpoint, keys: s.keys }, JSON.stringify(msg)); sent++; }
         catch (e) { const code = (e as { statusCode?: number }).statusCode; if (code === 410 || code === 404) await admin.from("push_abonnements").delete().eq("endpoint", s.endpoint); }
       }

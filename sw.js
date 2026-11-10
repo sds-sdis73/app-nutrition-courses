@@ -1,6 +1,6 @@
 /* Service worker Miam & moi : ouverture hors ligne, cache des fichiers de l'app, notifications push. */
-const CACHE = 'miam-shell-v3';
-const SHELL = ['./', './index.html', './manifest.webmanifest', './aliments.json', './plats.json', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png',
+const CACHE = 'miam-shell-v4';
+const SHELL = ['./', './index.html', './forme.js', './forme-data.js', './forme-import.js', './forme.css', './forme-theme.css', './forme-pictos.css', './manifest.webmanifest', './aliments.json', './plats.json', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png',
   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js',
   'https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/umd/zxing-browser.min.js'];
 

@@ -1,0 +1,191 @@
+/* Miam & moi – module Forme : animations des pictogrammes (FORME_PICTOS).
+   Le SVG est inséré dans <span class="fpicto">…</span>.
+   Les articulations pivotent autour de points précis du viewBox 0 0 100 100 :
+   on utilise donc transform-box: view-box + transform-origin en unités du viewBox
+   (groupes imbriqués : chaque segment reste attaché à son parent).
+   Les éléments isolés (ombre, aiguille, roue…) utilisent transform-box: fill-box. */
+
+.fpicto { line-height: 0; vertical-align: middle; } /* tailles : forme.css */
+.fpicto svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+.fpicto [class*="fp-"] { transform-box: view-box; animation-duration: 1.6s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+
+/* ── Squat ── */
+.fpicto .fp-sq-tibia { transform-origin: 45px 90px; animation-name: fp-k-sq-tibia; }
+.fpicto .fp-sq-cuisse { transform-origin: 45px 72px; animation-name: fp-k-sq-cuisse; }
+.fpicto .fp-sq-buste { transform-origin: 45px 54px; animation-name: fp-k-sq-buste; }
+.fpicto .fp-sq-bras { transform-origin: 45px 33px; animation-name: fp-k-sq-bras; }
+.fpicto .fp-sq-tibia, .fpicto .fp-sq-cuisse, .fpicto .fp-sq-buste, .fpicto .fp-sq-bras { animation-duration: 2s; }
+@keyframes fp-k-sq-tibia { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(30deg); } }
+@keyframes fp-k-sq-cuisse { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-100deg); } }
+@keyframes fp-k-sq-buste { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(105deg); } }
+@keyframes fp-k-sq-bras { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-35deg); } }
+
+/* ── Fente ── */
+.fpicto .fp-fe-tib1 { transform-origin: 62px 90px; animation-name: fp-k-fe-tib1; }
+.fpicto .fp-fe-cui1 { transform-origin: 61.3px 72px; animation-name: fp-k-fe-cui1; }
+.fpicto .fp-fe-buste { transform-origin: 50px 58px; animation-name: fp-k-fe-buste; }
+.fpicto .fp-fe-tib2 { transform-origin: 34px 90px; animation-name: fp-k-fe-tib2; }
+.fpicto .fp-fe-cui2 { transform-origin: 43.8px 74.9px; animation-name: fp-k-fe-cui2; }
+.fpicto .fp-fe-tib1, .fpicto .fp-fe-cui1, .fpicto .fp-fe-buste, .fpicto .fp-fe-tib2, .fpicto .fp-fe-cui2 { animation-duration: 2s; }
+@keyframes fp-k-fe-tib1 { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(19.3deg); } }
+@keyframes fp-k-fe-cui1 { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-54.9deg); } }
+@keyframes fp-k-fe-buste { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(35.6deg); } }
+@keyframes fp-k-fe-tib2 { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(43.8deg); } }
+@keyframes fp-k-fe-cui2 { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-68.7deg); } }
+
+/* ── Pompe ── */
+.fpicto .fp-po-corps { transform-origin: 16px 86px; animation-name: fp-k-po-corps; }
+.fpicto .fp-po-avb { transform-origin: 64px 90px; animation-name: fp-k-po-avb; }
+.fpicto .fp-po-bras { transform-origin: 62px 79.7px; animation-name: fp-k-po-bras; }
+@keyframes fp-k-po-corps { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(11deg); } }
+@keyframes fp-k-po-avb { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-25.5deg); } }
+@keyframes fp-k-po-bras { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(83.5deg); } }
+
+/* ── Gainage planche : chrono + respiration ── */
+.fpicto .fp-chrono { transform-box: fill-box; transform-origin: 50% 100%; animation-name: fp-k-tour; animation-duration: 2.4s; }
+.fpicto .fp-respire { animation-name: fp-k-respire; animation-duration: 2.4s; }
+@keyframes fp-k-tour { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes fp-k-respire { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-1.5px); } }
+
+/* ── Gainage latéral : bras libre ── */
+.fpicto .fp-gl-bras { transform-origin: 62px 68px; animation-name: fp-k-gl-bras; animation-duration: 2.4s; }
+@keyframes fp-k-gl-bras { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(60deg); } }
+
+/* ── Pont fessier ── */
+.fpicto .fp-pf-buste { transform-origin: 16px 88px; animation-name: fp-k-pf-buste; }
+.fpicto .fp-pf-cuisse { transform-origin: 64px 76px; animation-name: fp-k-pf-cuisse; }
+@keyframes fp-k-pf-buste { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-28deg); } }
+@keyframes fp-k-pf-cuisse { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(29deg); } }
+
+/* ── Soulevé de terre ── */
+.fpicto .fp-sdt-buste { transform-origin: 40px 56px; animation-name: fp-k-sdt-buste; animation-duration: 2.2s; }
+.fpicto .fp-sdt-bras { transform-origin: 40px 33px; animation-name: fp-k-sdt-bras; animation-duration: 2.2s; }
+@keyframes fp-k-sdt-buste { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(62deg); } }
+@keyframes fp-k-sdt-bras { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-62deg); } }
+
+/* ── Rowing ── */
+.fpicto .fp-ro-bras { transform-origin: 57px 43px; animation-name: fp-k-ro-bras; animation-duration: 1.8s; }
+.fpicto .fp-ro-avb { transform-origin: 57px 57px; animation-name: fp-k-ro-avb; animation-duration: 1.8s; }
+@keyframes fp-k-ro-bras { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(65deg); } }
+@keyframes fp-k-ro-avb { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-65deg); } }
+
+/* ── Traction ── */
+.fpicto .fp-tr-avg { transform-origin: 36px 10px; animation-name: fp-k-tr-avg; }
+.fpicto .fp-tr-brg { transform-origin: 36.6px 25px; animation-name: fp-k-tr-brg; }
+.fpicto .fp-tr-corps { transform-origin: 42px 39px; animation-name: fp-k-tr-corps; }
+.fpicto .fp-tr-avd { transform-origin: 64px 10px; animation-name: fp-k-tr-avd; }
+.fpicto .fp-tr-brd { transform-origin: 63.4px 25px; animation-name: fp-k-tr-brd; }
+.fpicto .fp-tr-avg, .fpicto .fp-tr-brg, .fpicto .fp-tr-corps, .fpicto .fp-tr-avd, .fpicto .fp-tr-brd { animation-duration: 2.2s; }
+@keyframes fp-k-tr-avg { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(37.2deg); } }
+@keyframes fp-k-tr-brg { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-92.1deg); } }
+@keyframes fp-k-tr-corps { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(54.9deg); } }
+@keyframes fp-k-tr-avd { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-37.2deg); } }
+@keyframes fp-k-tr-brd { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(92.1deg); } }
+
+/* ── Développé épaules ── */
+.fpicto .fp-de-brg { transform-origin: 40px 37px; animation-name: fp-k-de-brg; }
+.fpicto .fp-de-avg { transform-origin: 28px 39px; animation-name: fp-k-de-avg; }
+.fpicto .fp-de-brd { transform-origin: 60px 37px; animation-name: fp-k-de-brd; }
+.fpicto .fp-de-avd { transform-origin: 72px 39px; animation-name: fp-k-de-avd; }
+@keyframes fp-k-de-brg { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(60deg); } }
+@keyframes fp-k-de-avg { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-60deg); } }
+@keyframes fp-k-de-brd { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-60deg); } }
+@keyframes fp-k-de-avd { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(60deg); } }
+
+/* ── Crunch ── */
+.fpicto .fp-cr-buste { transform-origin: 50px 88px; animation-name: fp-k-cr-buste; animation-duration: 1.4s; }
+@keyframes fp-k-cr-buste { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(32deg); } }
+
+/* ── Mountain climber : deux jambes en opposition ── */
+.fpicto .fp-mc-cuisse { transform-origin: 46px 74px; animation-name: fp-k-mc-cuisse; animation-duration: 1.2s; }
+.fpicto .fp-mc-tibia { transform-origin: 34.8px 78.8px; animation-name: fp-k-mc-tibia; animation-duration: 1.2s; }
+.fpicto .fp-mc-b { animation-delay: -0.6s; }
+@keyframes fp-k-mc-cuisse { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-130deg); } }
+@keyframes fp-k-mc-tibia { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(133deg); } }
+
+/* ── Saut (jumping jack) ── */
+.fpicto .fp-sa-corps { animation-name: fp-k-sa-corps; animation-duration: 1.2s; }
+.fpicto .fp-sa-ombre { transform-box: fill-box; transform-origin: 50% 50%; animation-name: fp-k-sa-ombre; animation-duration: 1.2s; }
+.fpicto .fp-sa-brg { transform-origin: 50px 35px; animation-name: fp-k-sa-brg; animation-duration: 1.2s; }
+.fpicto .fp-sa-brd { transform-origin: 50px 35px; animation-name: fp-k-sa-brd; animation-duration: 1.2s; }
+.fpicto .fp-sa-jg { transform-origin: 50px 60px; animation-name: fp-k-sa-jg; animation-duration: 1.2s; }
+.fpicto .fp-sa-jd { transform-origin: 50px 60px; animation-name: fp-k-sa-jd; animation-duration: 1.2s; }
+@keyframes fp-k-sa-corps { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes fp-k-sa-ombre { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(0.6); } }
+@keyframes fp-k-sa-brg { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(125deg); } }
+@keyframes fp-k-sa-brd { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-125deg); } }
+@keyframes fp-k-sa-jg { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(18deg); } }
+@keyframes fp-k-sa-jd { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-18deg); } }
+
+/* ── Mollets ── */
+.fpicto .fp-mo-pied { transform-origin: 60px 90px; animation-name: fp-k-mo-pied; animation-duration: 1.6s; }
+.fpicto .fp-mo-corps { animation-name: fp-k-mo-corps; animation-duration: 1.6s; }
+@keyframes fp-k-mo-pied { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(28deg); } }
+@keyframes fp-k-mo-corps { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+
+/* ── Équilibre sur une jambe ── */
+.fpicto .fp-eq-corps { transform-origin: 50px 92px; animation-name: fp-k-eq-corps; animation-duration: 2.4s; }
+@keyframes fp-k-eq-corps { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+
+/* ── Étirement latéral ── */
+.fpicto .fp-et-haut { transform-origin: 50px 60px; animation-name: fp-k-et-haut; animation-duration: 2.4s; }
+@keyframes fp-k-et-haut { 0%, 100% { transform: rotate(-15deg); } 50% { transform: rotate(15deg); } }
+
+/* ── Superman ── */
+.fpicto .fp-su-jambes { transform-origin: 48px 87px; animation-name: fp-k-su-jambes; animation-duration: 2s; }
+.fpicto .fp-su-buste { transform-origin: 48px 87px; animation-name: fp-k-su-buste; animation-duration: 2s; }
+@keyframes fp-k-su-jambes { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(16deg); } }
+@keyframes fp-k-su-buste { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-18deg); } }
+
+/* ── Vélo : pédalage (linéaire pour suivre le pédalier) ── */
+.fpicto .fp-ve-cuisse { transform-origin: 46px 48px; animation-name: fp-k-ve-cuisse; }
+.fpicto .fp-ve-tibia { transform-origin: 62.8px 50.5px; animation-name: fp-k-ve-tibia; }
+.fpicto .fp-ve-pedalier { transform-origin: 54px 72px; animation-name: fp-k-tour; }
+.fpicto .fp-ve-roue { transform-box: fill-box; transform-origin: 50% 50%; animation-name: fp-k-tour; }
+.fpicto .fp-ve-cuisse, .fpicto .fp-ve-tibia, .fpicto .fp-ve-pedalier, .fpicto .fp-ve-roue { animation-duration: 1.6s; animation-timing-function: linear; }
+.fpicto .fp-ve-b { animation-delay: -0.8s; }
+@keyframes fp-k-ve-cuisse { 0% { transform: rotate(0deg); } 12.5% { transform: rotate(0.1deg); } 25% { transform: rotate(16deg); } 37.5% { transform: rotate(36.4deg); } 50% { transform: rotate(47.5deg); } 62.5% { transform: rotate(44.5deg); } 75% { transform: rotate(34.2deg); } 87.5% { transform: rotate(17.1deg); } 100% { transform: rotate(0deg); } }
+@keyframes fp-k-ve-tibia { 0% { transform: rotate(0deg); } 12.5% { transform: rotate(-18.2deg); } 25% { transform: rotate(-45.6deg); } 37.5% { transform: rotate(-70.7deg); } 50% { transform: rotate(-73.6deg); } 62.5% { transform: rotate(-50.7deg); } 75% { transform: rotate(-22.8deg); } 87.5% { transform: rotate(-2.1deg); } 100% { transform: rotate(0deg); } }
+
+/* ── Rameur ── */
+.fpicto .fp-ra-tibia { transform-origin: 80px 82px; animation-name: fp-k-ra-tibia; }
+.fpicto .fp-ra-cuisse { transform-origin: 73.3px 63.1px; animation-name: fp-k-ra-cuisse; }
+.fpicto .fp-ra-buste { transform-origin: 62px 82px; animation-name: fp-k-ra-buste; }
+.fpicto .fp-ra-bras { transform-origin: 70.2px 59.4px; animation-name: fp-k-ra-bras; }
+.fpicto .fp-ra-siege { animation-name: fp-k-ra-siege; }
+.fpicto .fp-ra-tibia, .fpicto .fp-ra-cuisse, .fpicto .fp-ra-buste, .fpicto .fp-ra-bras, .fpicto .fp-ra-siege { animation-duration: 2.2s; }
+@keyframes fp-k-ra-tibia { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-44.1deg); } }
+@keyframes fp-k-ra-cuisse { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(79.3deg); } }
+@keyframes fp-k-ra-buste { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-80.2deg); } }
+@keyframes fp-k-ra-bras { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(45deg); } }
+@keyframes fp-k-ra-siege { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-20px); } }
+
+/* ── Ski-erg ── */
+.fpicto .fp-sk-buste { transform-origin: 42px 58px; animation-name: fp-k-sk-buste; animation-duration: 1.6s; }
+.fpicto .fp-sk-bras { transform-origin: 42px 35px; animation-name: fp-k-sk-bras; animation-duration: 1.6s; }
+@keyframes fp-k-sk-buste { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(35deg); } }
+@keyframes fp-k-sk-bras { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(116deg); } }
+
+/* ── Step (montée) ── */
+.fpicto .fp-st-tibia { transform-origin: 64px 76px; animation-name: fp-k-st-tibia; }
+.fpicto .fp-st-cuisse { transform-origin: 70.3px 62.4px; animation-name: fp-k-st-cuisse; }
+.fpicto .fp-st-buste { transform-origin: 55.8px 66.3px; animation-name: fp-k-st-buste; }
+.fpicto .fp-st-arriere { transform-origin: 55.8px 66.3px; animation-name: fp-k-st-arriere; }
+.fpicto .fp-st-tibia, .fpicto .fp-st-cuisse, .fpicto .fp-st-buste, .fpicto .fp-st-arriere { animation-duration: 2s; }
+@keyframes fp-k-st-tibia { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-25deg); } }
+@keyframes fp-k-st-cuisse { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(130deg); } }
+@keyframes fp-k-st-buste { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-105deg); } }
+@keyframes fp-k-st-arriere { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-119deg); } }
+
+/* ── Kettlebell swing ── */
+.fpicto .fp-kb-buste { transform-origin: 40px 56px; animation-name: fp-k-kb-buste; animation-duration: 1.4s; }
+.fpicto .fp-kb-bras { transform-origin: 40px 33px; animation-name: fp-k-kb-bras; animation-duration: 1.4s; }
+@keyframes fp-k-kb-buste { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(55deg); } }
+@keyframes fp-k-kb-bras { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(45deg); } }
+
+/* ── Pause et mouvement réduit ── */
+.fpicto.paused *, .fpicto.paused *::before, .fpicto.paused *::after { animation-play-state: paused !important; }
+@media (prefers-reduced-motion: reduce) {
+  .fpicto * { animation: none !important; }
+}

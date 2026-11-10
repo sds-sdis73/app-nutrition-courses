@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -14,8 +14,14 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="forme.css">
+<link rel="stylesheet" href="forme-theme.css">
+<link rel="stylesheet" href="forme-pictos.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/umd/zxing-browser.min.js" defer></script>
+<script src="forme-data.js"></script>
+<script src="forme-import.js"></script>
+<script src="forme.js"></script>
 <style>
 /* Thème « Pop gourmand » : vanille, fraise, menthe, mangue et réglisse ; contours épais et boutons en relief */
 :root {
@@ -591,7 +597,7 @@ h1, h2, h3, .sheet-head h2, .section-title, .tl-head { font-weight: 800; letter-
   <button data-act="tab" data-tab="planning" aria-label="Planning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h3M8 18h3M14 14h2"/></svg><span>Planning</span></button>
   <button data-act="tab" data-tab="suivi" aria-label="Suivi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg><span>Suivi</span></button>
   <button data-act="tab" data-tab="courses" aria-label="Courses"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg><span>Courses</span></button>
-  <button data-act="tab" data-tab="batch" aria-label="Batch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1.1-2.1-.2-4 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.2.4-2.3 1-3.3.3 1.6 1.4 2.8 2.5 2.8z"/></svg><span>Batch</span></button>
+  <button data-act="tab" data-tab="forme" aria-label="Forme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 20 6.5-11 4 6.5L16 12l5 8z"/><path d="m8 11.5 1.5 1.5 1.6-1.6"/><circle cx="17.5" cy="5" r="1.8"/></svg></button>
 </nav>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -603,7 +609,7 @@ h1, h2, h3, .sheet-head h2, .section-title, .tl-head { font-weight: 800; letter-
 // ---------------------------------------------------------------------------
 const APP_NAME = 'Miam & moi';
 // À incrémenter à chaque publication, avec la même valeur dans version.json.
-const APP_VERSION = '2026-10-28.6';
+const APP_VERSION = '2026-11-10.1';
 const SUPABASE_URL = 'https://svugddkrptqpjmywhorb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2dWdkZGtycHRxcGpteXdob3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MjU5NDgsImV4cCI6MjEwODUwMTk0OH0.63RETgf7rbVMquGV-7ooY3qn-Qf31uVCA3ZBfqBvFcI';
 const OFF = 'https://world.openfoodfacts.org/api/v2';
@@ -712,7 +718,8 @@ const state = {
   compte: null,
   comptes: [],
   authMode: 'login',
-  tab: store.get('tab', 'aujourdhui'),
+  tab: store.get('tab', 'aujourdhui') === 'batch' ? 'courses' : store.get('tab', 'aujourdhui'),
+  cuisine: store.get('tab', '') === 'batch' ? 'batch' : store.get('cuisine', 'courses'),
   offline: false,
   push: null,
   settings: { store_name: 'Super U Porte de Savoie Montmélian', store_slug: 'superu-montmelian', default_servings: 2 },
@@ -1693,7 +1700,7 @@ const MET_CATS = {
 };
 const MET = Object.entries(MET_CATS).flatMap(([cat, l]) => l.map(([label, v]) => [label, v, cat]));
 function needs(m, date) {
-  const kcal = kcalNeed(m);
+  const kcal = kcalNeed(m) + activeBonus(m, date || new Date());
   const age = ageOf(m);
   const adult = age >= 18;
   return {
@@ -3049,6 +3056,7 @@ const renderCourses = () => weekNav() + renderShopping();
 // Texte « x/y articles cochés », recalculé après chaque coche sans redessiner la liste.
 function checkedCountText() { const all = [...buildShopping().byAisle.values()].flat(); return `${all.filter(isChecked).length}/${all.length} articles cochés`; }
 const renderBatchTab = () => weekNav() + renderBatch();
+const renderCuisine = () => `<div class="seg seg2" role="group" aria-label="Courses ou batch"><button data-act="cuisine" data-v="courses" aria-pressed="${state.cuisine !== 'batch'}">${ICON.cart} Courses</button><button data-act="cuisine" data-v="batch" aria-pressed="${state.cuisine === 'batch'}">${ICON.flame} Batch</button></div>` + (state.cuisine === 'batch' ? renderBatchTab() : renderCourses());
 
 function renderWeek() {
   const today = isoDate(new Date());
@@ -3514,8 +3522,8 @@ function linkItem(k, name) {
 // Compagnon animal : rendu SVG, humeurs, messages, bilan quotidien, coquillages, boutique
 // ---------------------------------------------------------------------------
 const ESPECES = { loutre: { label: 'Loutre', nom: 'Noisette' }, herisson: { label: 'Hérisson', nom: 'Pico' }, renard: { label: 'Renard', nom: 'Rouxy' } };
-const ACCESSOIRES = [['bonnet', 'Bonnet', 20], ['echarpe', 'Écharpe', 20], ['lunettes', 'Lunettes', 25], ['noeud', 'Nœud', 25], ['casquette', 'Casquette', 30], ['couronne', 'Couronne de fleurs', 45], ['tablier', 'Tablier de chef', 50], ['medaille', 'Médaille', 60], ['cape', 'Cape de héros', 80]];
-const FONDS = [['jardin', 'Jardin', 0], ['plage', 'Plage', 60], ['foret', 'Forêt', 60], ['montagne', 'Montagne', 80], ['cuisine', 'Cuisine', 80], ['espace', 'Espace', 120]];
+const ACCESSOIRES = [['bonnet', 'Bonnet', 20], ['echarpe', 'Écharpe', 20], ['lunettes', 'Lunettes', 25], ['noeud', 'Nœud', 25], ['casquette', 'Casquette', 30], ['couronne', 'Couronne de fleurs', 45], ['tablier', 'Tablier de chef', 50], ['medaille', 'Médaille', 60], ['cape', 'Cape de héros', 80], ['bandeau', 'Bandeau de trail', 30], ['frontale', 'Frontale', 40], ['dossard', 'Dossard', 35]];
+const FONDS = [['jardin', 'Jardin', 0], ['plage', 'Plage', 60], ['foret', 'Forêt', 60], ['montagne', 'Montagne', 80], ['cuisine', 'Cuisine', 80], ['espace', 'Espace', 120], ['sommet', 'Sommet', 90]];
 const FRIANDISES = [['pomme', '🍎', 'Pomme', 5], ['fraise', '🍓', 'Fraises', 5], ['carotte', '🥕', 'Carotte', 5], ['poisson', '🐟', 'Poisson', 8], ['smoothie', '🥤', 'Smoothie', 8], ['cupcake', '🧁', 'Cupcake', 12]];
 const FAVORI = { loutre: 'poisson', herisson: 'fraise', renard: 'pomme' };
 const WELCOME_SHELLS = 100;
@@ -3552,6 +3560,9 @@ function companionSvg(c, mood = 'content', size = 140) {
     tablier: '<path d="M38 70h24l4 26H34z" fill="#f6e9d6"/><path d="M42 70v-6h16v6" stroke="#f6e9d6" stroke-width="3" fill="none"/><path d="M44 80h12" stroke="#5f8a67" stroke-width="2"/>',
     cape: '<path d="M26 66q24 12 48 0l4 36H22z" fill="#6a7fd1" opacity=".9"/><path d="M30 66q20 6 40 0" stroke="#f0c04a" stroke-width="3" fill="none"/>',
   };
+  access.bandeau = '<path d="M28 36q22-10 44 0v6q-22-10-44 0z" fill="#2fb3a3"/><path d="M68 38l10-4-2 8z" fill="#2fb3a3"/>';
+  access.frontale = '<path d="M29 37q21-12 42 0" stroke="#27233a" stroke-width="3.5" fill="none"/><rect x="43" y="25" width="14" height="9" rx="3" fill="#f0c04a" stroke="#27233a" stroke-width="1.5"/><path d="M50 22l-3-6M50 22v-7M50 22l3-6" stroke="#ffe07a" stroke-width="1.6" stroke-linecap="round"/>';
+  access.dossard = '<rect x="38" y="70" width="24" height="16" rx="2" fill="#fff" stroke="#27233a" stroke-width="1.5"/><text x="50" y="82" font-size="9" font-weight="800" text-anchor="middle" fill="#dc3a3a">73</text>';
   access.casquette = '<path d="M29 37q21-24 42 0z" fill="#5b7fc7"/><path d="M62 35q16-3 22 5H62z" fill="#3f5fa3"/><circle cx="50" cy="22" r="2.5" fill="#3f5fa3"/>';
   access.medaille = '<path d="M43 62l7 11 7-11" stroke="#dd5b3e" stroke-width="3" fill="none"/><circle cx="50" cy="77" r="6.5" fill="#f0c04a" stroke="#c99a2a" stroke-width="1.5"/><path d="M50 73.5l1.2 2.4 2.6.4-1.9 1.8.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.8 2.6-.4z" fill="#fff6c9"/>';
   const tail = { loutre: '<path d="M74 86q14 2 16-10" stroke="#8a6a4f" stroke-width="8" fill="none" stroke-linecap="round"/>', renard: '<path d="M72 84q18 2 16-14q-4 4-8 4" fill="#d8864a"/><path d="M84 72q6 4 4-2" fill="#f6e9d6"/>' }[sp] || '';
@@ -3578,6 +3589,7 @@ function sceneSvg(fond = 'jardin', period = periodOf()) {
     foret: '<path d="M0 190V290H400V190z" fill="#79a565"/>' + [20, 75, 140, 200, 265, 330, 385].map((x, i) => `<path d="M${x} ${70 + (i % 3) * 14}l-30 ${110 - (i % 3) * 10}h60z" fill="#5d8a5a"/>`).join('') + [50, 160, 310, 370].map((x) => `<path d="M${x} 120l-34 100h68z" fill="#3f6b45"/><rect x="${x - 4}" y="220" width="8" height="12" fill="#6b4f3a"/>`).join('') + '<path d="M0 222q200-12 400 0V290H0z" fill="#6c9858"/><rect x="236" y="246" width="6" height="12" fill="#f6e9d6"/><path d="M228 248q11-14 22 0z" fill="#dd5b3e"/><circle cx="235" cy="244" r="1.6" fill="#fff"/><circle cx="244" cy="245" r="1.6" fill="#fff"/>',
     montagne: '<path d="M-10 200L90 70l60 70 60-90 90 110 50-50 70 90z" fill="#8a9bb0"/><path d="M90 70l-22 28 14-4 8 8 10-12 12 10zM210 50l-24 30 14-4 10 10 10-10 12 8z" fill="#fff"/><path d="M0 205q100-30 200-8t200 0V290H0z" fill="#93bf7d"/><path d="M0 238q120-16 240 0t160 0V290H0z" fill="#7fae6c"/>',
     cuisine: '<rect width="400" height="290" fill="#f7ecd9"/><rect x="36" y="34" width="120" height="100" rx="8" fill="url(#' + id + ')" stroke="#c69a6b" stroke-width="6"/><path d="M96 34v100M36 84h120" stroke="#c69a6b" stroke-width="4"/>' + (night ? '<circle cx="128" cy="58" r="9" fill="#f4f1de"/>' : '<circle cx="128" cy="60" r="12" fill="#ffe07a"/>') + '<g fill="#e7dcc8">' + Array.from({ length: 10 }, (_, i) => `<rect x="${i * 40}" y="150" width="38" height="38" rx="3"/>`).join('') + '</g><rect y="200" width="400" height="90" fill="#c69a6b"/><rect y="196" width="400" height="12" fill="#e0bd8f"/><path d="M230 60v40M262 60v34M294 60v44" stroke="#8a6a4f" stroke-width="3"/><circle cx="230" cy="106" r="8" fill="none" stroke="#7a7f88" stroke-width="4"/><rect x="256" y="94" width="12" height="18" rx="3" fill="#7a7f88"/><path d="M288 104h12l-2 12h-8z" fill="#7a7f88"/><path d="M318 168h56v28h-56z" fill="#5f8a67"/><rect x="312" y="164" width="68" height="8" rx="3" fill="#4b7353"/><path class="steam" d="M334 156q-6-8 0-16M350 156q-6-8 0-16M366 156q-6-8 0-16" stroke="#fff" stroke-width="3" fill="none" opacity=".7" stroke-linecap="round"/>',
+    sommet: '<path d="M-10 230L70 120l40 40 90-130 80 110 40-30 90 130z" fill="#7b8fa6"/><path d="M200 30l-30 42 16-6 14 14 12-16 18 12z" fill="#fff"/><path d="M200 30v-22" stroke="#27233a" stroke-width="2.5"/><path d="M200 8l22 6-22 7z" fill="#dc3a3a"/><path d="M0 240q90-26 200-8t200 0V290H0z" fill="#93bf7d"/><path d="M40 290q60-60 140-70" stroke="#e9dcc4" stroke-width="5" fill="none" stroke-dasharray="2 9" stroke-linecap="round"/>',
     espace: '<circle cx="90" cy="80" r="30" fill="#e8a33d"/><ellipse cx="90" cy="80" rx="50" ry="10" fill="none" stroke="#f4d58a" stroke-width="4" transform="rotate(-18 90 80)"/><path d="M0 214q200-50 400 0V290H0z" fill="#c9c6d6"/><ellipse cx="80" cy="250" rx="22" ry="7" fill="#aaa6bd"/><ellipse cx="300" cy="236" rx="16" ry="5" fill="#aaa6bd"/><ellipse cx="220" cy="270" rx="12" ry="4" fill="#aaa6bd"/><path d="M340 214v-40" stroke="#7a7f88" stroke-width="3"/><path d="M340 174h28l-6 8 6 8h-28z" fill="#dd5b3e"/>',
   }[fond] || '';
   const indoor = fond === 'cuisine';
@@ -3993,7 +4005,7 @@ function renderToday() {
     const planned = a.statut === 'prevu';
     items.push({ t, kind: 'sport', state: planned ? (past(t) ? 'missed' : 'next') : 'done', icon: '🏃', title: esc(a.label || 'Activité'),
       side: `${Math.round(Number(a.kcal) || 0)} kcal`,
-      body: `<div class="tl-actions"><span class="muted small grow">${a.minutes ? `${a.minutes} min · ` : ''}${planned ? (past(t) ? 'prévue, c\'est fait ?' : 'prévue') : 'faite'}</span>${planned ? `<button class="btn small primary" data-act="activite-done" data-id="${a.id}">C'est fait</button>` : ''}<button class="icon-btn" data-act="activite-del" data-id="${a.id}" aria-label="Supprimer">${ICON.trash}</button></div>` });
+      body: a.source === 'forme' ? `<div class="tl-actions"><span class="muted small grow">${a.minutes ? `${a.minutes} min · ` : ''}${planned ? 'séance du plan' : 'faite'}</span>${formeTodayActions(a)}</div>` : `<div class="tl-actions"><span class="muted small grow">${a.minutes ? `${a.minutes} min · ` : ''}${planned ? (past(t) ? 'prévue, c\'est fait ?' : 'prévue') : 'faite'}</span>${planned ? `<button class="btn small primary" data-act="activite-done" data-id="${a.id}">C'est fait</button>` : ''}<button class="icon-btn" data-act="activite-del" data-id="${a.id}" aria-label="Supprimer">${ICON.trash}</button></div>` });
   }
 
   // Hydratation : repères au fil de la journée, avec les boissons de la plage
@@ -4021,6 +4033,9 @@ function renderToday() {
   }
   const frigo = restesFor(today).filter((x) => x.stockage === 'frigo' && x.dlc <= iso);
   for (const x of frigo) { const r = recipeById(x.recipe_id); if (r) items.push({ t: '12:00', kind: 'rappel', state: 'next', icon: '🥡', title: 'Reste à finir aujourd\'hui', side: '', body: `<p class="muted small" style="margin:0">${esc(r.title)} · ${esc(resteLabel(x))}</p>` }); }
+
+  // Module Forme : conseils croisés (féculents la veille d'une grosse séance, protéines après le renfo)
+  items.push(...formeTodayItems(me, today, past));
 
   // Bilan du soir
   const cr = dayCriteria(me, today);
@@ -4146,7 +4161,7 @@ function suggestSheet() {
 // Rappels (Web Push)
 // ---------------------------------------------------------------------------
 const VAPID_PUBLIC = 'BGtcjD-H4BoUOSKDxhxrXqjtVqj6m8JHnqBbcOv3kK-BUTulfwV9ewxlZsF8oKogOEKtFFfZhehR6XtzDA8_5rw';
-const PUSH_DEFAULTS = { batch: true, congel: true, courses: true, courses_day: 5, courses_hour: 9, planning: true, bilan: true };
+const PUSH_DEFAULTS = { batch: true, congel: true, courses: true, courses_day: 5, courses_hour: 9, planning: true, bilan: true, seance: true, dispos: true };
 const Push = {
   supported: () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window,
   standaloneHint: () => /iPhone|iPad/.test(navigator.userAgent) && !window.navigator.standalone && !matchMedia('(display-mode: standalone)').matches,
@@ -4199,6 +4214,8 @@ function openRappels() {
         <label class="check" style="display:flex;padding:6px 0"><input type="checkbox" data-p="congel" ${pr.congel ? 'checked' : ''}><span class="grow">La veille à 19 h : sortir un reste du congélateur</span></label>
         <label class="check" style="display:flex;padding:6px 0"><input type="checkbox" data-p="planning" ${pr.planning ? 'checked' : ''}><span class="grow">Vendredi 18 h : semaine prochaine encore vide</span></label>
         <label class="check" style="display:flex;padding:6px 0"><input type="checkbox" data-p="bilan" ${pr.bilan !== false ? 'checked' : ''}><span class="grow">20 h : bilan du soir avec mon compagnon</span></label>
+        <label class="check" style="display:flex;padding:6px 0"><input type="checkbox" data-p="seance" ${pr.seance !== false ? 'checked' : ''}><span class="grow">Forme : 1 h avant chaque séance prévue</span></label>
+        <label class="check" style="display:flex;padding:6px 0"><input type="checkbox" data-p="dispos" ${pr.dispos !== false ? 'checked' : ''}><span class="grow">Forme : dimanche 18 h, saisir mes dispos de la semaine</span></label>
         <label class="check" style="display:flex;padding:6px 0"><input type="checkbox" data-p="courses" ${pr.courses ? 'checked' : ''}><span class="grow">Liste de courses prête</span></label>
         <div class="grid2" style="margin:4px 0 0 30px"><select class="input" data-p="courses_day">${DAYS.map((d, i) => `<option value="${i}" ${Number(pr.courses_day) === i ? 'selected' : ''}>${d}</option>`).join('')}</select>
           <select class="input" data-p="courses_hour">${[7, 8, 9, 10, 11, 12, 14, 17, 18, 19, 20].map((h) => `<option value="${h}" ${Number(pr.courses_hour) === h ? 'selected' : ''}>${h} h</option>`).join('')}</select></div>
@@ -5006,8 +5023,8 @@ function render() {
     scan: ['Scanner un produit', renderScan],
     recettes: ['Mes recettes', renderRecipes],
     planning: ['Ma semaine', renderPlanning],
-    courses: ['Liste de courses', renderCourses],
-    batch: ['Batch cooking', renderBatchTab],
+    courses: [state.cuisine === 'batch' ? 'Batch cooking' : 'Liste de courses', renderCuisine],
+    forme: ['Forme', renderForme],
     suivi: ['Suivi nutritionnel', renderSuivi],
   };
   if (!views[state.tab]) state.tab = 'aujourdhui';
@@ -5018,6 +5035,8 @@ function render() {
   main.innerHTML = (state.offline ? `<div class="offline-banner">${ICON.info} Hors ligne : données du dernier chargement${Queue.size() ? ` · ${Queue.size()} saisie(s) en attente` : ''}</div>` : '') + view();
 }
 function switchTab(tab) {
+  // Courses et Batch partagent un onglet (segment mémorisé).
+  if (tab === 'batch' || tab === 'courses') { if (tab === 'batch') { state.cuisine = 'batch'; store.set('cuisine', 'batch'); } tab = 'courses'; }
   state.tab = tab;
   state.moving = null;
   store.set('tab', tab);
@@ -5028,6 +5047,7 @@ function switchTab(tab) {
 const ACTIONS = {
   tab: (b) => { while (sheets.length) closeSheet(); if (b.dataset.tab === 'aujourdhui') { state.tab = 'aujourdhui'; state.moving = null; store.set('tab', 'aujourdhui'); goToDay(new Date()).then(() => window.scrollTo({ top: 0 })); } else switchTab(b.dataset.tab); },
   suggest: () => suggestSheet(),
+  cuisine: (b) => { state.cuisine = b.dataset.v; store.set('cuisine', b.dataset.v); render(); },
   'push-test': async () => { try { const r = await Foyer.invoke('send-reminders', { test: true }); toast(r.sent ? 'Notification de test envoyée' : 'Aucun appareil abonné'); } catch (e) { toast(e.message); } },
   'close-sheet': () => closeSheet(),
   settings: () => openSettings(),
@@ -5112,6 +5132,7 @@ const ACTIONS = {
   },
 };
 
+Forme.install();
 document.addEventListener('click', (e) => {
   const b = e.target.closest('[data-act]');
   if (!b) return;
@@ -5373,7 +5394,7 @@ async function onSession(session) {
   state.user = user;
   state.loaded = false;
   Object.assign(state, { foyer: null, compte: null, comptes: [], recipes: [], links: {}, scans: [], plan: [], checks: {}, extras: [], members: [], journal: [], moving: null });
-  if (!user) { Pet.stop(); renderAuth(); return; }
+  if (!user) { Pet.stop(); state.forme = Forme.blank(); renderAuth(); return; }
   document.body.classList.remove('logged-out');
   $('#main').innerHTML = '<div class="spinner"></div>';
   try {
@@ -5386,10 +5407,11 @@ async function onSession(session) {
     if (await Queue.flush().catch(() => 0)) await Data.loadWeek();
     Offline.saveAll();
     Offline.saveWeek();
+    await Forme.load(true).catch((e) => console.warn('forme', e));
     state.loaded = true;
     const qs = new URLSearchParams(location.search);
     const hash = location.hash.replace('#', '');
-    if (['planning', 'courses', 'batch', 'suivi', 'recettes', 'scan', 'aujourdhui'].includes(hash) ) { if (hash) state.tab = hash; history.replaceState(null, '', location.pathname); }
+    if (['planning', 'courses', 'batch', 'suivi', 'recettes', 'scan', 'aujourdhui', 'forme'].includes(hash)) { if (hash === 'batch') state.cuisine = 'batch'; if (hash === 'courses') state.cuisine = 'courses'; state.tab = hash === 'batch' ? 'courses' : hash; history.replaceState(null, '', location.pathname); }
     const urlAction = qs.get('action');
     if (urlAction) history.replaceState(null, '', location.pathname);
     render();
@@ -5404,6 +5426,7 @@ async function onSession(session) {
       if (Offline.restoreAll()) {
         Offline.restoreWeek();
         CQ.load().catch(() => {});
+        Forme.load(true).catch(() => {});
         state.offline = true;
         state.loaded = true;
         render();
@@ -5443,6 +5466,10 @@ const Queue = {
         try {
           if (op.type === 'journal') { const { error } = await db.from(T.journal).insert(op.row); if (error) throw error; }
           if (op.type === 'scan') { const { error } = await db.from(T.scans).insert(op.row); if (error) throw error; }
+          if (op.type === 'forme') { const { error } = await db.from(op.table).upsert(op.row, { onConflict: op.onConflict || 'id' }); if (error) throw error; }
+          if (op.type === 'forme-del') { const { error } = await db.from(op.table).delete().eq('id', op.id); if (error) throw error; }
+          if (op.type === 'act') { const { error } = await db.from(T.activites).upsert(op.row, { onConflict: 'member_id,date,source,ref' }); if (error) throw error; }
+          if (op.type === 'act-del') { const { error } = await db.from(T.activites).delete().eq('member_id', op.member_id).eq('source', 'forme').eq('ref', op.ref); if (error) throw error; }
           store.set('queue', this.list().filter((x) => x.t !== op.t));
           if (op.lid) state.journal = state.journal.filter((x) => x.id !== op.lid);
           done++;

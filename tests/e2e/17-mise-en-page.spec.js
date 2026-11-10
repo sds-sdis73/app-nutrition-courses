@@ -1,7 +1,7 @@
 const assert = require('node:assert/strict');
 const H = require('../helpers');
 
-const TABS = ['aujourdhui', 'scan', 'recettes', 'planning', 'courses', 'batch', 'suivi'];
+const TABS = ['aujourdhui', 'scan', 'recettes', 'planning', 'courses', 'batch', 'suivi', 'forme'];
 const SHEETS = [
   ['Noter un repas', () => journalAdd('midi')],
   ['Quantité', () => quantitySheet({ slot: 'midi', label: 'Poke bowl au saumon', per100: { kcal: 144, prot: 6.5, gluc: 13.5, suc: 2, lip: 6.7, ags: 1, fib: 1.3, sel: 0.5 }, source: 'ciqual', ref: 'plat:m1', defaultGrams: 430, portionG: 430 })],
