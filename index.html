@@ -4310,6 +4310,8 @@ function renderSuivi() {
 }
 
 // Suivi du poids : dernière pesée, tendance, courbe, conseil d'ajustement de l'objectif.
+// Poids à 0,1 kg près (fmtNum arrondit à l'unité au-delà de 10).
+const fmtKg = (n) => String(Math.round(Number(n) * 10) / 10).replace('.', ',');
 function weightCard(m) {
   if (!state.peseesOk || !m) return '';
   const list = state.pesees.filter((x) => x.member_id === m.id);
@@ -4331,7 +4333,7 @@ function weightCard(m) {
   const later = store.get(`weightLater:${m.id}`, null);
   const showAdv = adv && !(later && (Date.now() - isoToDate(later).getTime()) / 864e5 < 14) && Number(m.kcal_perso) !== adv.kcal;
   return `<div class="ntable weight"><div class="row"><div class="nt-title grow" style="margin:0">⚖️ Poids</div><button class="btn small primary" data-act="pesee">Me peser</button></div>
-    <div class="row" style="margin-top:6px;align-items:baseline"><b style="font-size:24px">${fmtNum(t.last)} kg</b><span class="muted small grow">&nbsp;le ${fmtDay(isoToDate(t.lastDate))}</span><span class="small">tendance <b>${fmtNum(t.trend)} kg</b></span></div>
+    <div class="row" style="margin-top:6px;align-items:baseline"><b style="font-size:24px">${fmtKg(t.last)} kg</b><span class="muted small grow">&nbsp;le ${fmtDay(isoToDate(t.lastDate))}</span><span class="small">tendance <b>${fmtKg(t.trend)} kg</b></span></div>
     ${spark}<p class="muted small" style="margin:2px 0 0">${trendTxt}</p>
     ${showAdv ? `<div class="advice"><p class="small" style="margin:0">${esc(adv.why)} On peut ajuster l'objectif de ${adv.delta > 0 ? '+' : ''}${adv.delta} kcal, sans rien changer d'autre.</p>
       <div class="row" style="gap:6px;margin-top:8px"><button class="btn small primary" data-act="weight-apply" data-m="${m.id}" data-kcal="${adv.kcal}">Passer à ${adv.kcal} kcal/jour</button><button class="btn small" data-act="weight-later" data-m="${m.id}">Plus tard</button></div></div>` : ''}</div>`;
