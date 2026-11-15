@@ -397,7 +397,17 @@ async function creerTache(donnees) {
   if (!String(donnees.titre || '').trim()) throw new Error('tâche sans titre');
   let base = null;
   if (donnees.origine && donnees.origine_id != null) base = D.taches.find((t) => !t.fait && t.origine === donnees.origine && t.origine_id === String(donnees.origine_id));
-  return enregistrer(T.taches, D.taches, champsTache({ ...(base || {}), ...donnees, id: base?.id || donnees.id }));
+  const avant = base || D.taches.find((t) => t.id === donnees.id) || null;
+  const t = await enregistrer(T.taches, D.taches, champsTache({ ...(base || {}), ...donnees, id: base?.id || donnees.id }));
+  prevenirResponsable(t, avant).catch(() => {});
+  return t;
+}
+// Notification « tâche confiée » (module notifications) : seulement quand le responsable change et n'est pas soi.
+async function prevenirResponsable(t, avant) {
+  const N = Modules.get('notifications')?.expose;
+  if (!N?.programmer || !t.responsable || t.fait || avant?.responsable === t.responsable || t.responsable === monMembre()) return;
+  const qui = nomMembre(state.compte?.member_id) || 'Quelqu\'un';
+  await N.programmer({ id: `tache-confiee:${t.id}:${t.responsable}`, type: 'taches', titre: 'Une tâche pour toi', corps: `${qui} : ${t.titre}${t.echeance ? ` (${libelleEcheance(t.echeance, aujourdhui()).toLowerCase()})` : ''}`, url: './#taches', pour_membres: [t.responsable], sauf_auteur: true });
 }
 
 async function basculerTache(t) {
@@ -1033,8 +1043,7 @@ Modules.register({
     },
   },
   notifications: [
-    { type: 'tache-confiee', libelle: 'Tâche confiée', description: 'Quand quelqu\'un te confie une tâche' },
-    { type: 'tache-echeance', libelle: 'Tâches du jour', description: 'Le matin, tes tâches du jour et en retard' },
+    { type: 'taches', libelle: 'Tâches', description: 'Une tâche t\'est confiée, est faite, ou arrive à échéance.' },
     { type: 'liste-depart', libelle: 'Listes de départ', description: 'La veille d\'un départ, ce qui reste à cocher', defaut: false },
   ],
   expose: { analyseTache, prochaineEcheance, libelleRecurrence, libelleEcheance, groupesTaches, progression, sectionsDe, titreVacances, copieModele, reservationVisible, elementsAccueil, MODELES, elementsModele },

@@ -40,7 +40,7 @@ module.exports = {
     } },
     { name: 'Plus : menu des réglages et outils, retour, feuille Réglages', fn: async ({ page }) => {
       await tab(page, 'plus');
-      assert.deepEqual(await page.$$eval('.plus-ligne', (l) => l.map((b) => b.dataset.id)), ['reglages', 'univers', 'notifications', 'monsieur-cuisine', 'securite', 'sauvegarde', 'widget']);
+      assert.deepEqual(await page.$$eval('.plus-ligne', (l) => l.map((b) => b.dataset.id)), ['reglages', 'univers', 'notifications', 'agenda-synchro', 'monsieur-cuisine', 'securite', 'sauvegarde', 'widget']);
       await page.click('.plus-ligne[data-id="sauvegarde"]');
       await page.waitForSelector('[data-act="sauvegarde-exporter"]');
       assert.equal(await page.$eval('.tabbar [aria-current="page"]', (b) => b.dataset.tab), 'plus');

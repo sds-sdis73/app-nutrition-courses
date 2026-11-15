@@ -92,7 +92,10 @@ module.exports = {
       assert.equal(await page.$eval('.mp-msg[data-id="m4"]', (e) => e.classList.contains('mp-suite')), true, 'second message de Manon groupé');
       assert.match(await page.$eval('.mp-msg[data-id="m2"] .mp-etat', (e) => e.textContent), /Lu par Manon/);
       await page.waitForFunction(() => !document.querySelector('.tabbar .mp-pastille'), null, { timeout: 5000 });
-      assert.equal(db.messages_lus.find((l) => l.id === 'l1').lu_jusqu_a, db.messages_famille.find((m) => m.id === 'm4').created_at);
+      // L'écriture du repère de lecture peut arriver juste après la disparition de la pastille.
+      const attendu = db.messages_famille.find((m) => m.id === 'm4').created_at;
+      for (let i = 0; i < 30 && db.messages_lus.find((l) => l.id === 'l1').lu_jusqu_a !== attendu; i++) await page.waitForTimeout(100);
+      assert.equal(db.messages_lus.find((l) => l.id === 'l1').lu_jusqu_a, attendu);
       assert.ok(await H.noHorizontalScroll(page));
     } },
     { name: 'envoyer un message : bulle, ligne enregistrée, notification aux autres', fn: async ({ page }) => {

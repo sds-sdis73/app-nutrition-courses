@@ -418,14 +418,15 @@ function detailEv(ev) {
 function externes(a, b) {
   if (!affiche('autres')) return [];
   const cle = `${isoDate(a)}_${isoDate(b)}`;
-  const frais = ext.cle === cle && Date.now() - ext.t < 5000;
+  // Agenda.version : augmentée par un module dont les éléments changent (agenda importé…), pour relire tout de suite.
+  const frais = ext.cle === cle && ext.v === (Agenda.version || 0) && Date.now() - ext.t < 5000;
   if (!frais && ext.attente !== cle) {
     ext.attente = cle;
     Agenda.elements(a, b).then((l) => {
       if (ext.attente !== cle) return;
       const items = l.filter((e) => e.source !== 'agenda');
       const change = ext.cle !== cle || JSON.stringify(items) !== JSON.stringify(ext.items);
-      ext = { cle, items, t: Date.now(), attente: '' };
+      ext = { cle, items, t: Date.now(), attente: '', v: Agenda.version || 0 };
       if (change && state.tab === 'agenda') render();
     }).catch(() => { ext.attente = ''; });
   }
@@ -618,7 +619,15 @@ async function enregistrer(row) {
   if (i >= 0) evenements[i] = ligneEnr; else evenements.push(ligneEnr);
   cache.set('evenements', evenements);
   ext.t = 0;
+  prevenirModif(ligneEnr, i >= 0 ? 'modifié' : 'ajouté');
   return ligneEnr;
+}
+// Notification « agenda modifié » aux autres comptes (module notifications ; coupée par défaut, chacun l'active).
+function prevenirModif(ev, verbe) {
+  const N = Modules.get('notifications')?.expose;
+  if (!N?.programmer || ev.source) return;
+  const qui = memberById(state.compte?.member_id)?.nom || 'Quelqu\'un';
+  N.programmer({ id: `agenda-modif:${ev.id}`, type: 'agenda_modifs', titre: 'Agenda de la famille', corps: `${qui} a ${verbe} « ${ev.titre} »`, url: './#agenda', sauf_auteur: true, envoyer_a: new Date(Date.now() + 2 * 60000) }).catch(() => {});
 }
 async function supprimer(ev, portee, date) {
   if (portee === 'une') { await enregistrer({ ...ev, exceptions: [...new Set([...(ev.exceptions || []), date])] }); toast('Cette fois est retirée de la série'); }
@@ -757,7 +766,8 @@ function reglages() {
     <h3 class="agenda-h3">Afficher dans l'agenda</h3>
     <div class="card agenda-carte agenda-affichage">${AFFICHAGE.map(([k, l]) => `<label class="check"><input type="checkbox" data-aff="${k}" ${affiche(k) ? 'checked' : ''}> ${esc(l)}</label>`).join('')}</div>
     <p class="muted small">Vacances : calendrier scolaire de l'Éducation nationale (académie de ${ACADEMIE}). Jours fériés : calendrier.api.gouv.fr. Mis à jour chaque semaine et gardés pour une utilisation hors ligne.</p>
-    <button class="btn block" data-x="maj">${ICO.cal} Mettre à jour les vacances et les jours fériés</button>`);
+    <button class="btn block" data-x="maj">${ICO.cal} Mettre à jour les vacances et les jours fériés</button>
+    ${Modules.get('agenda-synchro') ? `<h3 class="agenda-h3">Autres agendas</h3><p class="muted small">L'agenda de la famille dans ton iPhone, Google ou Outlook, leurs événements ici, et iCloud dans les deux sens.</p><button class="btn block" data-act="agenda-synchro-ouvrir">${ICO.rep} Agendas reliés</button>` : ''}`);
   const dessiner = () => {
     const box = $('[data-couleurs]', el);
     if (!box) return;
@@ -805,7 +815,7 @@ Modules.register({
   ordre: 10,
   libelle: 'Agenda familial',
   tables: { evenements: 'evenements', agenda_couleurs: 'agenda_couleurs' },
-  notifications: [{ type: 'agenda-rappel', libelle: 'Rappels des événements', description: 'Avant un événement, selon le rappel choisi pour toi.' }],
+  notifications: [{ type: 'agenda_modifs', libelle: 'Modifications de l\'agenda', description: 'Quelqu\'un d\'autre ajoute, déplace ou supprime un événement.', defaut: false }],
   async charger(force, { horsLigne } = {}) {
     evenements = cache.get('evenements', []);
     couleurs = cache.get('couleurs', {});
@@ -849,7 +859,8 @@ Modules.register({
     analyser(texte, ctx) {
       const p = parseEvenement(texte, { maintenant: ctx.maintenant, membres: ctx.membres });
       if (!p) return null;
-      return { score: p.heure || p.recurrence ? 0.9 : 0.7, resume: resumeEv(p, ctx.membres), donnees: p };
+      // Une répétition sans heure (« sortir les poubelles tous les mardis ») laisse la priorité à une tâche qui commence par un verbe (0,85).
+      return { score: p.heure ? 0.9 : p.recurrence ? 0.8 : 0.7, resume: resumeEv(p, ctx.membres), donnees: p };
     },
     async enregistrer(p) {
       const ligneEnr = await enregistrer(versLigne(p));

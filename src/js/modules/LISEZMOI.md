@@ -91,6 +91,18 @@ agenda: (debut, fin) => [{ id: 'rdv:42', date: '2026-11-18', heure: '09:30', heu
 ```
 Le module agenda lit le tout par `await Agenda.elements(debut, fin)` → éléments de la période, triés, chacun avec `source` (id du module).
 Le cœur y met déjà les repas du planning chargé (`source: 'planning'`).
+Le module agenda garde ces éléments 5 s en mémoire : un module dont les éléments changent (agenda importé, synchro iCloud)
+augmente `Agenda.version` pour qu'ils soient relus au prochain affichage.
+
+### (d) Entre modules (ajouts de l'intégration)
+
+- **Bouton de type du « + »** : `AjoutRapide.pour(type)` rend l'analyseur enregistré **en dernier** pour ce type ; un module passe donc devant le cœur (ex. `article` de cuisine-mc).
+- **Tâches** : `window.Taches.creer({ titre, echeance, notes, responsable, origine, origine_id })` crée une tâche sans doublon (même `origine` + `origine_id`). Le carnet s'en sert pour ses échéances à J-7.
+- **Notifications liées à une action** : `Modules.get('notifications').expose.programmer({ id, type, titre, corps, url, pour_membres | pour_users, sauf_auteur, envoyer_a })`.
+  Utiliser les types de l'écran Notifications (`taches`, `messages`, `agenda_modifs`, `courses_modif`…) plutôt que d'en déclarer de nouveaux qui feraient doublon.
+- **Éléments d'Accueil et d'agenda** : champs facultatifs `membres: [member_id]` (couleurs et filtre) et `trajet: { sens, qui, pour }` (briefing du soir).
+- **Partage d'outils entre deux écrans d'un même module** : `Modules.get(id).service` (messages et photos).
+
 
 ## Exemple de module minimal
 

@@ -110,5 +110,5 @@ test('module : deux écrans dans Famille, tables, notifications', () => {
   assert.equal(app.T.mp_messages, 'messages_famille');
   assert.equal(app.T.mp_gazettes, 'photos_gazettes');
   const types = app.Modules.notifications().map((n) => n.type);
-  assert.ok(types.includes('message') && types.includes('photo'));
+  assert.ok(types.includes('messages') && types.includes('photo'));
 });

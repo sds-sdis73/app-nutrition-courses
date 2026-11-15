@@ -217,7 +217,11 @@ const tachesACreer = (echeances, aujourdhui = isoDate(new Date()), delai = DELAI
 // le carnet l'appelle avec { titre, echeance: 'AAAA-MM-JJ', detail, source: 'carnet', cle }.
 function apiTaches() {
   const t = Modules.get('taches')?.expose || {};
-  return typeof t.creerTache === 'function' ? t.creerTache : typeof t.ajouterTache === 'function' ? t.ajouterTache : null;
+  if (typeof t.creerTache === 'function') return t.creerTache;
+  if (typeof t.ajouterTache === 'function') return t.ajouterTache;
+  // API publique du module taches (window.Taches) : la clé sert d'origine, sans doublon d'un téléphone à l'autre.
+  if (typeof window.Taches?.creer === 'function') return (d) => window.Taches.creer({ titre: d.titre, echeance: d.echeance, notes: d.detail || null, origine: d.source || 'carnet', origine_id: d.cle });
+  return null;
 }
 async function creerTaches() {
   const api = apiTaches();

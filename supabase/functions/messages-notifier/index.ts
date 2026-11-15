@@ -27,6 +27,20 @@ function enSilence(prefs: Prefs, heure: string) {
   if (!/^\d{2}:\d{2}$/.test(debut) || !/^\d{2}:\d{2}$/.test(fin) || debut === fin) return false;
   return debut < fin ? heure >= debut && heure < fin : heure >= debut || heure < fin;
 }
+// Réglages du module Notifications (table notif_prefs, heures entières) : ils passent avant push_abonnements.prefs.
+// Type « message » côté fonction = interrupteur « messages » de l'écran Plus › Notifications.
+const CLE_NOTIF: Record<string, string> = { message: "messages", photo: "photo" };
+type NotifPrefs = { types?: Record<string, boolean>; silence_actif?: boolean; silence_debut?: number; silence_fin?: number };
+function coupeParNotifPrefs(np: NotifPrefs | undefined, type: string, heure: string): boolean | null {
+  if (!np) return null;
+  if (np.types?.[CLE_NOTIF[type] ?? type] === false) return true;
+  if (np.silence_actif === false) return false;
+  const d = Number.isInteger(np.silence_debut) ? np.silence_debut! : 22;
+  const f = Number.isInteger(np.silence_fin) ? np.silence_fin! : 7;
+  const h = Number(heure.slice(0, 2));
+  if (d === f) return false;
+  return d < f ? h >= d && h < f : h >= d || h < f;
+}
 const court = (t: string, max = 140) => (t.length > max ? `${t.slice(0, max - 1).trimEnd()}…` : t);
 
 Deno.serve(async (req) => {
@@ -75,10 +89,14 @@ Deno.serve(async (req) => {
 
   const heure = heureParis();
   const { data: subs } = await admin.from("push_abonnements").select("*").eq("foyer_id", compte.foyer_id).neq("user_id", user.id);
+  // notif_prefs peut ne pas exister encore (migration non appliquée) : l'erreur est ignorée.
+  const { data: np } = await admin.from("notif_prefs").select("*").eq("foyer_id", compte.foyer_id);
+  const parUser = new Map((np ?? []).map((r: NotifPrefs & { user_id: string }) => [r.user_id, r]));
   let sent = 0;
   for (const s of subs ?? []) {
     const prefs = (s.prefs ?? {}) as Prefs;
-    if (prefs[msg.type] === false || enSilence(prefs, heure)) continue;
+    const coupe = coupeParNotifPrefs(parUser.get(s.user_id), msg.type, heure);
+    if (coupe ?? (prefs[msg.type] === false || enSilence(prefs, heure))) continue;
     try { await webpush.sendNotification({ endpoint: s.endpoint, keys: s.keys }, JSON.stringify(msg)); sent++; }
     catch (e) { const code = (e as { statusCode?: number }).statusCode; if (code === 410 || code === 404) await admin.from("push_abonnements").delete().eq("endpoint", s.endpoint); }
   }

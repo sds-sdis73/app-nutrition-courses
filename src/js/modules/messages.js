@@ -399,7 +399,7 @@ function bulle(m, { lus, attente }) {
   const nom = nomCompte(m.user_id, m.auteur);
   const reac = resumeReactions(M.reactions.filter((r) => r.message_id === m.id), me());
   const photo = m.photo?.chemin ? `<span class="mp-photo" role="button" tabindex="0" data-act="messages-photo" data-id="${m.id}" aria-label="Voir la photo" style="aspect-ratio:${Number(m.photo.l) || 4}/${Number(m.photo.h) || 3}">${imgTag(m.photo.mini || m.photo.chemin, 'Photo envoyée')}</span>` : '';
-  const texte = m.texte ? `<div class="mp-texte">${esc(m.texte).replace(/\n/g, '<br>')}</div>` : '';
+  const texte = m.texte ? `<div class="mp-texte">${esc(m.texte).replace(/ ([?!;»])/g, '\u202f$1').replace(/« /g, '«\u202f').replace(/\n/g, '<br>')}</div>` : '';
   const etat = !moi ? '' : (m._echec ? '<span class="mp-etat mp-echec">Non envoyé</span>'
     : attente.has(m.id) ? '<span class="mp-etat">En attente d\'envoi</span>'
       : lus.length ? `<span class="mp-etat">Lu par ${esc(listeNoms(lus.map((u) => nomCompte(u))))}</span>` : '');
@@ -616,7 +616,7 @@ Modules.register({
     const auj = jourDe(der.created_at) === isoDate(new Date());
     return [{ heure: auj ? heureCourte(der.created_at) : null, titre: l.length === 1 ? `Nouveau message de ${nom}` : `${l.length} messages non lus`, detail: `${nom} : ${apercu(der, 60)}`, icone: icMsg, act: 'tab', data: { tab: 'messages' }, priorite: 2 }];
   },
-  notifications: [{ type: 'message', libelle: 'Nouveaux messages', description: 'Quand quelqu\'un écrit dans la discussion de la famille.' }],
+  notifications: [{ type: 'messages', libelle: 'Nouveaux messages', description: 'Quand quelqu\'un écrit dans la discussion de la famille.' }],
   expose: { grouperMessages, nonLus, resumeReactions, lecteurs, apercu, jourLibelle, heureCourte, listeNoms },
 });
 

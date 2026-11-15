@@ -19,7 +19,7 @@ describe('registre des modules', () => {
     assert.deepEqual(seg('famille'), ['agenda', 'taches', 'messages', 'photos', 'carnet']);
     assert.deepEqual(seg('cuisine'), ['planning', 'courses', 'recettes', 'batch', 'scan']);
     assert.deepEqual(seg('forme'), ['forme']);
-    assert.deepEqual(seg('plus'), ['reglages', 'univers', 'notifications', 'monsieur-cuisine', 'securite', 'sauvegarde', 'widget']);
+    assert.deepEqual(seg('plus'), ['reglages', 'univers', 'notifications', 'agenda-synchro', 'monsieur-cuisine', 'securite', 'sauvegarde', 'widget']);
   });
   test('chaque écran a un rendu ou une action d\'ouverture', () => {
     for (const m of app.Modules.liste) assert.ok(m.rendu || m.ouvrir, `${m.id} sans rendu ni ouvrir`);

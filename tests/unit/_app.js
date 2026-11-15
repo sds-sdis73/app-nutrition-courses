@@ -30,7 +30,7 @@ const sandbox = {
   console, document, localStorage, fetch, setTimeout, clearTimeout, setInterval: () => 0, clearInterval: noop, requestAnimationFrame: noop,
   navigator: { onLine: true, userAgent: 'node-test', language: 'fr', vibrate: noop }, location: { search: '', hash: '', pathname: '/', origin: 'http://test', href: 'http://test/', replace: noop },
   history: { replaceState: noop }, crypto: require('node:crypto').webcrypto, matchMedia: () => ({ matches: false }), addEventListener: noop, removeEventListener: noop,
-  supabase: { createClient: () => db }, URL, URLSearchParams, TextEncoder, TextDecoder, AbortController, Intl, structuredClone, performance, innerWidth: 390, innerHeight: 844, scrollTo: noop,
+  supabase: { createClient: () => db }, URL, URLSearchParams, TextEncoder, TextDecoder, AbortController, Intl, structuredClone, performance, btoa, atob, innerWidth: 390, innerHeight: 844, scrollTo: noop,
 };
 sandbox.window = sandbox; sandbox.self = sandbox; sandbox.globalThis = sandbox;
 vm.createContext(sandbox);

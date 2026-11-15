@@ -199,6 +199,6 @@ describe('enregistrement du module', () => {
     assert.equal(m.segment, 'Tâches & listes');
     for (const t of ['taches', 'listes', 'liste_elements', 'envies', 'envies_reservations']) assert.equal(app.T[t], t);
     assert.ok(app.AjoutRapide.pour('tache'), 'le type « tâche » du « + » n\'est plus grisé');
-    assert.ok(app.Modules.notifications().some((n) => n.module === 'taches' && n.type === 'tache-echeance'));
+    assert.ok(app.Modules.notifications().some((n) => n.module === 'taches' && n.type === 'taches'));
   });
 });

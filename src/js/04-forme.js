@@ -668,7 +668,7 @@ function fHero() {
   return `<div class="f-hero">
     <div class="grow"><small>${w?.cycle_semaine ? `Cycle · semaine ${w.cycle_semaine}/4${w.cycle_semaine === 4 ? ' (allégée)' : ''}` : 'Ma forme'}${w?.plan?.taper ? ' · affûtage' : ''}</small>
     <h2>Semaine du ${lundi.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}</h2>
-    <p>${ss.length ? `${done}/${ss.length} séance${ss.length > 1 ? 's' : ''} · ${formeFmtMin(min)} de course${dplus ? ` · D+ ${dplus} m` : ''}` : 'Pas encore de plan cette semaine'}</p>
+    <p>${ss.length ? `${done}/${ss.length} séance${ss.length > 1 ? 's' : ''} · ${formeFmtMin(min)} de course${dplus ? ` · D+\u00a0${dplus}\u00a0m` : ''}` : 'Pas encore de plan cette semaine'}</p>
     ${obj ? `<p class="f-obj">🏁 ${esc(obj.nom)} dans ${Math.max(0, Math.round((isoToDate(obj.date) - new Date()) / 864e5))} j</p>` : ''}</div>
     ${c ? `<div class="f-hero-pet">${companionSvg(c, done ? 'sportif' : 'content', 74)}</div>` : ''}</div>
     <div class="seg f-seg">${[['semaine', 'Semaine'], ['seance', 'Séance'], ['suivi', 'Suivi'], ['reglages', 'Réglages']].map(([k, l]) => `<button data-act="forme-view" data-v="${k}" aria-pressed="${F.view === k}">${l}</button>`).join('')}</div>`;
@@ -788,9 +788,9 @@ function fSeanceCard(s) {
   const pr = state.forme.profil;
   const today = isoDate(new Date());
   const meta = [formeFmtMin(s.duree_min || p.duree_min || 0)];
-  if (s.type === 'course' && (s.dplus_m || p.dplus_m)) meta.push(`D+ ${s.dplus_m || p.dplus_m} m`);
+  if (s.type === 'course' && (s.dplus_m || p.dplus_m)) meta.push(`D+\u00a0${s.dplus_m || p.dplus_m}\u00a0m`);
   if (s.statut === 'fait' && s.distance_m) meta.push(`${fmtNum(s.distance_m / 1000)} km`);
-  if (s.statut === 'fait' && s.rpe) meta.push(`RPE ${s.rpe}`);
+  if (s.statut === 'fait' && s.rpe) meta.push(`RPE\u00a0${s.rpe}`);
   if (s.type === 'renfo' && p.format) meta.push(FORME_FORMATS[p.format]?.label || '');
   const intens = s.type === 'course' || s.type === 'cardio' ? formeIntensite(C.zone || 'ef', pr, pr?.modes_intensite || ['rpe']) : '';
   const met = state.forme.meteo && s.statut === 'prevu' && s.type === 'course' && s.date >= today ? formeMeteoAlerte(state.forme.meteo, s.date, s.heure) : null;
@@ -838,7 +838,7 @@ function fDraftHtml(d) {
     }).join('')}</div>`;
   }).join('');
   return `<div class="card f-pad f-draft"><div class="row"><h3 class="grow">${esc(d.titre)}</h3><button class="icon-btn" data-act="forme-draft-close" aria-label="Fermer la séance">${ICON.close}</button></div>
-    <p class="muted small">≈ ${formeFmtMin(Math.round(formeSeanceSecondes(d) / 60))}${d.dplus_m ? ` · D+ ${d.dplus_m} m` : ''}${state.forme.draftFor ? ' · séance du plan' : ''}</p>${blocs}
+    <p class="muted small">≈ ${formeFmtMin(Math.round(formeSeanceSecondes(d) / 60))}${d.dplus_m ? ` · D+\u00a0${d.dplus_m}\u00a0m` : ''}${state.forme.draftFor ? ' · séance du plan' : ''}</p>${blocs}
     <div class="grid2">${d.type === 'renfo' || !d.type ? `<button class="btn" data-act="forme-regen">${ICON.shuffle} Tout relancer</button>` : '<span></span>'}<button class="btn primary" data-act="forme-play">${ICON.play} Lancer</button></div></div>`;
 }
 function fExoSheet(id) {
@@ -1252,7 +1252,7 @@ function fViewReglages() {
       <form class="row" data-form="forme-ville" style="gap:8px"><input class="input grow" name="ville" placeholder="Ville (ex. Chambéry)" value="${esc(pf.ville || '')}"><button class="btn">OK</button></form>
       <button class="btn block small" data-act="forme-geo" style="margin-top:8px">📍 Utiliser ma position</button></div>
     <div class="card f-pad"><div class="row"><h3 class="grow">Course cible</h3><button class="btn small" data-act="forme-objectif">${ICON.plus} Ajouter</button></div>
-      ${F.objectifs.length ? F.objectifs.map((o) => `<div class="entry"><div class="grow"><div class="nm">🏁 ${esc(o.nom)}</div><div class="muted small">${fDate(o.date)}${o.distance_km ? ` · ${fmtNum(Number(o.distance_km))} km` : ''}${o.dplus_m ? ` · D+ ${o.dplus_m} m` : ''}</div></div><button class="icon-btn" data-act="forme-objectif-del" data-id="${o.id}" aria-label="Supprimer">${ICON.trash}</button></div>`).join('') : '<p class="muted small">Facultatif : le plan s\'allège les deux dernières semaines avant la course.</p>'}</div>
+      ${F.objectifs.length ? F.objectifs.map((o) => `<div class="entry"><div class="grow"><div class="nm">🏁 ${esc(o.nom)}</div><div class="muted small">${fDate(o.date)}${o.distance_km ? ` · ${fmtNum(Number(o.distance_km))} km` : ''}${o.dplus_m ? ` · D+\u00a0${o.dplus_m}\u00a0m` : ''}</div></div><button class="icon-btn" data-act="forme-objectif-del" data-id="${o.id}" aria-label="Supprimer">${ICON.trash}</button></div>`).join('') : '<p class="muted small">Facultatif : le plan s\'allège les deux dernières semaines avant la course.</p>'}</div>
     <div class="card f-pad stack"><h3>Mon profil Forme</h3><p class="muted small">${esc(FORME_NIVEAUX[pr.niveau] || '')} · ${esc(FORME_OBJECTIFS[pr.objectif_forme] || '')} · ${esc(FORME_TERRAINS[pr.terrain] || '')}</p>
       <button class="btn block" data-act="forme-q-redo">Refaire le questionnaire</button><button class="btn block" data-act="forme-reset" style="color:var(--danger)">Réinitialiser le module</button></div>
     ${(Forme.reglagesExtra || []).map((f) => f()).join('')}`; // cartes ajoutées par les modules (partage du sport…)

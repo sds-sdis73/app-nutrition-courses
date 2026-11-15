@@ -1,0 +1,24 @@
+/* Plus › Agendas reliés : lien d'abonnement, agendas importés, iCloud (jetons du thème uniquement). */
+.async-titre { font-size: 17px; margin: 18px 0 8px; }
+.async > .async-titre:first-child, .async > .async-alerte + .async-titre { margin-top: 4px; }
+.async-carte { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+.async-carte > p { margin: 0; }
+.async-lien { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; line-height: 1.35; padding: 10px 12px; border-radius: 12px;
+  background: var(--surface-2, var(--primary-soft)); color: var(--text); border: 1.5px dashed var(--border); overflow-wrap: anywhere; user-select: all; -webkit-user-select: all; }
+.async-boutons { display: flex; flex-wrap: wrap; gap: 8px; }
+.async-boutons .btn { flex: 1 1 auto; min-width: 0; }
+.async-abo { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 4px 0 10px; }
+.async-abo + .async-abo { border-top: 1.5px dashed var(--border); padding-top: 12px; }
+.async-abo .grow { flex: 1 1 160px; min-width: 0; display: flex; flex-direction: column; overflow-wrap: anywhere; }
+.async-abo.off .grow b { color: var(--muted); }
+.async-abo-actions { flex-basis: 100%; }
+.async-erreur { color: var(--danger); }
+.async-alerte { color: var(--primary-strong); background: var(--primary-soft); border-radius: 12px; padding: 8px 10px; margin: 0 0 6px; }
+.async-aide { font-size: 14px; }
+.async-aide summary { cursor: pointer; font-weight: 700; color: var(--primary-strong); min-height: 32px; display: flex; align-items: center; }
+.async-aide ol, .async-etapes { margin: 6px 0 0; padding-left: 22px; display: flex; flex-direction: column; gap: 6px; line-height: 1.4; }
+.async-etapes { font-size: 15px; margin-bottom: 12px; }
+.async-cal { justify-content: flex-start; gap: 10px; }
+.async-pastille { width: 14px; height: 14px; border-radius: 50%; flex: none; border: 1.5px solid var(--ink); }
+.async-notes { white-space: pre-line; overflow-wrap: anywhere; }
+.btn-link { background: none; border: 0; padding: 0; font: inherit; color: var(--primary-strong); text-decoration: underline; cursor: pointer; }

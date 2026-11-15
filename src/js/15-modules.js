@@ -147,7 +147,8 @@ const AjoutRapide = {
     out.sort((x, y) => y.score - x.score);
     return out.filter((p, i) => out.findIndex((q) => q.type === p.type) === i);
   },
-  pour(type) { return this.analyseurs.find((a) => a.type === type) || null; },
+  // Analyseur d'un type pour le bouton de type : celui d'un module passe devant celui du cœur (enregistré plus tard).
+  pour(type) { for (let i = this.analyseurs.length - 1; i >= 0; i--) if (this.analyseurs[i].type === type) return this.analyseurs[i]; return null; },
   async choisir(p, texte) {
     const ctx = this.ctx();
     if (p.analyseur.enregistrer) {
