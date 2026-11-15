@@ -1215,107 +1215,140 @@ h1, h2, h3, .sheet-head h2, .section-title, .tl-head { font-weight: 800; letter-
 .ajout-prop svg { width: 18px; height: 18px; flex: none; }
 body.logged-out [data-act="ajout-rapide"] { display: none; }
 @media (prefers-reduced-motion: reduce) { .tabbar button svg { transition: none; } }
-/* ==== module agenda ==== */
-/* Module « Agenda familial » : uniquement des jetons du thème (la couleur d'un membre arrive par --agenda-c). */
-.agenda { display: block; }
-.agenda > * + * { margin-top: 10px; }
-.agenda-modes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 4px; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--border); }
-.agenda-modes button { min-height: 36px; border: 0; border-radius: 10px; background: transparent; font-weight: 700; font-size: 13px; padding: 4px 2px; color: var(--muted); }
-.agenda-modes button[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 2px 0 var(--border); }
-.agenda-nav { display: flex; align-items: center; gap: 2px; }
-.agenda-periode { flex: 1; min-width: 0; text-align: center; font-family: var(--display); font-size: 17px; line-height: 1.2; }
-.agenda-nav .btn.small { padding: 6px 10px; }
-.agenda-filtres { padding-bottom: 4px; }
-.agenda-pastille { display: inline-block; flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--agenda-c, var(--muted)); vertical-align: middle; }
-.chip .agenda-pastille, .agenda-membre .agenda-pastille, .agenda-personne h3 .agenda-pastille, .agenda-couleur .agenda-pastille, .agenda-rappel .agenda-pastille { margin-right: 6px; }
-.chip[aria-pressed="true"] .agenda-pastille { box-shadow: 0 0 0 2px var(--on-primary); }
-.agenda-carte { padding: 10px 12px; }
-.agenda-liste { list-style: none; margin: 0; padding: 0; }
-.agenda-liste li + li { margin-top: 6px; }
-.agenda-item { width: 100%; display: flex; align-items: stretch; gap: 10px; text-align: left; border: 1px solid var(--border); border-left: 5px solid var(--agenda-c, var(--muted));
-  border-radius: 12px; background: var(--surface); padding: 8px 10px; min-height: 48px; color: var(--text); transition: transform .12s ease; }
-.agenda-item:active { transform: scale(.985); }
-.agenda-item:disabled { opacity: 1; cursor: default; }
-.agenda-item.externe { background: var(--surface-2); border-style: dashed; border-left-style: solid; }
-.agenda-item.t-ferie, .agenda-item.t-fete { background: var(--surface-2); }
-.agenda-heure { flex: none; width: 58px; white-space: nowrap; display: flex; flex-direction: column; justify-content: center; font-size: 14px; line-height: 1.2; }
-.agenda-heure small { color: var(--muted); font-size: 12px; }
-.agenda-texte { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
-.agenda-texte b { display: flex; align-items: center; gap: 4px; font-size: 15px; line-height: 1.25; overflow-wrap: anywhere; }
-.agenda-texte b svg { width: 16px; height: 16px; flex: none; color: var(--agenda-c, var(--muted)); }
-.agenda-texte span { color: var(--muted); font-size: 13px; line-height: 1.3; overflow-wrap: anywhere; }
-.agenda-qui { display: flex; flex-direction: column; justify-content: center; gap: 3px; }
-.agenda-rep { display: flex; align-items: center; color: var(--muted); }
-.agenda-rep svg { width: 16px; height: 16px; }
-.agenda-source { align-self: center; flex: none; font-size: 11px; font-weight: 700; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 1px 7px; }
-.agenda-vide { margin: 4px 0; color: var(--muted); font-size: 14px; }
-.agenda-jour-titre { display: flex; align-items: center; gap: 8px; width: 100%; border: 0; background: transparent; padding: 2px 0 8px; text-align: left; color: var(--ink); }
-.agenda-jour-titre b { flex: 1; font-size: 15px; }
-.agenda-jour-titre svg { width: 18px; height: 18px; color: var(--muted); }
-.agenda-jour.auj { box-shadow: var(--shadow), inset 0 0 0 2px var(--primary); }
-.agenda-jour .agenda-vide { font-size: 13px; margin: 0; }
-.agenda-jour:has(.agenda-vide) { padding-top: 8px; padding-bottom: 8px; }
-.agenda-jour:has(.agenda-vide) .agenda-jour-titre { padding-bottom: 2px; }
-.agenda-rappels-grille { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 10px; }
-.agenda-rappels-grille .input { min-width: 0; }
-.agenda-tag { font-size: 11px; font-weight: 800; border-radius: 999px; padding: 2px 8px; background: var(--primary-soft); color: var(--primary-strong); }
-.agenda-tag.vac { background: var(--mango-soft); color: var(--ink); }
-.agenda-bandeau { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 12px; background: var(--mango-soft); border: 1px solid var(--border); font-size: 14px; }
-.agenda-bandeau svg { width: 20px; height: 20px; flex: none; color: var(--mango-strong); }
-/* Mois */
-.agenda-grille { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; }
-.agenda-entete-j { text-align: center; font-size: 12px; font-weight: 800; color: var(--muted); padding-bottom: 2px; }
-.agenda-case { min-width: 0; aspect-ratio: 1 / 1.05; border: 1px solid transparent; border-radius: 10px; background: var(--surface); padding: 3px 0 2px;
-  display: flex; flex-direction: column; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 700; color: var(--text); }
-.agenda-case.hors { color: var(--muted); opacity: .55; }
-.agenda-case.vac { background: var(--mango-soft); }
-.agenda-case.ferie > span:first-child { color: var(--primary-strong); text-decoration: underline; text-underline-offset: 2px; }
-.agenda-case.auj > span:first-child { background: var(--primary); color: var(--on-primary); border-radius: 999px; min-width: 24px; text-align: center; text-decoration: none; }
-.agenda-case.choisi { border-color: var(--ink); }
-.agenda-points { display: flex; align-items: center; gap: 2px; min-height: 8px; }
-.agenda-points .agenda-pastille { width: 6px; height: 6px; }
-.agenda-points small { font-size: 10px; line-height: 1; color: var(--muted); }
-.agenda-legende { margin: 8px 0 0; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
-.agenda-leg { display: inline-block; width: 12px; height: 12px; border-radius: 4px; vertical-align: middle; }
-.agenda-leg.vac { background: var(--mango-soft); border: 1px solid var(--border); }
-.agenda-leg.ferie { border-bottom: 2px solid var(--primary-strong); border-radius: 0; height: 8px; }
-/* Par personne */
-.agenda-personne h3 { display: flex; align-items: center; gap: 4px; margin: 2px 0 8px; font-size: 16px; }
-.agenda-personne h3 .muted { margin-left: auto; font-weight: 600; }
-.agenda-personne .agenda-heure { width: 64px; }
-/* Fiche d'un événement */
-.agenda-fiche { border-left: 5px solid var(--agenda-c, var(--muted)); padding-left: 12px; }
-.agenda-det { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; }
-.agenda-det svg { width: 20px; height: 20px; flex: none; color: var(--muted); margin-top: 1px; }
-.agenda-membres { display: flex; flex-wrap: wrap; gap: 4px 12px; }
-.agenda-membre { display: inline-flex; align-items: center; }
-.agenda-notes { white-space: pre-wrap; background: var(--surface-2); border-radius: 12px; padding: 10px 12px; margin: 8px 0 0; }
-/* Formulaire */
-.agenda-form [hidden] { display: none !important; }
-.agenda-form .grid2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-.agenda-form .grid2 .input { min-width: 0; }
-.agenda-inter .row { flex-wrap: wrap; font-size: 15px; }
-.agenda-inter .input { width: 72px; }
-.agenda-jours { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
-.agenda-jours .chip { justify-content: center; padding: 6px 0; min-width: 0; }
-.agenda-rec { border-left: 3px solid var(--border); padding-left: 10px; }
-.agenda-rappels summary { display: flex; align-items: center; gap: 8px; font-weight: 700; min-height: 44px; cursor: pointer; }
-.agenda-rappels summary svg { width: 20px; height: 20px; }
-.agenda-rappel > span { display: flex !important; align-items: center; }
-/* Réglages */
-.agenda-h3 { margin: 4px 0 8px; font-size: 16px; }
-.agenda-couleur { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.agenda-couleur .grow { display: flex; align-items: center; min-width: 90px; }
-.agenda-nuancier { display: flex; gap: 6px; }
-.agenda-nuance { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--surface); background: var(--agenda-c); box-shadow: 0 0 0 1px var(--border); padding: 0; }
-.agenda-nuance[aria-checked="true"] { box-shadow: 0 0 0 3px var(--ink); }
-.agenda-affichage { display: flex; flex-direction: column; margin-bottom: 8px; }
-@media (max-width: 370px) {
-  .agenda-modes button { font-size: 12px; }
-  .agenda-heure { width: 54px; }
-  .agenda-nuance { width: 28px; height: 28px; }
+/* ==== module taches ==== */
+/* Module « Tâches et listes » : uniquement les jetons du thème (univers graphiques) */
+.taches { padding-bottom: 8px; }
+.taches svg { flex: none; }
+.taches-vues button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit; }
+.taches-pastille {
+  min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; font-size: 12px; line-height: 20px; font-weight: 800;
+  background: var(--surface-2); color: var(--ink); border: 1px solid var(--border);
 }
-@media (prefers-reduced-motion: reduce) { .agenda-item { transition: none; } }
+.taches-pastille.retard { background: var(--danger); color: var(--on-primary); border-color: var(--danger); }
+.taches-aide { margin: 0 2px 10px; }
+.taches-vide { padding: 28px 16px; }
+.taches-vide svg { width: 44px; height: 44px; }
+.taches-vide-court { margin: 4px 2px 8px; }
+.taches-entete { margin-top: 4px; }
+.taches-entete .section-title { margin: 14px 0 8px; }
+.taches-entete .btn svg { width: 18px; height: 18px; }
+
+/* Saisie rapide */
+.taches-saisie { display: flex; gap: 8px; padding: 8px; align-items: center; margin-bottom: 10px; }
+.taches-saisie .input { flex: 1; min-width: 0; }
+.taches-saisie .btn { flex: none; width: 44px; padding: 0; }
+.taches-chips { margin: 0 -16px; padding-left: 16px; padding-right: 16px; }
+
+/* Groupes et lignes de tâches */
+.taches-groupe { display: flex; align-items: center; gap: 8px; margin: 18px 2px 8px; font-size: 17px; }
+.taches-groupe.retard { color: var(--danger); }
+.taches-compte { font-size: 13px; font-weight: 800; color: var(--muted); background: var(--surface-2); border-radius: 999px; padding: 1px 8px; }
+.taches-liste { padding: 2px 4px; }
+.taches-ligne, .taches-el { display: flex; align-items: center; gap: 10px; padding: 6px 6px; min-height: 52px; }
+.taches-ligne + .taches-ligne, .taches-el + .taches-el { border-top: 1px solid var(--border); }
+.taches-coche {
+  width: 30px; height: 30px; flex: none; border-radius: 50%; border: 2px solid var(--ink); background: var(--surface);
+  display: grid; place-items: center; color: transparent; padding: 0; transition: background .15s, color .15s;
+}
+.taches-coche svg { width: 18px; height: 18px; stroke-width: 3; }
+.taches-coche[aria-checked="true"] { background: var(--mint); color: var(--ink); animation: taches-pop .28s ease-out; }
+.taches-corps, .taches-el-texte, .taches-envie-corps {
+  flex: 1; min-width: 0; border: 0; background: none; padding: 6px 0; text-align: left; font: inherit; color: inherit;
+  display: flex; flex-direction: column; gap: 3px; cursor: pointer;
+}
+.taches-el-texte { display: block; overflow-wrap: anywhere; }
+.taches-titre { font-weight: 700; overflow-wrap: anywhere; }
+.taches-meta { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 13px; color: var(--muted); }
+.taches-meta > span { display: inline-flex; align-items: center; gap: 4px; }
+.taches-meta svg { width: 14px; height: 14px; }
+.taches-retard { color: var(--danger); font-weight: 700; }
+.taches-badge { background: var(--mango-soft); color: var(--ink); border-radius: 999px; padding: 0 8px; font-weight: 800; font-size: 12px; }
+.taches-avatar {
+  width: 18px; height: 18px; border-radius: 50%; display: inline-grid; place-items: center; font-size: 11px; font-weight: 800;
+  background: var(--primary-soft); color: var(--primary-strong);
+}
+.taches-ligne.fait .taches-titre, .taches-el.fait .taches-el-texte > span:first-child { text-decoration: line-through; color: var(--muted); }
+.taches-ligne.en-retard .taches-coche { border-color: var(--danger); }
+.taches-voir-faites { margin-top: 16px; }
+.taches-voir-faites + .taches-liste { margin-top: 10px; }
+
+/* Cartes de listes */
+.taches-cartes { display: flex; flex-direction: column; gap: 10px; }
+.taches-carte {
+  display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px; text-align: left; font: inherit; color: inherit; cursor: pointer;
+}
+.taches-carte > svg { width: 18px; height: 18px; color: var(--muted); }
+.taches-carte .grow { display: flex; flex-direction: column; gap: 3px; }
+.taches-carte-titre { overflow-wrap: anywhere; }
+.taches-carte-desc { line-height: 1.3; }
+.taches-carte-ico {
+  width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; flex: none;
+  background: var(--primary-soft); color: var(--primary-strong);
+}
+.taches-carte-ico svg { width: 22px; height: 22px; }
+.taches-barre { display: block; height: 8px; border-radius: 6px; background: var(--ring-track); overflow: hidden; margin-top: 4px; }
+.taches-barre i { display: block; height: 100%; background: var(--mint); border-radius: 6px; transition: width .3s ease; }
+.taches-modele { position: relative; }
+.taches-modele .taches-carte { padding-right: 104px; }
+.taches-modele .taches-carte > svg:last-child { display: none; }
+.taches-lancer { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); }
+.taches-lancer:active:not(:disabled) { transform: translateY(calc(-50% + 2px)); }
+.taches-lancer svg, .taches-detail .btn svg { width: 16px; height: 16px; }
+.taches-finies summary { cursor: pointer; list-style: none; }
+.taches-finies summary::-webkit-details-marker { display: none; }
+.taches-finies summary::before { content: "▸ "; color: var(--muted); }
+.taches-finies[open] summary::before { content: "▾ "; }
+
+/* Détail d'une liste */
+.taches-detail { padding: 14px; }
+.taches-detail-titre { margin: 0; font-size: 20px; line-height: 1.2; overflow-wrap: anywhere; }
+.taches-detail > .taches-barre { margin: 12px 0 4px; }
+.taches-detail > .taches-aide { margin: 10px 0 4px; }
+.taches-section { margin-top: 12px; }
+.taches-section-titre { border-bottom: 2px solid var(--border); padding-bottom: 4px; margin-bottom: 2px; }
+.taches-section-titre h4 { margin: 0; font-size: 15px; font-family: var(--display); }
+.taches-puce { width: 10px; height: 10px; border-radius: 50%; background: var(--border); margin: 0 10px 0 8px; flex: none; }
+.taches-bravo {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 12px; padding: 10px 12px; border-radius: 14px;
+  background: var(--mint-soft); font-weight: 700; animation: taches-apparait .3s ease-out;
+}
+.taches-bravo > svg { width: 20px; height: 20px; color: var(--ink); }
+.taches-ajout { display: grid; grid-template-columns: minmax(0, 1fr) 44px; grid-template-areas: "texte bouton" "rubrique rubrique"; gap: 8px; margin-top: 14px; }
+.taches-ajout .input:first-child { grid-area: texte; min-width: 0; }
+.taches-ajout select.input { grid-area: rubrique; min-width: 0; }
+.taches-ajout .btn { grid-area: bouton; width: 44px; padding: 0; }
+.taches-menu { justify-content: flex-start; text-align: left; }
+
+/* Feuilles */
+.taches-form .grid2 { gap: 10px; }
+.taches-form .grid2 .input { min-width: 0; }
+.taches-genres { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.taches-genres legend { padding: 0; margin-bottom: 6px; font-weight: 600; }
+.taches-genre { cursor: pointer; }
+.taches-genre input { position: absolute; opacity: 0; pointer-events: none; }
+.taches-genre svg { width: 16px; height: 16px; }
+.taches-genre:has(input:checked) { background: var(--primary); color: var(--on-primary); }
+.taches-genre:has(input:focus-visible) { outline: 3px solid var(--mango); outline-offset: 2px; }
+
+/* Envies */
+.taches-envies { display: flex; flex-direction: column; gap: 10px; }
+.taches-envie { padding: 10px 12px; }
+.taches-envie.prise { background: var(--surface-2); }
+.taches-envie-corps { padding: 2px 0; }
+.taches-envie-corps b { overflow-wrap: anywhere; }
+.taches-envie-detail { display: block; }
+.taches-envie-actions { margin-top: 8px; gap: 8px; }
+.taches-lien { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; font-size: 14px; }
+.taches-lien svg { width: 16px; height: 16px; }
+.taches-pris { font-size: 14px; font-weight: 800; color: var(--muted); }
+.taches-pris.moi { color: var(--primary-strong); }
+
+@keyframes taches-pop { 0% { transform: scale(.8); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
+@keyframes taches-apparait { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .taches-coche[aria-checked="true"], .taches-bravo { animation: none; }
+  .taches-barre i, .taches-coche { transition: none; }
+}
 </style>
 </head>
 <body>
@@ -8510,872 +8543,14 @@ Modules.register({
 })();
 // ==== module agenda ====
 (function () {
-// Module « Agenda familial » (Famille › Agenda).
-// Événements du foyer (table evenements) avec récurrences, exceptions, « qui s'en occupe ? » et rappels par personne ;
-// vues jour, semaine, mois et « par personne » ; une couleur par membre (table agenda_couleurs) ;
-// anniversaires et fêtes, vacances scolaires de la zone A (Grenoble) et jours fériés (API publiques, mises en cache) ;
-// éléments des autres modules (Agenda.sources : repas, séances partagées, santé…).
-// Les fonctions de récurrence (occurrences, règles RRULE) sont exposées pour le futur module de synchronisation.
-
-const cache = Modules.cache('agenda');
-const JOUR_MS = 864e5;
-const ACADEMIE = 'Grenoble';
-const URL_FERIES = 'https://calendrier.api.gouv.fr/jours-feries/metropole.json';
-const URL_VACANCES = 'https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-calendrier-scolaire/records';
-
-// --- Données en mémoire -------------------------------------------------------
-let evenements = [];
-let couleurs = {}; // member_id → 'm1'…'m6'
-const vue = { mode: store.get('agenda:vue', 'semaine'), curseur: null, filtre: null, jour: null };
-let ext = { cle: '', items: [], t: 0, attente: '' };
-
-// --- Petites aides de dates (heure locale) -------------------------------------
-const minuit = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
-const dIso = (s) => { const [y, m, j] = String(s).slice(0, 10).split('-').map(Number); return new Date(y, m - 1, j); };
-const avecHeure = (jour, hhmm) => { const [h, mi] = String(hhmm || '00:00').split(':').map(Number); return new Date(jour.getFullYear(), jour.getMonth(), jour.getDate(), h || 0, mi || 0); };
-const hm = (d) => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-const jourIso = (d) => ((d.getDay() + 6) % 7) + 1; // lundi = 1 … dimanche = 7
-const pad = (n) => String(n).padStart(2, '0');
-const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
-const JOURS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']; // index 0 = lundi
-const JOURS_PLURIEL = ['lundis', 'mardis', 'mercredis', 'jeudis', 'vendredis', 'samedis', 'dimanches'];
-const JOURS_COURT = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
-const maj = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
-const quantieme = (n) => (n === 1 ? '1er' : String(n));
-const fmtHeure = (h) => { if (!h) return ''; const [a, b] = h.split(':').map(Number); return b ? `${a} h ${pad(b)}` : `${a} h`; };
-const fmtDate = (d) => `${quantieme(d.getDate())} ${MOIS[d.getMonth()]} ${d.getFullYear()}`;
-const fmtJourLong = (d) => `${JOURS[jourIso(d) - 1]} ${quantieme(d.getDate())} ${MOIS[d.getMonth()]}`;
-const MOIS_COURT = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
-const fmtJourCourt = (d) => `${JOURS[jourIso(d) - 1].slice(0, 3)}. ${d.getDate()} ${MOIS_COURT[d.getMonth()]}`;
-const listeEt = (l) => (l.length < 2 ? l.join('') : `${l.slice(0, -1).join(', ')} et ${l[l.length - 1]}`);
-const de = (nom) => (/^[aeiouyàâéèêëîïôûü]/i.test(nom) ? `d'${nom}` : `de ${nom}`); // « d'Antoine », « de Zoé »
-const aplatir = (s) => s.split('').map((c) => c.toLowerCase().normalize('NFD')[0] || c).join('');
-
-// --- Récurrences (fonctions pures) ---------------------------------------------
-// recurrence = { freq: 'quotidienne' | 'hebdo' | 'mensuelle' | 'annuelle', intervalle?: n, jours?: [1-7] (hebdo, lundi = 1),
-//                jusqu?: 'AAAA-MM-JJ' (inclus), nombre?: n (occurrences, exceptions comprises, comme COUNT en iCalendar) }
-// exceptions = ['AAAA-MM-JJ'] : dates retirées de la série.
-const FREQS = { quotidienne: 'Tous les jours', hebdo: 'Chaque semaine', mensuelle: 'Chaque mois', annuelle: 'Chaque année' };
-
-// Début, fin et durée d'un événement. Journée entière : fin = dernier jour (inclus).
-function bornes(ev) {
-  const d = new Date(ev.debut);
-  let f = ev.fin ? new Date(ev.fin) : null;
-  if (ev.journee) {
-    const d0 = minuit(d);
-    const f0 = f && f > d0 ? minuit(f) : d0;
-    return { debut: d0, jours: Math.round((f0 - d0) / JOUR_MS), duree: 0 };
-  }
-  if (!f || f < d) f = new Date(d.getTime() + 3600e3);
-  return { debut: d, jours: 0, duree: f - d };
-}
-
-// Dates candidates d'une série (minuit local), dans l'ordre ; null = mois ou année sans ce jour (sauté).
-function* candidats(rec, d0) {
-  const n = Math.max(1, Math.floor(Number(rec.intervalle) || 1));
-  if (rec.freq === 'quotidienne') { for (let k = 0; ; k++) yield addDays(d0, k * n); }
-  if (rec.freq === 'hebdo') {
-    const jours = [...new Set((rec.jours && rec.jours.length ? rec.jours : [jourIso(d0)]).map(Number))].filter((j) => j >= 1 && j <= 7).sort();
-    const lundi = mondayOf(d0);
-    for (let w = 0; ; w++) {
-      const base = addDays(lundi, w * 7 * n);
-      for (const j of jours) { const x = addDays(base, j - 1); if (x >= d0) yield x; }
-    }
-  }
-  if (rec.freq === 'mensuelle') {
-    for (let k = 0; ; k++) {
-      const x = new Date(d0.getFullYear(), d0.getMonth() + k * n, d0.getDate());
-      yield x.getDate() === d0.getDate() ? x : null;
-    }
-  }
-  if (rec.freq === 'annuelle') {
-    for (let k = 0; ; k++) {
-      const x = new Date(d0.getFullYear() + k * n, d0.getMonth(), d0.getDate());
-      yield x.getMonth() === d0.getMonth() ? x : null;
-    }
-  }
-}
-
-// Occurrences d'un événement qui touchent la période [a, b] (jours inclus).
-// → [{ ev, debut: Date, fin: Date, date: 'AAAA-MM-JJ', rang, cle }] ; pour une journée entière, fin = dernier jour.
-function occurrences(ev, a, b) {
-  if (!ev || !ev.debut) return [];
-  const { debut, jours, duree } = bornes(ev);
-  const debP = minuit(a), finP = addDays(minuit(b), 1);
-  const ex = new Set(ev.exceptions || []);
-  const out = [];
-  const ajouter = (jour, rang) => {
-    const deb = ev.journee ? jour : avecHeure(jour, hm(debut));
-    const fin = ev.journee ? addDays(jour, jours) : new Date(deb.getTime() + duree);
-    const finExcl = ev.journee ? addDays(fin, 1) : fin;
-    const touche = deb < finP && (finExcl > debP || (+finExcl === +deb && deb >= debP));
-    if (touche) out.push({ ev, debut: deb, fin, date: isoDate(deb), rang, cle: `${ev.id}:${isoDate(deb)}` });
-  };
-  const rec = ev.recurrence;
-  if (!rec || !FREQS[rec.freq]) { ajouter(minuit(debut), 1); return out; }
-  const limite = rec.jusqu ? addDays(dIso(rec.jusqu), 1) : null;
-  const marge = addDays(debP, -(jours + 1)); // une occurrence de plusieurs jours commencée avant la période
-  let rang = 0, garde = 0;
-  for (const j of candidats(rec, minuit(debut))) {
-    if (++garde > 40000) break;
-    if (j === null) continue;
-    if (j >= finP || (limite && j >= limite)) break;
-    rang++;
-    if (rec.nombre && rang > rec.nombre) break;
-    if (j < marge || ex.has(isoDate(j))) continue;
-    ajouter(j, rang);
-  }
-  return out;
-}
-
-// Prochaine occurrence à partir d'une date (dans l'année qui suit).
-const prochaine = (ev, apres = new Date()) => occurrences(ev, apres, addDays(apres, 400)).find((o) => (ev.journee ? addDays(o.fin, 1) : o.fin) > apres) || null;
-
-// Règle en français : « Tous les mercredis », « Une semaine sur deux, le lundi et le jeudi, jusqu'au 30 juin 2027 ».
-function regleTexte(rec, debut) {
-  if (!rec || !FREQS[rec.freq]) return '';
-  const n = Math.max(1, Math.floor(Number(rec.intervalle) || 1));
-  const d = debut ? new Date(debut) : null;
-  let t = '';
-  if (rec.freq === 'quotidienne') t = n === 1 ? 'Tous les jours' : `Tous les ${n} jours`;
-  if (rec.freq === 'hebdo') {
-    const jours = [...new Set((rec.jours && rec.jours.length ? rec.jours : d ? [jourIso(d)] : []).map(Number))].sort();
-    if (n === 1) t = jours.length === 7 ? 'Tous les jours' : jours.length ? `Tous les ${listeEt(jours.map((j) => JOURS_PLURIEL[j - 1]))}` : 'Chaque semaine';
-    else t = `${n === 2 ? 'Une semaine sur deux' : `Toutes les ${n} semaines`}${jours.length ? `, ${listeEt(jours.map((j) => `le ${JOURS[j - 1]}`))}` : ''}`;
-  }
-  if (rec.freq === 'mensuelle') t = `${n === 1 ? 'Tous les mois' : `Tous les ${n} mois`}${d ? `, le ${quantieme(d.getDate())}` : ''}`;
-  if (rec.freq === 'annuelle') t = `${n === 1 ? 'Tous les ans' : `Tous les ${n} ans`}${d ? `, le ${quantieme(d.getDate())} ${MOIS[d.getMonth()]}` : ''}`;
-  if (rec.jusqu) t += `, jusqu'au ${fmtDate(dIso(rec.jusqu))}`;
-  else if (rec.nombre) t += `, ${rec.nombre} fois`;
-  return t;
-}
-
-// Conversion vers et depuis une règle iCalendar (RRULE), pour l'export ICS et l'import d'agendas.
-const RR_FREQ = { quotidienne: 'DAILY', hebdo: 'WEEKLY', mensuelle: 'MONTHLY', annuelle: 'YEARLY' };
-const RR_JOURS = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'];
-function versRRule(rec, { journee = false } = {}) {
-  if (!rec || !RR_FREQ[rec.freq]) return '';
-  const p = [`FREQ=${RR_FREQ[rec.freq]}`];
-  const n = Math.max(1, Math.floor(Number(rec.intervalle) || 1));
-  if (n > 1) p.push(`INTERVAL=${n}`);
-  if (rec.freq === 'hebdo' && rec.jours && rec.jours.length) p.push(`BYDAY=${[...new Set(rec.jours.map(Number))].sort().map((j) => RR_JOURS[j - 1]).join(',')}`);
-  if (rec.jusqu) {
-    const f = dIso(rec.jusqu);
-    if (journee) p.push(`UNTIL=${f.getFullYear()}${pad(f.getMonth() + 1)}${pad(f.getDate())}`);
-    else { const z = new Date(f.getFullYear(), f.getMonth(), f.getDate(), 23, 59, 59); p.push(`UNTIL=${z.toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '')}`); }
-  } else if (rec.nombre) p.push(`COUNT=${rec.nombre}`);
-  return p.join(';');
-}
-// → recurrence, ou null ; nonGere: true si la règle contient des parties non comprises (ex. « 2e mercredi du mois »).
-function depuisRRule(texte) {
-  const s = String(texte || '').replace(/^RRULE:/i, '').trim();
-  if (!s) return null;
-  const kv = Object.fromEntries(s.split(';').map((x) => x.split('=')).filter((x) => x.length === 2).map(([k, v]) => [k.toUpperCase(), v]));
-  const freq = Object.keys(RR_FREQ).find((k) => RR_FREQ[k] === String(kv.FREQ || '').toUpperCase());
-  if (!freq) return null;
-  const rec = { freq };
-  let nonGere = Object.keys(kv).some((k) => !['FREQ', 'INTERVAL', 'BYDAY', 'UNTIL', 'COUNT', 'WKST'].includes(k));
-  if (Number(kv.INTERVAL) > 1) rec.intervalle = Number(kv.INTERVAL);
-  if (kv.BYDAY) {
-    const codes = kv.BYDAY.split(',');
-    if (codes.some((c) => !RR_JOURS.includes(c)) || freq !== 'hebdo') nonGere = true;
-    const jours = codes.map((c) => RR_JOURS.indexOf(c.replace(/^[+-]?\d+/, '')) + 1).filter((j) => j > 0);
-    if (freq === 'hebdo' && jours.length) rec.jours = [...new Set(jours)].sort();
-  }
-  if (kv.COUNT) rec.nombre = Number(kv.COUNT);
-  if (kv.UNTIL) {
-    const m = kv.UNTIL.match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})(Z)?)?$/);
-    if (m) {
-      const d = m[7] ? new Date(Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6])) : new Date(+m[1], +m[2] - 1, +m[3]);
-      rec.jusqu = isoDate(d);
-    }
-  }
-  if (nonGere) rec.nonGere = true;
-  return rec;
-}
-
-// Rappels à envoyer sur une période : [{ evenement_id, member_id, minutes, quand: Date, debut: Date, titre }], triés.
-function rappelsPeriode(liste, a, b) {
-  const out = [];
-  for (const ev of liste || []) {
-    if (!ev.rappels || !ev.rappels.length) continue;
-    const max = Math.max(...ev.rappels.map((r) => Number(r.minutes) || 0));
-    for (const o of occurrences(ev, a, addDays(b, Math.ceil(max / 1440) + 1))) {
-      const deb = ev.journee ? avecHeure(o.debut, '09:00') : o.debut;
-      for (const r of ev.rappels) {
-        const quand = new Date(deb.getTime() - (Number(r.minutes) || 0) * 60e3);
-        if (quand >= minuit(a) && quand < addDays(minuit(b), 1)) out.push({ evenement_id: ev.id, member_id: r.member_id, minutes: Number(r.minutes) || 0, quand, debut: deb, titre: ev.titre });
-      }
-    }
-  }
-  return out.sort((x, y) => x.quand - y.quand);
-}
-
-// --- Jours fériés, fêtes, vacances (fonctions pures) -------------------------
-function paques(an) { // algorithme de Meeus (calendrier grégorien)
-  const a = an % 19, b = Math.floor(an / 100), c = an % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3);
-  const h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
-  const mois = Math.floor((h + l - 7 * m + 114) / 31), jour = ((h + l - 7 * m + 114) % 31) + 1;
-  return new Date(an, mois - 1, jour);
-}
-// Jours fériés de métropole calculés dans le téléphone (secours quand l'API publique ne répond pas).
-function joursFeries(an) {
-  const p = paques(an);
-  const l = [[new Date(an, 0, 1), '1er janvier'], [addDays(p, 1), 'Lundi de Pâques'], [new Date(an, 4, 1), '1er mai'], [new Date(an, 4, 8), '8 mai'],
-    [addDays(p, 39), 'Ascension'], [addDays(p, 50), 'Lundi de Pentecôte'], [new Date(an, 6, 14), '14 juillet'], [new Date(an, 7, 15), 'Assomption'],
-    [new Date(an, 10, 1), 'Toussaint'], [new Date(an, 10, 11), '11 novembre'], [new Date(an, 11, 25), 'Jour de Noël']];
-  return l.map(([d, titre]) => ({ date: isoDate(d), titre }));
-}
-// Réponse de calendrier.api.gouv.fr ({ 'AAAA-MM-JJ': 'nom' }) → [{ date, titre }].
-const feriesDepuisApi = (json) => Object.entries(json || {}).filter(([d, t]) => /^\d{4}-\d{2}-\d{2}$/.test(d) && t).map(([date, titre]) => ({ date, titre: String(titre) })).sort((a, b) => a.date.localeCompare(b.date));
-// Réponse de data.education.gouv.fr → [{ debut, fin (inclus), titre }]. Les dates de l'API sont les minuits de Paris en UTC
-// (début = premier jour sans classe, fin = jour de reprise) : on ajoute 12 h pour retrouver le jour, sans dépendre du fuseau.
-function vacancesDepuisApi(json) {
-  const jourUtc = (s) => { const d = new Date(new Date(s).getTime() + 12 * 3600e3); return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`; };
-  const vu = new Set();
-  const out = [];
-  for (const r of (json && json.results) || []) {
-    if (!r.start_date || !r.end_date || /enseignant/i.test(r.population || '')) continue;
-    const debut = jourUtc(r.start_date);
-    const reprise = dIso(jourUtc(r.end_date));
-    const fin = isoDate(addDays(reprise, -1));
-    const titre = String(r.description || 'Vacances scolaires').replace(/\s+/g, ' ').trim();
-    const cle = `${debut}|${titre}`;
-    if (vu.has(cle) || fin < debut) continue;
-    vu.add(cle);
-    out.push({ debut, fin, titre });
-  }
-  return out.sort((a, b) => a.debut.localeCompare(b.debut));
-}
-// Fêtes des prénoms (calendrier usuel) et fêtes de famille.
-const FETES = { antoine: '06-13', manon: '08-15', zoe: '05-02', julie: '04-08', lea: '03-22', marie: '08-15', nicolas: '12-06', pierre: '06-29', paul: '06-29', jean: '06-24', louis: '08-25', lucas: '10-18',
-  camille: '07-14', thomas: '07-03', emma: '04-19', louise: '03-15', jules: '04-12', leo: '11-10', gabriel: '09-29', arthur: '11-15', alice: '12-16', sophie: '05-25', anne: '07-26', joseph: '03-19',
-  michel: '09-29', martin: '11-11', catherine: '11-25', claire: '08-11', luc: '10-18', marc: '04-25', clement: '11-23', mathilde: '03-14', elise: '11-17', lucie: '12-13' };
-function fetesFamille(an) {
-  const dernierDimanche = (m) => { const d = new Date(an, m + 1, 0); return addDays(d, -(d.getDay())); };
-  let meres = dernierDimanche(4);
-  if (isoDate(meres) === isoDate(addDays(paques(an), 49))) meres = addDays(meres, 7); // Pentecôte : premier dimanche de juin
-  const juin1 = new Date(an, 5, 1);
-  const peres = addDays(juin1, ((7 - juin1.getDay()) % 7) + 14);
-  const mars1 = new Date(an, 2, 1);
-  const gmeres = addDays(mars1, (7 - mars1.getDay()) % 7);
-  return [{ date: isoDate(gmeres), titre: 'Fête des grands-mères' }, { date: isoDate(meres), titre: 'Fête des mères' }, { date: isoDate(peres), titre: 'Fête des pères' }];
-}
-// Anniversaires et fêtes des membres sur la période : [{ date, titre, detail, member_id, type }].
-function anniversairesMembres(membres, a, b, { fetes = true } = {}) {
-  const out = [];
-  for (let an = a.getFullYear(); an <= b.getFullYear(); an++) {
-    for (const m of membres || []) {
-      if (m.naissance) {
-        const n = dIso(m.naissance);
-        const d = new Date(an, n.getMonth(), n.getDate());
-        if (d.getMonth() === n.getMonth() && an > n.getFullYear()) out.push({ date: isoDate(d), titre: `Anniversaire ${de(m.nom)}`, detail: `${an - n.getFullYear()} an${an - n.getFullYear() > 1 ? 's' : ''}`, member_id: m.id, type: 'anniversaire' });
-      }
-      const f = fetes && FETES[sansAccents(m.nom).trim().split(/[\s-]/)[0]];
-      if (f) out.push({ date: `${an}-${f}`, titre: `Fête ${de(m.nom)}`, detail: 'Fête du prénom', member_id: m.id, type: 'fete' });
-    }
-  }
-  const da = isoDate(a), db2 = isoDate(b);
-  return out.filter((x) => x.date >= da && x.date <= db2).sort((x, y) => x.date.localeCompare(y.date));
-}
-
-// --- Phrase libre → événement (fonction pure) ----------------------------------
-// parseEvenement('judo Zoé mercredi 14 h', { maintenant, membres }) →
-//   { titre, date, heure, heureFin, journee, membres, responsable, responsableRetour, recurrence, categorie } ou null si ni date ni récurrence.
-const RE_JOURS = '(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)';
-const NOMBRES = { un: 1, une: 1, deux: 2, trois: 3, quatre: 4, quinze: 15 };
-function parseEvenement(texte, { maintenant = new Date(), membres = [] } = {}) {
-  let t = ` ${String(texte || '').replace(/[«»"]/g, ' ').replace(/\s+/g, ' ').trim()} `;
-  const n = () => aplatir(t);
-  const retirer = (re) => { const m = n().match(re); if (!m) return null; t = `${t.slice(0, m.index)} ${t.slice(m.index + m[0].length)}`; return m; };
-  let recurrence = null, categorie = 'evenement', heure = null, heureFin = null, responsable = null, responsableRetour = null, m;
-  // Récurrence
-  if ((m = retirer(/ (?:tous les|toutes les|chaque) (\d+|deux|trois|quatre|quinze) (jours|semaines|mois|ans) /))) {
-    const k = NOMBRES[m[1]] || Number(m[1]);
-    if (m[2] === 'jours' && k % 7 === 0) recurrence = { freq: 'hebdo', intervalle: k / 7 };
-    else if (m[2] === 'jours' && k === 15) recurrence = { freq: 'hebdo', intervalle: 2 };
-    else recurrence = { freq: { jours: 'quotidienne', semaines: 'hebdo', mois: 'mensuelle', ans: 'annuelle' }[m[2]], intervalle: k };
-    if (recurrence.intervalle === 1) delete recurrence.intervalle;
-  } else if ((m = retirer(new RegExp(` (?:tous les|chaque|les) ${RE_JOURS}s?((?:(?:,| et|, et) ${RE_JOURS}s?)*) `)))) {
-    const noms = m[0].match(new RegExp(RE_JOURS, 'g'));
-    recurrence = { freq: 'hebdo', jours: [...new Set(noms.map((x) => JOURS.indexOf(x) + 1))].sort() };
-  } else if (retirer(/ (?:tous les jours|chaque jour|quotidiennement) /)) recurrence = { freq: 'quotidienne' };
-  else if (retirer(/ (?:toutes les semaines|chaque semaine|une semaine sur deux) /)) recurrence = /sur deux/.test(texte) ? { freq: 'hebdo', intervalle: 2 } : { freq: 'hebdo' };
-  else if (retirer(/ (?:tous les mois|chaque mois|mensuel) /)) recurrence = { freq: 'mensuelle' };
-  else if (retirer(/ (?:tous les ans|chaque annee|annuel) /)) recurrence = { freq: 'annuelle' };
-  if (/ anniv(?:ersaire)?s? /.test(n())) { categorie = 'anniversaire'; recurrence = recurrence || { freq: 'annuelle' }; }
-  else if (/ (?:rdv|rendez[- ]vous|dentiste|medecin|pediatre|docteur|kine|orthophoniste|osteo|vaccin|ophtalmo|veto|veterinaire) /.test(n())) categorie = 'rdv';
-  else if (/ (?:judo|danse|piscine|natation|foot|football|tennis|gym|eveil|musique|cours|entrainement|club) /.test(n())) categorie = 'activite';
-  // Plage horaire : « de 14 h à 16 h », « 14h-15h30 », « entre 9 h et 11 h »
-  if ((m = retirer(/ (?:de |entre )?(\d{1,2}) ?(?:h|:) ?(\d{2})? ?(?:a|-|–|et|jusqu'a) ?(\d{1,2}) ?(?:h|:) ?(\d{2})? /))) {
-    if (+m[1] < 24 && +m[3] < 24) { heure = `${pad(+m[1])}:${pad(+(m[2] || 0))}`; heureFin = `${pad(+m[3])}:${pad(+(m[4] || 0))}`; }
-  }
-  // Qui s'en occupe : « par Manon », « Antoine dépose », « récupéré par Antoine »
-  for (const mb of membres) {
-    const nom = sansAccents(mb.nom).trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    if (!nom) continue;
-    if (retirer(new RegExp(` (?:(?:recupere|ramene|retour)e?s? (?:par )?${nom}|${nom} (?:recupere|ramene)) `))) responsableRetour = mb.id;
-    else if (retirer(new RegExp(` (?:(?:depose|emmene|conduit|accompagne)e?s? par ${nom}|${nom} (?:depose|emmene|conduit|accompagne)|par ${nom}) `))) responsable = mb.id;
-  }
-  const p = analysePhrase(t, { maintenant, membres });
-  heure = heure || p.heure;
-  let date = p.date;
-  if (!date && !recurrence) return null;
-  const jour0 = minuit(maintenant);
-  if (!date) date = isoDate(jour0);
-  if (recurrence && recurrence.freq === 'hebdo') {
-    if (!recurrence.jours) recurrence.jours = p.date ? [jourIso(dIso(date))] : undefined;
-    if (recurrence.jours) { let d = dIso(date); for (let i = 0; i < 7 && !recurrence.jours.includes(jourIso(d)); i++) d = addDays(d, 1); date = isoDate(d); }
-    if (!recurrence.jours) delete recurrence.jours;
-  }
-  let titre = p.texte.replace(/^(?:(?:le|la|les|a|à|au|pour|de|du|avec|,|-|:)\s+)+/i, '').replace(/(?:\s+(?:le|la|a|à|au|de|pour|avec|et|,|-))+$/i, '').replace(/^[,;:\s-]+|[,;:\s-]+$/g, '').trim();
-  titre = maj(titre) || (categorie === 'anniversaire' ? 'Anniversaire' : 'Événement');
-  if (heure && !heureFin) heureFin = hm(new Date(avecHeure(dIso(date), heure).getTime() + 3600e3));
-  return { titre, date, heure, heureFin: heure ? heureFin : null, journee: !heure, membres: p.membres, responsable, responsableRetour, recurrence, categorie };
-}
-// Événement analysé → ligne de la table evenements.
-function versLigne(p) {
-  const jour = dIso(p.date);
-  const debut = p.journee ? jour : avecHeure(jour, p.heure);
-  let fin = p.journee ? dIso(p.dateFin || p.date) : avecHeure(dIso(p.dateFin || p.date), p.heureFin || hm(new Date(debut.getTime() + 3600e3)));
-  if (!p.journee && fin <= debut) fin = new Date(debut.getTime() + 3600e3);
-  return { titre: p.titre, categorie: p.categorie || 'evenement', debut: debut.toISOString(), fin: fin.toISOString(), journee: !!p.journee, lieu: p.lieu || null, notes: p.notes || null,
-    membres: p.membres || [], responsable: p.responsable || null, responsable_retour: p.responsableRetour || null, recurrence: p.recurrence || null, exceptions: p.exceptions || [], rappels: p.rappels || [] };
-}
-
-// --- Couleurs des membres -----------------------------------------------------
-// Uniquement des jetons du thème : chaque univers peut définir --m1…--m6 ; à défaut, couleurs du thème courant.
-const PALETTE = [['m1', 'var(--m1, var(--primary))'], ['m2', 'var(--m2, var(--sky))'], ['m3', 'var(--m3, var(--mango-strong))'],
-  ['m4', 'var(--m4, var(--mint))'], ['m5', 'var(--m5, var(--sage-light))'], ['m6', 'var(--m6, var(--primary-strong))']];
-const COULEUR_FOYER = 'var(--muted)';
-function slotMembre(id, membres = state.members, choix = couleurs) {
-  if (choix[id] && PALETTE.some(([k]) => k === choix[id])) return choix[id];
-  const i = Math.max(0, membres.findIndex((m) => m.id === id));
-  return PALETTE[i % PALETTE.length][0];
-}
-const couleurMembre = (id) => (id && memberById(id) ? PALETTE.find(([k]) => k === slotMembre(id))[1] : COULEUR_FOYER);
-const nomMembre = (id) => memberById(id)?.nom || '';
-const couleurEv = (ev) => couleurMembre((ev.membres || [])[0] || ev.responsable);
-
-// --- Préférences d'affichage (appareil) ----------------------------------------
-const AFFICHAGE = [['vacances', 'Vacances scolaires (zone A, Grenoble)'], ['feries', 'Jours fériés'], ['anniversaires', 'Anniversaires des membres'], ['fetes', 'Fêtes des prénoms et fêtes de famille'], ['autres', 'Repas, séances et autres modules']];
-const affiche = (k) => store.get('agenda:affichage', {})[k] !== false;
-
-// --- Vacances et jours fériés : API publiques, cache local ---------------------
-function publics() { return store.get('agenda:public', { vacances: [], feries: [], maj: 0 }); }
-async function chargerPublics(force = false) {
-  const p = publics();
-  if (!force && p.maj && Date.now() - p.maj < 7 * JOUR_MS) return false;
-  const depuis = `${new Date().getFullYear() - 1}-01-01`;
-  const q = new URLSearchParams({ where: `location="${ACADEMIE}" and end_date>="${depuis}"`, order_by: 'start_date', limit: '100', select: 'description,start_date,end_date,population' });
-  const [f, v] = await Promise.allSettled([
-    fetch(URL_FERIES).then((r) => (r.ok ? r.json() : Promise.reject(new Error(`jours fériés : ${r.status}`)))),
-    fetch(`${URL_VACANCES}?${q}`).then((r) => (r.ok ? r.json() : Promise.reject(new Error(`vacances : ${r.status}`)))),
-  ]);
-  const suivant = { vacances: v.status === 'fulfilled' ? vacancesDepuisApi(v.value) : p.vacances, feries: f.status === 'fulfilled' ? feriesDepuisApi(f.value) : p.feries,
-    maj: f.status === 'fulfilled' && v.status === 'fulfilled' ? Date.now() : p.maj };
-  store.set('agenda:public', suivant);
-  return f.status === 'fulfilled' || v.status === 'fulfilled';
-}
-// Jours fériés de la période : ceux de l'API, et le calcul local pour les années qu'elle ne couvre pas.
-function feriesPeriode(a, b) {
-  const api = publics().feries;
-  const ans = new Set(api.map((x) => x.date.slice(0, 4)));
-  const out = [];
-  for (let an = a.getFullYear(); an <= b.getFullYear(); an++) out.push(...(ans.has(String(an)) ? api.filter((x) => x.date.startsWith(`${an}-`)) : joursFeries(an)));
-  return out.filter((x) => x.date >= isoDate(a) && x.date <= isoDate(b));
-}
-const vacancesDu = (iso) => publics().vacances.find((v) => v.debut <= iso && v.fin >= iso) || null;
-
-// --- Éléments d'une période (événements + spéciaux + autres modules) ----------------
-const concerne = (ev, id) => !id || (ev.membres || []).includes(id) || ev.responsable === id || ev.responsable_retour === id || !(ev.membres || []).length;
-function occurrencesPeriode(a, b, filtre = vue.filtre) {
-  return evenements.flatMap((ev) => occurrences(ev, a, b)).filter((o) => concerne(o.ev, filtre));
-}
-// Liste plate d'éléments datés pour [a, b], au format d'Agenda.sources (un élément par jour couvert).
-function elementsModule(a, b, { filtre = null, avecSpeciaux = true } = {}) {
-  const out = [];
-  for (const o of occurrencesPeriode(a, b, filtre)) {
-    const dernier = minuit(o.ev.journee ? o.fin : new Date(o.fin.getTime() - 1));
-    for (let d = minuit(o.debut); d <= dernier && d <= b; d = addDays(d, 1)) {
-      if (d < minuit(a)) continue;
-      const premier = isoDate(d) === o.date;
-      out.push({ id: `ev:${o.cle}:${isoDate(d)}`, date: isoDate(d), heure: o.ev.journee || !premier ? null : hm(o.debut), heureFin: o.ev.journee ? null : hm(o.fin),
-        titre: o.ev.titre, detail: detailEv(o.ev), membres: o.ev.membres || [], couleur: couleurEv(o.ev), act: 'agenda-voir', data: { id: o.ev.id, date: o.date }, type: o.ev.categorie || 'evenement', recurrent: !!o.ev.recurrence, ev: o.ev });
-    }
-  }
-  if (avecSpeciaux) {
-    if (affiche('feries')) for (const f of feriesPeriode(a, b)) out.push({ id: `ferie:${f.date}`, date: f.date, heure: null, titre: f.titre, detail: 'Jour férié', type: 'ferie' });
-    const membres = filtre ? state.members.filter((m) => m.id === filtre) : state.members;
-    if (affiche('anniversaires') || affiche('fetes')) {
-      for (const x of anniversairesMembres(membres, a, b, { fetes: affiche('fetes') })) {
-        if (x.type === 'anniversaire' && !affiche('anniversaires')) continue;
-        out.push({ id: `${x.type}:${x.member_id}:${x.date}`, date: x.date, heure: null, titre: x.titre, detail: x.detail, membres: [x.member_id], couleur: couleurMembre(x.member_id), type: x.type });
-      }
-    }
-    if (affiche('fetes') && !filtre) for (let an = a.getFullYear(); an <= b.getFullYear(); an++) for (const x of fetesFamille(an)) if (x.date >= isoDate(a) && x.date <= isoDate(b)) out.push({ id: `fete:${x.date}`, date: x.date, heure: null, titre: x.titre, type: 'fete' });
-  }
-  return out.sort((x, y) => x.date.localeCompare(y.date) || (x.heure || '').localeCompare(y.heure || ''));
-}
-function detailEv(ev) {
-  const l = [];
-  if (ev.lieu) l.push(ev.lieu);
-  const qui = (ev.membres || []).map(nomMembre).filter(Boolean);
-  if (qui.length) l.push(listeEt(qui));
-  if (ev.responsable) l.push(ev.responsable_retour && ev.responsable_retour !== ev.responsable ? `aller : ${nomMembre(ev.responsable)}` : `${nomMembre(ev.responsable)} s'en occupe`);
-  if (ev.responsable_retour) l.push(`retour : ${nomMembre(ev.responsable_retour)}`);
-  return l.join(' · ');
-}
-// Éléments des autres modules (async) : mis en cache pour la période affichée, l'écran est redessiné à l'arrivée.
-function externes(a, b) {
-  if (!affiche('autres')) return [];
-  const cle = `${isoDate(a)}_${isoDate(b)}`;
-  const frais = ext.cle === cle && Date.now() - ext.t < 5000;
-  if (!frais && ext.attente !== cle) {
-    ext.attente = cle;
-    Agenda.elements(a, b).then((l) => {
-      if (ext.attente !== cle) return;
-      const items = l.filter((e) => e.source !== 'agenda');
-      const change = ext.cle !== cle || JSON.stringify(items) !== JSON.stringify(ext.items);
-      ext = { cle, items, t: Date.now(), attente: '' };
-      if (change && state.tab === 'agenda') render();
-    }).catch(() => { ext.attente = ''; });
-  }
-  if (ext.cle !== cle) return [];
-  return ext.items.filter((e) => !vue.filtre || !(e.membres || []).length || e.membres.includes(vue.filtre));
-}
-function elementsAffiches(a, b) {
-  return [...elementsModule(a, b, { filtre: vue.filtre }), ...externes(a, b).map((e) => ({ ...e, externe: true }))]
-    .sort((x, y) => x.date.localeCompare(y.date) || (x.heure ? 1 : 0) - (y.heure ? 1 : 0) || (x.heure || '').localeCompare(y.heure || ''));
-}
-
-// --- Rendu --------------------------------------------------------------------
-const ICO = {
-  cal: I('<rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/>'),
-  rep: I('<path d="M17 2l3 3-3 3"/><path d="M4 11V9a4 4 0 0 1 4-4h12M7 22l-3-3 3-3"/><path d="M20 13v2a4 4 0 0 1-4 4H4"/>'),
-  cloche: I('<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/>'),
-  gateau: I('<path d="M4 21V12h16v9M2 21h20M4 16c2 1.5 4 1.5 6 0s4-1.5 6 0 4 1.5 4 0M12 12V8M12 5.5c.8-.8.8-1.7 0-2.5-.8.8-.8 1.7 0 2.5"/>'),
-  lieu: I('<path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/>'),
-  soleil: I('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),
-  drapeau: I('<path d="M5 22V4M5 4h11l-2 4 2 4H5"/>'),
-  reglages: I('<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>'),
-};
-const dataAttrs = (data) => Object.entries(data || {}).map(([k, v]) => `data-${k.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)}="${esc(v)}"`).join(' ');
-const curseur = () => vue.curseur || minuit(new Date());
-function periode(mode = vue.mode, c = curseur()) {
-  if (mode === 'jour') return [c, c];
-  if (mode === 'mois') { const a = new Date(c.getFullYear(), c.getMonth(), 1); const b = new Date(c.getFullYear(), c.getMonth() + 1, 0); return [mondayOf(a), addDays(mondayOf(b), 6)]; }
-  const a = mondayOf(c);
-  return [a, addDays(a, 6)];
-}
-function titrePeriode(mode = vue.mode, c = curseur()) {
-  if (mode === 'jour') return maj(fmtJourLong(c));
-  if (mode === 'mois') return `${maj(MOIS[c.getMonth()])} ${c.getFullYear()}`;
-  const [a, b] = periode('semaine', c);
-  return a.getMonth() === b.getMonth() ? `Du ${quantieme(a.getDate())} au ${b.getDate()} ${MOIS[b.getMonth()]}` : `Du ${quantieme(a.getDate())} ${MOIS[a.getMonth()]} au ${quantieme(b.getDate())} ${MOIS[b.getMonth()]}`;
-}
-const pastille = (couleur) => `<i class="agenda-pastille" style="--agenda-c:${couleur || COULEUR_FOYER}"></i>`;
-function icoType(e) {
-  if (e.type === 'anniversaire') return ICO.gateau;
-  if (e.type === 'ferie') return ICO.drapeau;
-  return '';
-}
-function ligne(e, { date = false } = {}) {
-  const heure = e.heure ? `<b>${esc(fmtHeure(e.heure))}</b>${e.heureFin && e.heureFin !== e.heure ? `<small>${esc(fmtHeure(e.heureFin))}</small>` : ''}` : '<small>journée</small>';
-  const membres = (e.membres || []).length > 1 ? `<span class="agenda-qui">${e.membres.map((id) => pastille(couleurMembre(id))).join('')}</span>` : '';
-  const act = e.act ? `data-act="${esc(e.act)}" ${dataAttrs(e.data)}` : 'disabled';
-  return `<li><button type="button" class="agenda-item${e.externe ? ' externe' : ''} t-${esc(e.type || 'evenement')}" style="--agenda-c:${e.couleur || COULEUR_FOYER}" ${act}>
-    <span class="agenda-heure">${date ? `<small>${esc(fmtJourCourt(dIso(e.date)))}</small>` : ''}${heure}</span>
-    <span class="agenda-texte"><b>${icoType(e)}${esc(e.titre)}</b>${e.detail ? `<span>${esc(e.detail)}</span>` : ''}</span>
-    ${membres}${e.recurrent ? `<span class="agenda-rep" title="Se répète">${ICO.rep}</span>` : ''}${e.externe && e.source ? `<span class="agenda-source">${esc(libelleSource(e.source))}</span>` : ''}</button></li>`;
-}
-const libelleSource = (id) => ({ planning: 'Repas', forme: 'Séance' }[id] || Modules.get(id)?.segment || '');
-function bandeaux(iso) {
-  const out = [];
-  const v = affiche('vacances') && vacancesDu(iso);
-  if (v) out.push(`<div class="agenda-bandeau vacances">${ICO.soleil}<span><b>${esc(v.titre)}</b> · zone A, du ${esc(fmtJourCourt(dIso(v.debut)))} au ${esc(fmtJourCourt(dIso(v.fin)))}</span></div>`);
-  return out.join('');
-}
-function listeJour(iso, items) {
-  const l = items.filter((e) => e.date === iso);
-  return l.length ? `<ol class="agenda-liste">${l.map((e) => ligne(e)).join('')}</ol>` : '<p class="agenda-vide">Rien de prévu.</p>';
-}
-function vueJour(a) {
-  const iso = isoDate(a);
-  const items = elementsAffiches(a, a);
-  return `${bandeaux(iso)}<section class="card agenda-carte">${listeJour(iso, items)}</section>`;
-}
-function vueSemaine(a, b) {
-  const items = elementsAffiches(a, b);
-  const auj = isoDate(new Date());
-  let html = '';
-  for (let d = a; d <= b; d = addDays(d, 1)) {
-    const iso = isoDate(d);
-    const v = affiche('vacances') && vacancesDu(iso);
-    html += `<section class="card agenda-carte agenda-jour${iso === auj ? ' auj' : ''}${v ? ' vac' : ''}">
-      <button type="button" class="agenda-jour-titre" data-act="agenda-jour" data-date="${iso}"><b>${esc(maj(fmtJourLong(d)))}</b>${iso === auj ? '<span class="agenda-tag">Aujourd\'hui</span>' : ''}${v ? `<span class="agenda-tag vac" title="${esc(v.titre)}">Vacances</span>` : ''}</button>
-      ${listeJour(iso, items)}</section>`;
-  }
-  return html;
-}
-function vueMois(a, b) {
-  const c = curseur();
-  const items = elementsAffiches(a, b);
-  const choisi = vue.jour && vue.jour >= isoDate(a) && vue.jour <= isoDate(b) ? vue.jour : isoDate(c);
-  const auj = isoDate(new Date());
-  const feries = new Set(items.filter((e) => e.type === 'ferie').map((e) => e.date));
-  let cases = '';
-  for (let d = a; d <= b; d = addDays(d, 1)) {
-    const iso = isoDate(d);
-    const l = items.filter((e) => e.date === iso && e.type !== 'ferie');
-    const cls = [d.getMonth() !== c.getMonth() && 'hors', iso === auj && 'auj', iso === choisi && 'choisi', affiche('vacances') && vacancesDu(iso) && 'vac', feries.has(iso) && 'ferie'].filter(Boolean).join(' ');
-    const points = l.slice(0, 3).map((e) => pastille(e.couleur)).join('') + (l.length > 3 ? '<small>+</small>' : '');
-    cases += `<button type="button" class="agenda-case ${cls}" data-act="agenda-choisir" data-date="${iso}" aria-pressed="${iso === choisi}" aria-label="${esc(fmtJourLong(d))}${l.length ? `, ${l.length} élément${l.length > 1 ? 's' : ''}` : ''}"><span>${d.getDate()}</span><span class="agenda-points">${points}</span></button>`;
-  }
-  return `<section class="card agenda-carte agenda-mois"><div class="agenda-grille">${JOURS_COURT.map((j) => `<span class="agenda-entete-j">${j}</span>`).join('')}${cases}</div>
-    <p class="agenda-legende muted small"><span class="agenda-leg vac"></span> vacances scolaires · <span class="agenda-leg ferie"></span> jour férié</p></section>
-    ${bandeaux(choisi)}<section class="card agenda-carte"><button type="button" class="agenda-jour-titre" data-act="agenda-jour" data-date="${choisi}"><b>${esc(maj(fmtJourLong(dIso(choisi))))}</b>${ICON.next}</button>${listeJour(choisi, items)}</section>`;
-}
-function vuePersonnes(a, b) {
-  const items = elementsAffiches(a, b);
-  const blocs = state.members.filter((m) => !vue.filtre || m.id === vue.filtre).map((m) => {
-    const l = items.filter((e) => (e.membres || []).includes(m.id) || (e.ev && (e.ev.responsable === m.id || e.ev.responsable_retour === m.id)));
-    return `<section class="card agenda-carte agenda-personne" style="--agenda-c:${couleurMembre(m.id)}"><h3>${pastille(couleurMembre(m.id))}${esc(m.nom)}<span class="muted small">${l.length ? `${l.length} élément${l.length > 1 ? 's' : ''}` : ''}</span></h3>
-      ${l.length ? `<ol class="agenda-liste">${l.map((e) => ligne(e, { date: true })).join('')}</ol>` : '<p class="agenda-vide">Rien de prévu cette semaine.</p>'}</section>`;
-  });
-  const tous = items.filter((e) => !(e.membres || []).length && e.type !== 'ferie' && e.type !== 'fete' && !(e.ev && (e.ev.responsable || e.ev.responsable_retour)));
-  if (!vue.filtre && tous.length) blocs.push(`<section class="card agenda-carte agenda-personne"><h3>${pastille(COULEUR_FOYER)}Toute la famille</h3><ol class="agenda-liste">${tous.map((e) => ligne(e, { date: true })).join('')}</ol></section>`);
-  return blocs.join('') || '<div class="empty"><p>Ajoute les membres du foyer dans les réglages pour voir l\'agenda de chacun.</p></div>';
-}
-function rendu() {
-  const [a, b] = periode();
-  const modes = [['jour', 'Jour'], ['semaine', 'Semaine'], ['mois', 'Mois'], ['personnes', 'Personnes']];
-  const filtres = state.members.length > 1 ? `<div class="chips agenda-filtres" role="group" aria-label="Filtrer par membre">
-    <button type="button" class="chip" data-act="agenda-filtre" data-id="" aria-pressed="${!vue.filtre}">Tout le monde</button>
-    ${state.members.map((m) => `<button type="button" class="chip" data-act="agenda-filtre" data-id="${m.id}" aria-pressed="${vue.filtre === m.id}">${pastille(couleurMembre(m.id))}${esc(m.nom)}</button>`).join('')}</div>` : '';
-  const corps = vue.mode === 'jour' ? vueJour(a) : vue.mode === 'mois' ? vueMois(a, b) : vue.mode === 'personnes' ? vuePersonnes(a, b) : vueSemaine(a, b);
-  return `<div class="agenda">
-    <div class="agenda-modes" role="tablist" aria-label="Vue">${modes.map(([k, l]) => `<button type="button" role="tab" data-act="agenda-mode" data-mode="${k}" aria-selected="${vue.mode === k}">${l}</button>`).join('')}</div>
-    <div class="agenda-nav">
-      <button type="button" class="icon-btn" data-act="agenda-pas" data-pas="-1" aria-label="Précédent">${ICON.back}</button>
-      <b class="agenda-periode">${esc(vue.mode === 'personnes' ? titrePeriode('semaine') : titrePeriode())}</b>
-      <button type="button" class="icon-btn" data-act="agenda-pas" data-pas="1" aria-label="Suivant">${ICON.next}</button>
-      <button type="button" class="btn small" data-act="agenda-auj">Aujourd'hui</button>
-      <button type="button" class="icon-btn" data-act="agenda-reglages" aria-label="Réglages de l'agenda">${ICO.reglages}</button>
-    </div>
-    ${filtres}
-    <button type="button" class="btn primary block agenda-ajouter" data-act="agenda-nouveau">${ICON.plus} Nouvel événement</button>
-    ${corps}</div>`;
-}
-
-// --- Feuilles : détail, formulaire, réglages ----------------------------------
-const MINUTES = [[0, 'À l\'heure'], [5, '5 min avant'], [10, '10 min avant'], [15, '15 min avant'], [30, '30 min avant'], [60, '1 h avant'], [120, '2 h avant'], [1440, 'La veille'], [2880, '2 jours avant']];
-const CATEGORIES = [['evenement', 'Événement'], ['rdv', 'Rendez-vous'], ['activite', 'Activité'], ['anniversaire', 'Anniversaire']];
-const libMinutes = (n) => (MINUTES.find(([k]) => k === Number(n)) || [0, `${n} min avant`])[1];
-const evParId = (id) => evenements.find((e) => e.id === id) || null;
-
-function voir(id, date) {
-  const ev = evParId(id);
-  if (!ev) return toast('Événement introuvable');
-  const o = (date && occurrences(ev, dIso(date), dIso(date)).find((x) => x.date === date)) || occurrences(ev, bornes(ev).debut, bornes(ev).debut)[0] || { debut: bornes(ev).debut, fin: bornes(ev).debut, date: isoDate(bornes(ev).debut) };
-  const quand = ev.journee
-    ? (isoDate(o.fin) !== o.date ? `Du ${fmtJourLong(o.debut)} au ${fmtJourLong(o.fin)}` : `${maj(fmtJourLong(o.debut))}, toute la journée`)
-    : `${maj(fmtJourLong(o.debut))}, ${fmtHeure(hm(o.debut))} – ${isoDate(o.fin) !== o.date ? `${fmtJourCourt(o.fin)} ` : ''}${fmtHeure(hm(o.fin))}`;
-  const age = ev.categorie === 'anniversaire' && ev.recurrence && o.debut.getFullYear() > bornes(ev).debut.getFullYear() ? ` · ${o.debut.getFullYear() - bornes(ev).debut.getFullYear()} ans` : '';
-  const qui = (ev.membres || []).map((m) => `<span class="agenda-membre">${pastille(couleurMembre(m))}${esc(nomMembre(m))}</span>`).join('') || '<span class="muted">Toute la famille</span>';
-  const lignes = [
-    `<div class="agenda-det">${ICO.cal}<span>${esc(quand)}${esc(age)}</span></div>`,
-    ev.recurrence ? `<div class="agenda-det">${ICO.rep}<span>${esc(regleTexte(ev.recurrence, ev.debut))}</span></div>` : '',
-    ev.lieu ? `<div class="agenda-det">${ICO.lieu}<span>${esc(ev.lieu)}</span></div>` : '',
-    `<div class="agenda-det">${ICON.users}<span class="agenda-membres">${qui}</span></div>`,
-    ev.responsable || ev.responsable_retour ? `<div class="agenda-det">${ICON.clock}<span>${ev.responsable ? `${ev.responsable_retour ? 'Aller' : 'S\'en occupe'} : <b>${esc(nomMembre(ev.responsable))}</b>` : ''}${ev.responsable && ev.responsable_retour ? ' · ' : ''}${ev.responsable_retour ? `Retour : <b>${esc(nomMembre(ev.responsable_retour))}</b>` : ''}</span></div>` : '',
-    (ev.rappels || []).length ? `<div class="agenda-det">${ICO.cloche}<span>${ev.rappels.map((r) => `${esc(nomMembre(r.member_id) || 'Quelqu\'un')} : ${esc(libMinutes(r.minutes).toLowerCase())}`).join(' · ')}</span></div>` : '',
-    ev.notes ? `<p class="agenda-notes">${esc(ev.notes)}</p>` : '',
-  ].join('');
-  const el = openSheet(`${sheetHead(ev.titre)}<div class="agenda-fiche" style="--agenda-c:${couleurEv(ev)}">${lignes}</div>
-    <div class="grid2" style="margin-top:16px"><button class="btn" data-x="modifier">${ICON.edit} Modifier</button><button class="btn danger" data-x="suppr">${ICON.trash} Supprimer</button></div>`);
-  el.addEventListener('click', async (e) => {
-    const b = e.target.closest('[data-x]');
-    if (!b) return;
-    if (b.dataset.x === 'modifier') {
-      if (!ev.recurrence) { closeSheet(); return formulaire(ev); }
-      const choix = await choisirPortee('Modifier', false);
-      if (!choix) return;
-      closeSheet();
-      if (choix === 'serie') formulaire(ev);
-      else formulaire(ev, { occurrence: o });
-    }
-    if (b.dataset.x === 'suppr') {
-      const choix = ev.recurrence ? await choisirPortee('Supprimer', true) : ((await confirmSheet(`Supprimer « ${ev.titre} » ?`, 'Supprimer')) ? 'serie' : null);
-      if (!choix) return;
-      closeSheet();
-      supprimer(ev, choix, o.date).catch(fail);
-    }
-  });
-}
-// Portée d'une modification sur une série : 'une' (cette fois), 'suivantes', 'serie'.
-function choisirPortee(verbe, suivantes) {
-  return new Promise((resolve) => {
-    let fini = false;
-    const el = openSheet(`${sheetHead(`${verbe} l'événement`)}<p class="muted" style="margin-top:0">Cet événement se répète.</p>
-      <div class="stack"><button class="btn block" data-p="une">Cette fois seulement</button>${suivantes ? '<button class="btn block" data-p="suivantes">Cette fois et les suivantes</button>' : ''}<button class="btn block ${verbe === 'Supprimer' ? 'danger' : ''}" data-p="serie">Toute la série</button></div>`,
-    { onClose: () => { if (!fini) resolve(null); } });
-    el.addEventListener('click', (e) => { const b = e.target.closest('[data-p]'); if (!b) return; fini = true; resolve(b.dataset.p); closeSheet(); });
-  });
-}
-
-async function enregistrer(row) {
-  const ligneEnr = await Sync.upsert(T.evenements, row);
-  const i = evenements.findIndex((e) => e.id === ligneEnr.id);
-  if (i >= 0) evenements[i] = ligneEnr; else evenements.push(ligneEnr);
-  cache.set('evenements', evenements);
-  ext.t = 0;
-  return ligneEnr;
-}
-async function supprimer(ev, portee, date) {
-  if (portee === 'une') { await enregistrer({ ...ev, exceptions: [...new Set([...(ev.exceptions || []), date])] }); toast('Cette fois est retirée de la série'); }
-  else if (portee === 'suivantes' && date > isoDate(bornes(ev).debut)) {
-    const { nombre, ...rec } = ev.recurrence;
-    await enregistrer({ ...ev, recurrence: { ...rec, ...(nombre ? { nombre } : {}), jusqu: isoDate(addDays(dIso(date), -1)) } });
-    toast('Les prochaines fois sont supprimées');
-  } else {
-    await Sync.supprimer(T.evenements, ev.id);
-    evenements = evenements.filter((e) => e.id !== ev.id);
-    cache.set('evenements', evenements);
-    toast('Événement supprimé');
-  }
-  render();
-}
-
-// Formulaire complet. ev = événement existant (ou valeurs préremplies sans id) ; occurrence = modifier cette fois seulement.
-function formulaire(ev = null, { occurrence = null } = {}) {
-  const base = ev || {};
-  const b0 = base.debut ? bornes(base) : null;
-  const deb = occurrence ? occurrence.debut : b0 ? b0.debut : avecHeure(curseur(), isoDate(curseur()) === isoDate(new Date()) ? hm(new Date(Math.ceil(Date.now() / 1800e3) * 1800e3)) : '09:00');
-  const finD = occurrence ? occurrence.fin : base.debut ? (base.journee ? addDays(b0.debut, b0.jours) : new Date(b0.debut.getTime() + b0.duree)) : new Date(deb.getTime() + 3600e3);
-  const journee = !!base.journee;
-  const rec = occurrence ? null : base.recurrence || null;
-  const membresSel = new Set(base.membres || []);
-  const rappels = Object.fromEntries((base.rappels || []).map((r) => [r.member_id, r.minutes]));
-  const opt = (val, sel, lib) => `<option value="${esc(val)}" ${String(val) === String(sel ?? '') ? 'selected' : ''}>${esc(lib)}</option>`;
-  const optsMembres = (sel) => opt('', sel, 'Personne') + state.members.map((m) => opt(m.id, sel, m.nom)).join('');
-  const titre = occurrence ? 'Modifier cette fois' : base.id ? 'Modifier l\'événement' : 'Nouvel événement';
-  const el = openSheet(`${sheetHead(titre)}
-    <form class="stack agenda-form" data-form="agenda-evenement" novalidate>
-      <label class="field"><span>Titre</span><input class="input" name="titre" required maxlength="120" value="${esc(base.titre || '')}" placeholder="Judo, dentiste, dépôt à la crèche…"></label>
-      <div class="chips wrap" role="group" aria-label="Type">${CATEGORIES.map(([k, l]) => `<button type="button" class="chip" data-cat="${k}" aria-pressed="${(base.categorie || 'evenement') === k}">${l}</button>`).join('')}</div>
-      <label class="check"><input type="checkbox" name="journee" ${journee ? 'checked' : ''}> Toute la journée</label>
-      <div class="grid2"><label class="field"><span>Début</span><input class="input" type="date" name="date" required value="${isoDate(deb)}"></label>
-        <label class="field" data-si="heure"><span>Heure</span><input class="input" type="time" name="heure" step="300" value="${hm(deb)}"></label></div>
-      <div class="grid2"><label class="field"><span>Fin</span><input class="input" type="date" name="date_fin" value="${isoDate(finD)}"></label>
-        <label class="field" data-si="heure"><span>Heure de fin</span><input class="input" type="time" name="heure_fin" step="300" value="${hm(finD)}"></label></div>
-      <label class="field"><span>Lieu</span><input class="input" name="lieu" maxlength="160" value="${esc(base.lieu || '')}" placeholder="Facultatif"></label>
-      ${state.members.length ? `<div class="field"><span>Pour qui ?</span><div class="chips wrap" role="group" aria-label="Pour qui">${state.members.map((m) => `<button type="button" class="chip" data-membre="${m.id}" aria-pressed="${membresSel.has(m.id)}">${pastille(couleurMembre(m.id))}${esc(m.nom)}</button>`).join('')}</div><small class="muted">Personne de choisi : toute la famille.</small></div>
-      <div class="grid2"><label class="field"><span>Qui s'en occupe (aller)</span><select class="input" name="responsable">${optsMembres(base.responsable)}</select></label>
-        <label class="field"><span>Retour</span><select class="input" name="responsable_retour">${optsMembres(base.responsable_retour)}</select></label></div>` : ''}
-      ${occurrence ? '' : `<label class="field"><span>Répétition</span><select class="input" name="freq">${opt('', rec?.freq, 'Ne se répète pas')}${Object.entries(FREQS).map(([k, l]) => opt(k, rec?.freq, l)).join('')}</select></label>
-      <div class="agenda-rec stack" data-si="rec">
-        <label class="field agenda-inter"><span>Intervalle</span><span class="row">Toutes les <input class="input" type="number" name="intervalle" min="1" max="52" inputmode="numeric" value="${esc(rec?.intervalle || 1)}"> <span data-unite></span></span></label>
-        <div class="field" data-si="hebdo"><span>Les jours</span><div class="agenda-jours" role="group" aria-label="Jours de la semaine">${JOURS.map((j, i) => `<button type="button" class="chip" data-jour="${i + 1}" aria-label="${j}" aria-pressed="${(rec?.jours || [jourIso(deb)]).includes(i + 1)}">${JOURS_COURT[i]}</button>`).join('')}</div></div>
-        <div class="grid2"><label class="field"><span>Fin de la répétition</span><select class="input" name="fin_type">${opt('jamais', rec?.jusqu ? 'date' : rec?.nombre ? 'nombre' : 'jamais', 'Jamais')}${opt('date', rec?.jusqu ? 'date' : '', 'À une date')}${opt('nombre', rec?.nombre && !rec?.jusqu ? 'nombre' : '', 'Après un nombre de fois')}</select></label>
-          <label class="field" data-si="fin-date"><span>Jusqu'au</span><input class="input" type="date" name="jusqu" value="${esc(rec?.jusqu || '')}"></label>
-          <label class="field" data-si="fin-nombre"><span>Nombre de fois</span><input class="input" type="number" name="nombre" min="1" max="999" inputmode="numeric" value="${esc(rec?.nombre || 10)}"></label></div>
-        <p class="muted small" data-regle></p>
-      </div>`}
-      ${state.members.length ? `<details class="agenda-rappels" ${Object.keys(rappels).length ? 'open' : ''}><summary>${ICO.cloche} Rappels par personne</summary>
-        <div class="agenda-rappels-grille">${state.members.map((m) => `<label class="field agenda-rappel"><span>${pastille(couleurMembre(m.id))}${esc(m.nom)}</span><select class="input" name="rappel_${m.id}">${opt('', rappels[m.id], 'Pas de rappel')}${MINUTES.map(([k, l]) => opt(k, rappels[m.id], l)).join('')}</select></label>`).join('')}</div></details>` : ''}
-      <label class="field"><span>Notes</span><textarea class="input" name="notes" rows="2" maxlength="1000" placeholder="Facultatif">${esc(base.notes || '')}</textarea></label>
-      <button class="btn primary block">Enregistrer</button>
-    </form>`);
-  const f = $('form', el);
-  let joursChoisis = !!rec?.jours;
-  const montrer = () => {
-    const j = f.journee.checked;
-    $$('[data-si="heure"]', f).forEach((x) => { x.hidden = j; });
-    if (!f.freq) return;
-    const fr = f.freq.value;
-    $('[data-si="rec"]', f).hidden = !fr;
-    $('[data-si="hebdo"]', f).hidden = fr !== 'hebdo';
-    const n = Number(f.intervalle.value) || 1;
-    $('[data-unite]', f).textContent = { quotidienne: n > 1 ? 'jours' : 'jour', hebdo: n > 1 ? 'semaines' : 'semaine', mensuelle: 'mois', annuelle: n > 1 ? 'ans' : 'an' }[fr] || '';
-    $('[data-si="fin-date"]', f).hidden = f.fin_type.value !== 'date';
-    $('[data-si="fin-nombre"]', f).hidden = f.fin_type.value !== 'nombre';
-    const r = lireRec();
-    $('[data-regle]', f).textContent = r ? regleTexte(r, avecHeure(dIso(f.date.value || isoDate(deb)), '12:00')) : '';
-  };
-  const lireRec = () => {
-    if (!f.freq || !f.freq.value) return null;
-    const r = { freq: f.freq.value };
-    const n = Math.floor(Number(f.intervalle.value) || 1);
-    if (n > 1) r.intervalle = n;
-    if (r.freq === 'hebdo') r.jours = $$('[data-jour][aria-pressed="true"]', f).map((b) => Number(b.dataset.jour));
-    if (r.freq === 'hebdo' && !r.jours.length) r.jours = [jourIso(dIso(f.date.value || isoDate(deb)))];
-    if (f.fin_type.value === 'date' && f.jusqu.value) r.jusqu = f.jusqu.value;
-    if (f.fin_type.value === 'nombre') r.nombre = Math.max(1, Math.floor(Number(f.nombre.value) || 1));
-    return r;
-  };
-  f.addEventListener('click', (e) => {
-    const b = e.target.closest('[data-cat],[data-membre],[data-jour]');
-    if (!b) return;
-    if (b.dataset.cat) {
-      $$('[data-cat]', f).forEach((x) => x.setAttribute('aria-pressed', x === b));
-      if (b.dataset.cat === 'anniversaire') { f.journee.checked = true; if (f.freq && !f.freq.value) f.freq.value = 'annuelle'; }
-    } else b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') !== 'true');
-    if (b.dataset.jour) joursChoisis = true;
-    montrer();
-  });
-  f.addEventListener('input', montrer);
-  f.addEventListener('change', (e) => {
-    if (e.target.name === 'date' && f.date_fin.value < f.date.value) f.date_fin.value = f.date.value;
-    // Tant que personne n'a touché aux jours de la semaine, ils suivent la date de début.
-    if (e.target.name === 'date' && f.date.value && !joursChoisis) { const j = jourIso(dIso(f.date.value)); $$('[data-jour]', f).forEach((x) => x.setAttribute('aria-pressed', Number(x.dataset.jour) === j)); }
-    if (e.target.name === 'heure' && f.date_fin.value === f.date.value && f.heure_fin.value <= f.heure.value && f.heure.value) f.heure_fin.value = hm(new Date(avecHeure(dIso(f.date.value), f.heure.value).getTime() + 3600e3));
-    montrer();
-  });
-  montrer();
-  f.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const titreSaisi = f.titre.value.trim();
-    if (!titreSaisi) { f.titre.focus(); return toast('Donne un titre à l\'événement'); }
-    if (!f.date.value) return toast('Choisis une date');
-    const p = { titre: titreSaisi, categorie: $('[data-cat][aria-pressed="true"]', f)?.dataset.cat || 'evenement', journee: f.journee.checked, date: f.date.value, heure: f.heure.value || '09:00',
-      dateFin: f.date_fin.value || f.date.value, heureFin: f.heure_fin.value, lieu: f.lieu.value.trim(), notes: f.notes.value.trim(),
-      membres: $$('[data-membre][aria-pressed="true"]', f).map((b) => b.dataset.membre), responsable: f.responsable?.value || null, responsableRetour: f.responsable_retour?.value || null,
-      recurrence: occurrence ? null : lireRec(), exceptions: occurrence ? [] : base.exceptions || [],
-      rappels: state.members.filter((m) => f[`rappel_${m.id}`] && f[`rappel_${m.id}`].value !== '').map((m) => ({ member_id: m.id, minutes: Number(f[`rappel_${m.id}`].value) })) };
-    const debutN = p.journee ? dIso(p.date) : avecHeure(dIso(p.date), p.heure);
-    const finN = p.journee ? dIso(p.dateFin) : avecHeure(dIso(p.dateFin), p.heureFin || p.heure);
-    if (finN < debutN || (!p.journee && +finN === +debutN && p.heureFin)) return toast('La fin doit venir après le début');
-    if (p.recurrence?.jusqu && p.recurrence.jusqu < p.date) return toast('La répétition doit finir après le début');
-    const row = versLigne(p);
-    try {
-      if (occurrence) {
-        await enregistrer({ ...row, id: uid() });
-        await enregistrer({ ...base, exceptions: [...new Set([...(base.exceptions || []), occurrence.date])] });
-      } else await enregistrer(base.id ? { ...row, id: base.id } : row);
-      closeSheet();
-      toast(base.id ? 'Événement modifié' : 'Événement ajouté');
-      vue.curseur = dIso(p.date); vue.jour = p.date;
-      if (state.tab === 'agenda') render();
-    } catch (err) { fail(err, 'Enregistrement impossible'); }
-  });
-  if (!base.titre) setTimeout(() => f.titre.focus(), 60);
-  return el;
-}
-
-function reglages() {
-  const el = openSheet(`${sheetHead('Réglages de l\'agenda')}
-    ${state.members.length ? `<h3 class="agenda-h3">Une couleur par membre</h3><div class="stack" data-couleurs></div>` : ''}
-    <h3 class="agenda-h3">Afficher dans l'agenda</h3>
-    <div class="card agenda-carte agenda-affichage">${AFFICHAGE.map(([k, l]) => `<label class="check"><input type="checkbox" data-aff="${k}" ${affiche(k) ? 'checked' : ''}> ${esc(l)}</label>`).join('')}</div>
-    <p class="muted small">Vacances : calendrier scolaire de l'Éducation nationale (académie de ${ACADEMIE}). Jours fériés : calendrier.api.gouv.fr. Mis à jour chaque semaine et gardés pour une utilisation hors ligne.</p>
-    <button class="btn block" data-x="maj">${ICO.cal} Mettre à jour les vacances et les jours fériés</button>`);
-  const dessiner = () => {
-    const box = $('[data-couleurs]', el);
-    if (!box) return;
-    box.innerHTML = state.members.map((m) => `<div class="agenda-couleur"><span class="grow">${pastille(couleurMembre(m.id))}<b>${esc(m.nom)}</b></span>
-      <span class="agenda-nuancier" role="radiogroup" aria-label="Couleur de ${esc(m.nom)}">${PALETTE.map(([k, v], i) => `<button type="button" class="agenda-nuance" role="radio" style="--agenda-c:${v}" data-m="${m.id}" data-c="${k}" aria-checked="${slotMembre(m.id) === k}" aria-label="Couleur ${i + 1}"></button>`).join('')}</span></div>`).join('');
-  };
-  dessiner();
-  el.addEventListener('click', async (e) => {
-    const n = e.target.closest('[data-c]');
-    if (n) {
-      couleurs = { ...couleurs, [n.dataset.m]: n.dataset.c };
-      cache.set('couleurs', couleurs);
-      dessiner(); render();
-      try { await Sync.upsert(T.agenda_couleurs, { id: n.dataset.m, member_id: n.dataset.m, couleur: n.dataset.c }); } catch (err) { fail(err, 'Couleur non enregistrée'); }
-    }
-    if (e.target.closest('[data-x="maj"]')) {
-      const ok = await chargerPublics(true).catch(() => false);
-      toast(ok ? 'Vacances et jours fériés à jour' : 'Mise à jour impossible pour le moment');
-      render();
-    }
-  });
-  el.addEventListener('change', (e) => {
-    const k = e.target.dataset.aff;
-    if (!k) return;
-    store.set('agenda:affichage', { ...store.get('agenda:affichage', {}), [k]: e.target.checked });
-    ext.t = 0;
-    render();
-  });
-}
-
-// --- Ajout rapide (« + ») -----------------------------------------------------
-function resumeEv(p, membres = state.members) {
-  const d = dIso(p.date);
-  const l = [p.titre, `${fmtJourCourt(d)}${p.heure ? ` à ${fmtHeure(p.heure)}` : ''}`];
-  const qui = (p.membres || []).map((id) => (membres || []).find((m) => m.id === id)?.nom).filter(Boolean);
-  if (qui.length) l.push(listeEt(qui));
-  if (p.recurrence) l.push(regleTexte(p.recurrence, d).toLowerCase());
-  return l.join(' · ');
-}
-
+// Module « Agenda familial » : emplacement réservé, à construire (voir LISEZMOI.md).
 Modules.register({
   id: 'agenda',
   onglet: 'famille',
   segment: 'Agenda',
   ordre: 10,
   libelle: 'Agenda familial',
-  tables: { evenements: 'evenements', agenda_couleurs: 'agenda_couleurs' },
-  notifications: [{ type: 'agenda-rappel', libelle: 'Rappels des événements', description: 'Avant un événement, selon le rappel choisi pour toi.' }],
-  async charger(force, { horsLigne } = {}) {
-    evenements = cache.get('evenements', []);
-    couleurs = cache.get('couleurs', {});
-    if (horsLigne) return;
-    chargerPublics().then((ok) => { if (ok && state.tab === 'agenda') render(); }).catch(() => {});
-    const [ev, co] = await Promise.all([db.from(T.evenements).select('*').eq('foyer_id', foyer()), db.from(T.agenda_couleurs).select('*').eq('foyer_id', foyer())]);
-    if (!co.error) { couleurs = Object.fromEntries((co.data || []).map((c) => [c.member_id || c.id, c.couleur])); cache.set('couleurs', couleurs); }
-    if (ev.error) throw ev.error;
-    evenements = ev.data || [];
-    cache.set('evenements', evenements);
-    ext.t = 0;
-  },
-  rendu,
-  actions: {
-    'agenda-mode': (b) => { vue.mode = b.dataset.mode; store.set('agenda:vue', vue.mode); render(); },
-    'agenda-pas': (b) => {
-      const k = Number(b.dataset.pas) || 0, c = curseur();
-      vue.curseur = vue.mode === 'jour' ? addDays(c, k) : vue.mode === 'mois' ? new Date(c.getFullYear(), c.getMonth() + k, 1) : addDays(c, 7 * k);
-      vue.jour = null;
-      render();
-    },
-    'agenda-auj': () => { vue.curseur = null; vue.jour = null; render(); },
-    'agenda-filtre': (b) => { vue.filtre = b.dataset.id || null; render(); },
-    'agenda-jour': (b) => { vue.curseur = dIso(b.dataset.date); vue.mode = 'jour'; store.set('agenda:vue', 'jour'); if (state.tab !== 'agenda') switchTab('agenda'); else render(); },
-    'agenda-choisir': (b) => { vue.jour = b.dataset.date; render(); },
-    'agenda-nouveau': () => formulaire(),
-    'agenda-voir': (b) => voir(b.dataset.id, b.dataset.date),
-    'agenda-reglages': () => reglages(),
-  },
-  // Pour les autres modules (fil, export) : événements, fériés, anniversaires et fêtes de la période.
-  agenda: (debut, fin) => elementsModule(debut, fin).map(({ ev, ...e }) => e),
-  sourcesAccueil: (ctx) => {
-    const d = ctx.date || new Date();
-    const id = ctx.famille ? null : ctx.membre?.id || null;
-    return elementsModule(minuit(d), minuit(d), { filtre: id }).map((e) => ({ heure: e.heure, titre: e.titre, detail: e.detail || (e.heureFin && e.heure ? `jusqu'à ${fmtHeure(e.heureFin)}` : ''), icone: e.type === 'anniversaire' ? ICO.gateau : ICO.cal,
-      act: e.act || 'agenda-jour', data: e.data || { date: e.date }, priorite: e.type === 'anniversaire' ? 2 : 1 }));
-  },
-  ajoutRapide: {
-    type: 'evenement',
-    libelle: 'Événement',
-    analyser(texte, ctx) {
-      const p = parseEvenement(texte, { maintenant: ctx.maintenant, membres: ctx.membres });
-      if (!p) return null;
-      return { score: p.heure || p.recurrence ? 0.9 : 0.7, resume: resumeEv(p, ctx.membres), donnees: p };
-    },
-    async enregistrer(p) {
-      const ligneEnr = await enregistrer(versLigne(p));
-      vue.curseur = dIso(p.date); vue.jour = p.date;
-      return `Ajouté à l'agenda : ${ligneEnr.titre}, ${fmtJourCourt(dIso(p.date))}${p.heure ? ` à ${fmtHeure(p.heure)}` : ''}`;
-    },
-    ouvrir(texte, ctx) {
-      const p = texte ? parseEvenement(texte, { maintenant: ctx.maintenant, membres: ctx.membres }) : null;
-      if (!p) return formulaire(texte ? { titre: maj(texte.trim()) } : null);
-      formulaire({ ...versLigne(p), id: undefined });
-    },
-  },
-  expose: { occurrences, prochaine, regleTexte, versRRule, depuisRRule, rappelsPeriode, parseEvenement, versLigne, joursFeries, paques, feriesDepuisApi, vacancesDepuisApi,
-    fetesFamille, anniversairesMembres, slotMembre, fmtHeure, fmtJourCourt, titrePeriode, periode, bornes },
+  rendu: () => Modules.bientot('Agenda familial', 'Une couleur par membre, les vues jour, semaine et mois, les vacances scolaires et les liens avec vos autres agendas.'),
 });
 })();
 // ==== module carnet ====
@@ -9444,14 +8619,1046 @@ Modules.register({
 })();
 // ==== module taches ====
 (function () {
-// Module « Tâches et listes » : emplacement réservé, à construire (voir LISEZMOI.md).
+// Module « Tâches et listes » (Famille › Tâches & listes).
+// - Tâches ponctuelles : responsable, échéance (et heure), « importante », notes.
+//   Tâches récurrentes sans rotation : cocher une tâche récurrente crée sa prochaine occurrence.
+// - Listes libres partagées (valise, cadeaux, bricolage, films…), cochées en direct (Supabase Realtime).
+// - Listes types réutilisables (Avant départ, Avant nounou, Valise ski, Valise plage, Mode vacances) :
+//   fournies pré-remplies, modifiables ; « lancer » une liste type crée une copie à cocher.
+// - Listes d'envies de cadeaux par membre ; « je m'en occupe » est rangé dans une table à part
+//   (envies_reservations) que la personne concernée ne peut pas lire (RLS, voir la migration).
+// - Bouton « + » : « sortir les poubelles mardi », « appeler le véto avant vendredi Antoine ».
+// - Fil de l'Accueil : tâches du jour et en retard. Agenda : tâches datées.
+//
+// API publique pour les autres modules (le carnet, par exemple : échéance maison → tâche) :
+//   await Taches.creer({ titre, echeance?: 'AAAA-MM-JJ', heure?: 'HH:MM', responsable?: member_id, notes?, priorite?: 0|1,
+//                        recurrence?: { freq: 'jour'|'semaine'|'mois'|'an', n: 1 }, origine?: 'carnet', origine_id?: 'chaudiere' })
+//     → la tâche enregistrée. Avec origine + origine_id, une tâche ouverte de même origine est mise à jour (pas de doublon).
+//   await Taches.terminer(id) ; await Taches.supprimerOrigine(origine, origine_id) ;
+//   Taches.liste({ ouvertes: true }) → tâches en mémoire ; Taches.ouvrir(id) → feuille de la tâche ;
+//   await Taches.lancerListe(cle, { date_debut, date_fin }) → liste créée depuis une liste type.
+// ---------------------------------------------------------------------------
+const cache = Modules.cache('taches');
+const D = { taches: [], listes: [], elements: [], envies: [], resas: [], ok: false };
+const ui = { vue: store.get('taches:vue', 'taches'), filtre: 'tous', faites: false, ouverte: null, membreEnvies: null };
+let pretResoudre;
+const pret = new Promise((r) => { pretResoudre = r; });
+
+// ---------------------------------------------------------------------------
+// Fonctions pures (testées dans tests/unit/taches.test.js)
+// ---------------------------------------------------------------------------
+const aplatir = (s) => s.split('').map((c) => c.toLowerCase().normalize('NFD')[0] || c).join('');
+const majuscule = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
+const isoVersDate = (s) => { const [y, m, d] = String(s).slice(0, 10).split('-').map(Number); return new Date(y, m - 1, d); };
+const ecartJours = (a, b) => Math.round((isoVersDate(b) - isoVersDate(a)) / 864e5);
+const plusJours = (iso, n) => isoDate(addDays(isoVersDate(iso), n));
+const joursDuMois = (an, mois) => new Date(an, mois + 1, 0).getDate();
+const JOURS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+
+// Verbes d'action qui annoncent une tâche (forme sans accent, premier mot de la phrase).
+const VERBES_TACHE = new Set(['sortir', 'rentrer', 'appeler', 'rappeler', 'telephoner', 'reserver', 'payer', 'regler', 'ranger', 'nettoyer', 'laver', 'faire',
+  'envoyer', 'reparer', 'changer', 'vider', 'tondre', 'arroser', 'remplir', 'renouveler', 'deposer', 'recuperer', 'inscrire', 'commander', 'poster',
+  'imprimer', 'signer', 'preparer', 'trier', 'passer', 'aller', 'contacter', 'ecrire', 'repondre', 'verifier', 'organiser', 'demander', 'chercher',
+  'rendre', 'rapporter', 'installer', 'nourrir', 'promener', 'brosser', 'vacciner', 'vermifuger', 'repasser', 'plier', 'aspirer', 'descendre',
+  'monter', 'porter', 'resilier', 'declarer', 'remplacer', 'purger', 'ramoner', 'entretenir', 'emmener', 'amener', 'planter', 'tailler', 'degivrer',
+  'detartrer', 'mettre', 'donner', 'finir', 'terminer', 'demonter', 'peindre', 'fixer', 'accrocher', 'jeter', 'recycler', 'relancer', 'confirmer',
+  'annuler', 'prevenir', 'inviter', 'souhaiter', 'feter', 'telecharger', 'scanner', 'classer', 'faxer', 'renvoyer', 'retourner', 'echanger', 'recharger']);
+const RE_INTRO = /^(?:il faut |faut |penser a |pense a |ne pas oublier (?:de |d['’])|n['’]oublie pas (?:de |d['’])|rappel ?: ?|tache ?: ?|todo ?: ?|a faire ?: ?)/;
+const RE_REC = / (?:tous les|toutes les|chaque) (?:(\d{1,3}) )?(jours?|semaines?|mois|ans|annees?|matins?|soirs?|lundis?|mardis?|mercredis?|jeudis?|vendredis?|samedis?|dimanches?)(?= )/;
+const RE_LIMITE = / (?:avant|d['’]ici|au plus tard|pour)(?= (?:le |ce )?(?:lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche|demain|apres|aujourd|ce soir|ce midi|ce matin|1er|\d))/;
+const RE_PRIORITE = / (?:urgent|urgente|important|importante|prioritaire)(?= )/;
+
+// Analyse d'une phrase libre en tâche : titre, échéance, heure, responsable, priorité, récurrence et score (0-1).
+// analyseTache('appeler le véto avant vendredi Antoine', { maintenant, membres })
+//   → { titre: 'Appeler le véto', echeance: '2026-10-23', heure: null, responsable: idAntoine, priorite: 0, recurrence: null, score: 0.85 }
+function analyseTache(texte, { maintenant = new Date(), membres = [] } = {}) {
+  let t = ` ${String(texte || '').replace(/\s+/g, ' ').trim()} `;
+  const couper = (m) => { t = `${t.slice(0, m.index)} ${t.slice(m.index + m[0].length)}`; };
+  const aujourdhui = isoDate(maintenant);
+  let recurrence = null;
+  let jourSemaine = null;
+  let priorite = 0;
+  let limite = false;
+  let m = aplatir(t).match(RE_REC);
+  if (m) {
+    const n = Math.max(1, Number(m[1] || 1));
+    const u = m[2];
+    if (/^(jour|matin|soir)/.test(u)) recurrence = { freq: 'jour', n };
+    else if (/^semaine/.test(u)) recurrence = { freq: 'semaine', n };
+    else if (u === 'mois') recurrence = { freq: 'mois', n };
+    else if (/^(an|annee)/.test(u)) recurrence = { freq: 'an', n };
+    else { recurrence = { freq: 'semaine', n }; jourSemaine = JOURS.indexOf(u.replace(/s$/, '')); }
+    couper(m);
+  }
+  if (/!/.test(t)) { priorite = 1; t = t.replace(/!+/g, ' '); }
+  if ((m = aplatir(t).match(RE_PRIORITE))) { priorite = 1; couper(m); }
+  if ((m = aplatir(t).match(RE_LIMITE))) { limite = true; couper(m); }
+  const p = analysePhrase(t, { maintenant, membres });
+  let echeance = p.date;
+  if (!echeance && jourSemaine != null) echeance = plusJours(aujourdhui, (jourSemaine - maintenant.getDay() + 7) % 7);
+  if (recurrence?.freq === 'mois' && echeance) recurrence.jour = isoVersDate(echeance).getDate();
+  let titre = p.texte;
+  const intro = aplatir(titre).match(RE_INTRO);
+  if (intro) titre = titre.slice(intro[0].length);
+  for (let i = 0; i < 3; i++) titre = titre.replace(/[\s,;:.–-]+$/, '').replace(/\s+(?:le|la|les|de|du|des|d['’]|a|à|au|et|pour|avec)$/i, '');
+  titre = majuscule(titre.replace(/^[\s,;:.–-]+/, '').trim());
+  const premier = aplatir(titre).split(/[\s'’]/)[0];
+  const verbe = VERBES_TACHE.has(premier);
+  const rdv = /^prendre (?:un )?(?:rendez-vous|rdv)\b/.test(aplatir(titre));
+  let score;
+  if (!titre) score = 0;
+  else if (intro || rdv || (verbe && (limite || recurrence))) score = 0.85;
+  else if (verbe) score = 0.75;
+  else if (limite) score = 0.6;
+  else if (recurrence) score = 0.45;
+  else if (/[,;+]/.test(titre)) score = 0.1;
+  else if (echeance) score = 0.4;
+  else score = 0.2;
+  return { titre, echeance, heure: p.heure, responsable: p.membres[0] || null, priorite, recurrence, score };
+}
+
+// Date suivante d'une récurrence, toujours après aujourd'hui (une tâche en retard reprend au prochain créneau).
+function prochaineEcheance(echeance, rec, aujourdhui) {
+  if (!rec || !rec.freq) return null;
+  const n = Math.max(1, Number(rec.n) || 1);
+  let d = echeance || aujourdhui;
+  const jourRef = rec.jour || isoVersDate(d).getDate();
+  const avancer = (iso) => {
+    const x = isoVersDate(iso);
+    if (rec.freq === 'jour') return plusJours(iso, n);
+    if (rec.freq === 'semaine') return plusJours(iso, 7 * n);
+    const an = x.getFullYear() + (rec.freq === 'an' ? n : 0);
+    const mois = x.getMonth() + (rec.freq === 'mois' ? n : 0);
+    const cible = new Date(an, mois, 1);
+    cible.setDate(Math.min(rec.freq === 'mois' ? jourRef : x.getDate(), joursDuMois(cible.getFullYear(), cible.getMonth())));
+    if (rec.freq === 'an') cible.setDate(Math.min(jourRef, joursDuMois(cible.getFullYear(), cible.getMonth())));
+    return isoDate(cible);
+  };
+  for (let i = 0; i < 5000; i++) { d = avancer(d); if (d > aujourdhui) return d; }
+  return d;
+}
+
+function libelleRecurrence(rec) {
+  if (!rec || !rec.freq) return '';
+  const n = Math.max(1, Number(rec.n) || 1);
+  const L = { jour: ['Chaque jour', `Tous les ${n} jours`], semaine: ['Chaque semaine', `Toutes les ${n} semaines`], mois: ['Chaque mois', `Tous les ${n} mois`], an: ['Chaque année', `Tous les ${n} ans`] }[rec.freq];
+  return L ? L[n === 1 ? 0 : 1] : '';
+}
+
+// Échéance lisible : « Aujourd'hui », « Demain », « Hier », « Vendredi » (dans la semaine) ou « ven. 23 oct. ».
+function libelleEcheance(iso, aujourdhui) {
+  if (!iso) return '';
+  const e = ecartJours(aujourdhui, iso);
+  if (e === 0) return 'Aujourd\'hui';
+  if (e === 1) return 'Demain';
+  if (e === -1) return 'Hier';
+  const d = isoVersDate(iso);
+  if (e > 1 && e < 7) return majuscule(JOURS[d.getDay()]);
+  const opts = { weekday: 'short', day: 'numeric', month: 'short' };
+  if (d.getFullYear() !== isoVersDate(aujourdhui).getFullYear()) opts.year = 'numeric';
+  return d.toLocaleDateString('fr-FR', opts);
+}
+
+const trierTaches = (a, b) => (a.echeance || '9999').localeCompare(b.echeance || '9999') || (a.heure || '99').localeCompare(b.heure || '99')
+  || (b.priorite || 0) - (a.priorite || 0) || String(a.titre).localeCompare(String(b.titre), 'fr');
+
+// Tâches ouvertes rangées : En retard, Aujourd'hui, Demain, Cette semaine, Plus tard, Sans échéance (groupes vides omis).
+function groupesTaches(taches, aujourdhui) {
+  const G = [['retard', 'En retard'], ['jour', 'Aujourd\'hui'], ['demain', 'Demain'], ['semaine', 'Cette semaine'], ['tard', 'Plus tard'], ['sans', 'Sans échéance']];
+  const cle = (t) => {
+    if (!t.echeance) return 'sans';
+    const e = ecartJours(aujourdhui, t.echeance);
+    return e < 0 ? 'retard' : e === 0 ? 'jour' : e === 1 ? 'demain' : e < 7 ? 'semaine' : 'tard';
+  };
+  return G.map(([c, titre]) => ({ cle: c, titre, taches: taches.filter((t) => !t.fait && cle(t) === c).sort(trierTaches) })).filter((g) => g.taches.length);
+}
+
+const progression = (elements) => {
+  const total = elements.length;
+  const faits = elements.filter((e) => e.coche).length;
+  return { faits, total, pct: total ? Math.round((100 * faits) / total) : 0 };
+};
+
+// Sections d'une liste, dans l'ordre de leur premier élément (les éléments sans section d'abord).
+function sectionsDe(elements) {
+  const tri = [...elements].sort((a, b) => (a.ordre ?? 0) - (b.ordre ?? 0));
+  const out = [];
+  for (const e of tri) {
+    const s = e.section || '';
+    let g = out.find((x) => x.section === s);
+    if (!g) { g = { section: s, elements: [] }; out.push(g); }
+    g.elements.push(e);
+  }
+  return out.sort((a, b) => (a.section ? 1 : 0) - (b.section ? 1 : 0));
+}
+
+const fmtJourMois = (iso) => isoVersDate(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+// « Vacances du 19 au 26 décembre », « Vacances du 30 décembre au 4 janvier ».
+function titreVacances(debut, fin, base = 'Vacances') {
+  if (!debut) return base;
+  if (!fin || fin === debut) return `${base} du ${fmtJourMois(debut)}`;
+  const a = isoVersDate(debut), b = isoVersDate(fin);
+  const memeMois = a.getMonth() === b.getMonth() && a.getFullYear() === b.getFullYear();
+  const jourA = a.getDate() === 1 ? '1er' : String(a.getDate());
+  return `${base} du ${memeMois ? jourA : fmtJourMois(debut).replace(/^1 /, '1er ')} au ${fmtJourMois(fin).replace(/^1 /, '1er ')}`;
+}
+
+// Copie d'une liste type en liste à cocher : nouvelle liste et ses éléments décochés.
+function copieModele(modele, elements, { titre, date_debut = null, date_fin = null, nouvelId = uid } = {}) {
+  const id = nouvelId();
+  const t = titre || (modele.genre === 'vacances' && date_debut ? titreVacances(date_debut, date_fin) : modele.titre);
+  const liste = { id, titre: t, genre: modele.genre || 'libre', est_modele: false, cle: null, modele_id: modele.id && !String(modele.id).startsWith('modele:') ? modele.id : null,
+    date_debut, date_fin, archivee: false };
+  const els = [...elements].sort((a, b) => (a.ordre ?? 0) - (b.ordre ?? 0)).map((e, i) => ({ id: nouvelId(), liste_id: id, texte: e.texte, section: e.section || null, coche: false, coche_par: null, coche_le: null, ordre: i }));
+  return { liste, elements: els };
+}
+
+// Réservation d'une envie visible par le compte courant ? Jamais pour la personne concernée (double sécurité, la RLS filtre déjà).
+const reservationVisible = (envie, resa, monMembre) => !!resa && resa.envie_id === envie.id && (!monMembre || envie.member_id !== monMembre);
+
+// Éléments du fil de l'Accueil : tâches du jour et en retard (pour la personne, ou pour toute la famille).
+function elementsAccueil(taches, { iso, membre = null, famille = false, nom = () => '' } = {}) {
+  return taches.filter((t) => !t.fait && t.echeance && t.echeance <= iso && (famille || !membre || !t.responsable || t.responsable === membre.id))
+    .sort(trierTaches).map((t) => {
+      const retard = t.echeance < iso;
+      const qui = t.responsable ? nom(t.responsable) : '';
+      return { heure: t.heure || null, titre: t.titre, detail: [retard ? `En retard (${libelleEcheance(t.echeance, iso).toLowerCase()})` : 'À faire aujourd\'hui', qui].filter(Boolean).join(' · '),
+        icone: ICON.check, act: 'taches-ouvrir', data: { id: t.id }, priorite: retard ? 2 : t.priorite ? 1 : 0 };
+    });
+}
+
+// ---------------------------------------------------------------------------
+// Listes types fournies (modifiables : la première modification en garde une copie pour le foyer)
+// ---------------------------------------------------------------------------
+const MODELES = [
+  { cle: 'avant-depart', titre: 'Avant départ', genre: 'depart', description: 'Pour partir l\'esprit tranquille, même pour un week-end.', sections: {
+    Maison: ['Fermer les fenêtres et les volets', 'Baisser le chauffage', 'Éteindre les lumières', 'Débrancher les appareils en veille', 'Vider la poubelle', 'Fermer la porte à clé'],
+    Affaires: ['Clés, papiers et cartes bancaires', 'Chargeurs de téléphone', 'Doudou et tétines de Zoé', 'Couches et lingettes', 'Médicaments', 'Eau et goûters pour la route'],
+    Chiens: ['Laisses et colliers', 'Croquettes et gamelles', 'Sacs à crottes'],
+    Voiture: ['Siège auto de Zoé', 'Faire le plein'],
+  } },
+  { cle: 'avant-nounou', titre: 'Avant nounou', genre: 'nounou', description: 'Tout ce que la nounou doit trouver en arrivant.', sections: {
+    Zoé: ['Repas et goûter préparés', 'Gourde d\'eau remplie', 'Couches et lingettes en place', 'Un change complet', 'Doudou et tétine', 'Médicaments et posologie notés si besoin'],
+    Consignes: ['Horaires de la journée notés', 'Heure de retour prévue indiquée', 'Allergies et consignes rappelées', 'Numéros d\'urgence affichés', 'Carnet de santé à portée de main', 'Clés ou code d\'entrée transmis'],
+    Chiens: ['Chiens sortis et nourris', 'Consignes pour les chiens laissées'],
+  } },
+  { cle: 'valise-ski', titre: 'Valise ski', genre: 'ski', description: 'Pour la montagne en hiver, avec Zoé et les chiens.', sections: {
+    Vêtements: ['Combinaison de ski de Zoé', 'Vestes de ski', 'Pantalons de ski', 'Sous-vêtements thermiques', 'Polaires', 'Chaussettes de ski', 'Gants et moufles', 'Bonnets et cache-cous', 'Après-skis', 'Pyjamas'],
+    Équipement: ['Casques', 'Masques et lunettes de soleil', 'Forfaits', 'Luge', 'Porte-bébé'],
+    Soins: ['Crème solaire haute protection', 'Stick à lèvres', 'Crème hydratante', 'Trousse à pharmacie'],
+    Chiens: ['Croquettes', 'Manteaux des chiens', 'Serviette pour les chiens'],
+  } },
+  { cle: 'valise-plage', titre: 'Valise plage', genre: 'plage', description: 'Pour la mer ou le lac en été.', sections: {
+    Vêtements: ['Maillots de bain', 'Maillot couche de Zoé', 'T-shirts anti-UV', 'Chapeaux et casquettes', 'Shorts et robes légères', 'Sandales', 'Pyjamas'],
+    Plage: ['Serviettes de plage', 'Tente anti-UV ou parasol', 'Seau, pelle et râteau', 'Brassards', 'Glacière'],
+    Soins: ['Crème solaire', 'Après-soleil', 'Lunettes de soleil', 'Anti-moustiques', 'Trousse à pharmacie'],
+    Chiens: ['Gamelle pliable et eau', 'Croquettes', 'Laisses'],
+  } },
+  { cle: 'vacances', titre: 'Mode vacances', genre: 'vacances', description: 'Valise, maison et courses de départ, avec les dates du séjour.', sections: {
+    Valise: ['Vêtements pour tout le séjour', 'Pyjamas', 'Affaires de toilette', 'Médicaments et ordonnances', 'Papiers d\'identité et cartes Vitale', 'Chargeurs', 'Doudou et tétines de Zoé', 'Couches et lingettes', 'Jouets et livres pour la route'],
+    Chiens: ['Garde des chiens organisée ou affaires prêtes', 'Croquettes pour tout le séjour', 'Carnets de santé des chiens', 'Laisses et gamelles'],
+    Maison: ['Fermer les volets', 'Arroser les plantes ou les confier', 'Sortir les poubelles', 'Faire suivre ou relever le courrier', 'Vider le réfrigérateur', 'Couper l\'eau', 'Mettre le chauffage en hors-gel', 'Débrancher les appareils', 'Prévenir un voisin', 'Fermer à clé'],
+    'Courses de départ': ['Eau et goûters pour la route', 'Petits pots et lait de Zoé', 'Pique-nique du trajet', 'Croquettes', 'Crème solaire'],
+  } },
+];
+const elementsModele = (m) => Object.entries(m.sections).flatMap(([section, l]) => l.map((texte) => ({ texte, section })))
+  .map((e, i) => ({ ...e, id: `m:${m.cle}:${i}`, liste_id: `modele:${m.cle}`, ordre: i, coche: false }));
+
+const GENRES = {
+  libre: { libelle: 'Liste', icone: I('<path d="M9 6h11M9 12h11M9 18h11"/><path d="M4.5 6h.01M4.5 12h.01M4.5 18h.01"/>') },
+  valise: { libelle: 'Valise', icone: I('<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/>') },
+  cadeaux: { libelle: 'Cadeaux', icone: I('<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v9h14v-9M12 8S10.5 3 8 3a2.5 2.5 0 0 0 0 5M12 8s1.5-5 4-5a2.5 2.5 0 0 1 0 5"/>') },
+  bricolage: { libelle: 'Bricolage', icone: I('<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/>') },
+  films: { libelle: 'Films', icone: I('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4"/>') },
+  vacances: { libelle: 'Vacances', icone: I('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>') },
+  depart: { libelle: 'Départ', icone: I('<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>') },
+  nounou: { libelle: 'Nounou', icone: ICON.heart },
+  ski: { libelle: 'Ski', icone: I('<path d="m3 20 6.5-11 4 6.5L16 12l5 8z"/>') },
+  plage: { libelle: 'Plage', icone: I('<path d="M12 3a9 9 0 0 1 9 9H3a9 9 0 0 1 9-9zM12 12v7a2 2 0 0 0 4 0"/>') },
+};
+const GENRES_LIBRES = ['libre', 'valise', 'cadeaux', 'bricolage', 'films', 'vacances'];
+const iconeGenre = (g) => (GENRES[g] || GENRES.libre).icone;
+const REC_CHOIX = [['', 'Une seule fois'], ['jour:1', 'Chaque jour'], ['semaine:1', 'Chaque semaine'], ['semaine:2', 'Toutes les 2 semaines'], ['mois:1', 'Chaque mois'],
+  ['mois:3', 'Tous les 3 mois'], ['mois:6', 'Tous les 6 mois'], ['an:1', 'Chaque année']];
+
+// ---------------------------------------------------------------------------
+// Données : chargement, cache hors ligne, écritures (Sync et lots)
+// ---------------------------------------------------------------------------
+const aujourdhui = () => isoDate(new Date());
+const maintenantIso = () => new Date().toISOString();
+const monMembre = () => state.compte?.member_id || null;
+const nomMembre = (id) => memberById(id)?.nom || '';
+function nomCompte(userId) {
+  if (!userId) return '';
+  if (userId === me()) return 'toi';
+  const c = state.comptes.find((x) => x.user_id === userId);
+  return nomMembre(c?.member_id) || (c?.email ? c.email.split('@')[0] : 'quelqu\'un');
+}
+const sauverCache = () => cache.set('donnees', { taches: D.taches, listes: D.listes, elements: D.elements, envies: D.envies, resas: D.resas });
+const remplacer = (tab, ligne) => { const i = tab.findIndex((x) => x.id === ligne.id); if (i >= 0) tab[i] = { ...tab[i], ...ligne }; else tab.push(ligne); return ligne; };
+
+async function enregistrer(table, tab, ligne, opts) {
+  const l = await Sync.upsert(table, { ...ligne, updated_at: maintenantIso() }, opts);
+  remplacer(tab, l);
+  sauverCache();
+  return l;
+}
+async function retirer(table, tab, id) {
+  await Sync.supprimer(table, id);
+  const i = tab.findIndex((x) => x.id === id);
+  if (i >= 0) tab.splice(i, 1);
+  sauverCache();
+}
+// Écriture groupée (lancer une liste type : une seule requête) ; hors ligne, chaque ligne part dans la file.
+async function ecrireLot(table, lignes) {
+  if (!lignes.length) return [];
+  const rows = lignes.map((l) => ({ ...own(), ...l, updated_at: maintenantIso() }));
+  try {
+    const { data, error } = await db.from(table).upsert(rows, { onConflict: 'id' }).select();
+    if (error) throw error;
+    return data;
+  } catch (e) {
+    if (!isNetworkError(e)) throw e;
+    for (const row of rows) Queue.push({ type: 'upsert', table, row, onConflict: 'id' });
+    return rows;
+  }
+}
+
+async function charger(force, { horsLigne } = {}) {
+  if (horsLigne) {
+    Object.assign(D, cache.get('donnees', {}), { ok: true });
+    pretResoudre();
+    return;
+  }
+  try {
+    const depuis = new Date(Date.now() - 30 * 864e5).toISOString();
+    const [t, l, e, v, r] = await Promise.all([
+      db.from(T.taches).select('*').eq('foyer_id', foyer()).or(`fait.eq.false,fait_le.gte.${depuis}`),
+      db.from(T.listes).select('*').eq('foyer_id', foyer()),
+      db.from(T.liste_elements).select('*').eq('foyer_id', foyer()),
+      db.from(T.envies).select('*').eq('foyer_id', foyer()),
+      db.from(T.envies_reservations).select('*').eq('foyer_id', foyer()),
+    ]);
+    for (const x of [t, l, e, v, r]) if (x.error) throw x.error;
+    Object.assign(D, { taches: t.data, listes: l.data, elements: e.data, envies: v.data, resas: r.data, ok: true });
+    sauverCache();
+    if (!state.comptes.length) Foyer.loadComptes().catch(() => {});
+    TempsReel.abonner();
+  } catch (err) {
+    if (isNetworkError(err)) Object.assign(D, cache.get('donnees', {}), { ok: true });
+    throw err;
+  } finally {
+    pretResoudre();
+  }
+}
+
+// Cochage en direct : changements des autres téléphones reçus par Supabase Realtime.
+const TempsReel = {
+  canal: null,
+  foyer: null,
+  tableaux: () => ({ [T.taches]: D.taches, [T.listes]: D.listes, [T.liste_elements]: D.elements, [T.envies]: D.envies }),
+  abonner() {
+    if (typeof db.channel !== 'function' || !foyer()) return;
+    if (this.canal && this.foyer === foyer()) return;
+    this.desabonner();
+    try {
+      this.foyer = foyer();
+      this.canal = db.channel(`taches-${foyer()}`);
+      for (const table of Object.keys(this.tableaux())) {
+        this.canal.on('postgres_changes', { event: '*', schema: 'public', table }, (p) => this.recevoir({ table, eventType: p.eventType, new: p.new, old: p.old }));
+      }
+      this.canal.subscribe();
+    } catch (e) { console.warn('temps réel des listes', e); this.canal = null; }
+  },
+  desabonner() { if (this.canal) { try { db.removeChannel(this.canal); } catch { /* déjà fermé */ } } this.canal = null; },
+  recevoir({ table, eventType, new: nouveau, old }) {
+    const tab = this.tableaux()[table];
+    if (!tab) return;
+    if (eventType === 'DELETE') {
+      const i = tab.findIndex((x) => x.id === old?.id);
+      if (i >= 0) tab.splice(i, 1);
+      if (table === T.listes) D.elements = D.elements.filter((x) => x.liste_id !== old?.id);
+    } else if (nouveau?.id && (!nouveau.foyer_id || nouveau.foyer_id === foyer())) remplacer(tab, nouveau);
+    sauverCache();
+    rafraichir();
+  },
+};
+
+// Nouveau rendu de l'écran sans perdre une saisie en cours : on ne retouche alors que les cases à cocher.
+function rafraichir() {
+  if (state.tab !== 'taches' || sheets.length) return;
+  const actif = document.activeElement;
+  if (actif && actif.closest?.('#main') && /^(INPUT|TEXTAREA|SELECT)$/.test(actif.tagName)) {
+    for (const e of D.elements) {
+      const b = document.querySelector(`[data-act="taches-el-cocher"][data-id="${e.id}"]`);
+      if (!b) continue;
+      b.setAttribute('aria-checked', String(!!e.coche));
+      b.closest('.taches-el')?.classList.toggle('fait', !!e.coche);
+    }
+    return;
+  }
+  render();
+}
+let dernierRafraichissement = Date.now();
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible' || !state.loaded || !navigator.onLine || Date.now() - dernierRafraichissement < 30000) return;
+  dernierRafraichissement = Date.now();
+  charger(true, { horsLigne: false }).then(rafraichir).catch(() => {});
+});
+
+// ---------------------------------------------------------------------------
+// Tâches : création, cochage (récurrence), feuille d'édition
+// ---------------------------------------------------------------------------
+const champsTache = (t) => ({ id: t.id, titre: String(t.titre || '').trim().slice(0, 200), notes: t.notes || null, responsable: t.responsable || null, echeance: t.echeance || null,
+  heure: t.heure || null, priorite: t.priorite ? 1 : 0, recurrence: t.recurrence || null, fait: !!t.fait, fait_le: t.fait_le || null, fait_par: t.fait_par || null,
+  precedente_id: t.precedente_id || null, origine: t.origine || null, origine_id: t.origine_id != null ? String(t.origine_id) : null });
+
+async function creerTache(donnees) {
+  await pret;
+  if (!String(donnees.titre || '').trim()) throw new Error('tâche sans titre');
+  let base = null;
+  if (donnees.origine && donnees.origine_id != null) base = D.taches.find((t) => !t.fait && t.origine === donnees.origine && t.origine_id === String(donnees.origine_id));
+  return enregistrer(T.taches, D.taches, champsTache({ ...(base || {}), ...donnees, id: base?.id || donnees.id }));
+}
+
+async function basculerTache(t) {
+  if (!t.fait) {
+    await enregistrer(T.taches, D.taches, champsTache({ ...t, fait: true, fait_le: maintenantIso(), fait_par: me() }));
+    if (t.recurrence) {
+      const suivante = prochaineEcheance(t.echeance, t.recurrence, aujourdhui());
+      await enregistrer(T.taches, D.taches, champsTache({ ...t, id: uid(), echeance: suivante, fait: false, fait_le: null, fait_par: null, precedente_id: t.id }));
+      return `Faite. Prochaine fois : ${libelleEcheance(suivante, aujourdhui()).toLowerCase()}`;
+    }
+    return 'Tâche faite';
+  }
+  await enregistrer(T.taches, D.taches, champsTache({ ...t, fait: false, fait_le: null, fait_par: null }));
+  // Une tâche récurrente décochée reprend sa place : l'occurrence suivante créée au cochage disparaît.
+  for (const s of D.taches.filter((x) => x.precedente_id === t.id && !x.fait)) await retirer(T.taches, D.taches, s.id);
+  return 'Tâche à refaire';
+}
+
+const optionsMembres = (choisi, vide = 'Personne en particulier') => `<option value="">${esc(vide)}</option>${state.members.map((m) => `<option value="${m.id}" ${m.id === choisi ? 'selected' : ''}>${esc(m.nom)}</option>`).join('')}`;
+const cleRec = (r) => (r?.freq ? `${r.freq}:${Math.max(1, Number(r.n) || 1)}` : '');
+
+function feuilleTache(t = {}) {
+  const neuve = !t.id || !D.taches.some((x) => x.id === t.id);
+  const rc = cleRec(t.recurrence);
+  const choix = REC_CHOIX.some(([v]) => v === rc) ? REC_CHOIX : [...REC_CHOIX, [rc, libelleRecurrence(t.recurrence)]];
+  const el = openSheet(`${sheetHead(neuve ? 'Nouvelle tâche' : 'Tâche')}
+    <form data-form="taches-tache" class="stack taches-form">
+      <label class="field"><span>Quoi ?</span><input class="input" name="titre" required maxlength="200" value="${esc(t.titre || '')}" placeholder="Appeler le vétérinaire"></label>
+      <label class="field"><span>Qui s'en charge ?</span><select class="input" name="responsable">${optionsMembres(t.responsable)}</select></label>
+      <div class="grid2">
+        <label class="field"><span>Échéance</span><input class="input" type="date" name="echeance" value="${esc(t.echeance || '')}"></label>
+        <label class="field"><span>Heure</span><input class="input" type="time" name="heure" value="${esc(t.heure || '')}"></label>
+      </div>
+      <label class="field"><span>Répétition</span><select class="input" name="recurrence">${choix.map(([v, l]) => `<option value="${v}" ${v === rc ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></label>
+      <label class="check"><input type="checkbox" name="priorite" ${t.priorite ? 'checked' : ''}> Importante</label>
+      <label class="field"><span>Notes</span><textarea class="input" name="notes" rows="2" maxlength="2000" placeholder="Numéro, adresse, détails…">${esc(t.notes || '')}</textarea></label>
+      <p class="muted small taches-aide">Une tâche répétée revient d'elle-même quand tu la coches : la suivante est créée à la bonne date.</p>
+      <div class="grid2">${neuve ? '<button type="button" class="btn" data-x="annuler">Annuler</button>' : '<button type="button" class="btn danger" data-x="supprimer">Supprimer</button>'}
+        <button class="btn primary">${neuve ? 'Ajouter' : 'Enregistrer'}</button></div>
+    </form>`);
+  $('form', el).addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    const [freq, n] = f.recurrence.value.split(':');
+    const recurrence = freq ? { freq, n: Number(n) } : null;
+    if (recurrence?.freq === 'mois' && f.echeance.value) recurrence.jour = isoVersDate(f.echeance.value).getDate();
+    try {
+      await creerTache({ ...t, id: neuve ? undefined : t.id, titre: f.titre.value, responsable: f.responsable.value || null, echeance: f.echeance.value || null,
+        heure: f.heure.value || null, recurrence, priorite: f.priorite.checked ? 1 : 0, notes: f.notes.value.trim() || null });
+      closeSheet();
+      toast(neuve ? 'Tâche ajoutée' : 'Tâche enregistrée');
+      render();
+    } catch (err) { fail(err); }
+  });
+  el.addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-x]');
+    if (!b) return;
+    if (b.dataset.x === 'annuler') closeSheet();
+    if (b.dataset.x === 'supprimer') {
+      closeSheet();
+      if (!(await confirmSheet(`Supprimer la tâche « ${t.titre} » ?`, 'Supprimer'))) return;
+      try { await retirer(T.taches, D.taches, t.id); toast('Tâche supprimée'); render(); } catch (err) { fail(err); }
+    }
+  });
+  return el;
+}
+
+// ---------------------------------------------------------------------------
+// Listes et listes types
+// ---------------------------------------------------------------------------
+const elementsDe = (listeId) => {
+  if (String(listeId).startsWith('modele:')) { const m = MODELES.find((x) => `modele:${x.cle}` === listeId); return m ? elementsModele(m) : []; }
+  return D.elements.filter((e) => e.liste_id === listeId);
+};
+// Listes types : celles du foyer (modifiées ou créées), puis les listes fournies pas encore modifiées.
+function modeles() {
+  const perso = D.listes.filter((l) => l.est_modele);
+  const fournis = MODELES.filter((m) => !perso.some((l) => l.cle === m.cle)).map((m) => ({ id: `modele:${m.cle}`, titre: m.titre, genre: m.genre, cle: m.cle, est_modele: true, virtuel: true }));
+  const ordre = (l) => { const i = MODELES.findIndex((m) => m.cle === l.cle); return i < 0 ? 99 : i; };
+  return [...perso, ...fournis].sort((a, b) => ordre(a) - ordre(b) || String(a.titre).localeCompare(String(b.titre), 'fr'));
+}
+const listeParId = (id) => (String(id).startsWith('modele:') ? modeles().find((m) => m.id === id) : D.listes.find((l) => l.id === id)) || null;
+const descriptionModele = (l) => MODELES.find((m) => m.cle === l.cle)?.description || '';
+
+// Première modification d'une liste type fournie : le foyer en garde sa propre copie (même clé).
+async function materialiser(listeId) {
+  if (!String(listeId).startsWith('modele:')) return listeId;
+  const m = MODELES.find((x) => `modele:${x.cle}` === listeId);
+  const liste = await enregistrer(T.listes, D.listes, { id: uid(), titre: m.titre, genre: m.genre, est_modele: true, cle: m.cle, archivee: false });
+  const els = elementsModele(m).map((e) => ({ id: uid(), liste_id: liste.id, texte: e.texte, section: e.section, coche: false, ordre: e.ordre }));
+  D.elements.push(...await ecrireLot(T.liste_elements, els));
+  sauverCache();
+  if (ui.ouverte === listeId) ui.ouverte = liste.id;
+  return liste.id;
+}
+
+async function lancerListe(modeleId, { titre, date_debut = null, date_fin = null } = {}) {
+  await pret;
+  const id = MODELES.some((m) => m.cle === modeleId) ? (D.listes.find((l) => l.est_modele && l.cle === modeleId)?.id || `modele:${modeleId}`) : modeleId;
+  const modele = listeParId(id);
+  if (!modele) throw new Error(`liste type inconnue : ${modeleId}`);
+  const copie = copieModele(modele, elementsDe(id), { titre, date_debut, date_fin });
+  const l = await enregistrer(T.listes, D.listes, copie.liste);
+  D.elements.push(...await ecrireLot(T.liste_elements, copie.elements));
+  sauverCache();
+  return l;
+}
+
+async function basculerElement(e) {
+  const coche = !e.coche;
+  return enregistrer(T.liste_elements, D.elements, { ...e, coche, coche_par: coche ? me() : null, coche_le: coche ? maintenantIso() : null });
+}
+
+async function ajouterElement(listeId, texte, section) {
+  const id = await materialiser(listeId);
+  const ordre = Math.max(-1, ...elementsDe(id).map((e) => e.ordre ?? 0)) + 1;
+  return enregistrer(T.liste_elements, D.elements, { id: uid(), liste_id: id, texte: texte.slice(0, 200), section: section || null, coche: false, ordre });
+}
+
+function feuilleNouvelleListe() {
+  const el = openSheet(`${sheetHead('Nouvelle liste')}
+    <form data-form="taches-liste" class="stack taches-form">
+      <label class="field"><span>Nom</span><input class="input" name="titre" required maxlength="120" placeholder="Films à voir, cadeaux de Noël…"></label>
+      <fieldset class="taches-genres"><legend class="muted small">Genre</legend>
+        ${GENRES_LIBRES.map((g, i) => `<label class="chip taches-genre"><input type="radio" name="genre" value="${g}" ${i === 0 ? 'checked' : ''}>${GENRES[g].icone}${esc(GENRES[g].libelle)}</label>`).join('')}</fieldset>
+      <div class="grid2">
+        <label class="field"><span>Du (facultatif)</span><input class="input" type="date" name="debut"></label>
+        <label class="field"><span>Au</span><input class="input" type="date" name="fin"></label>
+      </div>
+      <label class="check"><input type="checkbox" name="modele"> C'est une liste type (à relancer plusieurs fois)</label>
+      <button class="btn primary block">Créer la liste</button>
+    </form>`);
+  $('form', el).addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    try {
+      const l = await enregistrer(T.listes, D.listes, { id: uid(), titre: f.titre.value.trim().slice(0, 120), genre: f.genre.value, est_modele: f.modele.checked,
+        date_debut: f.debut.value || null, date_fin: f.fin.value || f.debut.value || null, archivee: false });
+      closeSheet();
+      ui.ouverte = l.id;
+      render();
+      setTimeout(() => $('[data-form="taches-element"] [name="texte"]')?.focus(), 80);
+    } catch (err) { fail(err); }
+  });
+  setTimeout(() => $('[name="titre"]', el)?.focus(), 60);
+}
+
+function feuilleLancer(modeleId) {
+  const m = listeParId(modeleId);
+  if (!m) return;
+  const vac = m.genre === 'vacances';
+  const n = elementsDe(modeleId).length;
+  const el = openSheet(`${sheetHead(`Lancer « ${m.titre} »`)}
+    <form data-form="taches-lancer" class="stack taches-form">
+      <p class="muted small" style="margin:0">Une copie de ${n} élément${n > 1 ? 's' : ''} à cocher ; la liste type reste intacte pour la prochaine fois.</p>
+      <label class="field"><span>Nom</span><input class="input" name="titre" maxlength="120" value="${esc(vac ? '' : m.titre)}" placeholder="${vac ? 'Vacances du… (rempli avec les dates)' : ''}"></label>
+      <div class="grid2">
+        <label class="field"><span>${vac ? 'Départ' : 'Le (facultatif)'}</span><input class="input" type="date" name="debut" ${vac ? 'required' : ''}></label>
+        <label class="field"><span>${vac ? 'Retour' : 'Jusqu\'au'}</span><input class="input" type="date" name="fin"></label>
+      </div>
+      <button class="btn primary block">${ICON.play} Lancer la liste</button>
+    </form>`);
+  $('form', el).addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    const debut = f.debut.value || null;
+    const fin = f.fin.value || null;
+    if (debut && fin && fin < debut) { toast('Le retour doit suivre le départ'); return; }
+    try {
+      const l = await lancerListe(modeleId, { titre: f.titre.value.trim() || null, date_debut: debut, date_fin: fin || debut });
+      closeSheet();
+      ui.ouverte = l.id;
+      toast('Liste lancée : à toi de cocher');
+      render();
+      window.scrollTo({ top: 0 });
+    } catch (err) { fail(err); }
+  });
+}
+
+function feuilleElement(e) {
+  const liste = listeParId(e.liste_id);
+  const sections = [...new Set(elementsDe(e.liste_id).map((x) => x.section).filter(Boolean))];
+  const el = openSheet(`${sheetHead('Élément de la liste')}
+    <form data-form="taches-el" class="stack taches-form">
+      <label class="field"><span>Texte</span><input class="input" name="texte" required maxlength="200" value="${esc(e.texte)}"></label>
+      <label class="field"><span>Rubrique</span><input class="input" name="section" maxlength="60" list="taches-sections" value="${esc(e.section || '')}" placeholder="Sans rubrique">
+        <datalist id="taches-sections">${sections.map((s) => `<option value="${esc(s)}">`).join('')}</datalist></label>
+      <div class="grid2"><button type="button" class="btn danger" data-x="supprimer">Retirer</button><button class="btn primary">Enregistrer</button></div>
+    </form>`);
+  $('form', el).addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const f = ev.target;
+    try {
+      const id = await materialiser(e.liste_id);
+      const cible = id === e.liste_id ? e : D.elements.find((x) => x.liste_id === id && x.ordre === e.ordre) || e;
+      await enregistrer(T.liste_elements, D.elements, { ...cible, texte: f.texte.value.trim().slice(0, 200), section: f.section.value.trim() || null });
+      closeSheet();
+      render();
+    } catch (err) { fail(err); }
+  });
+  el.addEventListener('click', async (ev) => {
+    if (!ev.target.closest('[data-x="supprimer"]')) return;
+    try {
+      const id = await materialiser(e.liste_id);
+      const cible = id === e.liste_id ? e : D.elements.find((x) => x.liste_id === id && x.ordre === e.ordre);
+      if (cible) await retirer(T.liste_elements, D.elements, cible.id);
+      closeSheet();
+      toast(`Retiré de « ${liste?.titre || 'la liste'} »`);
+      render();
+    } catch (err) { fail(err); }
+  });
+}
+
+function feuilleMenuListe(l) {
+  const els = elementsDe(l.id);
+  const options = l.est_modele
+    ? [['lancer', ICON.play, 'Lancer cette liste'], ['renommer', ICON.edit, 'Renommer'],
+      ...(l.virtuel ? [] : l.cle ? [['retablir', ICON.swap, 'Rétablir la liste d\'origine']] : [['supprimer', ICON.trash, 'Supprimer la liste type']])]
+    : [['renommer', ICON.edit, 'Renommer et dates'], ['decocher', ICON.swap, 'Tout décocher'], ['modele', ICON.copy, 'Enregistrer comme liste type'],
+      [l.archivee ? 'reprendre' : 'archiver', ICON.check, l.archivee ? 'Remettre en cours' : 'Terminer la liste'], ['supprimer', ICON.trash, 'Supprimer la liste']];
+  const el = openSheet(`${sheetHead(l.titre)}<div class="stack">${options.map(([x, ic, t]) => `<button class="btn block taches-menu ${x === 'supprimer' ? 'danger' : ''}" data-x="${x}">${ic}<span class="grow">${esc(t)}</span></button>`).join('')}</div>`);
+  el.addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-x]');
+    if (!b) return;
+    const x = b.dataset.x;
+    closeSheet();
+    try {
+      if (x === 'lancer') return feuilleLancer(l.id);
+      if (x === 'renommer') return feuilleRenommer(l);
+      if (x === 'decocher') {
+        await ecrireLot(T.liste_elements, els.filter((y) => y.coche).map((y) => ({ ...y, coche: false, coche_par: null, coche_le: null })));
+        els.forEach((y) => { y.coche = false; y.coche_par = null; y.coche_le = null; });
+        sauverCache();
+        toast('Tout est décoché');
+      }
+      if (x === 'modele') {
+        const id = uid();
+        await enregistrer(T.listes, D.listes, { id, titre: l.titre, genre: l.genre, est_modele: true, archivee: false });
+        D.elements.push(...await ecrireLot(T.liste_elements, copieModele(l, els, { nouvelId: uid }).elements.map((y) => ({ ...y, liste_id: id }))));
+        sauverCache();
+        toast('Liste type enregistrée');
+      }
+      if (x === 'archiver' || x === 'reprendre') {
+        await enregistrer(T.listes, D.listes, { ...l, archivee: x === 'archiver' });
+        if (x === 'archiver') { ui.ouverte = null; toast('Liste terminée, bravo !'); }
+      }
+      if (x === 'retablir') {
+        if (!(await confirmSheet(`Rétablir « ${l.titre} » telle qu'elle était fournie ? Tes modifications seront perdues.`, 'Rétablir'))) return;
+        await retirer(T.listes, D.listes, l.id);
+        D.elements = D.elements.filter((y) => y.liste_id !== l.id);
+        sauverCache();
+        ui.ouverte = `modele:${l.cle}`;
+        toast('Liste type rétablie');
+      }
+      if (x === 'supprimer') {
+        if (!(await confirmSheet(`Supprimer « ${l.titre} » et ses ${els.length} élément${els.length > 1 ? 's' : ''} ?`, 'Supprimer'))) return;
+        await retirer(T.listes, D.listes, l.id);
+        D.elements = D.elements.filter((y) => y.liste_id !== l.id);
+        sauverCache();
+        ui.ouverte = null;
+        toast('Liste supprimée');
+      }
+      render();
+    } catch (err) { fail(err); }
+  });
+}
+
+function feuilleRenommer(l) {
+  const el = openSheet(`${sheetHead('Renommer')}
+    <form class="stack taches-form">
+      <label class="field"><span>Nom</span><input class="input" name="titre" required maxlength="120" value="${esc(l.titre)}"></label>
+      ${l.est_modele ? '' : `<div class="grid2"><label class="field"><span>Du</span><input class="input" type="date" name="debut" value="${esc(l.date_debut || '')}"></label>
+        <label class="field"><span>Au</span><input class="input" type="date" name="fin" value="${esc(l.date_fin || '')}"></label></div>`}
+      <button class="btn primary block">Enregistrer</button>
+    </form>`);
+  $('form', el).addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    try {
+      const id = await materialiser(l.id);
+      const base = D.listes.find((x) => x.id === id) || l;
+      await enregistrer(T.listes, D.listes, { ...base, titre: f.titre.value.trim().slice(0, 120), ...(l.est_modele ? {} : { date_debut: f.debut.value || null, date_fin: f.fin.value || null }) });
+      closeSheet();
+      render();
+    } catch (err) { fail(err); }
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Envies de cadeaux
+// ---------------------------------------------------------------------------
+const resaDe = (envie) => D.resas.find((r) => reservationVisible(envie, r, monMembre())) || null;
+
+function feuilleEnvie(envie = {}) {
+  const neuve = !envie.id;
+  const pour = envie.member_id || ui.membreEnvies || state.members[0]?.id;
+  const el = openSheet(`${sheetHead(neuve ? 'Nouvelle envie' : 'Envie')}
+    <form class="stack taches-form">
+      <label class="field"><span>Pour</span><select class="input" name="pour" ${neuve ? '' : 'disabled'}>${state.members.map((m) => `<option value="${m.id}" ${m.id === pour ? 'selected' : ''}>${esc(m.nom)}</option>`).join('')}</select></label>
+      <label class="field"><span>Envie</span><input class="input" name="titre" required maxlength="160" value="${esc(envie.titre || '')}" placeholder="Un livre, un jeu, une sortie…"></label>
+      <label class="field"><span>Précisions</span><input class="input" name="detail" maxlength="300" value="${esc(envie.detail || '')}" placeholder="Taille, couleur, édition…"></label>
+      <div class="grid2">
+        <label class="field"><span>Lien</span><input class="input" name="lien" type="url" inputmode="url" maxlength="500" value="${esc(envie.lien || '')}" placeholder="https://…"></label>
+        <label class="field"><span>Prix indicatif</span><input class="input" name="prix" maxlength="30" value="${esc(envie.prix || '')}" placeholder="25 €"></label>
+      </div>
+      <div class="grid2">${neuve ? '<button type="button" class="btn" data-x="annuler">Annuler</button>' : '<button type="button" class="btn danger" data-x="supprimer">Retirer</button>'}
+        <button class="btn primary">${neuve ? 'Ajouter' : 'Enregistrer'}</button></div>
+    </form>`);
+  $('form', el).addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    const lien = f.lien.value.trim();
+    if (lien && !safeUrl(lien)) { toast('Lien invalide : il doit commencer par https://'); return; }
+    try {
+      await enregistrer(T.envies, D.envies, { ...(neuve ? { id: uid(), member_id: f.pour.value } : envie), titre: f.titre.value.trim().slice(0, 160), detail: f.detail.value.trim() || null,
+        lien: lien ? safeUrl(lien) : null, prix: f.prix.value.trim() || null });
+      if (neuve) ui.membreEnvies = f.pour.value;
+      closeSheet();
+      toast(neuve ? 'Envie ajoutée' : 'Envie enregistrée');
+      render();
+    } catch (err) { fail(err); }
+  });
+  el.addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-x]');
+    if (!b) return;
+    if (b.dataset.x === 'annuler') closeSheet();
+    if (b.dataset.x === 'supprimer') {
+      try { await retirer(T.envies, D.envies, envie.id); D.resas = D.resas.filter((r) => r.envie_id !== envie.id); sauverCache(); closeSheet(); toast('Envie retirée'); render(); } catch (err) { fail(err); }
+    }
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Rendu
+// ---------------------------------------------------------------------------
+const avatar = (id) => { const n = nomMembre(id); return n ? `<span class="taches-avatar" aria-hidden="true">${esc(n.charAt(0).toUpperCase())}</span>` : ''; };
+
+function ligneTache(t, auj) {
+  const retard = !t.fait && t.echeance && t.echeance < auj;
+  const meta = [
+    t.priorite ? '<span class="taches-badge">Importante</span>' : '',
+    t.echeance ? `<span class="${retard ? 'taches-retard' : ''}">${ICON.clock}${esc(libelleEcheance(t.echeance, auj))}${t.heure ? ` à ${esc(t.heure.replace(':', ' h '))}` : ''}</span>` : '',
+    t.recurrence ? `<span>${ICON.swap}${esc(libelleRecurrence(t.recurrence))}</span>` : '',
+    t.responsable && nomMembre(t.responsable) ? `<span>${avatar(t.responsable)}${esc(nomMembre(t.responsable))}</span>` : '',
+    t.notes ? `<span>${ICON.edit}Notes</span>` : '',
+  ].filter(Boolean).join('');
+  return `<div class="taches-ligne ${t.fait ? 'fait' : ''} ${retard ? 'en-retard' : ''}">
+    <button class="taches-coche" role="checkbox" aria-checked="${!!t.fait}" data-act="taches-cocher" data-id="${t.id}" aria-label="${t.fait ? 'Décocher' : 'Cocher'} « ${esc(t.titre)} »">${ICON.check}</button>
+    <button class="taches-corps" data-act="taches-ouvrir" data-id="${t.id}"><span class="taches-titre">${esc(t.titre)}</span>${meta ? `<span class="taches-meta">${meta}</span>` : ''}</button>
+  </div>`;
+}
+
+function vueTaches() {
+  const auj = aujourdhui();
+  const filtre = (t) => ui.filtre === 'tous' || (ui.filtre === 'aucun' ? !t.responsable : t.responsable === ui.filtre);
+  const liste = D.taches.filter(filtre);
+  const groupes = groupesTaches(liste, auj);
+  const faites = liste.filter((t) => t.fait).sort((a, b) => String(b.fait_le || '').localeCompare(String(a.fait_le || '')));
+  const chips = [['tous', 'Tout le monde'], ...state.members.map((m) => [m.id, m.nom]), ['aucun', 'Sans responsable']]
+    .map(([v, l]) => `<button class="chip" data-act="taches-filtre" data-v="${v}" aria-pressed="${ui.filtre === v}">${esc(l)}</button>`).join('');
+  const corps = groupes.length
+    ? groupes.map((g) => `<h3 class="section-title taches-groupe ${g.cle === 'retard' ? 'retard' : ''}">${esc(g.titre)} <span class="taches-compte">${g.taches.length}</span></h3>
+      <div class="card taches-liste">${g.taches.map((t) => ligneTache(t, auj)).join('')}</div>`).join('')
+    : `<div class="empty taches-vide">${ICON.check}<p><b>Rien à faire${ui.filtre !== 'tous' ? ' de ce côté' : ''} !</b><br>Écris une tâche ci-dessus, ou touche le « + » en haut de l'écran.</p></div>`;
+  const blocFaites = faites.length ? `<button class="btn block taches-voir-faites" data-act="taches-faites" aria-expanded="${ui.faites}">${ui.faites ? 'Masquer' : 'Voir'} les tâches faites (${faites.length})</button>
+    ${ui.faites ? `<div class="card taches-liste">${faites.slice(0, 40).map((t) => ligneTache(t, auj)).join('')}</div>` : ''}` : '';
+  return `<form data-form="taches-rapide" class="card taches-saisie" autocomplete="off">
+      <input class="input" name="texte" maxlength="200" placeholder="Poubelles mardi, véto…" aria-label="Nouvelle tâche en une phrase">
+      <button class="btn primary" aria-label="Ajouter la tâche">${ICON.plus}</button>
+      <button type="button" class="btn" data-act="taches-nouvelle" aria-label="Nouvelle tâche détaillée">${ICON.edit}</button>
+    </form>
+    <div class="chips taches-chips">${chips}</div>${corps}${blocFaites}`;
+}
+
+function carteListe(l) {
+  const p = progression(elementsDe(l.id));
+  const dates = l.date_debut ? (l.date_fin && l.date_fin !== l.date_debut ? `${fmtJourMois(l.date_debut)} → ${fmtJourMois(l.date_fin)}` : fmtJourMois(l.date_debut)) : '';
+  return `<button class="card taches-carte" data-act="taches-liste-ouvrir" data-id="${l.id}">
+    <span class="taches-carte-ico">${iconeGenre(l.genre)}</span>
+    <span class="grow"><b class="taches-carte-titre">${esc(l.titre)}</b>
+      <span class="muted small">${l.est_modele ? `${p.total} élément${p.total > 1 ? 's' : ''}${l.virtuel ? '' : ' · modifiée'}` : `${p.faits}/${p.total} coché${p.faits > 1 ? 's' : ''}`}${dates ? ` · ${esc(dates)}` : ''}</span>
+      ${l.est_modele ? `<span class="muted small taches-carte-desc">${esc(descriptionModele(l))}</span>` : `<span class="taches-barre" aria-hidden="true"><i style="width:${p.pct}%"></i></span>`}</span>
+    ${ICON.next}</button>`;
+}
+
+function vueListes() {
+  if (ui.ouverte && listeParId(ui.ouverte)) return vueListe(listeParId(ui.ouverte));
+  ui.ouverte = null;
+  const enCours = D.listes.filter((l) => !l.est_modele && !l.archivee).sort((a, b) => String(a.date_debut || '9').localeCompare(String(b.date_debut || '9')) || String(b.updated_at || '').localeCompare(String(a.updated_at || '')));
+  const finies = D.listes.filter((l) => !l.est_modele && l.archivee);
+  return `<div class="row taches-entete"><h3 class="section-title grow">En cours</h3><button class="btn small" data-act="taches-liste-nouvelle">${ICON.plus} Nouvelle liste</button></div>
+    ${enCours.length ? `<div class="taches-cartes">${enCours.map(carteListe).join('')}</div>` : '<p class="muted taches-vide-court">Aucune liste en cours. Crée une liste libre, ou lance une liste type ci-dessous.</p>'}
+    <h3 class="section-title">Listes types</h3>
+    <p class="muted small taches-aide">Lance une liste type : elle crée une copie à cocher, et le modèle reste prêt pour la prochaine fois. Touche une liste type pour la modifier.</p>
+    <div class="taches-cartes">${modeles().map((m) => `<div class="taches-modele">${carteListe(m)}<button class="btn small primary taches-lancer" data-act="taches-lancer" data-id="${m.id}">${ICON.play} Lancer</button></div>`).join('')}</div>
+    ${finies.length ? `<details class="taches-finies"><summary class="section-title">Listes terminées (${finies.length})</summary><div class="taches-cartes">${finies.map(carteListe).join('')}</div></details>` : ''}`;
+}
+
+function vueListe(l) {
+  const els = elementsDe(l.id);
+  const p = progression(els);
+  const groupes = sectionsDe(els);
+  const sections = groupes.map((g) => g.section).filter(Boolean);
+  const dates = l.date_debut ? `${fmtJourMois(l.date_debut)}${l.date_fin && l.date_fin !== l.date_debut ? ` → ${fmtJourMois(l.date_fin)}` : ''}` : '';
+  const ligne = (e) => {
+    const par = e.coche && e.coche_par && e.coche_par !== me() ? nomCompte(e.coche_par) : '';
+    return `<div class="taches-el ${e.coche ? 'fait' : ''}">
+      ${l.est_modele ? `<span class="taches-puce" aria-hidden="true"></span>` : `<button class="taches-coche" role="checkbox" aria-checked="${!!e.coche}" data-act="taches-el-cocher" data-id="${e.id}" aria-label="${esc(e.texte)}">${ICON.check}</button>`}
+      <button class="taches-el-texte" data-act="taches-el-modifier" data-id="${e.id}" data-liste="${l.id}"><span>${esc(e.texte)}</span>${par ? `<span class="muted small"> · ${esc(par)}</span>` : ''}</button>
+    </div>`;
+  };
+  const versCourses = (s) => (!l.est_modele && /courses/i.test(s) ? `<button class="btn small soft" data-act="taches-vers-courses" data-id="${l.id}" data-section="${esc(s)}">${ICON.cart} Ajouter aux courses</button>` : '');
+  const fini = !l.est_modele && p.total && p.faits === p.total;
+  return `<div class="row taches-entete"><button class="btn small" data-act="taches-liste-retour">${ICON.back} Listes</button><span class="grow"></span>
+      ${l.est_modele ? `<button class="btn small primary" data-act="taches-lancer" data-id="${l.id}">${ICON.play} Lancer</button>` : ''}
+      <button class="icon-btn" data-act="taches-liste-menu" data-id="${l.id}" aria-label="Actions de la liste">${ICON.dots}</button></div>
+    <section class="card taches-detail">
+      <div class="row"><span class="taches-carte-ico">${iconeGenre(l.genre)}</span><div class="grow"><h2 class="taches-detail-titre">${esc(l.titre)}</h2>
+        <div class="muted small">${l.est_modele ? `Liste type · ${p.total} élément${p.total > 1 ? 's' : ''}` : `<span data-taches-prog>${p.faits}/${p.total} coché${p.faits > 1 ? 's' : ''}</span>`}${dates ? ` · ${esc(dates)}` : ''}</div></div></div>
+      ${l.est_modele ? `<p class="muted small taches-aide">${esc(descriptionModele(l) || 'Liste type du foyer.')} Les modifications servent aux prochains lancements.</p>` : `<span class="taches-barre" aria-hidden="true"><i style="width:${p.pct}%"></i></span>`}
+      ${fini ? `<div class="taches-bravo">${ICON.sparkle}<span class="grow">Tout est coché !</span><button class="btn small primary" data-act="taches-liste-terminer" data-id="${l.id}">Terminer la liste</button></div>` : ''}
+      ${groupes.map((g) => `<div class="taches-section">${g.section ? `<div class="row taches-section-titre"><h4 class="grow">${esc(g.section)}</h4>${versCourses(g.section)}</div>` : ''}${g.elements.map(ligne).join('')}</div>`).join('')
+        || '<p class="muted taches-vide-court">La liste est vide : ajoute un premier élément.</p>'}
+      <form data-form="taches-element" data-liste="${l.id}" class="taches-ajout" autocomplete="off">
+        <input class="input" name="texte" maxlength="200" placeholder="Ajouter un élément" aria-label="Nouvel élément">
+        ${sections.length ? `<select class="input" name="section" aria-label="Rubrique"><option value="">Sans rubrique</option>${sections.map((s) => `<option ${s === ui.derniereSection ? 'selected' : ''}>${esc(s)}</option>`).join('')}</select>` : ''}
+        <button class="btn primary" aria-label="Ajouter">${ICON.plus}</button>
+      </form>
+    </section>`;
+}
+
+function vueEnvies() {
+  const membres = state.members;
+  if (!membres.length) return '<div class="empty"><p>Ajoute d\'abord les membres du foyer (Réglages › Foyer).</p></div>';
+  if (!memberById(ui.membreEnvies)) ui.membreEnvies = membres.find((m) => m.id !== monMembre())?.id || membres[0].id;
+  const m = memberById(ui.membreEnvies);
+  const moi = m.id === monMembre();
+  const envies = D.envies.filter((e) => e.member_id === m.id).sort((a, b) => String(a.created_at || '').localeCompare(String(b.created_at || '')));
+  const carte = (e) => {
+    const r = moi ? null : resaDe(e);
+    let etat = '';
+    if (!moi) {
+      if (!r) etat = `<button class="btn small primary" data-act="taches-envie-reserver" data-id="${e.id}">Je m'en occupe</button>`;
+      else if (r.user_id === me()) {
+        etat = `<span class="taches-pris moi">${r.offert ? 'Offert par toi' : 'Tu t\'en occupes'}</span>${r.offert ? '' : `<button class="btn small" data-act="taches-envie-offert" data-id="${e.id}">Offert</button>`}
+          <button class="btn small" data-act="taches-envie-liberer" data-id="${e.id}">Annuler</button>`;
+      } else etat = `<span class="taches-pris">${esc(majuscule(nomCompte(r.user_id)))} ${r.offert ? 'l\'a offert' : 's\'en occupe'}</span>`;
+    }
+    const lien = e.lien && safeUrl(e.lien) ? `<a class="taches-lien" href="${esc(safeUrl(e.lien))}" target="_blank" rel="noopener noreferrer">${ICON.link} Voir le lien</a>` : '';
+    return `<div class="card taches-envie ${r ? 'prise' : ''}">
+      <button class="taches-envie-corps" data-act="taches-envie-modifier" data-id="${e.id}"><span><b>${esc(e.titre)}</b>${e.prix ? `<span class="muted small"> · ${esc(e.prix)}</span>` : ''}</span>
+        ${e.detail ? `<span class="muted small taches-envie-detail">${esc(e.detail)}</span>` : ''}</button>
+      ${lien || etat ? `<div class="row wrap taches-envie-actions">${lien}<span class="grow"></span>${etat}</div>` : ''}
+    </div>`;
+  };
+  const note = moi
+    ? `<p class="muted small taches-aide">C'est ta liste : les autres voient qui s'occupe de quoi, toi non. La surprise reste entière.</p>`
+    : `<p class="muted small taches-aide">« Je m'en occupe » reste invisible pour ${esc(m.nom)}.${monMembre() ? '' : ' Relie ton compte à ton profil (Réglages › Foyer) pour que ta propre liste garde aussi la surprise.'}</p>`;
+  return `<div class="chips taches-chips">${membres.map((x) => `<button class="chip" data-act="taches-envies-membre" data-v="${x.id}" aria-pressed="${x.id === m.id}">${esc(x.nom)}${x.id === monMembre() ? ' (moi)' : ''}</button>`).join('')}</div>
+    <div class="row taches-entete"><h3 class="section-title grow">${moi ? 'Mes envies' : `Les envies de ${esc(m.nom)}`}</h3><button class="btn small" data-act="taches-envie-nouvelle">${ICON.plus} Ajouter</button></div>
+    ${note}
+    ${envies.length ? `<div class="taches-envies">${envies.map(carte).join('')}</div>` : `<div class="empty taches-vide">${GENRES.cadeaux.icone}<p>Pas encore d'envie pour ${esc(m.nom)}.</p></div>`}`;
+}
+
+function rendu() {
+  if (!D.ok) return '<div class="spinner"></div>';
+  const ouvertes = D.taches.filter((t) => !t.fait);
+  const retard = ouvertes.filter((t) => t.echeance && t.echeance < aujourdhui()).length;
+  const vues = [['taches', 'Tâches', ouvertes.length ? `<span class="taches-pastille ${retard ? 'retard' : ''}">${ouvertes.length}</span>` : ''], ['listes', 'Listes', ''], ['envies', 'Envies', '']];
+  const corps = ui.vue === 'listes' ? vueListes() : ui.vue === 'envies' ? vueEnvies() : vueTaches();
+  return `<div class="taches">
+    <div class="seg taches-vues" role="tablist" aria-label="Tâches, listes et envies">${vues.map(([v, l, b]) => `<button role="tab" data-act="taches-vue" data-v="${v}" aria-pressed="${ui.vue === v}" aria-selected="${ui.vue === v}">${l}${b}</button>`).join('')}</div>
+    ${corps}</div>`;
+}
+
+// ---------------------------------------------------------------------------
+// Formulaires de l'écran
+// ---------------------------------------------------------------------------
+document.addEventListener('submit', async (e) => {
+  const f = e.target;
+  if (f.dataset?.form === 'taches-rapide') {
+    e.preventDefault();
+    const texte = f.texte.value.trim();
+    if (!texte) { feuilleTache({}); return; }
+    const a = analyseTache(texte, { maintenant: new Date(), membres: state.members });
+    if (!a.titre) return;
+    try {
+      const t = await creerTache(a);
+      toast(`Tâche ajoutée${t.echeance ? ` · ${libelleEcheance(t.echeance, aujourdhui()).toLowerCase()}` : ''}${t.responsable ? ` · ${nomMembre(t.responsable)}` : ''}`);
+      render();
+      $('[data-form="taches-rapide"] [name="texte"]')?.focus();
+    } catch (err) { fail(err); }
+  }
+  if (f.dataset?.form === 'taches-element') {
+    e.preventDefault();
+    const texte = f.texte.value.trim();
+    if (!texte) return;
+    const section = f.section?.value || null;
+    ui.derniereSection = section;
+    try {
+      const el = await ajouterElement(f.dataset.liste, texte, section);
+      ui.ouverte = el.liste_id;
+      render();
+      $('[data-form="taches-element"] [name="texte"]')?.focus();
+    } catch (err) { fail(err); }
+  }
+});
+
+const tache = (id) => D.taches.find((t) => t.id === id);
+const actions = {
+  'taches-vue': (b) => { ui.vue = b.dataset.v; store.set('taches:vue', ui.vue); if (ui.vue !== 'listes') ui.ouverte = null; render(); },
+  'taches-filtre': (b) => { ui.filtre = b.dataset.v; render(); },
+  'taches-faites': () => { ui.faites = !ui.faites; render(); },
+  'taches-nouvelle': () => { const v = $('[data-form="taches-rapide"] [name="texte"]')?.value.trim(); feuilleTache(v ? analyseTache(v, { maintenant: new Date(), membres: state.members }) : {}); },
+  'taches-ouvrir': (b) => {
+    const t = tache(b.dataset.id);
+    if (!t) { toast('Cette tâche n\'existe plus'); return; }
+    if (state.tab !== 'taches') { ui.vue = 'taches'; switchTab('taches'); }
+    feuilleTache(t);
+  },
+  'taches-cocher': async (b) => {
+    const t = tache(b.dataset.id);
+    if (!t) return;
+    b.setAttribute('aria-checked', String(!t.fait));
+    b.closest('.taches-ligne')?.classList.toggle('fait', !t.fait);
+    try { const msg = await basculerTache(t); toast(msg); setTimeout(() => { if (state.tab === 'taches') render(); }, 350); } catch (err) { fail(err); render(); }
+  },
+  'taches-liste-nouvelle': () => feuilleNouvelleListe(),
+  'taches-liste-ouvrir': (b) => { ui.ouverte = b.dataset.id; render(); window.scrollTo({ top: 0 }); },
+  // Depuis l'Accueil : ouvre directement une liste.
+  'taches-liste-ouvrir-tab': (b) => { ui.vue = 'listes'; ui.ouverte = b.dataset.id; switchTab('taches'); },
+  'taches-liste-retour': () => { ui.ouverte = null; render(); },
+  'taches-liste-menu': (b) => { const l = listeParId(b.dataset.id); if (l) feuilleMenuListe(l); },
+  'taches-liste-terminer': async (b) => {
+    const l = listeParId(b.dataset.id);
+    if (!l) return;
+    try { await enregistrer(T.listes, D.listes, { ...l, archivee: true }); ui.ouverte = null; toast('Liste terminée, bravo !'); render(); } catch (err) { fail(err); }
+  },
+  'taches-lancer': (b) => feuilleLancer(b.dataset.id),
+  'taches-el-cocher': async (b) => {
+    const e = D.elements.find((x) => x.id === b.dataset.id);
+    if (!e) return;
+    b.setAttribute('aria-checked', String(!e.coche));
+    b.closest('.taches-el')?.classList.toggle('fait', !e.coche);
+    try { await basculerElement(e); render(); } catch (err) { fail(err); render(); }
+  },
+  'taches-el-modifier': (b) => { const e = elementsDe(b.dataset.liste).find((x) => x.id === b.dataset.id); if (e) feuilleElement(e); },
+  'taches-vers-courses': async (b) => {
+    const els = elementsDe(b.dataset.id).filter((e) => e.section === b.dataset.section && !e.coche);
+    if (!els.length) { toast('Tout est déjà coché dans cette rubrique'); return; }
+    try {
+      for (const e of els) await Data.addExtra(e.texte, '', guessAisle(e.texte));
+      toast(`${els.length} article${els.length > 1 ? 's' : ''} ajouté${els.length > 1 ? 's' : ''} aux courses`);
+    } catch (err) { fail(err); }
+  },
+  'taches-envies-membre': (b) => { ui.membreEnvies = b.dataset.v; render(); },
+  'taches-envie-nouvelle': () => feuilleEnvie({}),
+  'taches-envie-modifier': (b) => { const e = D.envies.find((x) => x.id === b.dataset.id); if (e) feuilleEnvie(e); },
+  'taches-envie-reserver': async (b) => {
+    const e = D.envies.find((x) => x.id === b.dataset.id);
+    if (!e || e.member_id === monMembre()) return;
+    try { await enregistrer(T.envies_reservations, D.resas, { envie_id: e.id, member_id: e.member_id, offert: false }, { onConflict: 'envie_id' }); toast(`C'est noté : ${nomMembre(e.member_id)} n'en saura rien`); render(); } catch (err) { fail(err); }
+  },
+  'taches-envie-offert': async (b) => {
+    const r = D.resas.find((x) => x.envie_id === b.dataset.id);
+    if (!r) return;
+    try { await enregistrer(T.envies_reservations, D.resas, { ...r, offert: true }, { onConflict: 'envie_id' }); toast('Marqué comme offert'); render(); } catch (err) { fail(err); }
+  },
+  'taches-envie-liberer': async (b) => {
+    const r = D.resas.find((x) => x.envie_id === b.dataset.id);
+    if (!r) return;
+    try { await retirer(T.envies_reservations, D.resas, r.id); toast('Envie de nouveau libre'); render(); } catch (err) { fail(err); }
+  },
+};
+
+// ---------------------------------------------------------------------------
+// API publique (autres modules) et enregistrement
+// ---------------------------------------------------------------------------
+const Taches = {
+  pret,
+  creer: creerTache,
+  async terminer(id) { await pret; const t = tache(id); if (t && !t.fait) await basculerTache(t); return tache(id) || null; },
+  async supprimerOrigine(origine, origineId) { await pret; for (const t of D.taches.filter((x) => !x.fait && x.origine === origine && x.origine_id === String(origineId))) await retirer(T.taches, D.taches, t.id); },
+  liste: ({ ouvertes = false } = {}) => D.taches.filter((t) => !ouvertes || !t.fait).map((t) => ({ ...t })),
+  ouvrir(id) { const t = tache(id); if (t) { ui.vue = 'taches'; switchTab('taches'); feuilleTache(t); } },
+  lancerListe,
+  // Réception d'un changement en direct (utilisé aussi par les tests de bout en bout).
+  _recevoir: (p) => TempsReel.recevoir(p),
+};
+window.Taches = Taches;
+
 Modules.register({
   id: 'taches',
   onglet: 'famille',
   segment: 'Tâches & listes',
   ordre: 20,
   libelle: 'Tâches et listes',
-  rendu: () => Modules.bientot('Tâches et listes', 'Les tâches avec responsable et échéance, les listes types (avant départ, avant nounou, valises) et les listes d\'envies.'),
+  tables: { taches: 'taches', listes: 'listes', liste_elements: 'liste_elements', envies: 'envies', envies_reservations: 'envies_reservations' },
+  charger,
+  rendu,
+  actions,
+  sourcesAccueil: (ctx) => {
+    const out = elementsAccueil(D.taches, { iso: ctx.iso, membre: ctx.membre, famille: ctx.famille, nom: nomMembre });
+    // Listes datées qui commencent dans les 3 jours (vacances, départ) : à préparer.
+    for (const l of D.listes.filter((x) => !x.est_modele && !x.archivee && x.date_debut && ecartJours(ctx.iso, x.date_debut) >= 0 && ecartJours(ctx.iso, x.date_debut) <= 3)) {
+      const p = progression(elementsDe(l.id));
+      if (p.faits < p.total) out.push({ heure: null, titre: l.titre, detail: `${p.faits}/${p.total} cochés · départ ${libelleEcheance(l.date_debut, ctx.iso).toLowerCase()}`, icone: iconeGenre(l.genre), act: 'taches-liste-ouvrir-tab', data: { id: l.id }, priorite: 1 });
+    }
+    return out;
+  },
+  agenda: (debut, fin) => {
+    const a = isoDate(debut), b = isoDate(fin);
+    return D.taches.filter((t) => !t.fait && t.echeance && t.echeance >= a && t.echeance <= b)
+      .map((t) => ({ id: `tache:${t.id}`, date: t.echeance, heure: t.heure || null, titre: t.titre, detail: ['Tâche', nomMembre(t.responsable)].filter(Boolean).join(' · '),
+        membres: t.responsable ? [t.responsable] : [], act: 'taches-ouvrir', data: { id: t.id } }));
+  },
+  ajoutRapide: {
+    type: 'tache',
+    libelle: 'Tâche',
+    analyser(texte, ctx) {
+      const a = analyseTache(texte, ctx);
+      if (!a.titre || !a.score) return null;
+      const iso = isoDate(ctx.maintenant || new Date());
+      const resume = [a.titre, a.echeance ? libelleEcheance(a.echeance, iso).toLowerCase() : '', a.recurrence ? libelleRecurrence(a.recurrence).toLowerCase() : '',
+        a.responsable ? (ctx.membres || []).find((m) => m.id === a.responsable)?.nom : ''].filter(Boolean).join(' · ');
+      return { score: a.score, resume, donnees: a };
+    },
+    async enregistrer(a) { const t = await creerTache(a); return `Tâche ajoutée${t.responsable ? ` pour ${nomMembre(t.responsable)}` : ''}`; },
+    ouvrir(texte, ctx) {
+      ui.vue = 'taches';
+      switchTab('taches');
+      feuilleTache(texte ? analyseTache(texte, ctx) : {});
+    },
+  },
+  notifications: [
+    { type: 'tache-confiee', libelle: 'Tâche confiée', description: 'Quand quelqu\'un te confie une tâche' },
+    { type: 'tache-echeance', libelle: 'Tâches du jour', description: 'Le matin, tes tâches du jour et en retard' },
+    { type: 'liste-depart', libelle: 'Listes de départ', description: 'La veille d\'un départ, ce qui reste à cocher', defaut: false },
+  ],
+  expose: { analyseTache, prochaineEcheance, libelleRecurrence, libelleEcheance, groupesTaches, progression, sectionsDe, titreVacances, copieModele, reservationVisible, elementsAccueil, MODELES, elementsModele },
 });
 })();
 // ==== module univers ====

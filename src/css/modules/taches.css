@@ -1,0 +1,133 @@
+/* Module « Tâches et listes » : uniquement les jetons du thème (univers graphiques) */
+.taches { padding-bottom: 8px; }
+.taches svg { flex: none; }
+.taches-vues button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit; }
+.taches-pastille {
+  min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; font-size: 12px; line-height: 20px; font-weight: 800;
+  background: var(--surface-2); color: var(--ink); border: 1px solid var(--border);
+}
+.taches-pastille.retard { background: var(--danger); color: var(--on-primary); border-color: var(--danger); }
+.taches-aide { margin: 0 2px 10px; }
+.taches-vide { padding: 28px 16px; }
+.taches-vide svg { width: 44px; height: 44px; }
+.taches-vide-court { margin: 4px 2px 8px; }
+.taches-entete { margin-top: 4px; }
+.taches-entete .section-title { margin: 14px 0 8px; }
+.taches-entete .btn svg { width: 18px; height: 18px; }
+
+/* Saisie rapide */
+.taches-saisie { display: flex; gap: 8px; padding: 8px; align-items: center; margin-bottom: 10px; }
+.taches-saisie .input { flex: 1; min-width: 0; }
+.taches-saisie .btn { flex: none; width: 44px; padding: 0; }
+.taches-chips { margin: 0 -16px; padding-left: 16px; padding-right: 16px; }
+
+/* Groupes et lignes de tâches */
+.taches-groupe { display: flex; align-items: center; gap: 8px; margin: 18px 2px 8px; font-size: 17px; }
+.taches-groupe.retard { color: var(--danger); }
+.taches-compte { font-size: 13px; font-weight: 800; color: var(--muted); background: var(--surface-2); border-radius: 999px; padding: 1px 8px; }
+.taches-liste { padding: 2px 4px; }
+.taches-ligne, .taches-el { display: flex; align-items: center; gap: 10px; padding: 6px 6px; min-height: 52px; }
+.taches-ligne + .taches-ligne, .taches-el + .taches-el { border-top: 1px solid var(--border); }
+.taches-coche {
+  width: 30px; height: 30px; flex: none; border-radius: 50%; border: 2px solid var(--ink); background: var(--surface);
+  display: grid; place-items: center; color: transparent; padding: 0; transition: background .15s, color .15s;
+}
+.taches-coche svg { width: 18px; height: 18px; stroke-width: 3; }
+.taches-coche[aria-checked="true"] { background: var(--mint); color: var(--ink); animation: taches-pop .28s ease-out; }
+.taches-corps, .taches-el-texte, .taches-envie-corps {
+  flex: 1; min-width: 0; border: 0; background: none; padding: 6px 0; text-align: left; font: inherit; color: inherit;
+  display: flex; flex-direction: column; gap: 3px; cursor: pointer;
+}
+.taches-el-texte { display: block; overflow-wrap: anywhere; }
+.taches-titre { font-weight: 700; overflow-wrap: anywhere; }
+.taches-meta { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 13px; color: var(--muted); }
+.taches-meta > span { display: inline-flex; align-items: center; gap: 4px; }
+.taches-meta svg { width: 14px; height: 14px; }
+.taches-retard { color: var(--danger); font-weight: 700; }
+.taches-badge { background: var(--mango-soft); color: var(--ink); border-radius: 999px; padding: 0 8px; font-weight: 800; font-size: 12px; }
+.taches-avatar {
+  width: 18px; height: 18px; border-radius: 50%; display: inline-grid; place-items: center; font-size: 11px; font-weight: 800;
+  background: var(--primary-soft); color: var(--primary-strong);
+}
+.taches-ligne.fait .taches-titre, .taches-el.fait .taches-el-texte > span:first-child { text-decoration: line-through; color: var(--muted); }
+.taches-ligne.en-retard .taches-coche { border-color: var(--danger); }
+.taches-voir-faites { margin-top: 16px; }
+.taches-voir-faites + .taches-liste { margin-top: 10px; }
+
+/* Cartes de listes */
+.taches-cartes { display: flex; flex-direction: column; gap: 10px; }
+.taches-carte {
+  display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px; text-align: left; font: inherit; color: inherit; cursor: pointer;
+}
+.taches-carte > svg { width: 18px; height: 18px; color: var(--muted); }
+.taches-carte .grow { display: flex; flex-direction: column; gap: 3px; }
+.taches-carte-titre { overflow-wrap: anywhere; }
+.taches-carte-desc { line-height: 1.3; }
+.taches-carte-ico {
+  width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; flex: none;
+  background: var(--primary-soft); color: var(--primary-strong);
+}
+.taches-carte-ico svg { width: 22px; height: 22px; }
+.taches-barre { display: block; height: 8px; border-radius: 6px; background: var(--ring-track); overflow: hidden; margin-top: 4px; }
+.taches-barre i { display: block; height: 100%; background: var(--mint); border-radius: 6px; transition: width .3s ease; }
+.taches-modele { position: relative; }
+.taches-modele .taches-carte { padding-right: 104px; }
+.taches-modele .taches-carte > svg:last-child { display: none; }
+.taches-lancer { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); }
+.taches-lancer:active:not(:disabled) { transform: translateY(calc(-50% + 2px)); }
+.taches-lancer svg, .taches-detail .btn svg { width: 16px; height: 16px; }
+.taches-finies summary { cursor: pointer; list-style: none; }
+.taches-finies summary::-webkit-details-marker { display: none; }
+.taches-finies summary::before { content: "▸ "; color: var(--muted); }
+.taches-finies[open] summary::before { content: "▾ "; }
+
+/* Détail d'une liste */
+.taches-detail { padding: 14px; }
+.taches-detail-titre { margin: 0; font-size: 20px; line-height: 1.2; overflow-wrap: anywhere; }
+.taches-detail > .taches-barre { margin: 12px 0 4px; }
+.taches-detail > .taches-aide { margin: 10px 0 4px; }
+.taches-section { margin-top: 12px; }
+.taches-section-titre { border-bottom: 2px solid var(--border); padding-bottom: 4px; margin-bottom: 2px; }
+.taches-section-titre h4 { margin: 0; font-size: 15px; font-family: var(--display); }
+.taches-puce { width: 10px; height: 10px; border-radius: 50%; background: var(--border); margin: 0 10px 0 8px; flex: none; }
+.taches-bravo {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 12px; padding: 10px 12px; border-radius: 14px;
+  background: var(--mint-soft); font-weight: 700; animation: taches-apparait .3s ease-out;
+}
+.taches-bravo > svg { width: 20px; height: 20px; color: var(--ink); }
+.taches-ajout { display: grid; grid-template-columns: minmax(0, 1fr) 44px; grid-template-areas: "texte bouton" "rubrique rubrique"; gap: 8px; margin-top: 14px; }
+.taches-ajout .input:first-child { grid-area: texte; min-width: 0; }
+.taches-ajout select.input { grid-area: rubrique; min-width: 0; }
+.taches-ajout .btn { grid-area: bouton; width: 44px; padding: 0; }
+.taches-menu { justify-content: flex-start; text-align: left; }
+
+/* Feuilles */
+.taches-form .grid2 { gap: 10px; }
+.taches-form .grid2 .input { min-width: 0; }
+.taches-genres { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.taches-genres legend { padding: 0; margin-bottom: 6px; font-weight: 600; }
+.taches-genre { cursor: pointer; }
+.taches-genre input { position: absolute; opacity: 0; pointer-events: none; }
+.taches-genre svg { width: 16px; height: 16px; }
+.taches-genre:has(input:checked) { background: var(--primary); color: var(--on-primary); }
+.taches-genre:has(input:focus-visible) { outline: 3px solid var(--mango); outline-offset: 2px; }
+
+/* Envies */
+.taches-envies { display: flex; flex-direction: column; gap: 10px; }
+.taches-envie { padding: 10px 12px; }
+.taches-envie.prise { background: var(--surface-2); }
+.taches-envie-corps { padding: 2px 0; }
+.taches-envie-corps b { overflow-wrap: anywhere; }
+.taches-envie-detail { display: block; }
+.taches-envie-actions { margin-top: 8px; gap: 8px; }
+.taches-lien { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; font-size: 14px; }
+.taches-lien svg { width: 16px; height: 16px; }
+.taches-pris { font-size: 14px; font-weight: 800; color: var(--muted); }
+.taches-pris.moi { color: var(--primary-strong); }
+
+@keyframes taches-pop { 0% { transform: scale(.8); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
+@keyframes taches-apparait { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .taches-coche[aria-checked="true"], .taches-bravo { animation: none; }
+  .taches-barre i, .taches-coche { transition: none; }
+}
