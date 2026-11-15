@@ -1215,6 +1215,73 @@ h1, h2, h3, .sheet-head h2, .section-title, .tl-head { font-weight: 800; letter-
 .ajout-prop svg { width: 18px; height: 18px; flex: none; }
 body.logged-out [data-act="ajout-rapide"] { display: none; }
 @media (prefers-reduced-motion: reduce) { .tabbar button svg { transition: none; } }
+/* ==== module accueil-famille ==== */
+/* Accueil : fil de la famille, briefing du soir, bouton « + » flottant (jetons du thème uniquement). */
+.af-date { margin: 0 0 10px; }
+.af-membres .chip { gap: 8px; }
+.af-pastille { width: 12px; height: 12px; border-radius: 50%; flex: none; display: inline-block; background: var(--af-c, var(--primary)); border: 2px solid var(--surface); box-shadow: 0 0 0 1.5px var(--ink); }
+.chip[aria-pressed="true"] .af-pastille { border-color: var(--primary); box-shadow: 0 0 0 1.5px var(--on-primary); }
+
+.af-fil { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 8px; }
+.af-item { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 8px; align-items: stretch; }
+.af-heure { font-weight: 800; font-size: 14px; color: var(--ink); padding-top: 13px; text-align: right; white-space: nowrap; }
+.af-carte { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 52px; padding: 10px 12px; text-align: left;
+  background: var(--surface); border: 2px solid var(--ink); border-radius: 14px; color: var(--text); font: inherit; }
+button.af-carte:active { transform: translateY(1px); }
+.af-ico { width: 30px; height: 30px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); font-size: 15px; }
+.af-ico svg { width: 18px; height: 18px; }
+.af-texte { display: flex; flex-direction: column; overflow-wrap: anywhere; }
+.af-texte b { font-weight: 800; }
+.af-qui { display: inline-flex; gap: 3px; flex: none; }
+.af-item.passe .af-carte { background: var(--surface-2); }
+.af-item.passe .af-texte b, .af-item.passe .af-heure { color: var(--muted); }
+.af-maintenant { display: flex; align-items: center; gap: 8px; margin-left: 60px; color: var(--primary-strong); font-weight: 800; font-size: 13px; }
+.af-maintenant::after { content: ""; flex: 1; height: 2px; border-radius: 2px; background: var(--primary); }
+.af-vide { padding: 16px; text-align: center; }
+.af-vide p { margin: 0 0 6px; }
+
+.af-briefing { padding: 14px; margin: 0 0 14px; background: var(--surface); }
+.af-b-tete { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.af-b-tete h3 { margin: 0; font-family: var(--display); font-size: 20px; line-height: 1.1; }
+.af-b-lune { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: var(--mango-soft); font-size: 18px; flex: none; }
+.af-b-groupe { padding: 8px 0; border-top: 1.5px dashed var(--border); }
+.af-b-qui { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+.af-b-groupe ul { margin: 0; padding: 0 0 0 20px; list-style: none; }
+.af-b-groupe li { font-size: 15px; padding: 2px 0; overflow-wrap: anywhere; }
+.af-b-calme { margin: 0; }
+
+.af-fab { position: fixed; z-index: 25; right: max(16px, calc((100vw - 760px) / 2 + 16px)); bottom: calc(var(--nav-h) + var(--safe-b) + 14px);
+  width: 58px; height: 58px; border-radius: 50%; border: 2px solid var(--ink); background: var(--primary); color: var(--on-primary);
+  display: grid; place-items: center; box-shadow: var(--shadow); transition: transform .15s ease; }
+.af-fab svg { width: 28px; height: 28px; }
+.af-fab:active { transform: scale(.94); }
+.af-fab-espace { height: 72px; }
+.af-dictee { margin: 6px 0 0; }
+@media (prefers-reduced-motion: reduce) { .af-fab, button.af-carte { transition: none; transform: none; } }
+/* ==== module notifications ==== */
+/* Plus › Notifications : interrupteurs par type, heures de silence (jetons du thème uniquement). */
+.notif-intro { margin: 0 0 10px; }
+.notif-titre { font-size: 17px; margin: 18px 0 8px; }
+.notif-carte { padding: 4px 14px; }
+.notif-carte > p { margin: 10px 0; }
+.notif-carte > .btn { margin: 4px 0 12px; }
+.notif-bloc + .notif-bloc, .notif-carte > .notif-ligne + .notif-ligne { border-top: 1.5px dashed var(--border); }
+.notif-ligne { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 0; cursor: pointer; }
+.notif-ligne .grow { display: flex; flex-direction: column; overflow-wrap: anywhere; }
+.notif-bloc.off .notif-ligne b { color: var(--muted); }
+.notif-extra { display: flex; align-items: center; gap: 8px; padding: 0 0 12px; flex-wrap: wrap; font-size: 14px; font-weight: 700; color: var(--muted); }
+.notif-extra select.input { width: auto; min-width: 0; flex: 1 1 110px; max-width: 180px; min-height: 40px; padding: 6px 10px; color: var(--text); }
+.notif-silence select.input { flex: 1 1 80px; }
+.notif-alerte { color: var(--primary-strong); background: var(--primary-soft); border-radius: 12px; padding: 8px 10px; }
+/* Interrupteur : case à cocher redessinée, accessible au clavier et aux lecteurs d'écran (role="switch"). */
+.notif-switch { appearance: none; -webkit-appearance: none; flex: none; position: relative; width: 52px; height: 32px; margin: 0; border-radius: 999px;
+  border: 2px solid var(--ink); background: var(--ring-track); cursor: pointer; transition: background .15s ease; }
+.notif-switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: var(--surface);
+  border: 2px solid var(--ink); box-sizing: border-box; transition: transform .15s ease; }
+.notif-switch:checked { background: var(--mint); }
+.notif-switch:checked::after { transform: translateX(20px); }
+.notif-switch:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .notif-switch, .notif-switch::after { transition: none; } }
 </style>
 </head>
 <body>
@@ -8397,14 +8464,346 @@ setInterval(() => Updater.check(), 5 * 60 * 1000);
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') Updater.check(); });
 // ==== module accueil-famille ====
 (function () {
-// Module « Le fil de la famille » : emplacement réservé, à construire (voir LISEZMOI.md).
+// Module « Accueil » : le fil de la journée qui réunit tous les modules (Accueil.sources), avec la bascule
+// « moi / famille » des segments Ma journée et Famille, le briefing du soir et le bouton « + » flottant.
+//  - Ma journée (écran du cœur) garde repas, eau, activités et compagnon ; ce module y ajoute le briefing
+//    du soir (à partir de 18 h) et « Aussi aujourd'hui » : ce que les autres modules disent de ma journée.
+//  - Famille (cet écran) : le fil de tout le foyer, une couleur par membre, filtrable par personne.
+//  - Le briefing de demain est aussi préparé pour la notification du soir (file notif_file du module notifications),
+//    avec les rappels des événements des deux prochains jours.
+// Les éléments des modules peuvent porter `membres: [member_id]` (couleurs, filtre) et `trajet: { sens: 'depot' | 'retour',
+// qui: [member_id], pour: [member_id] }` (« qui dépose Zoé ? ») ; sans `trajet`, le titre suffit (« Déposer Zoé à la crèche »).
+const cache = Modules.cache('accueil-famille');
+
+// ---------------------------------------------------------------------------
+// Fonctions pures (testées)
+// ---------------------------------------------------------------------------
+// Couleur d'un membre selon sa place dans le foyer : jetons de l'univers (--m1…), sinon couleurs du thème.
+const COULEURS = ['var(--m1, var(--primary))', 'var(--m2, var(--sky))', 'var(--m3, var(--mango-strong))', 'var(--m4, var(--mint))', 'var(--m5, var(--sage-light))'];
+const couleurMembre = (index) => COULEURS[((Number(index) || 0) % COULEURS.length + COULEURS.length) % COULEURS.length];
+
+// Un élément me concerne s'il n'a pas de membre (tout le foyer), s'il me cite ou cite un enfant du foyer.
+function concerne(e, moi, enfants = []) {
+  const ids = e.membres || [];
+  return !ids.length || ids.includes(moi) || ids.some((id) => enfants.includes(id));
+}
+// Fil filtré : mode 'moi' (ce qui me concerne) ou 'famille' (tout, ou un membre choisi).
+function filtrerFil(elements, { mode = 'famille', moi = null, enfants = [], filtre = null } = {}) {
+  if (mode === 'moi') return elements.filter((e) => concerne(e, moi, enfants));
+  if (filtre) return elements.filter((e) => (e.membres || []).includes(filtre));
+  return elements;
+}
+// Le briefing du soir s'affiche à partir de 18 h.
+const briefingVisible = (d) => d.getHours() >= 18;
+
+const REG_DEPOT = /\b(depose|deposer|deposes|depot|emmene|emmener|emmenes|amene|amener|accompagne|accompagner)\b/;
+const REG_RETOUR = /\b(recupere|recuperer|recuperes|recup|cherche|chercher|retour)\b/;
+// Trajet d'enfant (« qui dépose Zoé ? ») : champ trajet du module, sinon déduit du titre.
+function detecterTrajet(e, membres = [], enfants = []) {
+  if (e.trajet) return { sens: e.trajet.sens === 'retour' ? 'retour' : 'depot', qui: e.trajet.qui || [], pour: e.trajet.pour || [] };
+  const t = ` ${sansAccents(e.titre)} `;
+  const sens = REG_DEPOT.test(t) ? 'depot' : REG_RETOUR.test(t) ? 'retour' : null;
+  if (!sens) return null;
+  const cites = membres.filter((m) => enfants.includes(m.id) && new RegExp(`\\b${sansAccents(m.nom).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`).test(t)).map((m) => m.id);
+  const pour = [...new Set([...cites, ...(e.membres || []).filter((id) => enfants.includes(id))])];
+  if (!pour.length) return null;
+  return { sens, qui: (e.membres || []).filter((id) => !enfants.includes(id)), pour };
+}
+const creneau = (h) => (!h ? '' : h < '11:00' ? 'matin' : h < '15:00' ? 'midi' : 'soir');
+// Éléments du briefing de demain, classés, à partir de l'agenda et du fil des modules.
+// agenda : Agenda.elements(demain, demain) ; accueil : Accueil.elements({ date: demain, famille: true }) ; seances : séances prévues.
+function classerBriefing({ agenda = [], accueil = [], seances = [], membres = [], enfants = [] } = {}) {
+  const out = [];
+  const de = (e, source) => {
+    const base = { titre: e.titre, heure: e.heure || null, membres: e.membres || [] };
+    if (source === 'planning' || e.type === 'repas') return { ...base, type: 'repas', creneau: creneau(e.heure), membres: [] };
+    if (source === 'taches' || e.type === 'tache') return { ...base, type: 'tache' };
+    if (source === 'forme' || e.type === 'seance') return { ...base, type: 'seance' };
+    const tr = detecterTrajet(e, membres, enfants);
+    if (tr) return { ...base, type: 'trajet', sens: tr.sens, membres: tr.qui, pour: tr.pour };
+    return { ...base, type: 'evenement' };
+  };
+  for (const e of agenda) out.push(de(e, e.source));
+  const deja = new Set(out.map((x) => `${sansAccents(x.titre)}|${x.heure || ''}`));
+  for (const e of accueil) {
+    if (['accueil-famille', 'agenda', 'planning'].includes(e.module)) continue;
+    const x = de(e, e.module);
+    const k = `${sansAccents(x.titre)}|${x.heure || ''}`;
+    if (!deja.has(k)) { deja.add(k); out.push(x); }
+  }
+  for (const s of seances) out.push({ type: 'seance', titre: s.titre, heure: s.heure || null, membres: s.membres || [] });
+  return out;
+}
+// Composition du briefing : même règle que la fonction send-reminders (supabase/functions/send-reminders/regles.js).
+const ICONES = { trajet: '🚗', evenement: '📅', tache: '✅', repas: '🍽️', seance: '🏃' };
+const ORDRE = { trajet: 0, evenement: 1, seance: 2, tache: 3, repas: 4 };
+const heureFr = (h) => { if (!h) return ''; const [hh, mm] = String(h).split(':'); return `${Number(hh)} h${mm && mm !== '00' ? ` ${mm}` : ''}`; };
+const nomsDe = (ids, membres) => (ids || []).map((id) => membres.find((m) => m.id === id)?.nom).filter(Boolean);
+const liste = (noms) => (noms.length < 2 ? noms.join('') : `${noms.slice(0, -1).join(', ')} et ${noms[noms.length - 1]}`);
+function phrase(e, membres, chez = null) {
+  const a = e.heure ? ` à ${heureFr(e.heure)}` : '';
+  if (e.type === 'trajet') {
+    const enfants = liste(nomsDe(e.pour, membres));
+    const verbe = e.sens === 'retour' ? 'récupère' : 'dépose';
+    const qui = liste(nomsDe((e.membres || []).filter((id) => id !== chez), membres));
+    if (!(e.membres || []).length) return `${e.sens === 'retour' ? 'Retour' : 'Dépôt'}${enfants ? ` de ${enfants}` : ''}${a} : personne n'est désigné`;
+    return `${qui ? `${qui} ` : ''}${verbe}${enfants ? ` ${enfants}` : ''}${a}`;
+  }
+  if (e.type === 'repas') return `${({ midi: 'Midi', soir: 'Soir', matin: 'Matin' })[e.creneau] || 'Au menu'} : ${e.titre}`;
+  return `${e.titre}${a}`;
+}
+function composerBriefing({ elements = [], membres = [], moi = null } = {}) {
+  const tri = (x, y) => (x.heure || '99:99').localeCompare(y.heure || '99:99') || ORDRE[x.type] - ORDRE[y.type];
+  const vus = new Set();
+  const uniques = elements.filter((e) => { const k = `${e.type}|${e.titre}|${e.heure || ''}|${(e.membres || []).join(',')}`; if (vus.has(k)) return false; vus.add(k); return true; });
+  const groupes = [];
+  const pris = new Set();
+  const ordre = moi ? [...membres.filter((m) => m.id === moi), ...membres.filter((m) => m.id !== moi)] : membres;
+  for (const m of ordre) {
+    const siens = uniques.filter((e) => e.type !== 'repas' && !pris.has(e) && ((e.membres || []).includes(m.id) || (e.type === 'trajet' && !(e.membres || []).length && (e.pour || []).includes(m.id))));
+    siens.forEach((e) => pris.add(e));
+    if (siens.length) groupes.push({ membre: { id: m.id, nom: m.nom }, lignes: siens.sort(tri).map((e) => ({ type: e.type, icone: ICONES[e.type] || '•', heure: e.heure || null, texte: phrase(e, membres, m.id) })) });
+  }
+  const reste = uniques.filter((e) => !pris.has(e)).sort(tri);
+  if (reste.length) groupes.push({ membre: null, lignes: reste.map((e) => ({ type: e.type, icone: ICONES[e.type] || '•', heure: e.heure || null, texte: phrase(e, membres) })) });
+  const nb = groupes.reduce((t, g) => t + g.lignes.length, 0);
+  return { groupes, nb, resume: resumeBriefing(groupes, moi) };
+}
+function resumeBriefing(groupes, moi = null) {
+  if (!groupes.length) return 'Rien de prévu demain : une journée tranquille.';
+  const parts = [];
+  for (const g of groupes) {
+    const textes = g.lignes.map((l) => l.texte);
+    if (!g.membre) parts.push(textes.join(' · '));
+    else if (g.membre.id === moi) parts.unshift(`Toi : ${textes.join(' · ')}`);
+    else parts.push(`${g.membre.nom} : ${textes.join(' · ')}`);
+  }
+  const t = parts.join('\n');
+  return t.length > 300 ? `${t.slice(0, 297)}…` : t;
+}
+// Vue « moi » du briefing : mon groupe, ceux des enfants et ce qui concerne tout le foyer.
+const briefingPourMoi = (b, moi, enfants = []) => ({ ...b, groupes: b.groupes.filter((g) => !g.membre || g.membre.id === moi || enfants.includes(g.membre.id)) });
+
+// Date et heure locales d'un élément d'agenda → Date.
+const dateLocale = (iso, heure = '00:00') => { const [a, m, j] = iso.split('-').map(Number); const [h, mi] = String(heure).split(':').map(Number); return new Date(a, m - 1, j, h || 0, mi || 0); };
+// Rappels à programmer pour les éléments d'agenda à venir (événements avec heure ; tâches datées le matin même).
+function rappelsAgenda(elements, maintenant) {
+  const out = [];
+  for (const e of elements) {
+    if (!e.date || ['planning', 'forme'].includes(e.source)) continue;
+    if (e.source === 'taches') {
+      const quand = dateLocale(e.date, '08:00');
+      const fin = dateLocale(e.date, '21:00');
+      if (fin <= maintenant) continue;
+      out.push({ id: `tache:${e.id}:${e.date}`, type: 'taches', titre: 'À faire aujourd\'hui', corps: e.titre, url: './#taches', pour_membres: e.membres || [], envoyer_a: quand, expire_a: fin });
+      continue;
+    }
+    if (!e.heure) continue;
+    const debut = dateLocale(e.date, e.heure);
+    if (debut <= maintenant) continue;
+    const jour = isoDate(maintenant) === e.date ? 'Aujourd\'hui' : isoDate(addDays(maintenant, 1)) === e.date ? 'Demain' : `Le ${e.date.split('-').reverse().slice(0, 2).join('/')}`;
+    out.push({ id: `evt:${e.source || 'agenda'}:${e.id}:${e.date}`, type: 'evenements', titre: e.titre, corps: `${jour} à ${heureFr(e.heure)}${e.detail ? ` · ${e.detail}` : ''}`, url: './#agenda',
+      pour_membres: e.membres || [], envoyer_a: addDays(debut, -1), evenement_a: debut, expire_a: debut });
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------------------
+// État et données
+// ---------------------------------------------------------------------------
+const vues = { moi: cache.get('vue:moi', null), famille: cache.get('vue:famille', null) }; // { cle, elements, briefing }
+let filtre = null; // membre choisi dans le fil de la famille
+const sequence = { moi: 0, famille: 0 }; // le dernier calcul lancé l'emporte
+
+const moiCompte = () => memberById(state.compte?.member_id) || state.members[0] || null;
+const enfantsDuFoyer = () => state.members.filter((m) => m.naissance && ageOf(m) < 15).map((m) => m.id);
+const indexMembre = (id) => state.members.findIndex((m) => m.id === id);
+
+// Repas du jour du planning, pour le fil de la famille (Ma journée les montre déjà).
+function sourceRepas(ctx) {
+  if (!ctx.famille) return [];
+  const di = dayIndex(ctx.date);
+  if (di < 0) return [];
+  const out = [];
+  for (const p of state.plan.filter((x) => x.day === di && ['midi', 'soir'].includes(x.slot))) {
+    const r = p.recipe_id ? recipeById(p.recipe_id) : null;
+    if (!r) continue;
+    const mangeurs = mealEaters(p);
+    out.push({ type: 'repas', heure: SLOT_TIME[p.slot], titre: `${slotLabel(p.slot)} : ${r.title}`, detail: mealWho(p), icone: '🍽️',
+      membres: mangeurs.length === state.members.length ? [] : mangeurs.map((m) => m.id), act: 'open-recipe', data: { id: r.id } });
+  }
+  return out;
+}
+
+// Données du briefing de demain (fil des modules, agenda, séances prévues).
+async function donneesBriefing(date = new Date()) {
+  const demain = addDays(new Date(date.getFullYear(), date.getMonth(), date.getDate()), 1);
+  const membres = state.members.map((m) => ({ id: m.id, nom: m.nom }));
+  const enfants = enfantsDuFoyer();
+  const moi = moiCompte();
+  const [agenda, accueil] = await Promise.all([Agenda.elements(demain, demain), Accueil.elements({ date: demain, iso: isoDate(demain), membre: moi, famille: true })]);
+  const seances = moi ? dayActs(moi.id, isoDate(demain)).filter((a) => a.kind === 'seance' && a.statut === 'prevu').map((a) => ({ titre: a.label || 'Séance', heure: a.heure || null, membres: [moi.id] })) : [];
+  const elements = classerBriefing({ agenda, accueil, seances, membres, enfants });
+  return { date: isoDate(demain), libelle: demain.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }), ...composerBriefing({ elements, membres, moi: moi?.id || null }) };
+}
+
+// Recalcule le fil (et le briefing) d'un mode, puis met à jour l'écran affiché sans tout redessiner.
+async function rafraichir(mode) {
+  const n = ++sequence[mode];
+  const maintenant = new Date();
+  const membre = mode === 'moi' ? journalMember() : moiCompte();
+  try {
+    const els = (await Accueil.elements({ date: maintenant, membre, famille: mode === 'famille' })).filter((e) => mode === 'famille' || e.module !== 'accueil-famille');
+    const briefing = briefingVisible(maintenant) ? await donneesBriefing(maintenant) : null;
+    if (n !== sequence[mode]) return;
+    const v = { cle: `${isoDate(maintenant)}:${membre?.id || ''}`, elements: els, briefing };
+    const avant = JSON.stringify(vues[mode]);
+    vues[mode] = v;
+    if (JSON.stringify(v) !== avant) {
+      cache.set(`vue:${mode}`, v);
+      const fil = $(`[data-af-fil="${mode}"]`);
+      if (fil) fil.innerHTML = filHtml(mode);
+      const b = $(`[data-af-briefing="${mode}"]`);
+      if (b) b.innerHTML = briefingHtml(mode);
+    }
+    planifierPlusTard();
+  } catch (e) { console.warn('fil de l\'Accueil', e); }
+}
+
+// Briefing du soir et rappels d'agenda déposés dans la file d'envoi (module notifications), au plus toutes les 4 s.
+let minuterie = null;
+function planifierPlusTard(delai = 4000) { clearTimeout(minuterie); minuterie = setTimeout(() => planifier().catch((e) => console.warn('notifications programmées', e)), delai); }
+async function planifier() {
+  const N = Modules.get('notifications')?.expose;
+  if (!N?.programmer || state.offline || !me() || !state.members.length) return { briefing: false, rappels: 0 };
+  const p = N.prefs();
+  const maintenant = new Date();
+  const faits = cache.get('programmes', {}); // id → signature déjà envoyée
+  let briefing = false;
+  if (N.veut(p, 'briefing')) {
+    const b = await donneesBriefing(maintenant);
+    const minuit = new Date(maintenant.getFullYear(), maintenant.getMonth(), maintenant.getDate(), 23, 59);
+    const ligne = { id: `briefing:${me()}:${b.date}`, type: 'briefing', titre: `Demain, ${b.libelle}`, corps: b.resume, url: './#aujourdhui', pour_users: [me()],
+      envoyer_a: new Date(maintenant.getFullYear(), maintenant.getMonth(), maintenant.getDate(), p.briefing_heure), expire_a: minuit };
+    const sig = `${ligne.corps}|${p.briefing_heure}`;
+    if (faits[ligne.id] !== sig) { await N.programmer(ligne); faits[ligne.id] = sig; briefing = true; }
+  }
+  const rappels = rappelsAgenda(await Agenda.elements(maintenant, addDays(maintenant, 2)), maintenant);
+  const ids = new Set(rappels.map((r) => r.id));
+  let nb = 0;
+  for (const r of rappels) {
+    const sig = `${r.titre}|${r.corps}|${r.evenement_a?.getTime?.() || r.envoyer_a.getTime()}|${(r.pour_membres || []).join(',')}`;
+    if (faits[r.id] === sig) continue;
+    await N.programmer(r);
+    faits[r.id] = sig;
+    nb++;
+  }
+  // Événements supprimés ou déplacés : leur rappel est retiré de la file.
+  for (const id of Object.keys(faits)) {
+    if (!/^(evt|tache):/.test(id) || ids.has(id)) continue;
+    const date = id.split(':').pop();
+    if (date >= isoDate(maintenant)) await N.annuler(id).catch(() => {});
+    delete faits[id];
+  }
+  for (const id of Object.keys(faits)) if (id.startsWith('briefing:') && id.split(':').pop() < isoDate(maintenant)) delete faits[id];
+  cache.set('programmes', faits);
+  return { briefing, rappels: nb };
+}
+
+// ---------------------------------------------------------------------------
+// Affichage
+// ---------------------------------------------------------------------------
+const pastilles = (ids) => (ids || []).filter((id) => indexMembre(id) >= 0).map((id) => `<span class="af-pastille" style="--af-c:${couleurMembre(indexMembre(id))}" title="${esc(memberById(id)?.nom || '')}"></span>`).join('');
+const attrsData = (data) => Object.entries(data || {}).map(([k, v]) => `data-${esc(String(k).replace(/[^a-z0-9-]/gi, '').toLowerCase())}="${esc(String(v))}"`).join(' ');
+
+function itemHtml(e, passe) {
+  const corps = `<span class="af-ico" aria-hidden="true">${e.icone || '•'}</span><span class="grow af-texte"><b>${esc(e.titre)}</b>${e.detail ? `<span class="muted small">${esc(e.detail)}</span>` : ''}</span>${e.membres?.length ? `<span class="af-qui">${pastilles(e.membres)}</span>` : ''}`;
+  return `<li class="af-item${passe ? ' passe' : ''}"><span class="af-heure">${e.heure ? esc(heureFr(e.heure)) : ''}</span>${e.act ? `<button class="af-carte" data-act="${esc(e.act)}" ${attrsData(e.data)}>${corps}</button>` : `<div class="af-carte">${corps}</div>`}</li>`;
+}
+
+function filHtml(mode) {
+  const v = vues[mode];
+  if (!v) return '<div class="spinner"></div>';
+  const moi = (mode === 'moi' ? journalMember() : moiCompte())?.id || null;
+  const els = filtrerFil(v.elements, { mode, moi, enfants: enfantsDuFoyer(), filtre: mode === 'famille' ? filtre : null });
+  if (!els.length) {
+    if (mode === 'moi') return '';
+    return `<div class="card af-vide"><p><b>${filtre ? `Rien de prévu aujourd'hui pour ${esc(memberById(filtre)?.nom || '')}.` : 'Rien de prévu aujourd\'hui pour la famille.'}</b></p><p class="muted small">Touche « + » pour ajouter un événement, une tâche ou un article.</p></div>`;
+  }
+  const now = nowHM();
+  const avecHeure = els.filter((e) => e.heure);
+  const sansHeure = els.filter((e) => !e.heure);
+  const idx = avecHeure.findIndex((e) => e.heure > now);
+  const marque = '<li class="af-maintenant"><span>Maintenant</span></li>';
+  const lignes = avecHeure.map((e, i) => (i === idx ? marque : '') + itemHtml(e, e.heure <= now)).join('') + (idx < 0 && avecHeure.length ? marque : '');
+  return `${mode === 'moi' ? '<h3 class="tl-head">Aussi aujourd\'hui</h3>' : ''}<ol class="af-fil">${lignes}${sansHeure.map((e) => itemHtml(e, false)).join('')}</ol>`;
+}
+
+function briefingHtml(mode) {
+  const b0 = vues[mode]?.briefing;
+  if (!b0 || !briefingVisible(new Date())) return '';
+  const moi = moiCompte()?.id || null;
+  const b = mode === 'moi' ? briefingPourMoi(b0, moi, enfantsDuFoyer()) : b0;
+  const groupes = b.groupes.map((g) => `<div class="af-b-groupe">
+      <div class="af-b-qui">${g.membre ? `<span class="af-pastille" style="--af-c:${couleurMembre(indexMembre(g.membre.id))}"></span><b>${g.membre.id === moi ? 'Toi' : esc(g.membre.nom)}</b>` : '<b>Le foyer</b>'}</div>
+      <ul>${g.lignes.map((l) => `<li><span aria-hidden="true">${l.icone}</span> ${esc(l.texte)}</li>`).join('')}</ul></div>`).join('');
+  return `<section class="card af-briefing" aria-label="Briefing du soir">
+    <div class="af-b-tete"><span class="af-b-lune" aria-hidden="true">🌙</span><div class="grow"><h3>Demain</h3><span class="muted small">${esc(b0.libelle)}</span></div></div>
+    ${groupes || '<p class="muted small af-b-calme">Rien de prévu demain : une journée tranquille.</p>'}
+  </section>`;
+}
+
+const fab = () => `<button class="af-fab" data-act="accueil-ajout" aria-label="Ajouter : phrase libre ou dictée"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="af-fab-espace" aria-hidden="true"></div>`;
+
+// Ma journée (écran du cœur) : briefing du soir avant le fil, « Aussi aujourd'hui » après, et le « + » flottant.
+function augmenterJournee(html) {
+  if (!journalMember()) return html;
+  rafraichir('moi');
+  const brief = `<div data-af-briefing="moi">${briefingHtml('moi')}</div>`;
+  const i = html.indexOf('<h3 class="tl-head">');
+  const avec = i >= 0 ? html.slice(0, i) + brief + html.slice(i) : html + brief;
+  return `${avec}<div data-af-fil="moi">${vues.moi?.cle?.startsWith(isoDate(new Date())) ? filHtml('moi') : ''}</div>${fab()}`;
+}
+const vueJour = Modules.get('aujourdhui');
+if (vueJour) { const base = vueJour.rendu; vueJour.rendu = () => augmenterJournee(base()); }
+
+function renduFamille() {
+  rafraichir('famille');
+  const d = new Date();
+  const membres = state.members;
+  if (!membres.length) return `<div class="card af-vide"><p class="muted small">Ajoute les membres du foyer pour voir la journée de chacun.</p><button class="btn primary small" data-act="foyer">${ICON.users} Configurer le foyer</button></div>`;
+  if (filtre && !memberById(filtre)) filtre = null;
+  const chips = `<div class="chips af-membres" role="group" aria-label="Afficher">
+    <button class="chip" data-act="af-filtre" data-m="" aria-pressed="${!filtre}">Tout le monde</button>
+    ${membres.map((m, i) => `<button class="chip" data-act="af-filtre" data-m="${m.id}" aria-pressed="${filtre === m.id}"><span class="af-pastille" style="--af-c:${couleurMembre(i)}"></span>${esc(m.nom)}</button>`).join('')}</div>`;
+  const aJour = vues.famille?.cle?.startsWith(isoDate(d));
+  return `<p class="muted af-date">${d.getHours() < 12 ? 'Bonjour' : d.getHours() < 18 ? 'Bon après-midi' : 'Bonsoir'} · ${esc(d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }))}</p>
+    <div data-af-briefing="famille">${aJour ? briefingHtml('famille') : ''}</div>
+    ${chips}
+    <h3 class="tl-head">Aujourd'hui</h3>
+    <div data-af-fil="famille">${aJour ? filHtml('famille') : '<div class="spinner"></div>'}</div>
+    ${fab()}`;
+}
+
 Modules.register({
   id: 'accueil-famille',
   onglet: 'accueil',
   segment: 'Famille',
   ordre: 20,
-  libelle: 'La journée de la famille',
-  rendu: () => Modules.bientot('Le fil de la famille', 'La journée de toute la famille d\'un geste, et le briefing du soir.'),
+  libelle: 'Notre journée',
+  rendu: renduFamille,
+  async charger(force, { horsLigne } = {}) { if (!horsLigne) planifierPlusTard(6000); },
+  sourcesAccueil: (ctx) => sourceRepas(ctx),
+  actions: {
+    'af-filtre': (b) => { filtre = b.dataset.m || null; $$('.af-membres .chip').forEach((c) => c.setAttribute('aria-pressed', String((c.dataset.m || null) === filtre))); const f = $('[data-af-fil="famille"]'); if (f) f.innerHTML = filHtml('famille'); },
+    'accueil-ajout': () => {
+      while (sheets.length) closeSheet();
+      const el = AjoutRapide.ouvrir();
+      const champ = el && $('[name="txt"]', el);
+      if (champ) champ.insertAdjacentHTML('afterend', '<p class="muted small af-dictee"><span aria-hidden="true">🎙️</span> Pour dicter, touche le micro du clavier.</p>');
+    },
+  },
+  expose: { couleurMembre, concerne, filtrerFil, briefingVisible, detecterTrajet, classerBriefing, composerBriefing, resumeBriefing, briefingPourMoi, rappelsAgenda, heureFr, planifier },
 });
 })();
 // ==== module agenda ====
@@ -8445,7 +8844,193 @@ Modules.register({
 })();
 // ==== module notifications ====
 (function () {
-// Module « Notifications » : emplacement réservé, à construire (voir LISEZMOI.md).
+// Module « Notifications » (Plus › Notifications) : chacun choisit, une par une, les notifications qu'il reçoit,
+// ses heures de silence, l'heure du briefing du soir et le délai des rappels d'événements.
+// Tables (migration 2026-11-16_accueil-notifications.sql) :
+//   notif_prefs : une ligne par compte (RLS propriétaire) ;
+//   notif_file  : file des notifications à envoyer, partagée par le foyer, vidée par la fonction send-reminders.
+// Pour les autres modules (tâche confiée, nouveau message, agenda ou courses modifiés…) :
+//   Modules.get('notifications').expose.programmer({ id, type, titre, corps, url, pour_membres | pour_users, sauf_auteur, envoyer_a })
+//   type : un des TYPES_NOTIF ci-dessous ou un type déclaré par le module (champ notifications).
+// Sans la migration, les réglages restent sur l'appareil et dans push_abonnements.prefs (ancienne fonction).
+const cache = Modules.cache('notifications');
+
+// Copie de supabase/functions/send-reminders/regles.js (un test vérifie qu'elles restent identiques).
+const TYPES_NOTIF = [
+  { type: 'briefing', groupe: 'famille', libelle: 'Briefing du soir', description: 'Demain pour chacun : qui dépose qui, repas, événements, tâches, séance.', defaut: true },
+  { type: 'evenements', groupe: 'famille', libelle: 'Rappels d\'événements', description: 'Avant chaque événement de l\'agenda qui te concerne.', defaut: true },
+  { type: 'taches', groupe: 'famille', libelle: 'Tâches', description: 'Une tâche t\'est confiée, est faite, ou arrive à échéance.', defaut: true },
+  { type: 'messages', groupe: 'famille', libelle: 'Messages', description: 'Un nouveau message de la famille.', defaut: true },
+  { type: 'agenda_modifs', groupe: 'famille', libelle: 'Modifications de l\'agenda', description: 'Quelqu\'un d\'autre ajoute, déplace ou supprime un événement.', defaut: false },
+  { type: 'courses_modif', groupe: 'cuisine', libelle: 'Liste de courses modifiée', description: 'Quelqu\'un ajoute des articles pendant que tu fais les courses.', defaut: false },
+  { type: 'courses', groupe: 'cuisine', libelle: 'Liste de courses prête', description: 'Le jour et l\'heure de ton choix.', defaut: true },
+  { type: 'planning', groupe: 'cuisine', libelle: 'Semaine à planifier', description: 'Vendredi 18 h, si la semaine prochaine est encore vide.', defaut: true },
+  { type: 'batch', groupe: 'cuisine', libelle: 'Batch cooking', description: 'Samedi 18 h, la session du lendemain.', defaut: true },
+  { type: 'congel', groupe: 'cuisine', libelle: 'Sortir du congélateur', description: 'La veille à 19 h, pour un reste prévu le lendemain.', defaut: true },
+  { type: 'seance', groupe: 'forme', libelle: 'Séances', description: 'Une heure avant chaque séance prévue.', defaut: true },
+  { type: 'dispos', groupe: 'forme', libelle: 'Dispos du dimanche', description: 'Dimanche 18 h, coche tes disponibilités de la semaine.', defaut: true },
+  { type: 'bilan', groupe: 'forme', libelle: 'Bilan du soir', description: '20 h, le bilan de la journée avec ton compagnon.', defaut: true },
+];
+const PREFS_DEFAUT = {
+  silence_actif: true, silence_debut: 22, silence_fin: 7,
+  briefing_heure: 19, rappel_min: 60, regrouper: true, courses_day: 5, courses_hour: 9,
+};
+const GROUPES = [['famille', 'Famille'], ['cuisine', 'Cuisine'], ['forme', 'Forme et compagnon'], ['autres', 'Autres']];
+// Clés reprises par l'ancienne fonction send-reminders (push_abonnements.prefs).
+const CLES_ANCIENNES = ['batch', 'congel', 'courses', 'planning', 'bilan', 'seance', 'dispos'];
+
+const bool = (v) => (typeof v === 'boolean' ? v : null);
+const entier = (v, min, max, def) => { const n = Number(v); return Number.isInteger(n) && n >= min && n <= max ? n : def; };
+// Réglages effectifs : la ligne notif_prefs, puis les anciens réglages de l'abonnement, puis les valeurs par défaut.
+function prefsEffectives(ligne, ancien) {
+  const l = ligne || {};
+  const a = ancien || {};
+  const types = {};
+  for (const t of TYPES_NOTIF) {
+    const v = bool((l.types || {})[t.type]);
+    const w = bool(a[t.type]);
+    types[t.type] = v ?? w ?? t.defaut;
+  }
+  for (const [k, v] of Object.entries(l.types || {})) if (!(k in types) && typeof v === 'boolean') types[k] = v;
+  return {
+    types,
+    silence_actif: bool(l.silence_actif) ?? PREFS_DEFAUT.silence_actif,
+    silence_debut: entier(l.silence_debut, 0, 23, PREFS_DEFAUT.silence_debut),
+    silence_fin: entier(l.silence_fin, 0, 23, PREFS_DEFAUT.silence_fin),
+    briefing_heure: entier(l.briefing_heure, 0, 23, PREFS_DEFAUT.briefing_heure),
+    rappel_min: entier(l.rappel_min, 0, 24 * 60, PREFS_DEFAUT.rappel_min),
+    regrouper: bool(l.regrouper) ?? PREFS_DEFAUT.regrouper,
+    courses_day: entier(l.courses_day ?? a.courses_day, 0, 6, PREFS_DEFAUT.courses_day),
+    courses_hour: entier(l.courses_hour ?? a.courses_hour, 0, 23, PREFS_DEFAUT.courses_hour),
+  };
+}
+const veut = (prefs, type) => type === 'test' || prefs?.types?.[type] !== false;
+function enSilence(prefs, heure) {
+  if (!prefs?.silence_actif) return false;
+  const d = prefs.silence_debut, f = prefs.silence_fin;
+  if (d === f) return false;
+  return d < f ? heure >= d && heure < f : heure >= d || heure < f;
+}
+const libelleSilence = (p) => `de ${p.silence_debut} h à ${p.silence_fin} h`;
+// Liste affichée : types de base, puis ceux que d'autres modules déclarent (champ notifications).
+function typesAffiches(declares = []) {
+  const base = TYPES_NOTIF.map((t) => ({ ...t }));
+  for (const d of declares) if (!base.some((t) => t.type === d.type)) base.push({ groupe: 'autres', defaut: true, ...d });
+  return base;
+}
+// Réglages repris par l'ancienne fonction (tant que la nouvelle n'est pas déployée).
+function prefsAnciennes(p) {
+  return { ...Object.fromEntries(CLES_ANCIENNES.map((k) => [k, p.types[k] !== false])), courses_day: p.courses_day, courses_hour: p.courses_hour };
+}
+
+let ligne = null; // ligne notif_prefs du compte
+let absente = false; // migration pas encore appliquée
+let appareil = 'inconnu'; // 'oui' | 'non' | 'indispo' | 'inconnu'
+const prefs = () => prefsEffectives(ligne, state.push?.prefs);
+const tableAbsente = (e) => /relation|does not exist|schema cache/i.test(e?.message || '');
+
+async function enregistrer(patch) {
+  ligne = { ...(ligne || {}), ...patch, user_id: me(), foyer_id: foyer(), updated_at: new Date().toISOString() };
+  cache.set('prefs', ligne);
+  const p = prefs();
+  const anciennes = prefsAnciennes(p);
+  if (state.push) state.push.prefs = { ...(state.push.prefs || {}), ...anciennes };
+  db.from('push_abonnements').update({ prefs: { ...(state.push?.prefs || {}), ...anciennes } }).eq('user_id', me()).then(() => {}, () => {});
+  if (absente) return;
+  const r = await Sync.upsert(T.notif_prefs, ligne, { onConflict: 'user_id' });
+  ligne = { ...ligne, id: r.id };
+  cache.set('prefs', ligne);
+}
+
+// File d'envoi : une ligne par notification (identifiant stable pour la remplacer ou l'annuler).
+async function programmer(n) {
+  if (absente || !n?.id || !n.type || !n.titre) return null;
+  const iso = (d) => (d instanceof Date ? d.toISOString() : d || null);
+  return Sync.upsert(T.notif_file, {
+    id: n.id, type: n.type, titre: n.titre, corps: n.corps || '', url: n.url || './',
+    pour_users: n.pour_users?.length ? n.pour_users : null, pour_membres: n.pour_membres?.length ? n.pour_membres : null,
+    sauf_auteur: !!n.sauf_auteur, envoyer_a: iso(n.envoyer_a) || new Date().toISOString(), evenement_a: iso(n.evenement_a), expire_a: iso(n.expire_a),
+  });
+}
+async function annuler(id) { if (!absente && id) await Sync.supprimer(T.notif_file, id); }
+
+// État de l'abonnement push de cet appareil (avec délai : le service worker peut être absent).
+async function verifierAppareil() {
+  if (!Push.supported()) { appareil = 'indispo'; return; }
+  try {
+    const r = await Promise.race([Push.current(), new Promise((_, ko) => setTimeout(() => ko(new Error('délai')), 3000))]);
+    appareil = r ? 'oui' : 'non';
+  } catch { appareil = 'non'; }
+}
+
+const sw = (attrs, on, label) => `<input type="checkbox" role="switch" class="notif-switch" ${attrs} ${on ? 'checked' : ''} aria-label="${esc(label)}">`;
+const options = (liste, val) => liste.map(([v, l]) => `<option value="${v}" ${Number(val) === Number(v) ? 'selected' : ''}>${esc(l)}</option>`).join('');
+const HEURES = Array.from({ length: 24 }, (_, h) => [h, `${h} h`]);
+const DELAIS = [[60, '1 h avant'], [120, '2 h avant'], [180, '3 h avant'], [1440, 'la veille']];
+
+// Réglage complémentaire d'un type (heure du briefing, délai des rappels, jour des courses).
+function extra(t, p) {
+  if (t.type === 'briefing') return `<label class="notif-extra"><span>Vers</span><select class="input" data-notif-champ="briefing_heure" aria-label="Heure du briefing">${options(HEURES.filter(([h]) => h >= 16 && h <= 22), p.briefing_heure)}</select></label>`;
+  if (t.type === 'evenements') return `<label class="notif-extra"><span>Prévenir</span><select class="input" data-notif-champ="rappel_min" aria-label="Délai des rappels">${options(DELAIS, p.rappel_min)}</select></label>`;
+  if (t.type === 'courses') return `<div class="notif-extra"><select class="input" data-notif-champ="courses_day" aria-label="Jour de la liste de courses">${options(DAYS.map((d, i) => [i, d]), p.courses_day)}</select><select class="input" data-notif-champ="courses_hour" aria-label="Heure de la liste de courses">${options(HEURES.filter(([h]) => h >= 7 && h <= 21), p.courses_hour)}</select></div>`;
+  return '';
+}
+
+function blocAppareil() {
+  if (appareil === 'indispo') return '<p class="muted small">Les notifications ne sont pas disponibles dans ce navigateur. Sur iPhone, installe l\'appli sur l\'écran d\'accueil (Partager › Sur l\'écran d\'accueil), puis ouvre-la depuis son icône.</p>';
+  const hint = Push.standaloneHint() ? '<p class="small notif-alerte">Sur iPhone, les notifications ne fonctionnent qu\'avec l\'appli installée sur l\'écran d\'accueil (Partager › Sur l\'écran d\'accueil), ouverte depuis son icône.</p>' : '';
+  return `${hint}<label class="notif-ligne"><span class="grow"><b>Recevoir sur cet appareil</b><span class="muted small">${appareil === 'oui' ? 'Activé : les notifications arrivent même appli fermée.' : appareil === 'inconnu' ? 'Vérification…' : 'Désactivé sur cet appareil.'}</span></span>${sw('data-notif-appareil', appareil === 'oui', 'Recevoir sur cet appareil')}</label>
+    ${appareil === 'oui' ? `<button class="btn small block" data-act="push-test">${ICON.sparkle} M'envoyer une notification de test</button>` : ''}`;
+}
+
+function rendu() {
+  const p = prefs();
+  const types = typesAffiches(Modules.notifications());
+  const groupes = GROUPES.map(([g, titre]) => {
+    const liste = types.filter((t) => t.groupe === g);
+    if (!liste.length) return '';
+    return `<h3 class="notif-titre">${esc(titre)}</h3><section class="card notif-carte">${liste.map((t) => {
+      const on = p.types[t.type] ?? t.defaut;
+      return `<div class="notif-bloc ${on ? '' : 'off'}"><label class="notif-ligne"><span class="grow"><b>${esc(t.libelle)}</b>${t.description ? `<span class="muted small">${esc(t.description)}</span>` : ''}</span>${sw(`data-notif-type="${esc(t.type)}"`, on, t.libelle)}</label>${on ? extra(t, p) : ''}</div>`;
+    }).join('')}</section>`;
+  }).join('');
+  if (appareil === 'inconnu') verifierAppareil().then(() => { const z = $('[data-notif-appareil-zone]'); if (z) z.innerHTML = blocAppareil(); });
+  return `<div class="notif">
+    <p class="muted small notif-intro">Ces réglages sont les tiens : chaque membre du foyer choisit les siens.${absente ? ' Ils sont gardés sur cet appareil en attendant la mise à jour du serveur.' : ''}</p>
+    <section class="card notif-carte" data-notif-appareil-zone>${blocAppareil()}</section>
+    <h3 class="notif-titre">Heures de silence</h3>
+    <section class="card notif-carte">
+      <label class="notif-ligne"><span class="grow"><b>Silence la nuit</b><span class="muted small">${p.silence_actif ? `Rien ${esc(libelleSilence(p))} : ce qui arrive attend la fin du silence.` : 'Les notifications peuvent arriver à toute heure.'}</span></span>${sw('data-notif-champ="silence_actif"', p.silence_actif, 'Heures de silence')}</label>
+      ${p.silence_actif ? `<div class="notif-extra notif-silence"><span>De</span><select class="input" data-notif-champ="silence_debut" aria-label="Début du silence">${options(HEURES, p.silence_debut)}</select><span>à</span><select class="input" data-notif-champ="silence_fin" aria-label="Fin du silence">${options(HEURES, p.silence_fin)}</select></div>` : ''}
+      <label class="notif-ligne"><span class="grow"><b>Regrouper</b><span class="muted small">Plusieurs notifications de la même heure arrivent en une seule.</span></span>${sw('data-notif-champ="regrouper"', p.regrouper, 'Regrouper les notifications')}</label>
+    </section>
+    ${groupes}
+  </div>`;
+}
+
+const majEcran = () => { if (state.tab === 'notifications') render(); };
+document.addEventListener('change', async (e) => {
+  const t = e.target;
+  if (!t.closest || !t.closest('.notif')) return;
+  try {
+    if (t.matches('[data-notif-appareil]')) {
+      if (t.checked) await Push.subscribe(); else await Push.unsubscribe();
+      appareil = t.checked ? 'oui' : 'non';
+      toast(t.checked ? 'Notifications activées sur cet appareil' : 'Notifications coupées sur cet appareil');
+      return majEcran();
+    }
+    if (t.dataset.notifType) {
+      await enregistrer({ types: { ...(ligne?.types || {}), [t.dataset.notifType]: t.checked } });
+      return majEcran();
+    }
+    if (t.dataset.notifChamp) {
+      const v = t.type === 'checkbox' ? t.checked : Number(t.value);
+      await enregistrer({ [t.dataset.notifChamp]: v });
+      return majEcran();
+    }
+  } catch (err) { fail(err, 'Réglage non enregistré'); majEcran(); }
+});
+
 Modules.register({
   id: 'notifications',
   onglet: 'plus',
@@ -8453,8 +9038,23 @@ Modules.register({
   ordre: 30,
   libelle: 'Notifications',
   icone: I('<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>'),
-  description: 'Bientôt ici',
-  rendu: () => Modules.bientot('Notifications', 'Chacun choisit, une par une, les notifications qu\'il reçoit, et ses heures de silence.', `<button class="btn" data-act="rappels">${ICON.clock} Rappels actuels</button>`),
+  description: 'Une par une, et tes heures de silence',
+  tables: { notif_prefs: 'notif_prefs', notif_file: 'notif_file' },
+  async charger(force, { horsLigne } = {}) {
+    if (horsLigne || !me()) { ligne = cache.get('prefs', null); return; }
+    const { data, error } = await db.from(T.notif_prefs).select('*').eq('user_id', me()).maybeSingle();
+    if (error) {
+      if (!tableAbsente(error)) throw error;
+      absente = true;
+      ligne = cache.get('prefs', null);
+      return;
+    }
+    absente = false;
+    ligne = data || cache.get('prefs', null);
+    if (data) cache.set('prefs', data);
+  },
+  rendu,
+  expose: { TYPES_NOTIF, PREFS_DEFAUT, prefsEffectives, veut, enSilence, libelleSilence, typesAffiches, prefsAnciennes, prefs, programmer, annuler },
 });
 })();
 // ==== module photos ====
