@@ -1,0 +1,42 @@
+/* Accueil : fil de la famille, briefing du soir, bouton « + » flottant (jetons du thème uniquement). */
+.af-date { margin: 0 0 10px; }
+.af-membres .chip { gap: 8px; }
+.af-pastille { width: 12px; height: 12px; border-radius: 50%; flex: none; display: inline-block; background: var(--af-c, var(--primary)); border: 2px solid var(--surface); box-shadow: 0 0 0 1.5px var(--ink); }
+.chip[aria-pressed="true"] .af-pastille { border-color: var(--primary); box-shadow: 0 0 0 1.5px var(--on-primary); }
+
+.af-fil { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 8px; }
+.af-item { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 8px; align-items: stretch; }
+.af-heure { font-weight: 800; font-size: 14px; color: var(--ink); padding-top: 13px; text-align: right; white-space: nowrap; }
+.af-carte { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 52px; padding: 10px 12px; text-align: left;
+  background: var(--surface); border: 2px solid var(--ink); border-radius: 14px; color: var(--text); font: inherit; }
+button.af-carte:active { transform: translateY(1px); }
+.af-ico { width: 30px; height: 30px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); font-size: 15px; }
+.af-ico svg { width: 18px; height: 18px; }
+.af-texte { display: flex; flex-direction: column; overflow-wrap: anywhere; }
+.af-texte b { font-weight: 800; }
+.af-qui { display: inline-flex; gap: 3px; flex: none; }
+.af-item.passe .af-carte { background: var(--surface-2); }
+.af-item.passe .af-texte b, .af-item.passe .af-heure { color: var(--muted); }
+.af-maintenant { display: flex; align-items: center; gap: 8px; margin-left: 60px; color: var(--primary-strong); font-weight: 800; font-size: 13px; }
+.af-maintenant::after { content: ""; flex: 1; height: 2px; border-radius: 2px; background: var(--primary); }
+.af-vide { padding: 16px; text-align: center; }
+.af-vide p { margin: 0 0 6px; }
+
+.af-briefing { padding: 14px; margin: 0 0 14px; background: var(--surface); }
+.af-b-tete { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.af-b-tete h3 { margin: 0; font-family: var(--display); font-size: 20px; line-height: 1.1; }
+.af-b-lune { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: var(--mango-soft); font-size: 18px; flex: none; }
+.af-b-groupe { padding: 8px 0; border-top: 1.5px dashed var(--border); }
+.af-b-qui { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+.af-b-groupe ul { margin: 0; padding: 0 0 0 20px; list-style: none; }
+.af-b-groupe li { font-size: 15px; padding: 2px 0; overflow-wrap: anywhere; }
+.af-b-calme { margin: 0; }
+
+.af-fab { position: fixed; z-index: 25; right: max(16px, calc((100vw - 760px) / 2 + 16px)); bottom: calc(var(--nav-h) + var(--safe-b) + 14px);
+  width: 58px; height: 58px; border-radius: 50%; border: 2px solid var(--ink); background: var(--primary); color: var(--on-primary);
+  display: grid; place-items: center; box-shadow: var(--shadow); transition: transform .15s ease; }
+.af-fab svg { width: 28px; height: 28px; }
+.af-fab:active { transform: scale(.94); }
+.af-fab-espace { height: 72px; }
+.af-dictee { margin: 6px 0 0; }
+@media (prefers-reduced-motion: reduce) { .af-fab, button.af-carte { transition: none; transform: none; } }
