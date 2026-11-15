@@ -1254,7 +1254,8 @@ function fViewReglages() {
     <div class="card f-pad"><div class="row"><h3 class="grow">Course cible</h3><button class="btn small" data-act="forme-objectif">${ICON.plus} Ajouter</button></div>
       ${F.objectifs.length ? F.objectifs.map((o) => `<div class="entry"><div class="grow"><div class="nm">🏁 ${esc(o.nom)}</div><div class="muted small">${fDate(o.date)}${o.distance_km ? ` · ${fmtNum(Number(o.distance_km))} km` : ''}${o.dplus_m ? ` · D+ ${o.dplus_m} m` : ''}</div></div><button class="icon-btn" data-act="forme-objectif-del" data-id="${o.id}" aria-label="Supprimer">${ICON.trash}</button></div>`).join('') : '<p class="muted small">Facultatif : le plan s\'allège les deux dernières semaines avant la course.</p>'}</div>
     <div class="card f-pad stack"><h3>Mon profil Forme</h3><p class="muted small">${esc(FORME_NIVEAUX[pr.niveau] || '')} · ${esc(FORME_OBJECTIFS[pr.objectif_forme] || '')} · ${esc(FORME_TERRAINS[pr.terrain] || '')}</p>
-      <button class="btn block" data-act="forme-q-redo">Refaire le questionnaire</button><button class="btn block" data-act="forme-reset" style="color:var(--danger)">Réinitialiser le module</button></div>`;
+      <button class="btn block" data-act="forme-q-redo">Refaire le questionnaire</button><button class="btn block" data-act="forme-reset" style="color:var(--danger)">Réinitialiser le module</button></div>
+    ${(Forme.reglagesExtra || []).map((f) => f()).join('')}`; // cartes ajoutées par les modules (partage du sport…)
 }
 function fLieuSheet(id) {
   const l = id ? state.forme.lieux.find((x) => x.id === id) : null;

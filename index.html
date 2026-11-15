@@ -1215,73 +1215,305 @@ h1, h2, h3, .sheet-head h2, .section-title, .tl-head { font-weight: 800; letter-
 .ajout-prop svg { width: 18px; height: 18px; flex: none; }
 body.logged-out [data-act="ajout-rapide"] { display: none; }
 @media (prefers-reduced-motion: reduce) { .tabbar button svg { transition: none; } }
-/* ==== module accueil-famille ==== */
-/* Accueil : fil de la famille, briefing du soir, bouton « + » flottant (jetons du thème uniquement). */
-.af-date { margin: 0 0 10px; }
-.af-membres .chip { gap: 8px; }
-.af-pastille { width: 12px; height: 12px; border-radius: 50%; flex: none; display: inline-block; background: var(--af-c, var(--primary)); border: 2px solid var(--surface); box-shadow: 0 0 0 1.5px var(--ink); }
-.chip[aria-pressed="true"] .af-pastille { border-color: var(--primary); box-shadow: 0 0 0 1.5px var(--on-primary); }
+/* ==== module univers-securite ==== */
+/* ==========================================================================
+   Univers graphiques (Plus › Univers), écran de verrouillage (Plus › Sécurité),
+   partage du sport et sauvegarde.
 
-.af-fil { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 8px; }
-.af-item { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 8px; align-items: stretch; }
-.af-heure { font-weight: 800; font-size: 14px; color: var(--ink); padding-top: 13px; text-align: right; white-space: nowrap; }
-.af-carte { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 52px; padding: 10px 12px; text-align: left;
-  background: var(--surface); border: 2px solid var(--ink); border-radius: 14px; color: var(--text); font: inherit; }
-button.af-carte:active { transform: translateY(1px); }
-.af-ico { width: 30px; height: 30px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); font-size: 15px; }
-.af-ico svg { width: 18px; height: 18px; }
-.af-texte { display: flex; flex-direction: column; overflow-wrap: anywhere; }
-.af-texte b { font-weight: 800; }
-.af-qui { display: inline-flex; gap: 3px; flex: none; }
-.af-item.passe .af-carte { background: var(--surface-2); }
-.af-item.passe .af-texte b, .af-item.passe .af-heure { color: var(--muted); }
-.af-maintenant { display: flex; align-items: center; gap: 8px; margin-left: 60px; color: var(--primary-strong); font-weight: 800; font-size: 13px; }
-.af-maintenant::after { content: ""; flex: 1; height: 2px; border-radius: 2px; background: var(--primary); }
-.af-vide { padding: 16px; text-align: center; }
-.af-vide p { margin: 0 0 6px; }
+   Un univers = un jeu de jetons posé sur <html data-univers="…">. Sans attribut :
+   l'univers « Classique » (Pop gourmand, src/css/10-theme.css) s'applique tel quel.
+   Les mêmes jetons servent aux vignettes d'aperçu ([data-uapercu="…"]).
+   Les contrastes (≥ 4,5:1) sont vérifiés par tests/unit/univers-securite.test.js,
+   qui lit ce fichier : chaque couleur d'un univers est écrite ici en #RRGGBB.
+   Jetons propres aux univers (préfixe --u-) :
+     --u-texte (police du texte), --u-ligne / --u-bord (contours), --u-r-btn, --u-r-puce,
+     --u-r-champ (rayons), --u-sh-btn (ombre des boutons), --u-motif / --u-motif-taille
+     (fond), --u-w-titre / --u-style-titre / --u-ls-titre / --u-titre-echelle (titres),
+     --u-tab-bg / --u-tab-ink / --u-tab-actif / --u-tab-on / --u-tab-on-bg / --u-tab-bord
+     (barre d'onglets), --u-icone (épaisseur du trait des icônes), --u-surligne (titres de section).
+   ========================================================================== */
 
-.af-briefing { padding: 14px; margin: 0 0 14px; background: var(--surface); }
-.af-b-tete { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-.af-b-tete h3 { margin: 0; font-family: var(--display); font-size: 20px; line-height: 1.1; }
-.af-b-lune { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: var(--mango-soft); font-size: 18px; flex: none; }
-.af-b-groupe { padding: 8px 0; border-top: 1.5px dashed var(--border); }
-.af-b-qui { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
-.af-b-groupe ul { margin: 0; padding: 0 0 0 20px; list-style: none; }
-.af-b-groupe li { font-size: 15px; padding: 2px 0; overflow-wrap: anywhere; }
-.af-b-calme { margin: 0; }
+/* ---------- Classique (copie des jetons de 10-theme.css, pour l'aperçu) ---------- */
+[data-uapercu="classique"] {
+  --bg: #fff3d1; --surface: #ffffff; --surface-2: #fff8e6; --text: #27233a; --ink: #27233a; --muted: #6e6680;
+  --border: #efd9a3; --primary: #dc3a3a; --primary-strong: #b52a2d; --primary-soft: #ffe1dc; --on-primary: #ffffff;
+  --mango: #ffd166; --mango-strong: #ffb703; --mango-soft: #fff0c2; --danger: #c4553f; --sage-light: #ff9e94; --mint: #06d6a0; --mint-soft: #d9f7e8; --sky: #3aa6ff;
+  --display: "Baloo 2", "Nunito", system-ui, sans-serif; --radius: 18px; --shadow: 0 4px 0 #f2c35b;
+  --u-texte: "Nunito", system-ui, sans-serif; --u-ligne: #27233a; --u-bord: 2px; --u-r-btn: 16px; --u-r-puce: 999px;
+  --u-sh-btn: 0 3px 0 #27233a; --u-motif: none; --u-motif-taille: auto; --u-w-titre: 800; --u-style-titre: normal; --u-ls-titre: 0;
+}
 
-.af-fab { position: fixed; z-index: 25; right: max(16px, calc((100vw - 760px) / 2 + 16px)); bottom: calc(var(--nav-h) + var(--safe-b) + 14px);
-  width: 58px; height: 58px; border-radius: 50%; border: 2px solid var(--ink); background: var(--primary); color: var(--on-primary);
-  display: grid; place-items: center; box-shadow: var(--shadow); transition: transform .15s ease; }
-.af-fab svg { width: 28px; height: 28px; }
-.af-fab:active { transform: scale(.94); }
-.af-fab-espace { height: 72px; }
-.af-dictee { margin: 6px 0 0; }
-@media (prefers-reduced-motion: reduce) { .af-fab, button.af-carte { transition: none; transform: none; } }
-/* ==== module notifications ==== */
-/* Plus › Notifications : interrupteurs par type, heures de silence (jetons du thème uniquement). */
-.notif-intro { margin: 0 0 10px; }
-.notif-titre { font-size: 17px; margin: 18px 0 8px; }
-.notif-carte { padding: 4px 14px; }
-.notif-carte > p { margin: 10px 0; }
-.notif-carte > .btn { margin: 4px 0 12px; }
-.notif-bloc + .notif-bloc, .notif-carte > .notif-ligne + .notif-ligne { border-top: 1.5px dashed var(--border); }
-.notif-ligne { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 0; cursor: pointer; }
-.notif-ligne .grow { display: flex; flex-direction: column; overflow-wrap: anywhere; }
-.notif-bloc.off .notif-ligne b { color: var(--muted); }
-.notif-extra { display: flex; align-items: center; gap: 8px; padding: 0 0 12px; flex-wrap: wrap; font-size: 14px; font-weight: 700; color: var(--muted); }
-.notif-extra select.input { width: auto; min-width: 0; flex: 1 1 110px; max-width: 180px; min-height: 40px; padding: 6px 10px; color: var(--text); }
-.notif-silence select.input { flex: 1 1 80px; }
-.notif-alerte { color: var(--primary-strong); background: var(--primary-soft); border-radius: 12px; padding: 8px 10px; }
-/* Interrupteur : case à cocher redessinée, accessible au clavier et aux lecteurs d'écran (role="switch"). */
-.notif-switch { appearance: none; -webkit-appearance: none; flex: none; position: relative; width: 52px; height: 32px; margin: 0; border-radius: 999px;
-  border: 2px solid var(--ink); background: var(--ring-track); cursor: pointer; transition: background .15s ease; }
-.notif-switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: var(--surface);
-  border: 2px solid var(--ink); box-sizing: border-box; transition: transform .15s ease; }
-.notif-switch:checked { background: var(--mint); }
-.notif-switch:checked::after { transform: translateX(20px); }
-.notif-switch:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
-@media (prefers-reduced-motion: reduce) { .notif-switch, .notif-switch::after { transition: none; } }
+/* ---------- Carnet de bord : papeterie, bullet journal ---------- */
+:root[data-univers="carnet"], [data-uapercu="carnet"] {
+  --bg: #FAFAF6; --surface: #FFFFFF; --surface-2: #EEF2FA; --text: #1E2A5A; --ink: #1E2A5A; --muted: #4A5478;
+  --border: #C9D2E6; --primary: #2D47C9; --primary-strong: #2D47C9; --primary-soft: #E3E8FB; --on-primary: #FFFFFF; --sage-light: #9AA8E6;
+  --mint: #2B9BC4; --mint-soft: #E1F1F7; --mango: #FFE86B; --mango-strong: #E9A21B; --mango-soft: #FFF6C4; --sky: #2B9BC4;
+  --ring-track: #E3E8F3; --pop-shadow: #D5DCEC; --danger: #B3261E;
+  --display: "Gochi Hand", "Comic Sans MS", cursive; --shadow: 2px 3px 0 rgba(30, 42, 90, .10); --radius: 6px;
+  --u-texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --u-ligne: #1E2A5A; --u-bord: 1.5px; --u-r-btn: 6px; --u-r-puce: 6px; --u-r-champ: 6px; --u-sh-btn: 2px 2px 0 #1E2A5A;
+  --u-motif: linear-gradient(90deg, transparent 22px, #F3A9B7 22px, #F3A9B7 23.5px, transparent 23.5px), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18'%3E%3Ccircle cx='1.5' cy='1.5' r='1.1' fill='%23B8C6E4'/%3E%3C/svg%3E");
+  --u-motif-taille: auto, 18px 18px;
+  --u-w-titre: 400; --u-style-titre: normal; --u-ls-titre: 0; --u-titre-echelle: 1.18;
+  --u-tab-bg: #FFFFFF; --u-tab-ink: #4A5478; --u-tab-actif: #1E2A5A; --u-tab-on: #1E2A5A; --u-tab-on-bg: #FFE86B; --u-tab-bord: 1.5px dashed #1E2A5A;
+  --u-icone: 1.9; --u-surligne: linear-gradient(transparent 58%, #FFE86B 58%, #FFE86B 92%, transparent 92%);
+}
+
+/* ---------- Washi : japonais minimal ---------- */
+:root[data-univers="washi"], [data-uapercu="washi"] {
+  --bg: #F3F2EE; --surface: #FBFBF9; --surface-2: #ECEAE3; --text: #1C1C1A; --ink: #1C1C1A; --muted: #57564F;
+  --border: #D9D6CC; --primary: #1C1C1A; --primary-strong: #A82C22; --primary-soft: #F3E3E0; --on-primary: #F3F2EE; --sage-light: #D9A39C;
+  --mint: #2F4A6D; --mint-soft: #E4E9EF; --mango: #E8DDC4; --mango-strong: #9A7A35; --mango-soft: #F1ECE0; --sky: #2F4A6D;
+  --ring-track: #E3E0D7; --pop-shadow: #D9D6CC; --danger: #A82C22;
+  --display: "Shippori Mincho", "Hiragino Mincho ProN", "Times New Roman", serif; --shadow: none; --radius: 0px;
+  --u-texte: "Zen Kaku Gothic New", "Hiragino Sans", "Helvetica Neue", sans-serif;
+  --u-ligne: #D9D6CC; --u-bord: 1px; --u-r-btn: 0px; --u-r-puce: 0px; --u-r-champ: 0px; --u-sh-btn: none;
+  --u-motif: none; --u-motif-taille: auto;
+  --u-w-titre: 600; --u-style-titre: normal; --u-ls-titre: .04em; --u-titre-echelle: 1;
+  --u-tab-bg: #F3F2EE; --u-tab-ink: #57564F; --u-tab-actif: #A82C22; --u-tab-on: #A82C22; --u-tab-on-bg: transparent; --u-tab-bord: 1px solid #D9D6CC;
+  --u-icone: 1.4; --u-surligne: none;
+}
+
+/* ---------- Herbier : nature et botanique ---------- */
+:root[data-univers="herbier"], [data-uapercu="herbier"] {
+  --bg: #E9EEDF; --surface: #F8FAF2; --surface-2: #DDE7CF; --text: #1F3324; --ink: #1F3324; --muted: #46584A;
+  --border: #B7C6A8; --primary: #2F5D3A; --primary-strong: #2F5D3A; --primary-soft: #E3ECD6; --on-primary: #F8FAF2; --sage-light: #9FBF95;
+  --mint: #5E9B6A; --mint-soft: #DCEBD7; --mango: #E4D9A6; --mango-strong: #C08A1F; --mango-soft: #F1ECCF; --sky: #3F7E99;
+  --ring-track: #DCE4D0; --pop-shadow: #B7C6A8; --danger: #8C3B5A;
+  --display: "Fraunces", "Iowan Old Style", Georgia, serif; --shadow: 0 1px 0 rgba(31, 51, 36, .06), 0 10px 24px -16px rgba(31, 51, 36, .45); --radius: 26px 6px 26px 6px;
+  --u-texte: "Karla", "Avenir Next", "Helvetica Neue", sans-serif;
+  --u-ligne: #B7C6A8; --u-bord: 1px; --u-r-btn: 999px 999px 999px 6px; --u-r-puce: 999px; --u-r-champ: 14px 4px 14px 4px; --u-sh-btn: none;
+  --u-motif: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cg fill='none' stroke='%23C9D5BA' stroke-width='1.4' stroke-linecap='round'%3E%3Cpath d='M20 90 Q30 60 52 40'/%3E%3Cpath d='M30 70 q-12 -4 -16 -14 q12 0 16 14z'/%3E%3Cpath d='M38 58 q12 -8 20 -2 q-10 8 -20 2z'/%3E%3Cpath d='M44 50 q-8 -12 -4 -22 q8 8 4 22z'/%3E%3Ccircle cx='86' cy='86' r='2.4'/%3E%3Ccircle cx='94' cy='80' r='1.8'/%3E%3C/g%3E%3C/svg%3E");
+  --u-motif-taille: 110px 110px;
+  --u-w-titre: 600; --u-style-titre: italic; --u-ls-titre: 0; --u-titre-echelle: 1;
+  --u-tab-bg: #F8FAF2; --u-tab-ink: #46584A; --u-tab-actif: #2F5D3A; --u-tab-on: #F8FAF2; --u-tab-on-bg: #2F5D3A; --u-tab-bord: 1px solid #B7C6A8;
+  --u-icone: 1.6; --u-surligne: none;
+}
+
+/* ---------- Cocon : doux pastel ---------- */
+:root[data-univers="cocon"], [data-uapercu="cocon"] {
+  --bg: #FCEFEA; --surface: #FFFFFF; --surface-2: #EAF5F1; --text: #3D3550; --ink: #3D3550; --muted: #625A74;
+  --border: #EADBD5; --primary: #F6BBAA; --primary-strong: #7A4E8A; --primary-soft: #FDE3DA; --on-primary: #3D3550; --sage-light: #F6BBAA;
+  --mint: #6FC0A6; --mint-soft: #E3F4EE; --mango: #FFE3A3; --mango-strong: #E9C15B; --mango-soft: #FFF3D6; --sky: #7BA7D9;
+  --ring-track: #F6E9E4; --pop-shadow: #F4E7E2; --danger: #A63D40;
+  --display: "Fredoka", "Arial Rounded MT Bold", "Helvetica Neue", sans-serif; --shadow: 0 14px 30px -18px rgba(120, 80, 100, .45); --radius: 28px;
+  --u-texte: "Nunito", "Avenir Next", "Helvetica Neue", sans-serif;
+  --u-ligne: transparent; --u-bord: 0px; --u-r-btn: 999px; --u-r-puce: 999px; --u-r-champ: 18px; --u-sh-btn: 0 8px 18px -10px rgba(240, 138, 126, .9);
+  --u-motif: radial-gradient(circle at 12% 6%, #FFD8CB 0, transparent 38%), radial-gradient(circle at 96% 34%, #DCEBFA 0, transparent 36%), radial-gradient(circle at 20% 92%, #DFF3EA 0, transparent 34%);
+  --u-motif-taille: auto;
+  --u-w-titre: 600; --u-style-titre: normal; --u-ls-titre: 0; --u-titre-echelle: 1;
+  --u-tab-bg: #FFFFFF; --u-tab-ink: #625A74; --u-tab-actif: #3D3550; --u-tab-on: #3D3550; --u-tab-on-bg: #FFE3A3; --u-tab-bord: 0 solid transparent;
+  --u-icone: 2; --u-surligne: none;
+}
+
+/* ---------- Kermesse : maximaliste coloré ---------- */
+:root[data-univers="kermesse"], [data-uapercu="kermesse"] {
+  --bg: #FFE6EE; --surface: #FFFFFF; --surface-2: #DDF5EE; --text: #1A1446; --ink: #1A1446; --muted: #3E3770;
+  --border: #CFC8EA; --primary: #2B3BDB; --primary-strong: #2B3BDB; --primary-soft: #E3E6FF; --on-primary: #FFFFFF; --sage-light: #FF8FB4;
+  --mint: #10B39A; --mint-soft: #DDF5EE; --mango: #FFD23F; --mango-strong: #FFB000; --mango-soft: #FFF4C7; --sky: #2B3BDB;
+  --ring-track: #F1E9F5; --pop-shadow: #FF4F8B; --danger: #B4123F;
+  --display: "Bricolage Grotesque", "Arial Black", sans-serif; --shadow: 5px 5px 0 #FF4F8B; --radius: 18px;
+  --u-texte: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+  --u-ligne: #1A1446; --u-bord: 2.5px; --u-r-btn: 14px; --u-r-puce: 999px; --u-r-champ: 12px; --u-sh-btn: 3px 3px 0 #1A1446;
+  /* Confettis plus petits et plus clairs que la maquette : ils restent derrière le contenu, jamais derrière un titre. */
+  --u-motif: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cpath d='M14 22 l10 -10 l4 14z' fill='%23FFD0E0'/%3E%3Ccircle cx='96' cy='20' r='6' fill='none' stroke='%23D6D9FF' stroke-width='3'/%3E%3Cpath d='M60 64 q6 -8 12 0 t12 0 t12 0' fill='none' stroke='%23BDEBDF' stroke-width='3' stroke-linecap='round'/%3E%3Crect x='18' y='96' width='10' height='10' fill='%23FFEBA6' transform='rotate(20 23 101)'/%3E%3Ccircle cx='118' cy='104' r='4' fill='%23FFD0E0'/%3E%3C/svg%3E");
+  --u-motif-taille: 170px 170px;
+  --u-w-titre: 800; --u-style-titre: normal; --u-ls-titre: -.02em; --u-titre-echelle: 1;
+  --u-tab-bg: #FFD23F; --u-tab-ink: #1A1446; --u-tab-actif: #1A1446; --u-tab-on: #FFD23F; --u-tab-on-bg: #1A1446; --u-tab-bord: 2.5px solid #1A1446;
+  --u-icone: 2.2; --u-surligne: none;
+}
+
+/* ==========================================================================
+   Application des jetons à toute l'appli (tout univers sauf Classique)
+   ========================================================================== */
+:root[data-univers] body {
+  font-family: var(--u-texte);
+  background-color: var(--bg);
+  background-image: var(--u-motif);
+  background-size: var(--u-motif-taille);
+}
+:root[data-univers] h1, :root[data-univers] h2, :root[data-univers] h3, :root[data-univers] .section-title,
+:root[data-univers] .sheet-head h2, :root[data-univers] .tl-head, :root[data-univers] .plus-titre {
+  font-family: var(--display); font-weight: var(--u-w-titre); font-style: var(--u-style-titre); letter-spacing: var(--u-ls-titre);
+}
+/* En-tête opaque : le motif du fond (confettis, feuilles) ne passe jamais derrière le titre. */
+:root[data-univers] .topbar { background: var(--bg); -webkit-backdrop-filter: none; backdrop-filter: none; }
+:root[data-univers] .topbar h1 { color: var(--ink); font-size: calc(24px * var(--u-titre-echelle, 1)); }
+:root[data-univers] .section-title, :root[data-univers] .plus-titre {
+  width: fit-content; max-width: 100%; padding: 0 6px; margin-left: -6px; border-radius: 6px;
+  background-color: var(--bg); background-image: var(--u-surligne);
+}
+
+/* Boutons, cartes, puces, champs */
+:root[data-univers] .btn {
+  border: var(--u-bord) solid var(--u-ligne); border-radius: var(--u-r-btn); box-shadow: var(--u-sh-btn);
+  background: var(--surface); color: var(--ink); font-family: var(--u-texte);
+}
+:root[data-univers] .btn:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
+:root[data-univers] .btn.primary { background: var(--primary); color: var(--on-primary); border-color: var(--u-ligne); }
+:root[data-univers] .btn.soft { background: var(--primary-soft); color: var(--ink); }
+:root[data-univers] .btn.small { box-shadow: var(--u-sh-btn); }
+:root[data-univers] .btn:disabled { box-shadow: none; }
+:root[data-univers] .quick3 .btn:first-child { background: var(--primary); color: var(--on-primary); }
+:root[data-univers] .quick3 .btn:nth-child(2) { background: var(--surface-2); }
+:root[data-univers] .quick3 .btn:nth-child(3) { background: var(--mango-soft); }
+:root[data-univers] .pet-actions .btn:first-child { background: var(--mint-soft); }
+:root[data-univers] .card, :root[data-univers] .hero, :root[data-univers] .ntable, :root[data-univers] .kcal-card,
+:root[data-univers] .slot-block, :root[data-univers] .tl-card, :root[data-univers] .scene, :root[data-univers] .bq-item,
+:root[data-univers] .prod-row, :root[data-univers] .macro-strip div, :root[data-univers] .day {
+  border: var(--u-bord) solid var(--u-ligne); box-shadow: var(--shadow);
+}
+:root[data-univers] .card, :root[data-univers] .hero { border-radius: var(--radius); }
+:root[data-univers] .chip { border: var(--u-bord) solid var(--u-ligne); border-radius: var(--u-r-puce); background: var(--surface); color: var(--ink); }
+:root[data-univers] .chip[aria-pressed="true"], :root[data-univers] .seg button[aria-pressed="true"], :root[data-univers] .segbar button[aria-pressed="true"] {
+  background: var(--primary); color: var(--on-primary); box-shadow: var(--u-sh-btn); opacity: 1;
+}
+:root[data-univers] .seg { background: var(--surface-2); border: var(--u-bord) solid var(--u-ligne); border-radius: var(--u-r-btn); }
+:root[data-univers] .seg button { border-radius: var(--u-r-btn); color: var(--ink); }
+:root[data-univers] .segbar button { border: var(--u-bord) solid var(--u-ligne); border-radius: var(--u-r-btn); background: var(--surface); color: var(--ink); font-family: var(--u-texte); }
+:root[data-univers] .input, :root[data-univers] select.input, :root[data-univers] textarea.input {
+  border: 1.5px solid var(--border); border-radius: var(--u-r-champ); background: var(--surface);
+}
+:root[data-univers] .input:focus { border-color: var(--primary-strong); box-shadow: 0 0 0 3px var(--primary-soft); }
+:root[data-univers] .icon-btn:hover { background: var(--surface-2); }
+
+/* Barre d'onglets */
+:root[data-univers] .tabbar { background: var(--u-tab-bg); border-top: var(--u-tab-bord); }
+:root[data-univers] .tabbar button { color: var(--u-tab-ink); }
+:root[data-univers] .tabbar button[aria-current="page"] { color: var(--u-tab-actif); }
+:root[data-univers] .tabbar button[aria-current="page"] svg { background: var(--u-tab-on-bg); color: var(--u-tab-on); box-shadow: none; }
+:root[data-univers="washi"] .tabbar button[aria-current="page"] span { border-bottom: 2px solid currentColor; }
+
+/* Icônes : épaisseur du trait propre à l'univers */
+:root[data-univers] .tabbar svg, :root[data-univers] .btn svg, :root[data-univers] .icon-btn svg,
+:root[data-univers] .plus-ico svg, :root[data-univers] .plus-ligne > svg, :root[data-univers] .bientot-ico svg { stroke-width: var(--u-icone); }
+
+/* Feuilles, bulles, bandeaux et petits éléments encore colorés en dur dans le cœur */
+:root[data-univers] .sheet { background: var(--surface); border-top: var(--u-bord) solid var(--u-ligne); }
+:root[data-univers] .sheet-grip { background: var(--border); }
+:root[data-univers] .toast { background: var(--ink); color: var(--bg); border-radius: var(--u-r-champ, 12px); }
+:root[data-univers] .pill { background: var(--ink); color: var(--surface); }
+:root[data-univers] .scene-bubble { background: var(--surface); color: var(--ink); border-color: var(--u-ligne); box-shadow: var(--u-sh-btn); }
+:root[data-univers] .scene-bubble::after { border-top-color: var(--surface); }
+:root[data-univers] .scene-bubble::before { border-top-color: var(--u-ligne); }
+:root[data-univers] .bubble { border-color: var(--u-ligne); }
+:root[data-univers] .fam.on { background: var(--primary-soft); color: var(--ink); border-color: var(--u-ligne); }
+:root[data-univers] .offline-banner { background: var(--mango-soft); color: var(--ink); }
+:root[data-univers] .tl-dot { background: var(--mango); border-color: var(--u-ligne); }
+:root[data-univers] .tl-now .tl-dot { background: var(--primary-strong); }
+:root[data-univers] .tl-now-line { color: var(--primary-strong); border-top-color: var(--primary-strong); }
+:root[data-univers] .tl-check { color: var(--primary-strong); }
+:root[data-univers] .tag.ahead { background: var(--mint-soft); color: var(--ink); }
+:root[data-univers] .fx-gain { background: var(--mango-soft); color: var(--ink); }
+:root[data-univers] .victoires { background: linear-gradient(160deg, var(--mango-soft), var(--surface)); }
+:root[data-univers] .auth .logo { color: var(--on-primary); }
+:root[data-univers] .logo.logo-img { border-color: var(--u-ligne); box-shadow: var(--u-sh-btn); }
+:root[data-univers] .scan-hero { background: linear-gradient(160deg, var(--primary-strong), var(--primary)); color: var(--on-primary); }
+:root[data-univers] .scan-hero .btn { background: var(--surface); color: var(--ink); }
+:root[data-univers] .plus-ico, :root[data-univers] .bientot-ico { background: var(--primary-soft); color: var(--primary-strong); border-radius: var(--u-r-champ, 10px); }
+:root[data-univers] .plus-ligne + .plus-ligne { border-top-color: var(--border); }
+:root[data-univers="carnet"] .card.hero::before {
+  content: ""; position: absolute; top: -9px; left: calc(50% - 30px); width: 60px; height: 18px;
+  background: color-mix(in srgb, var(--mango) 75%, transparent); transform: rotate(-4deg); pointer-events: none;
+}
+:root[data-univers="carnet"] .card.hero { position: relative; }
+
+/* Module Forme : ses ambiances de montagne cèdent la place à l'univers choisi */
+:root[data-univers] .forme[data-amb], :root[data-univers] .forme:not([data-amb]) {
+  --f-bg: var(--bg); --f-surface: var(--surface); --f-surface-2: var(--surface-2); --f-ink: var(--ink); --f-muted: var(--muted);
+  --f-accent: var(--primary); --f-on-accent: var(--on-primary); --f-accent-2: var(--sky); --f-soft: var(--primary-soft);
+  --f-line: var(--border); --f-radius: var(--radius); --f-shadow: var(--shadow);
+  --f-motif: linear-gradient(transparent, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) { :root[data-univers] .btn:active:not(:disabled) { transform: none; } }
+
+/* ==========================================================================
+   Plus › Univers : vignettes d'aperçu
+   ========================================================================== */
+.us-grille { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
+.us-apercu {
+  display: flex; flex-direction: column; gap: 8px; width: 100%; min-width: 0; text-align: left; padding: 12px; min-height: 172px;
+  background-color: var(--bg); background-image: var(--u-motif); background-size: var(--u-motif-taille);
+  color: var(--ink); font-family: var(--u-texte); border: 2px solid var(--border); border-radius: 16px; cursor: pointer;
+}
+.us-apercu[aria-pressed="true"] { outline: 3px solid var(--ink); outline-offset: 2px; }
+.us-apercu:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 2px; }
+.us-apercu-nom {
+  font-family: var(--display); font-weight: var(--u-w-titre); font-style: var(--u-style-titre); letter-spacing: var(--u-ls-titre);
+  font-size: 19px; line-height: 1.15; overflow-wrap: anywhere; background: var(--bg); align-self: flex-start; padding: 0 3px; border-radius: 4px;
+}
+.us-apercu-carte {
+  display: flex; align-items: center; gap: 8px; padding: 8px; background: var(--surface);
+  border: var(--u-bord) solid var(--u-ligne); border-radius: var(--radius); box-shadow: var(--shadow); min-width: 0;
+}
+.us-apercu-points { display: flex; gap: 4px; flex: none; }
+.us-apercu-points i { width: 10px; height: 10px; border-radius: 50%; display: block; }
+.us-apercu-points i:nth-child(1) { background: var(--primary); }
+.us-apercu-points i:nth-child(2) { background: var(--mint); }
+.us-apercu-points i:nth-child(3) { background: var(--mango-strong, var(--mango)); }
+.us-apercu-ligne { flex: 1; min-width: 0; height: 8px; border-radius: 4px; background: var(--surface-2); }
+.us-apercu-bouton {
+  margin-top: auto; align-self: flex-start; display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px;
+  background: var(--primary); color: var(--on-primary); border: var(--u-bord) solid var(--u-ligne); border-radius: var(--u-r-btn);
+  box-shadow: var(--u-sh-btn); font-weight: 700; font-size: 13px;
+}
+.us-apercu-famille { font-size: 13px; color: var(--muted); line-height: 1.3; }
+.us-choisi { font-size: 12px; font-weight: 700; color: var(--ink); background: var(--mango-soft); border-radius: 999px; padding: 2px 8px; align-self: flex-start; }
+.us-detail { padding: 16px; margin-top: 16px; }
+.us-detail h3 { margin: 0 0 4px; }
+.us-detail p { margin: 6px 0 0; }
+
+/* ==========================================================================
+   Plus › Sécurité et écran de verrouillage
+   ========================================================================== */
+.us-carte { padding: 16px; }
+.us-carte + .us-carte { margin-top: 14px; }
+.us-carte h3 { margin: 0 0 6px; }
+.us-carte p { margin: 6px 0 0; }
+.us-etat { display: flex; align-items: center; gap: 10px; }
+.us-etat-ico { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; flex: none; background: var(--primary-soft); color: var(--primary-strong); }
+.us-etat-ico svg { width: 22px; height: 22px; }
+.us-actions { display: grid; gap: 8px; margin-top: 12px; }
+.us-code { letter-spacing: .5em; font-size: 20px; text-align: center; font-variant-numeric: tabular-nums; }
+
+.us-verrou {
+  position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; overflow-y: auto;
+  padding: calc(16px + var(--safe-t)) 16px calc(16px + var(--safe-b));
+  background-color: var(--bg); background-image: var(--u-motif, none); background-size: var(--u-motif-taille, auto); color: var(--ink);
+}
+.us-verrou[hidden] { display: none; }
+.us-verrou-carte { width: 100%; max-width: 340px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.us-verrou-logo { width: 72px; height: 72px; border-radius: 18px; box-shadow: var(--shadow); }
+.us-verrou h2 { margin: 0; font-size: 22px; }
+.us-verrou p { margin: 0; }
+.us-points { display: flex; gap: 14px; justify-content: center; min-height: 18px; margin: 4px 0; }
+.us-points i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--ink); display: block; }
+.us-points i.plein { background: var(--ink); }
+.us-points.erreur { animation: us-secoue .35s; }
+@keyframes us-secoue { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+@media (prefers-reduced-motion: reduce) { .us-points.erreur { animation: none; } }
+.us-clavier { display: grid; grid-template-columns: repeat(3, 72px); gap: 12px; justify-content: center; }
+.us-touche {
+  width: 72px; height: 72px; border-radius: 50%; border: var(--u-bord, 2px) solid var(--u-ligne, var(--ink)); background: var(--surface); color: var(--ink);
+  font: inherit; font-size: 26px; font-weight: 700; display: grid; place-items: center; box-shadow: var(--u-sh-btn, none);
+}
+.us-touche:active { background: var(--primary-soft); }
+.us-touche.vide { visibility: hidden; }
+.us-touche svg { width: 26px; height: 26px; }
+.us-msg { min-height: 20px; font-weight: 700; color: var(--danger); font-size: 14px; }
+.us-verrou .btn { width: 100%; }
+@media (max-width: 359px) { .us-clavier { grid-template-columns: repeat(3, 64px); } .us-touche { width: 64px; height: 64px; } }
+
+/* Partage du sport (Forme › Réglages) et sauvegarde */
+.us-partage-liste { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.us-partage-liste li { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.us-interrupteur { display: flex; align-items: center; gap: 12px; min-height: 44px; }
+.us-interrupteur input { width: 22px; height: 22px; accent-color: var(--primary); flex: none; }
+.us-seance dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; margin: 0; }
+.us-seance dt { color: var(--muted); font-size: 14px; }
+.us-seance dd { margin: 0; font-weight: 600; }
+.us-tables { margin: 10px 0 0; padding-left: 18px; font-size: 14px; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -2899,7 +3131,8 @@ function fViewReglages() {
     <div class="card f-pad"><div class="row"><h3 class="grow">Course cible</h3><button class="btn small" data-act="forme-objectif">${ICON.plus} Ajouter</button></div>
       ${F.objectifs.length ? F.objectifs.map((o) => `<div class="entry"><div class="grow"><div class="nm">🏁 ${esc(o.nom)}</div><div class="muted small">${fDate(o.date)}${o.distance_km ? ` · ${fmtNum(Number(o.distance_km))} km` : ''}${o.dplus_m ? ` · D+ ${o.dplus_m} m` : ''}</div></div><button class="icon-btn" data-act="forme-objectif-del" data-id="${o.id}" aria-label="Supprimer">${ICON.trash}</button></div>`).join('') : '<p class="muted small">Facultatif : le plan s\'allège les deux dernières semaines avant la course.</p>'}</div>
     <div class="card f-pad stack"><h3>Mon profil Forme</h3><p class="muted small">${esc(FORME_NIVEAUX[pr.niveau] || '')} · ${esc(FORME_OBJECTIFS[pr.objectif_forme] || '')} · ${esc(FORME_TERRAINS[pr.terrain] || '')}</p>
-      <button class="btn block" data-act="forme-q-redo">Refaire le questionnaire</button><button class="btn block" data-act="forme-reset" style="color:var(--danger)">Réinitialiser le module</button></div>`;
+      <button class="btn block" data-act="forme-q-redo">Refaire le questionnaire</button><button class="btn block" data-act="forme-reset" style="color:var(--danger)">Réinitialiser le module</button></div>
+    ${(Forme.reglagesExtra || []).map((f) => f()).join('')}`; // cartes ajoutées par les modules (partage du sport…)
 }
 function fLieuSheet(id) {
   const l = id ? state.forme.lieux.find((x) => x.id === id) : null;
@@ -8041,13 +8274,7 @@ Modules.register({ id: 'forme', onglet: 'forme', segment: 'Forme', ordre: 10, li
 Modules.register({ id: 'plus', onglet: 'plus', libelle: 'Plus', rendu: () => Nav.menuPlus() });
 Modules.register({ id: 'reglages', onglet: 'plus', segment: 'Réglages', ordre: 10, icone: I('<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>'), description: 'Compte, foyer, magasin, rappels', ouvrir: () => openSettings() });
 Modules.register({ id: 'monsieur-cuisine', onglet: 'plus', segment: 'Monsieur Cuisine', ordre: 40, icone: ICON.chef, description: 'Planning, courses et recettes du robot', ouvrir: () => mcSheet() });
-Modules.register({
-  id: 'sauvegarde', onglet: 'plus', segment: 'Sauvegarde', ordre: 60, icone: ICON.download, description: 'Exporter ou importer vos données', libelle: 'Sauvegarde',
-  rendu: () => `<section class="card" style="padding:16px">
-    <p style="margin-top:0">Un fichier de vos recettes, de votre planning et de vos réglages, à garder en lieu sûr.</p>
-    <div class="grid2"><button class="btn" data-act="export-data">${ICON.download} Exporter</button>
-      <label class="btn">${ICON.upload} Importer<input type="file" accept="application/json" data-import-data hidden></label></div></section>`,
-});
+// Sauvegarde (Plus › Sauvegarde) : module univers-securite (src/js/modules/univers-securite.js).
 Modules.register({ id: 'widget', onglet: 'plus', segment: 'Widget', ordre: 70, icone: I('<rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="18" height="8" rx="2"/>'), description: 'Le résumé du jour sur l\'écran d\'accueil', ouvrir: () => widgetSheet() });
 
 // Analyseurs du cœur : article de courses, repas, séance. Les événements et les tâches viennent des modules agenda et taches.
@@ -8464,346 +8691,14 @@ setInterval(() => Updater.check(), 5 * 60 * 1000);
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') Updater.check(); });
 // ==== module accueil-famille ====
 (function () {
-// Module « Accueil » : le fil de la journée qui réunit tous les modules (Accueil.sources), avec la bascule
-// « moi / famille » des segments Ma journée et Famille, le briefing du soir et le bouton « + » flottant.
-//  - Ma journée (écran du cœur) garde repas, eau, activités et compagnon ; ce module y ajoute le briefing
-//    du soir (à partir de 18 h) et « Aussi aujourd'hui » : ce que les autres modules disent de ma journée.
-//  - Famille (cet écran) : le fil de tout le foyer, une couleur par membre, filtrable par personne.
-//  - Le briefing de demain est aussi préparé pour la notification du soir (file notif_file du module notifications),
-//    avec les rappels des événements des deux prochains jours.
-// Les éléments des modules peuvent porter `membres: [member_id]` (couleurs, filtre) et `trajet: { sens: 'depot' | 'retour',
-// qui: [member_id], pour: [member_id] }` (« qui dépose Zoé ? ») ; sans `trajet`, le titre suffit (« Déposer Zoé à la crèche »).
-const cache = Modules.cache('accueil-famille');
-
-// ---------------------------------------------------------------------------
-// Fonctions pures (testées)
-// ---------------------------------------------------------------------------
-// Couleur d'un membre selon sa place dans le foyer : jetons de l'univers (--m1…), sinon couleurs du thème.
-const COULEURS = ['var(--m1, var(--primary))', 'var(--m2, var(--sky))', 'var(--m3, var(--mango-strong))', 'var(--m4, var(--mint))', 'var(--m5, var(--sage-light))'];
-const couleurMembre = (index) => COULEURS[((Number(index) || 0) % COULEURS.length + COULEURS.length) % COULEURS.length];
-
-// Un élément me concerne s'il n'a pas de membre (tout le foyer), s'il me cite ou cite un enfant du foyer.
-function concerne(e, moi, enfants = []) {
-  const ids = e.membres || [];
-  return !ids.length || ids.includes(moi) || ids.some((id) => enfants.includes(id));
-}
-// Fil filtré : mode 'moi' (ce qui me concerne) ou 'famille' (tout, ou un membre choisi).
-function filtrerFil(elements, { mode = 'famille', moi = null, enfants = [], filtre = null } = {}) {
-  if (mode === 'moi') return elements.filter((e) => concerne(e, moi, enfants));
-  if (filtre) return elements.filter((e) => (e.membres || []).includes(filtre));
-  return elements;
-}
-// Le briefing du soir s'affiche à partir de 18 h.
-const briefingVisible = (d) => d.getHours() >= 18;
-
-const REG_DEPOT = /\b(depose|deposer|deposes|depot|emmene|emmener|emmenes|amene|amener|accompagne|accompagner)\b/;
-const REG_RETOUR = /\b(recupere|recuperer|recuperes|recup|cherche|chercher|retour)\b/;
-// Trajet d'enfant (« qui dépose Zoé ? ») : champ trajet du module, sinon déduit du titre.
-function detecterTrajet(e, membres = [], enfants = []) {
-  if (e.trajet) return { sens: e.trajet.sens === 'retour' ? 'retour' : 'depot', qui: e.trajet.qui || [], pour: e.trajet.pour || [] };
-  const t = ` ${sansAccents(e.titre)} `;
-  const sens = REG_DEPOT.test(t) ? 'depot' : REG_RETOUR.test(t) ? 'retour' : null;
-  if (!sens) return null;
-  const cites = membres.filter((m) => enfants.includes(m.id) && new RegExp(`\\b${sansAccents(m.nom).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`).test(t)).map((m) => m.id);
-  const pour = [...new Set([...cites, ...(e.membres || []).filter((id) => enfants.includes(id))])];
-  if (!pour.length) return null;
-  return { sens, qui: (e.membres || []).filter((id) => !enfants.includes(id)), pour };
-}
-const creneau = (h) => (!h ? '' : h < '11:00' ? 'matin' : h < '15:00' ? 'midi' : 'soir');
-// Éléments du briefing de demain, classés, à partir de l'agenda et du fil des modules.
-// agenda : Agenda.elements(demain, demain) ; accueil : Accueil.elements({ date: demain, famille: true }) ; seances : séances prévues.
-function classerBriefing({ agenda = [], accueil = [], seances = [], membres = [], enfants = [] } = {}) {
-  const out = [];
-  const de = (e, source) => {
-    const base = { titre: e.titre, heure: e.heure || null, membres: e.membres || [] };
-    if (source === 'planning' || e.type === 'repas') return { ...base, type: 'repas', creneau: creneau(e.heure), membres: [] };
-    if (source === 'taches' || e.type === 'tache') return { ...base, type: 'tache' };
-    if (source === 'forme' || e.type === 'seance') return { ...base, type: 'seance' };
-    const tr = detecterTrajet(e, membres, enfants);
-    if (tr) return { ...base, type: 'trajet', sens: tr.sens, membres: tr.qui, pour: tr.pour };
-    return { ...base, type: 'evenement' };
-  };
-  for (const e of agenda) out.push(de(e, e.source));
-  const deja = new Set(out.map((x) => `${sansAccents(x.titre)}|${x.heure || ''}`));
-  for (const e of accueil) {
-    if (['accueil-famille', 'agenda', 'planning'].includes(e.module)) continue;
-    const x = de(e, e.module);
-    const k = `${sansAccents(x.titre)}|${x.heure || ''}`;
-    if (!deja.has(k)) { deja.add(k); out.push(x); }
-  }
-  for (const s of seances) out.push({ type: 'seance', titre: s.titre, heure: s.heure || null, membres: s.membres || [] });
-  return out;
-}
-// Composition du briefing : même règle que la fonction send-reminders (supabase/functions/send-reminders/regles.js).
-const ICONES = { trajet: '🚗', evenement: '📅', tache: '✅', repas: '🍽️', seance: '🏃' };
-const ORDRE = { trajet: 0, evenement: 1, seance: 2, tache: 3, repas: 4 };
-const heureFr = (h) => { if (!h) return ''; const [hh, mm] = String(h).split(':'); return `${Number(hh)} h${mm && mm !== '00' ? ` ${mm}` : ''}`; };
-const nomsDe = (ids, membres) => (ids || []).map((id) => membres.find((m) => m.id === id)?.nom).filter(Boolean);
-const liste = (noms) => (noms.length < 2 ? noms.join('') : `${noms.slice(0, -1).join(', ')} et ${noms[noms.length - 1]}`);
-function phrase(e, membres, chez = null) {
-  const a = e.heure ? ` à ${heureFr(e.heure)}` : '';
-  if (e.type === 'trajet') {
-    const enfants = liste(nomsDe(e.pour, membres));
-    const verbe = e.sens === 'retour' ? 'récupère' : 'dépose';
-    const qui = liste(nomsDe((e.membres || []).filter((id) => id !== chez), membres));
-    if (!(e.membres || []).length) return `${e.sens === 'retour' ? 'Retour' : 'Dépôt'}${enfants ? ` de ${enfants}` : ''}${a} : personne n'est désigné`;
-    return `${qui ? `${qui} ` : ''}${verbe}${enfants ? ` ${enfants}` : ''}${a}`;
-  }
-  if (e.type === 'repas') return `${({ midi: 'Midi', soir: 'Soir', matin: 'Matin' })[e.creneau] || 'Au menu'} : ${e.titre}`;
-  return `${e.titre}${a}`;
-}
-function composerBriefing({ elements = [], membres = [], moi = null } = {}) {
-  const tri = (x, y) => (x.heure || '99:99').localeCompare(y.heure || '99:99') || ORDRE[x.type] - ORDRE[y.type];
-  const vus = new Set();
-  const uniques = elements.filter((e) => { const k = `${e.type}|${e.titre}|${e.heure || ''}|${(e.membres || []).join(',')}`; if (vus.has(k)) return false; vus.add(k); return true; });
-  const groupes = [];
-  const pris = new Set();
-  const ordre = moi ? [...membres.filter((m) => m.id === moi), ...membres.filter((m) => m.id !== moi)] : membres;
-  for (const m of ordre) {
-    const siens = uniques.filter((e) => e.type !== 'repas' && !pris.has(e) && ((e.membres || []).includes(m.id) || (e.type === 'trajet' && !(e.membres || []).length && (e.pour || []).includes(m.id))));
-    siens.forEach((e) => pris.add(e));
-    if (siens.length) groupes.push({ membre: { id: m.id, nom: m.nom }, lignes: siens.sort(tri).map((e) => ({ type: e.type, icone: ICONES[e.type] || '•', heure: e.heure || null, texte: phrase(e, membres, m.id) })) });
-  }
-  const reste = uniques.filter((e) => !pris.has(e)).sort(tri);
-  if (reste.length) groupes.push({ membre: null, lignes: reste.map((e) => ({ type: e.type, icone: ICONES[e.type] || '•', heure: e.heure || null, texte: phrase(e, membres) })) });
-  const nb = groupes.reduce((t, g) => t + g.lignes.length, 0);
-  return { groupes, nb, resume: resumeBriefing(groupes, moi) };
-}
-function resumeBriefing(groupes, moi = null) {
-  if (!groupes.length) return 'Rien de prévu demain : une journée tranquille.';
-  const parts = [];
-  for (const g of groupes) {
-    const textes = g.lignes.map((l) => l.texte);
-    if (!g.membre) parts.push(textes.join(' · '));
-    else if (g.membre.id === moi) parts.unshift(`Toi : ${textes.join(' · ')}`);
-    else parts.push(`${g.membre.nom} : ${textes.join(' · ')}`);
-  }
-  const t = parts.join('\n');
-  return t.length > 300 ? `${t.slice(0, 297)}…` : t;
-}
-// Vue « moi » du briefing : mon groupe, ceux des enfants et ce qui concerne tout le foyer.
-const briefingPourMoi = (b, moi, enfants = []) => ({ ...b, groupes: b.groupes.filter((g) => !g.membre || g.membre.id === moi || enfants.includes(g.membre.id)) });
-
-// Date et heure locales d'un élément d'agenda → Date.
-const dateLocale = (iso, heure = '00:00') => { const [a, m, j] = iso.split('-').map(Number); const [h, mi] = String(heure).split(':').map(Number); return new Date(a, m - 1, j, h || 0, mi || 0); };
-// Rappels à programmer pour les éléments d'agenda à venir (événements avec heure ; tâches datées le matin même).
-function rappelsAgenda(elements, maintenant) {
-  const out = [];
-  for (const e of elements) {
-    if (!e.date || ['planning', 'forme'].includes(e.source)) continue;
-    if (e.source === 'taches') {
-      const quand = dateLocale(e.date, '08:00');
-      const fin = dateLocale(e.date, '21:00');
-      if (fin <= maintenant) continue;
-      out.push({ id: `tache:${e.id}:${e.date}`, type: 'taches', titre: 'À faire aujourd\'hui', corps: e.titre, url: './#taches', pour_membres: e.membres || [], envoyer_a: quand, expire_a: fin });
-      continue;
-    }
-    if (!e.heure) continue;
-    const debut = dateLocale(e.date, e.heure);
-    if (debut <= maintenant) continue;
-    const jour = isoDate(maintenant) === e.date ? 'Aujourd\'hui' : isoDate(addDays(maintenant, 1)) === e.date ? 'Demain' : `Le ${e.date.split('-').reverse().slice(0, 2).join('/')}`;
-    out.push({ id: `evt:${e.source || 'agenda'}:${e.id}:${e.date}`, type: 'evenements', titre: e.titre, corps: `${jour} à ${heureFr(e.heure)}${e.detail ? ` · ${e.detail}` : ''}`, url: './#agenda',
-      pour_membres: e.membres || [], envoyer_a: addDays(debut, -1), evenement_a: debut, expire_a: debut });
-  }
-  return out;
-}
-
-// ---------------------------------------------------------------------------
-// État et données
-// ---------------------------------------------------------------------------
-const vues = { moi: cache.get('vue:moi', null), famille: cache.get('vue:famille', null) }; // { cle, elements, briefing }
-let filtre = null; // membre choisi dans le fil de la famille
-const sequence = { moi: 0, famille: 0 }; // le dernier calcul lancé l'emporte
-
-const moiCompte = () => memberById(state.compte?.member_id) || state.members[0] || null;
-const enfantsDuFoyer = () => state.members.filter((m) => m.naissance && ageOf(m) < 15).map((m) => m.id);
-const indexMembre = (id) => state.members.findIndex((m) => m.id === id);
-
-// Repas du jour du planning, pour le fil de la famille (Ma journée les montre déjà).
-function sourceRepas(ctx) {
-  if (!ctx.famille) return [];
-  const di = dayIndex(ctx.date);
-  if (di < 0) return [];
-  const out = [];
-  for (const p of state.plan.filter((x) => x.day === di && ['midi', 'soir'].includes(x.slot))) {
-    const r = p.recipe_id ? recipeById(p.recipe_id) : null;
-    if (!r) continue;
-    const mangeurs = mealEaters(p);
-    out.push({ type: 'repas', heure: SLOT_TIME[p.slot], titre: `${slotLabel(p.slot)} : ${r.title}`, detail: mealWho(p), icone: '🍽️',
-      membres: mangeurs.length === state.members.length ? [] : mangeurs.map((m) => m.id), act: 'open-recipe', data: { id: r.id } });
-  }
-  return out;
-}
-
-// Données du briefing de demain (fil des modules, agenda, séances prévues).
-async function donneesBriefing(date = new Date()) {
-  const demain = addDays(new Date(date.getFullYear(), date.getMonth(), date.getDate()), 1);
-  const membres = state.members.map((m) => ({ id: m.id, nom: m.nom }));
-  const enfants = enfantsDuFoyer();
-  const moi = moiCompte();
-  const [agenda, accueil] = await Promise.all([Agenda.elements(demain, demain), Accueil.elements({ date: demain, iso: isoDate(demain), membre: moi, famille: true })]);
-  const seances = moi ? dayActs(moi.id, isoDate(demain)).filter((a) => a.kind === 'seance' && a.statut === 'prevu').map((a) => ({ titre: a.label || 'Séance', heure: a.heure || null, membres: [moi.id] })) : [];
-  const elements = classerBriefing({ agenda, accueil, seances, membres, enfants });
-  return { date: isoDate(demain), libelle: demain.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }), ...composerBriefing({ elements, membres, moi: moi?.id || null }) };
-}
-
-// Recalcule le fil (et le briefing) d'un mode, puis met à jour l'écran affiché sans tout redessiner.
-async function rafraichir(mode) {
-  const n = ++sequence[mode];
-  const maintenant = new Date();
-  const membre = mode === 'moi' ? journalMember() : moiCompte();
-  try {
-    const els = (await Accueil.elements({ date: maintenant, membre, famille: mode === 'famille' })).filter((e) => mode === 'famille' || e.module !== 'accueil-famille');
-    const briefing = briefingVisible(maintenant) ? await donneesBriefing(maintenant) : null;
-    if (n !== sequence[mode]) return;
-    const v = { cle: `${isoDate(maintenant)}:${membre?.id || ''}`, elements: els, briefing };
-    const avant = JSON.stringify(vues[mode]);
-    vues[mode] = v;
-    if (JSON.stringify(v) !== avant) {
-      cache.set(`vue:${mode}`, v);
-      const fil = $(`[data-af-fil="${mode}"]`);
-      if (fil) fil.innerHTML = filHtml(mode);
-      const b = $(`[data-af-briefing="${mode}"]`);
-      if (b) b.innerHTML = briefingHtml(mode);
-    }
-    planifierPlusTard();
-  } catch (e) { console.warn('fil de l\'Accueil', e); }
-}
-
-// Briefing du soir et rappels d'agenda déposés dans la file d'envoi (module notifications), au plus toutes les 4 s.
-let minuterie = null;
-function planifierPlusTard(delai = 4000) { clearTimeout(minuterie); minuterie = setTimeout(() => planifier().catch((e) => console.warn('notifications programmées', e)), delai); }
-async function planifier() {
-  const N = Modules.get('notifications')?.expose;
-  if (!N?.programmer || state.offline || !me() || !state.members.length) return { briefing: false, rappels: 0 };
-  const p = N.prefs();
-  const maintenant = new Date();
-  const faits = cache.get('programmes', {}); // id → signature déjà envoyée
-  let briefing = false;
-  if (N.veut(p, 'briefing')) {
-    const b = await donneesBriefing(maintenant);
-    const minuit = new Date(maintenant.getFullYear(), maintenant.getMonth(), maintenant.getDate(), 23, 59);
-    const ligne = { id: `briefing:${me()}:${b.date}`, type: 'briefing', titre: `Demain, ${b.libelle}`, corps: b.resume, url: './#aujourdhui', pour_users: [me()],
-      envoyer_a: new Date(maintenant.getFullYear(), maintenant.getMonth(), maintenant.getDate(), p.briefing_heure), expire_a: minuit };
-    const sig = `${ligne.corps}|${p.briefing_heure}`;
-    if (faits[ligne.id] !== sig) { await N.programmer(ligne); faits[ligne.id] = sig; briefing = true; }
-  }
-  const rappels = rappelsAgenda(await Agenda.elements(maintenant, addDays(maintenant, 2)), maintenant);
-  const ids = new Set(rappels.map((r) => r.id));
-  let nb = 0;
-  for (const r of rappels) {
-    const sig = `${r.titre}|${r.corps}|${r.evenement_a?.getTime?.() || r.envoyer_a.getTime()}|${(r.pour_membres || []).join(',')}`;
-    if (faits[r.id] === sig) continue;
-    await N.programmer(r);
-    faits[r.id] = sig;
-    nb++;
-  }
-  // Événements supprimés ou déplacés : leur rappel est retiré de la file.
-  for (const id of Object.keys(faits)) {
-    if (!/^(evt|tache):/.test(id) || ids.has(id)) continue;
-    const date = id.split(':').pop();
-    if (date >= isoDate(maintenant)) await N.annuler(id).catch(() => {});
-    delete faits[id];
-  }
-  for (const id of Object.keys(faits)) if (id.startsWith('briefing:') && id.split(':').pop() < isoDate(maintenant)) delete faits[id];
-  cache.set('programmes', faits);
-  return { briefing, rappels: nb };
-}
-
-// ---------------------------------------------------------------------------
-// Affichage
-// ---------------------------------------------------------------------------
-const pastilles = (ids) => (ids || []).filter((id) => indexMembre(id) >= 0).map((id) => `<span class="af-pastille" style="--af-c:${couleurMembre(indexMembre(id))}" title="${esc(memberById(id)?.nom || '')}"></span>`).join('');
-const attrsData = (data) => Object.entries(data || {}).map(([k, v]) => `data-${esc(String(k).replace(/[^a-z0-9-]/gi, '').toLowerCase())}="${esc(String(v))}"`).join(' ');
-
-function itemHtml(e, passe) {
-  const corps = `<span class="af-ico" aria-hidden="true">${e.icone || '•'}</span><span class="grow af-texte"><b>${esc(e.titre)}</b>${e.detail ? `<span class="muted small">${esc(e.detail)}</span>` : ''}</span>${e.membres?.length ? `<span class="af-qui">${pastilles(e.membres)}</span>` : ''}`;
-  return `<li class="af-item${passe ? ' passe' : ''}"><span class="af-heure">${e.heure ? esc(heureFr(e.heure)) : ''}</span>${e.act ? `<button class="af-carte" data-act="${esc(e.act)}" ${attrsData(e.data)}>${corps}</button>` : `<div class="af-carte">${corps}</div>`}</li>`;
-}
-
-function filHtml(mode) {
-  const v = vues[mode];
-  if (!v) return '<div class="spinner"></div>';
-  const moi = (mode === 'moi' ? journalMember() : moiCompte())?.id || null;
-  const els = filtrerFil(v.elements, { mode, moi, enfants: enfantsDuFoyer(), filtre: mode === 'famille' ? filtre : null });
-  if (!els.length) {
-    if (mode === 'moi') return '';
-    return `<div class="card af-vide"><p><b>${filtre ? `Rien de prévu aujourd'hui pour ${esc(memberById(filtre)?.nom || '')}.` : 'Rien de prévu aujourd\'hui pour la famille.'}</b></p><p class="muted small">Touche « + » pour ajouter un événement, une tâche ou un article.</p></div>`;
-  }
-  const now = nowHM();
-  const avecHeure = els.filter((e) => e.heure);
-  const sansHeure = els.filter((e) => !e.heure);
-  const idx = avecHeure.findIndex((e) => e.heure > now);
-  const marque = '<li class="af-maintenant"><span>Maintenant</span></li>';
-  const lignes = avecHeure.map((e, i) => (i === idx ? marque : '') + itemHtml(e, e.heure <= now)).join('') + (idx < 0 && avecHeure.length ? marque : '');
-  return `${mode === 'moi' ? '<h3 class="tl-head">Aussi aujourd\'hui</h3>' : ''}<ol class="af-fil">${lignes}${sansHeure.map((e) => itemHtml(e, false)).join('')}</ol>`;
-}
-
-function briefingHtml(mode) {
-  const b0 = vues[mode]?.briefing;
-  if (!b0 || !briefingVisible(new Date())) return '';
-  const moi = moiCompte()?.id || null;
-  const b = mode === 'moi' ? briefingPourMoi(b0, moi, enfantsDuFoyer()) : b0;
-  const groupes = b.groupes.map((g) => `<div class="af-b-groupe">
-      <div class="af-b-qui">${g.membre ? `<span class="af-pastille" style="--af-c:${couleurMembre(indexMembre(g.membre.id))}"></span><b>${g.membre.id === moi ? 'Toi' : esc(g.membre.nom)}</b>` : '<b>Le foyer</b>'}</div>
-      <ul>${g.lignes.map((l) => `<li><span aria-hidden="true">${l.icone}</span> ${esc(l.texte)}</li>`).join('')}</ul></div>`).join('');
-  return `<section class="card af-briefing" aria-label="Briefing du soir">
-    <div class="af-b-tete"><span class="af-b-lune" aria-hidden="true">🌙</span><div class="grow"><h3>Demain</h3><span class="muted small">${esc(b0.libelle)}</span></div></div>
-    ${groupes || '<p class="muted small af-b-calme">Rien de prévu demain : une journée tranquille.</p>'}
-  </section>`;
-}
-
-const fab = () => `<button class="af-fab" data-act="accueil-ajout" aria-label="Ajouter : phrase libre ou dictée"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="af-fab-espace" aria-hidden="true"></div>`;
-
-// Ma journée (écran du cœur) : briefing du soir avant le fil, « Aussi aujourd'hui » après, et le « + » flottant.
-function augmenterJournee(html) {
-  if (!journalMember()) return html;
-  rafraichir('moi');
-  const brief = `<div data-af-briefing="moi">${briefingHtml('moi')}</div>`;
-  const i = html.indexOf('<h3 class="tl-head">');
-  const avec = i >= 0 ? html.slice(0, i) + brief + html.slice(i) : html + brief;
-  return `${avec}<div data-af-fil="moi">${vues.moi?.cle?.startsWith(isoDate(new Date())) ? filHtml('moi') : ''}</div>${fab()}`;
-}
-const vueJour = Modules.get('aujourdhui');
-if (vueJour) { const base = vueJour.rendu; vueJour.rendu = () => augmenterJournee(base()); }
-
-function renduFamille() {
-  rafraichir('famille');
-  const d = new Date();
-  const membres = state.members;
-  if (!membres.length) return `<div class="card af-vide"><p class="muted small">Ajoute les membres du foyer pour voir la journée de chacun.</p><button class="btn primary small" data-act="foyer">${ICON.users} Configurer le foyer</button></div>`;
-  if (filtre && !memberById(filtre)) filtre = null;
-  const chips = `<div class="chips af-membres" role="group" aria-label="Afficher">
-    <button class="chip" data-act="af-filtre" data-m="" aria-pressed="${!filtre}">Tout le monde</button>
-    ${membres.map((m, i) => `<button class="chip" data-act="af-filtre" data-m="${m.id}" aria-pressed="${filtre === m.id}"><span class="af-pastille" style="--af-c:${couleurMembre(i)}"></span>${esc(m.nom)}</button>`).join('')}</div>`;
-  const aJour = vues.famille?.cle?.startsWith(isoDate(d));
-  return `<p class="muted af-date">${d.getHours() < 12 ? 'Bonjour' : d.getHours() < 18 ? 'Bon après-midi' : 'Bonsoir'} · ${esc(d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }))}</p>
-    <div data-af-briefing="famille">${aJour ? briefingHtml('famille') : ''}</div>
-    ${chips}
-    <h3 class="tl-head">Aujourd'hui</h3>
-    <div data-af-fil="famille">${aJour ? filHtml('famille') : '<div class="spinner"></div>'}</div>
-    ${fab()}`;
-}
-
+// Module « Le fil de la famille » : emplacement réservé, à construire (voir LISEZMOI.md).
 Modules.register({
   id: 'accueil-famille',
   onglet: 'accueil',
   segment: 'Famille',
   ordre: 20,
-  libelle: 'Notre journée',
-  rendu: renduFamille,
-  async charger(force, { horsLigne } = {}) { if (!horsLigne) planifierPlusTard(6000); },
-  sourcesAccueil: (ctx) => sourceRepas(ctx),
-  actions: {
-    'af-filtre': (b) => { filtre = b.dataset.m || null; $$('.af-membres .chip').forEach((c) => c.setAttribute('aria-pressed', String((c.dataset.m || null) === filtre))); const f = $('[data-af-fil="famille"]'); if (f) f.innerHTML = filHtml('famille'); },
-    'accueil-ajout': () => {
-      while (sheets.length) closeSheet();
-      const el = AjoutRapide.ouvrir();
-      const champ = el && $('[name="txt"]', el);
-      if (champ) champ.insertAdjacentHTML('afterend', '<p class="muted small af-dictee"><span aria-hidden="true">🎙️</span> Pour dicter, touche le micro du clavier.</p>');
-    },
-  },
-  expose: { couleurMembre, concerne, filtrerFil, briefingVisible, detecterTrajet, classerBriefing, composerBriefing, resumeBriefing, briefingPourMoi, rappelsAgenda, heureFr, planifier },
+  libelle: 'La journée de la famille',
+  rendu: () => Modules.bientot('Le fil de la famille', 'La journée de toute la famille d\'un geste, et le briefing du soir.'),
 });
 })();
 // ==== module agenda ====
@@ -8844,193 +8739,7 @@ Modules.register({
 })();
 // ==== module notifications ====
 (function () {
-// Module « Notifications » (Plus › Notifications) : chacun choisit, une par une, les notifications qu'il reçoit,
-// ses heures de silence, l'heure du briefing du soir et le délai des rappels d'événements.
-// Tables (migration 2026-11-16_accueil-notifications.sql) :
-//   notif_prefs : une ligne par compte (RLS propriétaire) ;
-//   notif_file  : file des notifications à envoyer, partagée par le foyer, vidée par la fonction send-reminders.
-// Pour les autres modules (tâche confiée, nouveau message, agenda ou courses modifiés…) :
-//   Modules.get('notifications').expose.programmer({ id, type, titre, corps, url, pour_membres | pour_users, sauf_auteur, envoyer_a })
-//   type : un des TYPES_NOTIF ci-dessous ou un type déclaré par le module (champ notifications).
-// Sans la migration, les réglages restent sur l'appareil et dans push_abonnements.prefs (ancienne fonction).
-const cache = Modules.cache('notifications');
-
-// Copie de supabase/functions/send-reminders/regles.js (un test vérifie qu'elles restent identiques).
-const TYPES_NOTIF = [
-  { type: 'briefing', groupe: 'famille', libelle: 'Briefing du soir', description: 'Demain pour chacun : qui dépose qui, repas, événements, tâches, séance.', defaut: true },
-  { type: 'evenements', groupe: 'famille', libelle: 'Rappels d\'événements', description: 'Avant chaque événement de l\'agenda qui te concerne.', defaut: true },
-  { type: 'taches', groupe: 'famille', libelle: 'Tâches', description: 'Une tâche t\'est confiée, est faite, ou arrive à échéance.', defaut: true },
-  { type: 'messages', groupe: 'famille', libelle: 'Messages', description: 'Un nouveau message de la famille.', defaut: true },
-  { type: 'agenda_modifs', groupe: 'famille', libelle: 'Modifications de l\'agenda', description: 'Quelqu\'un d\'autre ajoute, déplace ou supprime un événement.', defaut: false },
-  { type: 'courses_modif', groupe: 'cuisine', libelle: 'Liste de courses modifiée', description: 'Quelqu\'un ajoute des articles pendant que tu fais les courses.', defaut: false },
-  { type: 'courses', groupe: 'cuisine', libelle: 'Liste de courses prête', description: 'Le jour et l\'heure de ton choix.', defaut: true },
-  { type: 'planning', groupe: 'cuisine', libelle: 'Semaine à planifier', description: 'Vendredi 18 h, si la semaine prochaine est encore vide.', defaut: true },
-  { type: 'batch', groupe: 'cuisine', libelle: 'Batch cooking', description: 'Samedi 18 h, la session du lendemain.', defaut: true },
-  { type: 'congel', groupe: 'cuisine', libelle: 'Sortir du congélateur', description: 'La veille à 19 h, pour un reste prévu le lendemain.', defaut: true },
-  { type: 'seance', groupe: 'forme', libelle: 'Séances', description: 'Une heure avant chaque séance prévue.', defaut: true },
-  { type: 'dispos', groupe: 'forme', libelle: 'Dispos du dimanche', description: 'Dimanche 18 h, coche tes disponibilités de la semaine.', defaut: true },
-  { type: 'bilan', groupe: 'forme', libelle: 'Bilan du soir', description: '20 h, le bilan de la journée avec ton compagnon.', defaut: true },
-];
-const PREFS_DEFAUT = {
-  silence_actif: true, silence_debut: 22, silence_fin: 7,
-  briefing_heure: 19, rappel_min: 60, regrouper: true, courses_day: 5, courses_hour: 9,
-};
-const GROUPES = [['famille', 'Famille'], ['cuisine', 'Cuisine'], ['forme', 'Forme et compagnon'], ['autres', 'Autres']];
-// Clés reprises par l'ancienne fonction send-reminders (push_abonnements.prefs).
-const CLES_ANCIENNES = ['batch', 'congel', 'courses', 'planning', 'bilan', 'seance', 'dispos'];
-
-const bool = (v) => (typeof v === 'boolean' ? v : null);
-const entier = (v, min, max, def) => { const n = Number(v); return Number.isInteger(n) && n >= min && n <= max ? n : def; };
-// Réglages effectifs : la ligne notif_prefs, puis les anciens réglages de l'abonnement, puis les valeurs par défaut.
-function prefsEffectives(ligne, ancien) {
-  const l = ligne || {};
-  const a = ancien || {};
-  const types = {};
-  for (const t of TYPES_NOTIF) {
-    const v = bool((l.types || {})[t.type]);
-    const w = bool(a[t.type]);
-    types[t.type] = v ?? w ?? t.defaut;
-  }
-  for (const [k, v] of Object.entries(l.types || {})) if (!(k in types) && typeof v === 'boolean') types[k] = v;
-  return {
-    types,
-    silence_actif: bool(l.silence_actif) ?? PREFS_DEFAUT.silence_actif,
-    silence_debut: entier(l.silence_debut, 0, 23, PREFS_DEFAUT.silence_debut),
-    silence_fin: entier(l.silence_fin, 0, 23, PREFS_DEFAUT.silence_fin),
-    briefing_heure: entier(l.briefing_heure, 0, 23, PREFS_DEFAUT.briefing_heure),
-    rappel_min: entier(l.rappel_min, 0, 24 * 60, PREFS_DEFAUT.rappel_min),
-    regrouper: bool(l.regrouper) ?? PREFS_DEFAUT.regrouper,
-    courses_day: entier(l.courses_day ?? a.courses_day, 0, 6, PREFS_DEFAUT.courses_day),
-    courses_hour: entier(l.courses_hour ?? a.courses_hour, 0, 23, PREFS_DEFAUT.courses_hour),
-  };
-}
-const veut = (prefs, type) => type === 'test' || prefs?.types?.[type] !== false;
-function enSilence(prefs, heure) {
-  if (!prefs?.silence_actif) return false;
-  const d = prefs.silence_debut, f = prefs.silence_fin;
-  if (d === f) return false;
-  return d < f ? heure >= d && heure < f : heure >= d || heure < f;
-}
-const libelleSilence = (p) => `de ${p.silence_debut} h à ${p.silence_fin} h`;
-// Liste affichée : types de base, puis ceux que d'autres modules déclarent (champ notifications).
-function typesAffiches(declares = []) {
-  const base = TYPES_NOTIF.map((t) => ({ ...t }));
-  for (const d of declares) if (!base.some((t) => t.type === d.type)) base.push({ groupe: 'autres', defaut: true, ...d });
-  return base;
-}
-// Réglages repris par l'ancienne fonction (tant que la nouvelle n'est pas déployée).
-function prefsAnciennes(p) {
-  return { ...Object.fromEntries(CLES_ANCIENNES.map((k) => [k, p.types[k] !== false])), courses_day: p.courses_day, courses_hour: p.courses_hour };
-}
-
-let ligne = null; // ligne notif_prefs du compte
-let absente = false; // migration pas encore appliquée
-let appareil = 'inconnu'; // 'oui' | 'non' | 'indispo' | 'inconnu'
-const prefs = () => prefsEffectives(ligne, state.push?.prefs);
-const tableAbsente = (e) => /relation|does not exist|schema cache/i.test(e?.message || '');
-
-async function enregistrer(patch) {
-  ligne = { ...(ligne || {}), ...patch, user_id: me(), foyer_id: foyer(), updated_at: new Date().toISOString() };
-  cache.set('prefs', ligne);
-  const p = prefs();
-  const anciennes = prefsAnciennes(p);
-  if (state.push) state.push.prefs = { ...(state.push.prefs || {}), ...anciennes };
-  db.from('push_abonnements').update({ prefs: { ...(state.push?.prefs || {}), ...anciennes } }).eq('user_id', me()).then(() => {}, () => {});
-  if (absente) return;
-  const r = await Sync.upsert(T.notif_prefs, ligne, { onConflict: 'user_id' });
-  ligne = { ...ligne, id: r.id };
-  cache.set('prefs', ligne);
-}
-
-// File d'envoi : une ligne par notification (identifiant stable pour la remplacer ou l'annuler).
-async function programmer(n) {
-  if (absente || !n?.id || !n.type || !n.titre) return null;
-  const iso = (d) => (d instanceof Date ? d.toISOString() : d || null);
-  return Sync.upsert(T.notif_file, {
-    id: n.id, type: n.type, titre: n.titre, corps: n.corps || '', url: n.url || './',
-    pour_users: n.pour_users?.length ? n.pour_users : null, pour_membres: n.pour_membres?.length ? n.pour_membres : null,
-    sauf_auteur: !!n.sauf_auteur, envoyer_a: iso(n.envoyer_a) || new Date().toISOString(), evenement_a: iso(n.evenement_a), expire_a: iso(n.expire_a),
-  });
-}
-async function annuler(id) { if (!absente && id) await Sync.supprimer(T.notif_file, id); }
-
-// État de l'abonnement push de cet appareil (avec délai : le service worker peut être absent).
-async function verifierAppareil() {
-  if (!Push.supported()) { appareil = 'indispo'; return; }
-  try {
-    const r = await Promise.race([Push.current(), new Promise((_, ko) => setTimeout(() => ko(new Error('délai')), 3000))]);
-    appareil = r ? 'oui' : 'non';
-  } catch { appareil = 'non'; }
-}
-
-const sw = (attrs, on, label) => `<input type="checkbox" role="switch" class="notif-switch" ${attrs} ${on ? 'checked' : ''} aria-label="${esc(label)}">`;
-const options = (liste, val) => liste.map(([v, l]) => `<option value="${v}" ${Number(val) === Number(v) ? 'selected' : ''}>${esc(l)}</option>`).join('');
-const HEURES = Array.from({ length: 24 }, (_, h) => [h, `${h} h`]);
-const DELAIS = [[60, '1 h avant'], [120, '2 h avant'], [180, '3 h avant'], [1440, 'la veille']];
-
-// Réglage complémentaire d'un type (heure du briefing, délai des rappels, jour des courses).
-function extra(t, p) {
-  if (t.type === 'briefing') return `<label class="notif-extra"><span>Vers</span><select class="input" data-notif-champ="briefing_heure" aria-label="Heure du briefing">${options(HEURES.filter(([h]) => h >= 16 && h <= 22), p.briefing_heure)}</select></label>`;
-  if (t.type === 'evenements') return `<label class="notif-extra"><span>Prévenir</span><select class="input" data-notif-champ="rappel_min" aria-label="Délai des rappels">${options(DELAIS, p.rappel_min)}</select></label>`;
-  if (t.type === 'courses') return `<div class="notif-extra"><select class="input" data-notif-champ="courses_day" aria-label="Jour de la liste de courses">${options(DAYS.map((d, i) => [i, d]), p.courses_day)}</select><select class="input" data-notif-champ="courses_hour" aria-label="Heure de la liste de courses">${options(HEURES.filter(([h]) => h >= 7 && h <= 21), p.courses_hour)}</select></div>`;
-  return '';
-}
-
-function blocAppareil() {
-  if (appareil === 'indispo') return '<p class="muted small">Les notifications ne sont pas disponibles dans ce navigateur. Sur iPhone, installe l\'appli sur l\'écran d\'accueil (Partager › Sur l\'écran d\'accueil), puis ouvre-la depuis son icône.</p>';
-  const hint = Push.standaloneHint() ? '<p class="small notif-alerte">Sur iPhone, les notifications ne fonctionnent qu\'avec l\'appli installée sur l\'écran d\'accueil (Partager › Sur l\'écran d\'accueil), ouverte depuis son icône.</p>' : '';
-  return `${hint}<label class="notif-ligne"><span class="grow"><b>Recevoir sur cet appareil</b><span class="muted small">${appareil === 'oui' ? 'Activé : les notifications arrivent même appli fermée.' : appareil === 'inconnu' ? 'Vérification…' : 'Désactivé sur cet appareil.'}</span></span>${sw('data-notif-appareil', appareil === 'oui', 'Recevoir sur cet appareil')}</label>
-    ${appareil === 'oui' ? `<button class="btn small block" data-act="push-test">${ICON.sparkle} M'envoyer une notification de test</button>` : ''}`;
-}
-
-function rendu() {
-  const p = prefs();
-  const types = typesAffiches(Modules.notifications());
-  const groupes = GROUPES.map(([g, titre]) => {
-    const liste = types.filter((t) => t.groupe === g);
-    if (!liste.length) return '';
-    return `<h3 class="notif-titre">${esc(titre)}</h3><section class="card notif-carte">${liste.map((t) => {
-      const on = p.types[t.type] ?? t.defaut;
-      return `<div class="notif-bloc ${on ? '' : 'off'}"><label class="notif-ligne"><span class="grow"><b>${esc(t.libelle)}</b>${t.description ? `<span class="muted small">${esc(t.description)}</span>` : ''}</span>${sw(`data-notif-type="${esc(t.type)}"`, on, t.libelle)}</label>${on ? extra(t, p) : ''}</div>`;
-    }).join('')}</section>`;
-  }).join('');
-  if (appareil === 'inconnu') verifierAppareil().then(() => { const z = $('[data-notif-appareil-zone]'); if (z) z.innerHTML = blocAppareil(); });
-  return `<div class="notif">
-    <p class="muted small notif-intro">Ces réglages sont les tiens : chaque membre du foyer choisit les siens.${absente ? ' Ils sont gardés sur cet appareil en attendant la mise à jour du serveur.' : ''}</p>
-    <section class="card notif-carte" data-notif-appareil-zone>${blocAppareil()}</section>
-    <h3 class="notif-titre">Heures de silence</h3>
-    <section class="card notif-carte">
-      <label class="notif-ligne"><span class="grow"><b>Silence la nuit</b><span class="muted small">${p.silence_actif ? `Rien ${esc(libelleSilence(p))} : ce qui arrive attend la fin du silence.` : 'Les notifications peuvent arriver à toute heure.'}</span></span>${sw('data-notif-champ="silence_actif"', p.silence_actif, 'Heures de silence')}</label>
-      ${p.silence_actif ? `<div class="notif-extra notif-silence"><span>De</span><select class="input" data-notif-champ="silence_debut" aria-label="Début du silence">${options(HEURES, p.silence_debut)}</select><span>à</span><select class="input" data-notif-champ="silence_fin" aria-label="Fin du silence">${options(HEURES, p.silence_fin)}</select></div>` : ''}
-      <label class="notif-ligne"><span class="grow"><b>Regrouper</b><span class="muted small">Plusieurs notifications de la même heure arrivent en une seule.</span></span>${sw('data-notif-champ="regrouper"', p.regrouper, 'Regrouper les notifications')}</label>
-    </section>
-    ${groupes}
-  </div>`;
-}
-
-const majEcran = () => { if (state.tab === 'notifications') render(); };
-document.addEventListener('change', async (e) => {
-  const t = e.target;
-  if (!t.closest || !t.closest('.notif')) return;
-  try {
-    if (t.matches('[data-notif-appareil]')) {
-      if (t.checked) await Push.subscribe(); else await Push.unsubscribe();
-      appareil = t.checked ? 'oui' : 'non';
-      toast(t.checked ? 'Notifications activées sur cet appareil' : 'Notifications coupées sur cet appareil');
-      return majEcran();
-    }
-    if (t.dataset.notifType) {
-      await enregistrer({ types: { ...(ligne?.types || {}), [t.dataset.notifType]: t.checked } });
-      return majEcran();
-    }
-    if (t.dataset.notifChamp) {
-      const v = t.type === 'checkbox' ? t.checked : Number(t.value);
-      await enregistrer({ [t.dataset.notifChamp]: v });
-      return majEcran();
-    }
-  } catch (err) { fail(err, 'Réglage non enregistré'); majEcran(); }
-});
-
+// Module « Notifications » : emplacement réservé, à construire (voir LISEZMOI.md).
 Modules.register({
   id: 'notifications',
   onglet: 'plus',
@@ -9038,23 +8747,8 @@ Modules.register({
   ordre: 30,
   libelle: 'Notifications',
   icone: I('<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>'),
-  description: 'Une par une, et tes heures de silence',
-  tables: { notif_prefs: 'notif_prefs', notif_file: 'notif_file' },
-  async charger(force, { horsLigne } = {}) {
-    if (horsLigne || !me()) { ligne = cache.get('prefs', null); return; }
-    const { data, error } = await db.from(T.notif_prefs).select('*').eq('user_id', me()).maybeSingle();
-    if (error) {
-      if (!tableAbsente(error)) throw error;
-      absente = true;
-      ligne = cache.get('prefs', null);
-      return;
-    }
-    absente = false;
-    ligne = data || cache.get('prefs', null);
-    if (data) cache.set('prefs', data);
-  },
-  rendu,
-  expose: { TYPES_NOTIF, PREFS_DEFAUT, prefsEffectives, veut, enSilence, libelleSilence, typesAffiches, prefsAnciennes, prefs, programmer, annuler },
+  description: 'Bientôt ici',
+  rendu: () => Modules.bientot('Notifications', 'Chacun choisit, une par une, les notifications qu\'il reçoit, et ses heures de silence.', `<button class="btn" data-act="rappels">${ICON.clock} Rappels actuels</button>`),
 });
 })();
 // ==== module photos ====
@@ -9069,20 +8763,6 @@ Modules.register({
   rendu: () => Modules.bientot('Album de famille', 'L\'album privé du foyer, les liens vers vos albums partagés et la gazette des grands-parents.'),
 });
 })();
-// ==== module securite ====
-(function () {
-// Module « Sécurité » : emplacement réservé, à construire (voir LISEZMOI.md).
-Modules.register({
-  id: 'securite',
-  onglet: 'plus',
-  segment: 'Sécurité',
-  ordre: 50,
-  libelle: 'Sécurité',
-  icone: I('<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>'),
-  description: 'Bientôt ici',
-  rendu: () => Modules.bientot('Sécurité', 'Face ID à l\'ouverture de l\'appli, avec un code en secours.'),
-});
-})();
 // ==== module taches ====
 (function () {
 // Module « Tâches et listes » : emplacement réservé, à construire (voir LISEZMOI.md).
@@ -9095,18 +8775,732 @@ Modules.register({
   rendu: () => Modules.bientot('Tâches et listes', 'Les tâches avec responsable et échéance, les listes types (avant départ, avant nounou, valises) et les listes d\'envies.'),
 });
 })();
-// ==== module univers ====
+// ==== module univers-securite ====
 (function () {
-// Module « Univers graphique » : emplacement réservé, à construire (voir LISEZMOI.md).
+// ---------------------------------------------------------------------------
+// Module « Univers, sécurité, partage du sport, sauvegarde ».
+// Un seul fichier pour quatre écrans qui partagent la ligne de préférences du compte (table compte_preferences) :
+//   - univers        Plus › Univers : 5 univers graphiques + Classique, choisis par chaque compte ;
+//   - securite       Plus › Sécurité : verrouillage Face ID (clé d'accès WebAuthn) + code de secours ;
+//   - sauvegarde     Plus › Sauvegarde : toutes les données du foyer en un fichier JSON, rappel mensuel ;
+//   - univers-securite  partage « tout ou rien » du sport, réglé dans Forme › Réglages,
+//                    séances partagées dans l'agenda familial.
+// Styles : src/css/modules/univers-securite.css. Migration : supabase/migrations/2026-11-16_univers-securite.sql.
+// ---------------------------------------------------------------------------
+const cache = Modules.cache('univers-securite');
+const TABLE_ABSENTE = (e) => ['42P01', 'PGRST205', 'PGRST202', 'PGRST200'].includes(e?.code) || /does not exist|Could not find the table|schema cache/i.test(e?.message || '');
+const COLONNES_PREFS = ['id', 'user_id', 'foyer_id', 'univers', 'partage_sport', 'sauvegarde_le', 'updated_at'];
+const ICO_VERROU = I('<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>');
+const ICO_VISAGE = I('<path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 9.5v1M15 9.5v1M12 9v4h-1M9.5 16a3.5 3.5 0 0 0 5 0"/>');
+const ICO_EFFACER = I('<path d="M21 5H9l-6 7 6 7h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1z"/><path d="m17 9-6 6M11 9l6 6"/>');
+const ICO_PALETTE = I('<path d="M12 3a9 9 0 1 0 0 18c1 0 1.5-.7 1.5-1.5 0-.4-.2-.8-.4-1.1-.3-.3-.4-.7-.4-1.1 0-.8.7-1.5 1.5-1.5H16a5 5 0 0 0 5-5c0-4.4-4-7.8-9-7.8z"/><circle cx="7.5" cy="11.5" r="1"/><circle cx="10.5" cy="7.5" r="1"/><circle cx="15.5" cy="7.5" r="1"/>');
+const ICO_COURSE = I('<circle cx="14" cy="4.5" r="1.8"/><path d="m7 21 3-6 3 2v4M6 12l3-4 4 1 2 3 3 1"/>');
+
+// ---------------------------------------------------------------------------
+// Préférences du compte (une ligne par compte, lisible et modifiable par lui seul)
+// ---------------------------------------------------------------------------
+const Prefs = {
+  ligne: null,
+  dispo: null, // false : la table n'existe pas encore sur le serveur (migration à appliquer)
+  cle: () => `prefs-compte:${me() || 'x'}`,
+  lire() { return this.ligne || store.get(this.cle(), null) || {}; },
+  // Ne garde que les colonnes de la table (le cache local porte aussi le marqueur « à envoyer »).
+  colonnes: (l) => Object.fromEntries(Object.entries(l).filter(([k]) => COLONNES_PREFS.includes(k))),
+  async charger({ horsLigne } = {}) {
+    if (!me()) return;
+    const local = store.get(this.cle(), null);
+    if (horsLigne) { this.ligne = local; return; }
+    const { data, error } = await db.from(T.compte_preferences).select('*').eq('user_id', me()).limit(1);
+    if (error) {
+      this.ligne = local;
+      if (TABLE_ABSENTE(error)) { this.dispo = false; return; }
+      if (isNetworkError(error)) return;
+      throw error;
+    }
+    this.dispo = true;
+    const serveur = data?.[0] || null;
+    if (local?.aEnvoyer) {
+      // Choix faits hors ligne ou avant la migration : ils l'emportent sur le serveur.
+      this.ligne = { ...(serveur || {}), ...local };
+      await this.envoyer().catch((e) => console.warn('préférences', e));
+    } else this.ligne = serveur || local;
+    store.set(this.cle(), this.ligne);
+  },
+  async envoyer() {
+    const r = await Sync.upsert(T.compte_preferences, this.colonnes({ ...this.ligne, user_id: me(), foyer_id: foyer() }), { onConflict: 'user_id' });
+    this.ligne = { ...r };
+    store.set(this.cle(), this.ligne);
+  },
+  async enregistrer(patch) {
+    this.ligne = { ...this.lire(), ...patch, updated_at: new Date().toISOString() };
+    if (this.dispo !== true) { this.ligne.aEnvoyer = true; store.set(this.cle(), this.ligne); return this.ligne; }
+    store.set(this.cle(), this.ligne);
+    try { await this.envoyer(); } catch (e) {
+      if (!TABLE_ABSENTE(e)) throw e;
+      this.dispo = false;
+      this.ligne.aEnvoyer = true;
+      store.set(this.cle(), this.ligne);
+    }
+    return this.ligne;
+  },
+};
+
+// ---------------------------------------------------------------------------
+// (1) Univers graphiques
+// ---------------------------------------------------------------------------
+const UNIVERS = [
+  { id: 'classique', nom: 'Classique', famille: 'Pop gourmand', fond: '#fff3d1', polices: 'Baloo+2:wght@600;700;800&family=Nunito:wght@500;600;700;800',
+    texte: 'Vanille, fraise et mangue, contours épais et boutons en relief : l\'appli telle que tu la connais.', policesNoms: 'Baloo 2 et Nunito',
+    ideal: 'garder ses repères.' },
+  { id: 'carnet', nom: 'Carnet de bord', famille: 'Papeterie · bullet journal', fond: '#FAFAF6', polices: 'Gochi+Hand&family=Atkinson+Hyperlegible:wght@400;700',
+    texte: 'La semaine s\'écrit comme dans un carnet à spirale : papier pointé, stylo bille bleu, surligneur jaune et bouts de ruban adhésif.', policesNoms: 'Gochi Hand et Atkinson Hyperlegible',
+    ideal: 'les listes, les cases à cocher, l\'agenda tenu à la main.' },
+  { id: 'washi', nom: 'Washi', famille: 'Japonais minimal', fond: '#F3F2EE', polices: 'Shippori+Mincho:wght@600&family=Zen+Kaku+Gothic+New:wght@400;500;700',
+    texte: 'Beaucoup de vide, des filets fins, l\'encre noire et un seul rouge vermillon. L\'écran se fait oublier et laisse la journée respirer.', policesNoms: 'Shippori Mincho et Zen Kaku Gothic New',
+    ideal: 'le calme et peu de couleur ; très lisible, très net.' },
+  { id: 'herbier', nom: 'Herbier', famille: 'Nature et botanique', fond: '#E9EEDF', polices: 'Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&family=Karla:wght@400;600;700',
+    texte: 'Feuilles pressées, verts de sous-bois et une touche de baie, avec des cartes en forme de feuille. Doux et vivant, comme un carnet de cueillette.', policesNoms: 'Fraunces et Karla',
+    ideal: 'la cuisine, les courses et la forme ; apaisant.' },
+  { id: 'cocon', nom: 'Cocon', famille: 'Doux pastel · cocooning', fond: '#FCEFEA', polices: 'Fredoka:wght@500;600&family=Nunito:wght@400;600;700;800',
+    texte: 'Pêche, menthe et bleu poudré, formes très arrondies et ombres floues comme un plaid. Tout paraît moelleux.', policesNoms: 'Fredoka et Nunito',
+    ideal: 'le fil de la journée, le compagnon, les soirées ; doux pour les yeux.' },
+  { id: 'kermesse', nom: 'Kermesse', famille: 'Maximaliste coloré', fond: '#FFE6EE', polices: 'Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800',
+    texte: 'Confettis, contours épais, ombres décalées en couleur et une typo grasse qui claque. On lit le planning comme une affiche de fête.', policesNoms: 'Bricolage Grotesque',
+    ideal: 'l\'agenda familial et les couleurs ; les enfants adorent.' },
+];
+const universDe = (id) => UNIVERS.find((u) => u.id === id) || UNIVERS[0];
+const universValide = (id) => UNIVERS.some((u) => u.id === id);
+const policesUrl = (u) => `https://fonts.googleapis.com/css2?family=${u.polices}&display=swap`;
+const universActuel = () => universDe(document.documentElement?.dataset?.univers || 'classique').id;
+
+// Ajoute une seule fois la feuille Google Fonts d'un univers (hors ligne : les polices de secours prennent le relais).
+function chargerPolices(u) {
+  if (u.id === 'classique' || !document.head) return;
+  const id = `us-polices-${u.id}`;
+  if (document.getElementById?.(id)) return;
+  const l = document.createElement('link');
+  l.id = id; l.rel = 'stylesheet'; l.href = policesUrl(u);
+  document.head.append(l);
+}
+function appliquerUnivers(id) {
+  const u = universDe(id);
+  const html = document.documentElement;
+  if (u.id === 'classique') delete html.dataset.univers; else html.dataset.univers = u.id;
+  chargerPolices(u);
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', u.fond);
+  store.set('univers', u.id); // affichage immédiat au prochain lancement, avant la connexion
+  return u.id;
+}
+// Dès le chargement du script : le dernier univers connu sur cet appareil, sans attendre le réseau.
+appliquerUnivers(store.get('univers', 'classique'));
+
+const vignette = (u, actuel) => `<li><button type="button" class="us-apercu" data-uapercu="${u.id}" data-act="univers-choisir" data-id="${u.id}" aria-pressed="${u.id === actuel}" aria-label="Univers ${esc(u.nom)}${u.id === actuel ? ' (choisi)' : ''}">
+  <span class="us-apercu-nom">${esc(u.nom)}</span>
+  <span class="us-apercu-carte"><span class="us-apercu-points"><i></i><i></i><i></i></span><span class="us-apercu-ligne"></span></span>
+  <span class="us-apercu-famille">${esc(u.famille)}</span>
+  ${u.id === actuel ? '<span class="us-choisi">Choisi</span>' : '<span class="us-apercu-bouton">Choisir</span>'}</button></li>`;
+
+function renduUnivers() {
+  UNIVERS.forEach(chargerPolices); // les vignettes montrent chaque univers avec ses polices
+  const actuel = universActuel();
+  const u = universDe(actuel);
+  return `<p class="muted" style="margin:0 0 12px">Chacun choisit le sien : ton univers ne change que <b>ton</b> affichage, et te suit sur tes appareils.</p>
+    <ul class="us-grille">${UNIVERS.map((x) => vignette(x, actuel)).join('')}</ul>
+    <section class="card us-detail" aria-live="polite"><h3>${esc(u.nom)}</h3><p>${esc(u.texte)}</p>
+      <p class="muted small">Polices : ${esc(u.policesNoms)}. Idéal pour ${esc(u.ideal)}</p>
+      ${Prefs.dispo === false ? '<p class="muted small">Choix gardé sur cet appareil ; il suivra ton compte après la prochaine mise à jour du serveur.</p>' : ''}</section>`;
+}
+
+// ---------------------------------------------------------------------------
+// (2) Sécurité : verrouillage par Face ID (clé d'accès WebAuthn de l'appareil) et code de secours
+// ---------------------------------------------------------------------------
+const SECU = { config: 'securite:appareil', cacheLe: 'securite:cache-le', echecs: 'securite:echecs' };
+const DELAIS = [[0, 'Immédiatement'], [1, '1 minute'], [5, '5 minutes'], [15, '15 minutes']];
+const ITERATIONS = 150000;
+const configSecu = () => store.get(SECU.config, null);
+const secuActive = () => { const c = configSecu(); return !!(c?.actif && (!me() || c.user === me())); };
+
+// --- Fonctions pures (tests unitaires) ---
+const octetsEnHex = (o) => [...o].map((x) => x.toString(16).padStart(2, '0')).join('');
+const hexEnOctets = (h) => new Uint8Array((String(h).match(/../g) || []).map((x) => parseInt(x, 16)));
+// Base64 « URL » (identifiant de la clé d'accès), sans dépendre de btoa/atob.
+const B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+function b64url(buf) {
+  const o = new Uint8Array(buf);
+  let s = '';
+  for (let i = 0; i < o.length; i += 3) {
+    const n = (o[i] << 16) | ((o[i + 1] || 0) << 8) | (o[i + 2] || 0);
+    s += B64[(n >> 18) & 63] + B64[(n >> 12) & 63] + (i + 1 < o.length ? B64[(n >> 6) & 63] : '') + (i + 2 < o.length ? B64[n & 63] : '');
+  }
+  return s;
+}
+function deB64url(s) {
+  const v = String(s).replace(/=+$/, '').split('').map((c) => B64.indexOf(c));
+  const out = [];
+  for (let i = 0; i < v.length; i += 4) {
+    const n = (v[i] << 18) | (v[i + 1] << 12) | ((v[i + 2] > -1 ? v[i + 2] : 0) << 6) | (v[i + 3] > -1 ? v[i + 3] : 0);
+    out.push((n >> 16) & 255);
+    if (i + 2 < v.length) out.push((n >> 8) & 255);
+    if (i + 3 < v.length) out.push(n & 255);
+  }
+  return new Uint8Array(out);
+}
+// Code de secours : 4 à 6 chiffres, ni répété (0000), ni en suite (1234, 9876). Renvoie un message, ou null si le code convient.
+function codeRefuse(code) {
+  const c = String(code ?? '');
+  if (!/^\d{4,6}$/.test(c)) return 'Le code compte de 4 à 6 chiffres.';
+  if (/^(\d)\1+$/.test(c)) return 'Évite un code fait d\'un seul chiffre répété.';
+  const d = c.split('').map(Number);
+  const suite = (pas) => d.every((x, i) => i === 0 || x === (d[i - 1] + pas + 10) % 10);
+  if (suite(1) || suite(-1)) return 'Évite une suite de chiffres comme 1234.';
+  return null;
+}
+// Empreinte PBKDF2-SHA-256 du code (sel aléatoire propre à l'appareil) : le code lui-même n'est jamais stocké.
+async function hacherCode(code, selHex, iterations = ITERATIONS) {
+  const cle = await crypto.subtle.importKey('raw', new TextEncoder().encode(String(code)), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: hexEnOctets(selHex), iterations }, cle, 256);
+  return octetsEnHex(new Uint8Array(bits));
+}
+// Après 5 essais manqués : 30 s d'attente, puis le double à chaque nouvel échec (15 min au plus).
+const attenteApresEchecs = (n) => (n < 5 ? 0 : Math.min(15 * 60000, 30000 * 2 ** (n - 5)));
+// Faut-il verrouiller en revenant dans l'appli ?
+function doitVerrouiller({ actif, cacheLe, maintenant, delaiMin = 5 }) {
+  if (!actif || !cacheLe) return false;
+  return maintenant - cacheLe >= delaiMin * 60000;
+}
+// Données d'authentificateur WebAuthn : octet 32 = drapeaux ; 0x01 présence (UP), 0x04 identité vérifiée (UV, Face ID).
+function uvVerifie(authData) {
+  const o = authData instanceof Uint8Array ? authData : new Uint8Array(authData || []);
+  return o.length >= 37 && (o[32] & 0x05) === 0x05;
+}
+const nomBio = (ua = navigator.userAgent) => (/iPhone|iPad|iPod/.test(ua) ? 'Face ID' : /Macintosh/.test(ua) ? 'Touch ID' : 'la reconnaissance biométrique');
+const delaiTexte = (min) => (min === 0 ? 'dès que tu quittes l\'appli' : `après ${min} minute${min > 1 ? 's' : ''} hors de l'appli`);
+
+// --- Appareil ---
+const alea = (n) => crypto.getRandomValues(new Uint8Array(n));
+let bioDispo = null;
+async function bioDisponible() {
+  try {
+    bioDispo = !!(window.isSecureContext !== false && window.PublicKeyCredential && navigator.credentials
+      && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable());
+  } catch { bioDispo = false; }
+  return bioDispo;
+}
+async function creerCle() {
+  const m = memberById(state.compte?.member_id);
+  const cred = await navigator.credentials.create({ publicKey: {
+    challenge: alea(32), rp: { name: APP_NAME },
+    user: { id: new TextEncoder().encode(me() || uid()), name: state.user?.email || 'compte', displayName: m?.nom || state.user?.email || APP_NAME },
+    pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+    authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', residentKey: 'discouraged' },
+    timeout: 60000, attestation: 'none',
+  } });
+  if (!cred?.rawId) throw new Error('clé non créée');
+  return b64url(cred.rawId);
+}
+async function verifierBio(cfg) {
+  const cred = await navigator.credentials.get({ publicKey: {
+    challenge: alea(32), allowCredentials: [{ type: 'public-key', id: deB64url(cfg.cred), transports: ['internal'] }],
+    userVerification: 'required', timeout: 60000,
+  } });
+  if (!cred || !uvVerifie(cred.response?.authenticatorData)) throw new Error('identité non vérifiée');
+  return true;
+}
+async function nouveauCode(code) {
+  const sel = octetsEnHex(alea(16));
+  return { hash: await hacherCode(code, sel), sel, iter: ITERATIONS, len: String(code).length };
+}
+const codeJuste = async (cfg, code) => !!cfg?.code && (await hacherCode(code, cfg.code.sel, cfg.code.iter)) === cfg.code.hash;
+const sessionPresente = () => { try { for (let i = 0; i < localStorage.length; i++) if (/^sb-.+-auth-token$/.test(localStorage.key(i) || '')) return true; } catch { /* stockage indisponible */ } return false; };
+
+// --- Écran de verrouillage (au-dessus de tout, le reste de la page devient inerte) ---
+const Verrou = {
+  el: null,
+  saisie: '',
+  confirmeOubli: false,
+  ouvert() { return !!this.el; },
+  montrer(raison = 'ouverture') {
+    const cfg = configSecu();
+    if (!cfg?.actif || this.el) return;
+    this.saisie = '';
+    this.confirmeOubli = false;
+    const el = document.createElement('div');
+    el.className = 'us-verrou';
+    el.setAttribute('role', 'dialog');
+    el.setAttribute('aria-modal', 'true');
+    el.setAttribute('aria-labelledby', 'us-verrou-titre');
+    document.body.append(el);
+    for (const x of document.body.children) if (x !== el) x.inert = true;
+    document.documentElement.style.overflow = 'hidden';
+    this.el = el;
+    this.dessiner();
+    el.addEventListener('click', (e) => this.clic(e));
+    if (cfg.bio && raison !== 'manuel' && document.visibilityState === 'visible') setTimeout(() => this.bio(true), 250);
+  },
+  cacher() {
+    if (!this.el) return;
+    this.el.remove();
+    this.el = null;
+    for (const x of document.body.children) x.inert = false;
+    document.documentElement.style.overflow = '';
+    store.set(SECU.cacheLe, null);
+  },
+  dessiner() {
+    const cfg = configSecu();
+    if (!this.el || !cfg) return;
+    if (this.confirmeOubli) {
+      this.el.innerHTML = `<div class="us-verrou-carte"><h2 id="us-verrou-titre">Code oublié ?</h2>
+        <p>Pour ta sécurité, tu vas être déconnecté·e de cet appareil. Reconnecte-toi avec ton e-mail et ton mot de passe, puis réactive le verrouillage dans Plus › Sécurité.</p>
+        <button class="btn primary" data-us="deconnecter">Me déconnecter</button><button class="btn" data-us="annuler">Annuler</button></div>`;
+      return;
+    }
+    const len = cfg.code?.len || 4;
+    const touches = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'x'];
+    this.el.innerHTML = `<div class="us-verrou-carte">
+      <img class="us-verrou-logo" src="icon-192.png" alt="">
+      <h2 id="us-verrou-titre">${esc(APP_NAME)} est verrouillée</h2>
+      <p class="muted">${cfg.bio ? `Déverrouille avec ${esc(nomBio())} ou ton code.` : 'Saisis ton code pour continuer.'}</p>
+      ${cfg.bio ? `<button class="btn primary" data-us="bio">${ICO_VISAGE} Déverrouiller avec ${esc(nomBio())}</button>` : ''}
+      <div class="us-points" aria-hidden="true">${Array.from({ length: len }, (_, i) => `<i class="${i < this.saisie.length ? 'plein' : ''}"></i>`).join('')}</div>
+      <p class="sr-only" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">${this.saisie.length} chiffre${this.saisie.length > 1 ? 's' : ''} sur ${len}</p>
+      <div class="us-clavier">${touches.map((t) => (t === '' ? '<span class="us-touche vide"></span>'
+        : t === 'x' ? `<button class="us-touche" data-us="effacer" aria-label="Effacer">${ICO_EFFACER}</button>`
+          : `<button class="us-touche" data-us="chiffre" data-c="${t}">${t}</button>`)).join('')}</div>
+      <p class="us-msg" data-msg role="alert"></p>
+      <button class="btn small" data-us="oubli" style="width:auto">Code oublié ?</button></div>`;
+  },
+  message(t, secouer = false) {
+    const m = this.el && $('[data-msg]', this.el);
+    if (m) m.textContent = t;
+    if (secouer) { const p = $('.us-points', this.el); p?.classList.remove('erreur'); void p?.offsetWidth; p?.classList.add('erreur'); }
+  },
+  async clic(e) {
+    const b = e.target.closest('[data-us]');
+    if (!b) return;
+    const cfg = configSecu();
+    const x = b.dataset.us;
+    if (x === 'bio') return this.bio(false);
+    if (x === 'oubli') { this.confirmeOubli = true; return this.dessiner(); }
+    if (x === 'annuler') { this.confirmeOubli = false; return this.dessiner(); }
+    if (x === 'deconnecter') {
+      store.set(SECU.config, null);
+      store.set(SECU.echecs, null);
+      this.cacher();
+      try { await db.auth.signOut({ scope: 'local' }); } catch (err) { console.warn('déconnexion', err); }
+      return;
+    }
+    if (x === 'effacer') { this.saisie = this.saisie.slice(0, -1); return this.dessiner(); }
+    if (x === 'chiffre') {
+      const len = cfg?.code?.len || 4;
+      if (this.saisie.length >= len) return;
+      this.saisie += b.dataset.c;
+      this.dessiner();
+      if (this.saisie.length === len) await this.verifier(this.saisie);
+    }
+  },
+  async verifier(code) {
+    const cfg = configSecu();
+    const ech = store.get(SECU.echecs, null) || { n: 0, t: 0 };
+    const reste = ech.t + attenteApresEchecs(ech.n) - Date.now();
+    if (reste > 0) { this.saisie = ''; this.dessiner(); this.message(`Trop d'essais : réessaie dans ${Math.ceil(reste / 1000)} s.`); return false; }
+    if (await codeJuste(cfg, code)) { store.set(SECU.echecs, null); this.cacher(); return true; }
+    const n = ech.n + 1;
+    store.set(SECU.echecs, { n, t: Date.now() });
+    this.saisie = '';
+    this.dessiner();
+    const attente = attenteApresEchecs(n);
+    this.message(attente ? `Code incorrect. Patiente ${Math.round(attente / 1000)} s avant de réessayer.` : `Code incorrect${n >= 3 ? ` (encore ${5 - n} essai${5 - n > 1 ? 's' : ''} avant une pause)` : ''}.`, true);
+    return false;
+  },
+  async bio(silencieux) {
+    const cfg = configSecu();
+    if (!cfg?.bio || !this.el) return;
+    try { await verifierBio(cfg); store.set(SECU.echecs, null); this.cacher(); } catch (err) {
+      if (!silencieux) this.message(`${nomBio()} n'a pas abouti : réessaie ou saisis ton code.`);
+      console.warn('déverrouillage', err?.name || err);
+    }
+  },
+};
+
+// À l'ouverture : verrouillé avant même l'affichage des données (s'il reste une session sur l'appareil).
+if (configSecu()?.actif && sessionPresente()) Verrou.montrer('ouverture');
+// Au retour dans l'appli après le délai choisi (5 minutes par défaut).
+function auRetour() {
+  const cfg = configSecu();
+  if (document.visibilityState === 'hidden') { if (cfg?.actif && !Verrou.ouvert()) store.set(SECU.cacheLe, Date.now()); return; }
+  if (doitVerrouiller({ actif: secuActive() && !!state.user, cacheLe: store.get(SECU.cacheLe, null), maintenant: Date.now(), delaiMin: cfg?.delai ?? 5 })) Verrou.montrer('retour');
+}
+document.addEventListener('visibilitychange', auRetour);
+window.addEventListener('pageshow', (e) => { if (e.persisted) auRetour(); });
+// Déconnexion : plus rien à protéger, l'écran de connexion demande le mot de passe.
+db.auth.onAuthStateChange((evt) => { if (evt === 'SIGNED_OUT') Verrou.cacher(); });
+
+function renduSecurite() {
+  const cfg = configSecu();
+  const actif = secuActive();
+  if (bioDispo === null) bioDisponible().then(() => { if (state.tab === 'securite') render(); });
+  const bio = nomBio();
+  const info = `<section class="card us-carte"><h3>Bon à savoir</h3>
+    <p class="muted small">Le verrouillage protège l'accès à l'appli sur ce téléphone ; ton compte garde son mot de passe. ${esc(bio)} reste dans le téléphone : l'appli reçoit seulement la réponse « c'est bien toi ».</p>
+    <p class="muted small">Ton code de secours n'est jamais enregistré en clair : seule son empreinte chiffrée reste sur cet appareil. En cas d'oubli, tu te reconnectes avec ton mot de passe.</p></section>`;
+  if (!actif) {
+    return `<section class="card us-carte"><div class="us-etat"><span class="us-etat-ico">${ICO_VERROU}</span><div class="grow"><b>Verrouillage désactivé</b><br><span class="muted small">Sur cet appareil</span></div></div>
+      <p>À l'ouverture, et quand tu reviens après 5 minutes, l'appli te demande ${esc(bio)} ou un code de secours à 4 à 6 chiffres.</p>
+      ${bioDispo === false ? `<p class="muted small">${esc(bio.charAt(0).toUpperCase() + bio.slice(1))} n'est pas disponible dans ce navigateur : le verrouillage se fera avec ton code seul.</p>` : ''}
+      <div class="us-actions"><button class="btn primary block" data-act="securite-activer">${ICO_VERROU} Activer le verrouillage</button></div></section>${info}`;
+  }
+  return `<section class="card us-carte"><div class="us-etat"><span class="us-etat-ico">${ICO_VERROU}</span><div class="grow"><b>Verrouillage activé</b><br>
+      <span class="muted small">${cfg.bio ? `${esc(bio)} et code de secours` : 'Code de secours seul'} · ${esc(delaiTexte(cfg.delai ?? 5))}</span></div></div>
+    <div class="us-actions">
+      <button class="btn block" data-act="securite-verrouiller">Verrouiller maintenant</button>
+      ${!cfg.bio && bioDispo ? `<button class="btn block" data-act="securite-bio">${ICO_VISAGE} Ajouter ${esc(bio)}</button>` : ''}
+      <button class="btn block" data-act="securite-code">Changer le code de secours</button>
+      <label class="field"><span>Redemander au retour dans l'appli</span><select class="input" data-securite-delai>${DELAIS.map(([v, l]) => `<option value="${v}" ${(cfg.delai ?? 5) === v ? 'selected' : ''}>${l === 'Immédiatement' ? l : `Après ${l}`}</option>`).join('')}</select></label>
+      <button class="btn block danger" data-act="securite-desactiver">Désactiver le verrouillage</button>
+    </div></section>${info}`;
+}
+
+// Feuille « code » : activation (nouveau code), changement (ancien + nouveau) ou désactivation (code actuel).
+function feuilleCode(mode) {
+  const cfg = configSecu();
+  const bio = nomBio();
+  const champ = (nom, libelle) => `<label class="field"><span>${libelle}</span><input class="input us-code" name="${nom}" type="password" inputmode="numeric" pattern="[0-9]*" minlength="4" maxlength="6" autocomplete="off" required></label>`;
+  const titres = { activer: 'Activer le verrouillage', changer: 'Changer le code de secours', desactiver: 'Désactiver le verrouillage' };
+  const bouton = { activer: bioDispo ? `Continuer avec ${bio}` : 'Activer avec ce code', changer: 'Enregistrer le nouveau code', desactiver: 'Désactiver' }[mode];
+  const el = openSheet(`${sheetHead(titres[mode])}
+    <form class="stack" data-form="securite-${mode}">
+      ${mode === 'activer' ? `<p class="muted small" style="margin:0">Choisis un code de secours de 4 à 6 chiffres. Il sert si ${esc(bio)} ne te reconnaît pas.</p>` : ''}
+      ${mode !== 'activer' ? champ('actuel', 'Code actuel') : ''}
+      ${mode !== 'desactiver' ? `${champ('c1', mode === 'changer' ? 'Nouveau code' : 'Code de secours')}${champ('c2', 'Confirme le code')}` : ''}
+      <p class="us-msg" data-msg role="alert"></p>
+      <button class="btn primary block" data-x="ok">${esc(bouton)}</button>
+      ${mode === 'activer' ? '<button type="button" class="btn block" data-x="code-seul" hidden>Activer avec le code seul</button>' : ''}
+    </form>`);
+  const f = $('form', el);
+  const msg = (t) => { $('[data-msg]', el).textContent = t; };
+  let codeOk = null;
+  const terminer = async (cred) => {
+    const code = await nouveauCode(codeOk);
+    const prec = configSecu();
+    store.set(SECU.config, { actif: true, user: me(), cred: cred || null, bio: !!cred, code, delai: prec?.delai ?? 5, cree_le: new Date().toISOString() });
+    store.set(SECU.echecs, null);
+    closeSheet();
+    render();
+    toast(cred ? `Verrouillage activé avec ${bio}` : 'Verrouillage activé avec ton code');
+  };
+  $('[data-x="code-seul"]', el)?.addEventListener('click', () => terminer(null).catch(fail));
+  f.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const bt = $('[data-x="ok"]', el);
+    bt.disabled = true;
+    try {
+      if (mode !== 'activer' && !(await codeJuste(cfg, f.actuel.value))) { msg('Code actuel incorrect.'); return; }
+      if (mode === 'desactiver') { store.set(SECU.config, null); store.set(SECU.cacheLe, null); closeSheet(); render(); toast('Verrouillage désactivé'); return; }
+      const refus = codeRefuse(f.c1.value);
+      if (refus) { msg(refus); return; }
+      if (f.c1.value !== f.c2.value) { msg('Les deux codes ne sont pas identiques.'); return; }
+      codeOk = f.c1.value;
+      if (mode === 'changer') {
+        store.set(SECU.config, { ...cfg, code: await nouveauCode(codeOk) });
+        closeSheet(); render(); toast('Code de secours changé');
+        return;
+      }
+      if (!bioDispo) { await terminer(null); return; }
+      try { await terminer(await creerCle()); } catch (err) {
+        console.warn('clé d\'accès', err?.name || err);
+        msg(`${bio} n'a pas été configuré. Réessaie, ou active le verrouillage avec ton code seul.`);
+        bt.textContent = 'Réessayer';
+        $('[data-x="code-seul"]', el).hidden = false;
+      }
+    } catch (err) { fail(err); } finally { bt.disabled = false; }
+  });
+  setTimeout(() => f.querySelector('input')?.focus(), 60);
+  return el;
+}
+
+document.addEventListener('change', (e) => {
+  if (e.target.matches?.('[data-securite-delai]')) {
+    const cfg = configSecu();
+    if (cfg) { store.set(SECU.config, { ...cfg, delai: Number(e.target.value) }); render(); toast('Délai enregistré'); }
+  }
+  if (e.target.matches?.('[data-partage-sport]')) basculerPartage(e.target).catch(fail);
+  if (e.target.matches?.('[data-sauvegarde-rappel]')) { store.set(cleRappel(), e.target.checked); toast(e.target.checked ? 'Rappel mensuel activé' : 'Rappel mensuel désactivé'); }
+});
+
+// ---------------------------------------------------------------------------
+// (3) Partage du sport « tout ou rien »
+// ---------------------------------------------------------------------------
+// Le serveur (RLS) ne renvoie les séances d'un autre compte que s'il a choisi de partager ;
+// les siennes ne sont montrées à la famille (agenda) que si l'on partage soi-même.
+const sport = { seances: [], debut: null, fin: null };
+const TYPES_SEANCE = { course: 'Course', renfo: 'Renfo', cardio: 'Cardio', mobilite: 'Mobilité' };
+const titreSeance = (s) => s.titre || s.prevu?.titre || FORME_COURSE[s.sous || s.prevu?.sous]?.label || FORME_COURSE[s.type]?.label || TYPES_SEANCE[s.type] || 'Séance';
+function heureFin(heure, minutes) {
+  if (!/^\d{2}:\d{2}$/.test(heure || '') || !(minutes > 0)) return null;
+  const [h, m] = heure.split(':').map(Number);
+  const t = Math.min(23 * 60 + 59, h * 60 + m + Math.round(minutes));
+  return `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`;
+}
+function seancesVisibles(seances, { moi, partageMoi }) {
+  return (seances || []).filter((s) => s.statut !== 'rate' && (s.user_id !== moi || partageMoi));
+}
+function elementAgenda(s, nomDe = () => '') {
+  const nom = nomDe(s.member_id);
+  const bits = [nom, s.duree_min ? `${s.duree_min} min` : '', s.distance_m ? `${String(Math.round(s.distance_m / 100) / 10).replace('.', ',')} km` : '', s.statut === 'fait' ? 'faite' : ''].filter(Boolean);
+  return { id: `seance:${s.id}`, date: s.date, heure: s.heure || null, heureFin: heureFin(s.heure, s.duree_min), titre: titreSeance(s), detail: bits.join(' · '),
+    membres: s.member_id ? [s.member_id] : [], couleur: null, act: 'partage-sport-voir', data: { id: s.id } };
+}
+const partageMoi = () => !!Prefs.lire().partage_sport;
+const COLONNES_SEANCE = 'id,member_id,user_id,date,heure,type,statut,duree_min,distance_m,dplus_m,titre:prevu->>titre,sous:prevu->>sous';
+async function lireSeances(a, b) {
+  const { data, error } = await db.from(T.forme_seances || 'forme_seances').select(COLONNES_SEANCE).eq('foyer_id', foyer()).gte('date', a).lte('date', b).order('date');
+  if (error) { if (TABLE_ABSENTE(error)) return []; throw error; }
+  return data || [];
+}
+async function chargerSport(horsLigne) {
+  if (!foyer()) return;
+  if (horsLigne) { Object.assign(sport, cache.get('sport', { seances: [], debut: null, fin: null })); return; }
+  const debut = isoDate(addDays(new Date(), -42)), fin = isoDate(addDays(new Date(), 84));
+  try { Object.assign(sport, { seances: await lireSeances(debut, fin), debut, fin }); cache.set('sport', sport); } catch (e) {
+    if (!isNetworkError(e)) throw e;
+    Object.assign(sport, cache.get('sport', sport));
+  }
+}
+async function agendaSport(debut, fin) {
+  const a = isoDate(debut), b = isoDate(fin);
+  let liste = sport.seances;
+  if (navigator.onLine && foyer() && (!sport.debut || a < sport.debut || b > sport.fin)) liste = await lireSeances(a, b).catch(() => sport.seances);
+  const nomDe = (id) => memberById(id)?.nom || '';
+  return seancesVisibles(liste, { moi: me(), partageMoi: partageMoi() }).filter((s) => s.date >= a && s.date <= b).map((s) => elementAgenda(s, nomDe));
+}
+const partageurs = () => [...new Set(sport.seances.filter((s) => s.user_id !== me()).map((s) => s.member_id))].map((id) => memberById(id)?.nom).filter(Boolean);
+
+function cartePartage() {
+  const oui = partageMoi();
+  const autres = partageurs();
+  return `<section class="card f-pad stack" data-partage-carte><h3>Partage avec la famille</h3>
+    <label class="us-interrupteur"><input type="checkbox" data-partage-sport ${oui ? 'checked' : ''}><span><b>Partager tout mon sport</b></span></label>
+    <p class="muted small" style="margin-top:4px">Tout ou rien : si tu partages, les membres du foyer voient tes séances (prévues et faites), ton plan de la semaine, tes objectifs et tes réglages Forme, en lecture seule. Personne ne peut les modifier. Tes mensurations restent privées. Tu peux changer d'avis à tout moment.</p>
+    ${oui ? '<p class="small"><b>Partagé :</b> tes séances apparaissent dans l\'agenda de la famille.</p>' : '<p class="small"><b>Non partagé :</b> ton sport reste visible de toi seul·e.</p>'}
+    ${autres.length ? `<p class="small">Partagent leur sport avec toi : <b>${autres.map(esc).join(', ')}</b>.</p>` : ''}
+    ${Prefs.dispo === false ? '<p class="muted small">Le partage s\'activera après la prochaine mise à jour du serveur.</p>' : ''}</section>`;
+}
+async function basculerPartage(input) {
+  const oui = input.checked;
+  if (oui && !(await confirmSheet('Partager tout ton sport avec la famille ? Ils verront tes séances, ton plan et tes objectifs, sans pouvoir les modifier.', 'Partager', false))) { input.checked = false; return; }
+  await Prefs.enregistrer({ partage_sport: oui });
+  toast(oui ? 'Ton sport est partagé avec la famille' : 'Ton sport n\'est plus partagé');
+  render();
+}
+// Forme › Réglages : la carte de partage s'ajoute aux réglages du module (point d'extension Forme.reglagesExtra).
+(Forme.reglagesExtra = Forme.reglagesExtra || []).push(cartePartage);
+
+function feuilleSeance(id) {
+  const s = sport.seances.find((x) => x.id === id);
+  if (!s) { toast('Séance introuvable'); return; }
+  const m = memberById(s.member_id);
+  const date = isoToDate(s.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+  const fin = heureFin(s.heure, s.duree_min);
+  const ligne = (t, v) => (v ? `<dt>${t}</dt><dd>${esc(v)}</dd>` : '');
+  openSheet(`${sheetHead(titreSeance(s))}<div class="us-seance stack">
+    <dl>${ligne('Qui', m?.nom)}${ligne('Quand', `${date}${s.heure ? `, ${s.heure.replace(':', ' h ')}${fin ? ` – ${fin.replace(':', ' h ')}` : ''}` : ''}`)}
+      ${ligne('Type', TYPES_SEANCE[s.type])}${ligne('Durée', s.duree_min ? `${s.duree_min} min` : '')}${ligne('Distance', s.distance_m ? `${String(Math.round(s.distance_m / 100) / 10).replace('.', ',')} km` : '')}
+      ${ligne('Dénivelé', s.dplus_m ? `${s.dplus_m} m` : '')}${ligne('État', { prevu: 'Prévue', fait: 'Faite', rate: 'Manquée' }[s.statut])}</dl>
+    <p class="muted small">${s.user_id === me() ? 'Ta séance, telle que la famille la voit.' : `Séance partagée par ${esc(m?.nom || 'un membre du foyer')} : lecture seule.`}</p></div>`);
+}
+
+// ---------------------------------------------------------------------------
+// (4) Sauvegarde : toutes les données du foyer en un fichier JSON, rappel mensuel
+// ---------------------------------------------------------------------------
+const SAUVEGARDE_TABLES = ['foyer_membres', 'foyer_comptes', 'reglages', 'recettes', 'planning_repas', 'courses_coches', 'courses_ajouts', 'historique_scans',
+  'liens_produits', 'placards', 'restes', 'journal', 'aliments_favoris', 'produits_perso', 'activites', 'hydratation', 'compagnons', 'bilans', 'gains', 'pesees',
+  'resume_jour', 'mensurations', 'forme_profil', 'forme_lieux', 'forme_exercices', 'forme_objectifs', 'forme_semaines', 'forme_seances',
+  'mc_planning', 'mc_courses', 'mc_recettes', 'compte_preferences'];
+// Jamais exportées : secrets (connexion Monsieur Cuisine, abonnements aux notifications) et tables techniques.
+const SAUVEGARDE_EXCLUES = ['mc_secrets', 'push_abonnements', 'rappels_envoyes', 'config_app', 'mc_connexions', 'foyers'];
+// Données personnelles : seulement celles du compte qui exporte (pas les séances partagées par les autres).
+const SAUVEGARDE_PERSO = /^(forme_|mensurations$|compte_preferences$)/;
+const tablesASauvegarder = (tablesConnues = []) => [...new Set([...SAUVEGARDE_TABLES, ...tablesConnues])].filter((t) => t && !SAUVEGARDE_EXCLUES.includes(t));
+const nomFichierSauvegarde = (d) => `tribu-et-toutous-sauvegarde-${isoDate(d)}.json`;
+const joursDepuis = (iso, maintenant) => (iso ? Math.floor((maintenant - new Date(iso)) / 864e5) : null);
+// Rappel mensuel : jamais sauvegardé, ou il y a 30 jours ou plus.
+function rappelSauvegarde(derniereIso, maintenant = new Date()) {
+  const j = joursDepuis(derniereIso, maintenant);
+  return { du: j === null || j >= 30, jours: j };
+}
+function construireSauvegarde({ tables, foyer: f, compte, maintenant = new Date(), absentes = [] }) {
+  const lignes = Object.values(tables).reduce((t, l) => t + l.length, 0);
+  return {
+    app: APP_NAME, format: 'tribu-et-toutous/sauvegarde', version: 2, exported_at: maintenant.toISOString(),
+    foyer: f, compte, resume: { tables: Object.keys(tables).length, lignes }, tables_absentes: absentes, tables,
+    // Mêmes clés que l'ancien format : le fichier reste importable par « Importer ».
+    settings: tables.reglages?.[0] || null, recipes: tables.recettes || [], meal_plan: tables.planning_repas || [], product_links: tables.liens_produits || [],
+  };
+}
+async function lireTable(t) {
+  const lignes = [];
+  for (let i = 0; i < 50; i++) {
+    let q = db.from(t).select('*').eq('foyer_id', foyer());
+    if (SAUVEGARDE_PERSO.test(t)) q = q.eq('user_id', me());
+    const { data, error } = await q.range(i * 1000, i * 1000 + 999);
+    if (error) throw error;
+    lignes.push(...(data || []));
+    if (!data || data.length < 1000) break;
+  }
+  return lignes;
+}
+const cleRappel = () => `sauvegarde:rappel:${me() || 'x'}`;
+const derniereSauvegarde = () => Prefs.lire().sauvegarde_le || store.get(`sauvegarde:le:${me() || 'x'}`, null);
+let exportEnCours = false;
+async function exporterTout(bouton) {
+  if (exportEnCours) return;
+  if (!navigator.onLine) { toast('Connecte-toi à Internet pour télécharger la sauvegarde'); return; }
+  exportEnCours = true;
+  const texte = bouton?.innerHTML;
+  if (bouton) { bouton.disabled = true; bouton.textContent = 'Préparation du fichier…'; }
+  try {
+    const tables = {};
+    const absentes = [];
+    for (const t of tablesASauvegarder(Object.values(T))) {
+      try { tables[t] = await lireTable(t); } catch (e) {
+        if (TABLE_ABSENTE(e) || e?.code === '42703') absentes.push(t);
+        else throw e;
+      }
+    }
+    const maintenant = new Date();
+    const donnees = construireSauvegarde({ tables, foyer: { id: foyer(), nom: state.foyer?.nom || null }, compte: state.user?.email || null, maintenant, absentes });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(donnees, null, 2)], { type: 'application/json' }));
+    a.download = nomFichierSauvegarde(maintenant);
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    store.set(`sauvegarde:le:${me()}`, maintenant.toISOString());
+    await Prefs.enregistrer({ sauvegarde_le: maintenant.toISOString() }).catch((e) => console.warn('préférences', e));
+    toast(`Sauvegarde téléchargée : ${donnees.resume.lignes} éléments`);
+    if (state.tab === 'sauvegarde') render();
+  } catch (e) { fail(e, 'Sauvegarde impossible'); } finally {
+    exportEnCours = false;
+    if (bouton?.isConnected) { bouton.disabled = false; bouton.innerHTML = texte; }
+  }
+}
+function renduSauvegarde() {
+  const der = derniereSauvegarde();
+  const { du, jours } = rappelSauvegarde(der);
+  const quand = der ? `Dernière sauvegarde le ${new Date(der).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}${jours ? ` (il y a ${jours} jour${jours > 1 ? 's' : ''})` : ''}` : 'Aucune sauvegarde pour l\'instant';
+  return `<section class="card us-carte"><div class="us-etat"><span class="us-etat-ico">${ICON.download}</span><div class="grow"><b>Sauvegarde du foyer</b><br><span class="muted small" data-sauvegarde-quand>${esc(quand)}</span></div></div>
+      <p>Un fichier avec toutes les données du foyer : membres, recettes, repas, courses, journal, activités, suivi, Monsieur Cuisine, et ton sport. Range-le en lieu sûr (Fichiers, iCloud Drive…).</p>
+      ${du ? '<p class="small"><b>C\'est le moment de faire la sauvegarde du mois.</b></p>' : ''}
+      <div class="us-actions"><button class="btn primary block" data-act="sauvegarde-exporter">${ICON.download} Télécharger la sauvegarde</button></div></section>
+    <section class="card us-carte"><h3>Rappel mensuel</h3>
+      <label class="us-interrupteur"><input type="checkbox" data-sauvegarde-rappel ${store.get(cleRappel(), true) ? 'checked' : ''}><span>Me le rappeler sur l'Accueil chaque mois</span></label></section>
+    <section class="card us-carte"><h3>Restaurer</h3><p class="muted small">Réimporte les recettes, le planning et les réglages d'un fichier de sauvegarde.</p>
+      <div class="us-actions"><label class="btn block">${ICON.upload} Importer un fichier<input type="file" accept="application/json" data-import-data hidden></label></div></section>`;
+}
+
+// ---------------------------------------------------------------------------
+// Enregistrement des écrans
+// ---------------------------------------------------------------------------
 Modules.register({
   id: 'univers',
   onglet: 'plus',
   segment: 'Univers',
   ordre: 20,
   libelle: 'Univers graphique',
-  icone: I('<path d="M12 3a9 9 0 1 0 0 18c1 0 1.5-.7 1.5-1.5 0-.4-.2-.8-.4-1.1-.3-.3-.4-.7-.4-1.1 0-.8.7-1.5 1.5-1.5H16a5 5 0 0 0 5-5c0-4.4-4-7.8-9-7.8z"/><circle cx="7.5" cy="11.5" r="1"/><circle cx="10.5" cy="7.5" r="1"/><circle cx="15.5" cy="7.5" r="1"/>'),
-  description: 'Bientôt ici',
-  rendu: () => Modules.bientot('Univers graphique', 'Chacun choisit son univers : carnet, washi, herbier, cocon ou kermesse.'),
+  icone: ICO_PALETTE,
+  description: 'Couleurs, polices et motifs de ton affichage',
+  tables: { compte_preferences: 'compte_preferences' },
+  async charger(force, { horsLigne }) {
+    await Prefs.charger({ horsLigne });
+    const u = Prefs.lire().univers;
+    if (universValide(u) && u !== universActuel()) { appliquerUnivers(u); render(); }
+  },
+  rendu: renduUnivers,
+  actions: {
+    'univers-choisir': async (b) => {
+      const u = universDe(b.dataset.id);
+      appliquerUnivers(u.id);
+      render();
+      toast(`Univers « ${u.nom} » choisi`);
+      try { await Prefs.enregistrer({ univers: u.id }); } catch (e) { fail(e, 'Choix gardé sur cet appareil seulement'); }
+    },
+  },
+  expose: { UNIVERS, universDe, universValide, policesUrl },
+});
+
+Modules.register({
+  id: 'securite',
+  onglet: 'plus',
+  segment: 'Sécurité',
+  ordre: 50,
+  libelle: 'Sécurité',
+  icone: ICO_VERROU,
+  description: 'Face ID à l\'ouverture, code de secours',
+  async charger() {
+    // Verrou d'un autre compte (appareil prêté, changement de compte) : il ne s'applique pas.
+    const cfg = configSecu();
+    if (Verrou.ouvert() && cfg?.user && cfg.user !== me()) Verrou.cacher();
+    bioDisponible();
+  },
+  rendu: renduSecurite,
+  actions: {
+    'securite-activer': () => feuilleCode('activer'),
+    'securite-code': () => feuilleCode('changer'),
+    'securite-desactiver': () => feuilleCode('desactiver'),
+    'securite-verrouiller': () => Verrou.montrer('manuel'),
+    'securite-bio': async () => {
+      try { const cred = await creerCle(); store.set(SECU.config, { ...configSecu(), cred, bio: true }); render(); toast(`${nomBio()} ajouté`); } catch (e) { console.warn('clé d\'accès', e?.name || e); toast(`${nomBio()} n'a pas été configuré`); }
+    },
+  },
+  expose: { codeRefuse, hacherCode, attenteApresEchecs, doitVerrouiller, uvVerifie, b64url, deB64url, nomBio, delaiTexte, octetsEnHex, hexEnOctets },
+});
+
+Modules.register({
+  id: 'sauvegarde',
+  onglet: 'plus',
+  segment: 'Sauvegarde',
+  ordre: 60,
+  libelle: 'Sauvegarde',
+  icone: ICON.download,
+  description: 'Toutes les données du foyer dans un fichier',
+  rendu: renduSauvegarde,
+  actions: { 'sauvegarde-exporter': (b) => exporterTout(b) },
+  // Rappel mensuel dans le fil de l'Accueil (personnel, pas dans le fil de la famille).
+  sourcesAccueil: (ctx) => {
+    if (ctx.famille || !me() || !store.get(cleRappel(), true)) return [];
+    const { du, jours } = rappelSauvegarde(derniereSauvegarde(), ctx.date || new Date());
+    return du ? [{ heure: null, titre: 'Sauvegarde du mois', detail: jours === null ? 'Garde une copie des données du foyer' : `Dernière il y a ${jours} jours`, icone: ICON.download, act: 'tab', data: { tab: 'sauvegarde' }, priorite: 0 }] : [];
+  },
+  notifications: [{ type: 'sauvegarde-mensuelle', libelle: 'Sauvegarde du mois', description: 'Un rappel par mois pour télécharger le fichier de sauvegarde', defaut: true }],
+  expose: { tablesASauvegarder, nomFichierSauvegarde, rappelSauvegarde, construireSauvegarde, SAUVEGARDE_EXCLUES },
+});
+
+// Module du fichier (id = nom du fichier) : partage du sport, écran sans segment ouvert par switchTab('univers-securite').
+Modules.register({
+  id: 'univers-securite',
+  onglet: 'forme',
+  libelle: 'Partage du sport',
+  async charger(force, { horsLigne }) { await chargerSport(horsLigne); },
+  // Le réglage et les séances partagées à venir.
+  rendu: () => {
+    const auj = isoDate(new Date());
+    const nomDe = (id) => memberById(id)?.nom || '';
+    const prochaines = seancesVisibles(sport.seances, { moi: me(), partageMoi: partageMoi() }).filter((s) => s.date >= auj).slice(0, 12).map((s) => elementAgenda(s, nomDe));
+    return `${cartePartage()}<section class="card f-pad" style="margin-top:14px"><h3>Séances partagées à venir</h3>
+      ${prochaines.length ? `<div class="menu-list">${prochaines.map((e) => `<button data-act="partage-sport-voir" data-id="${esc(e.data.id)}">${ICO_COURSE}<span class="grow"><b>${esc(e.titre)}</b><br><span class="muted small">${esc(isoToDate(e.date).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' }))}${e.heure ? ` · ${esc(e.heure)}` : ''}${e.detail ? ` · ${esc(e.detail)}` : ''}</span></span></button>`).join('')}</div>`
+        : '<p class="muted small">Aucune séance partagée pour l\'instant.</p>'}</section>`;
+  },
+  agenda: agendaSport,
+  // Fil de la famille : séances du jour partagées par les autres membres.
+  sourcesAccueil: (ctx) => {
+    if (!ctx.famille) return [];
+    const nomDe = (id) => memberById(id)?.nom || '';
+    return seancesVisibles(sport.seances, { moi: me(), partageMoi: false }).filter((s) => s.date === ctx.iso)
+      .map((s) => ({ ...elementAgenda(s, nomDe), titre: `${nomDe(s.member_id) || 'Séance'} : ${titreSeance(s)}`, icone: ICO_COURSE, priorite: 1 }));
+  },
+  actions: { 'partage-sport-voir': (b) => feuilleSeance(b.dataset.id) },
+  expose: { seancesVisibles, elementAgenda, heureFin, titreSeance },
 });
 })();
 

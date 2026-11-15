@@ -1,0 +1,298 @@
+/* ==========================================================================
+   Univers graphiques (Plus › Univers), écran de verrouillage (Plus › Sécurité),
+   partage du sport et sauvegarde.
+
+   Un univers = un jeu de jetons posé sur <html data-univers="…">. Sans attribut :
+   l'univers « Classique » (Pop gourmand, src/css/10-theme.css) s'applique tel quel.
+   Les mêmes jetons servent aux vignettes d'aperçu ([data-uapercu="…"]).
+   Les contrastes (≥ 4,5:1) sont vérifiés par tests/unit/univers-securite.test.js,
+   qui lit ce fichier : chaque couleur d'un univers est écrite ici en #RRGGBB.
+   Jetons propres aux univers (préfixe --u-) :
+     --u-texte (police du texte), --u-ligne / --u-bord (contours), --u-r-btn, --u-r-puce,
+     --u-r-champ (rayons), --u-sh-btn (ombre des boutons), --u-motif / --u-motif-taille
+     (fond), --u-w-titre / --u-style-titre / --u-ls-titre / --u-titre-echelle (titres),
+     --u-tab-bg / --u-tab-ink / --u-tab-actif / --u-tab-on / --u-tab-on-bg / --u-tab-bord
+     (barre d'onglets), --u-icone (épaisseur du trait des icônes), --u-surligne (titres de section).
+   ========================================================================== */
+
+/* ---------- Classique (copie des jetons de 10-theme.css, pour l'aperçu) ---------- */
+[data-uapercu="classique"] {
+  --bg: #fff3d1; --surface: #ffffff; --surface-2: #fff8e6; --text: #27233a; --ink: #27233a; --muted: #6e6680;
+  --border: #efd9a3; --primary: #dc3a3a; --primary-strong: #b52a2d; --primary-soft: #ffe1dc; --on-primary: #ffffff;
+  --mango: #ffd166; --mango-strong: #ffb703; --mango-soft: #fff0c2; --danger: #c4553f; --sage-light: #ff9e94; --mint: #06d6a0; --mint-soft: #d9f7e8; --sky: #3aa6ff;
+  --display: "Baloo 2", "Nunito", system-ui, sans-serif; --radius: 18px; --shadow: 0 4px 0 #f2c35b;
+  --u-texte: "Nunito", system-ui, sans-serif; --u-ligne: #27233a; --u-bord: 2px; --u-r-btn: 16px; --u-r-puce: 999px;
+  --u-sh-btn: 0 3px 0 #27233a; --u-motif: none; --u-motif-taille: auto; --u-w-titre: 800; --u-style-titre: normal; --u-ls-titre: 0;
+}
+
+/* ---------- Carnet de bord : papeterie, bullet journal ---------- */
+:root[data-univers="carnet"], [data-uapercu="carnet"] {
+  --bg: #FAFAF6; --surface: #FFFFFF; --surface-2: #EEF2FA; --text: #1E2A5A; --ink: #1E2A5A; --muted: #4A5478;
+  --border: #C9D2E6; --primary: #2D47C9; --primary-strong: #2D47C9; --primary-soft: #E3E8FB; --on-primary: #FFFFFF; --sage-light: #9AA8E6;
+  --mint: #2B9BC4; --mint-soft: #E1F1F7; --mango: #FFE86B; --mango-strong: #E9A21B; --mango-soft: #FFF6C4; --sky: #2B9BC4;
+  --ring-track: #E3E8F3; --pop-shadow: #D5DCEC; --danger: #B3261E;
+  --display: "Gochi Hand", "Comic Sans MS", cursive; --shadow: 2px 3px 0 rgba(30, 42, 90, .10); --radius: 6px;
+  --u-texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --u-ligne: #1E2A5A; --u-bord: 1.5px; --u-r-btn: 6px; --u-r-puce: 6px; --u-r-champ: 6px; --u-sh-btn: 2px 2px 0 #1E2A5A;
+  --u-motif: linear-gradient(90deg, transparent 22px, #F3A9B7 22px, #F3A9B7 23.5px, transparent 23.5px), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18'%3E%3Ccircle cx='1.5' cy='1.5' r='1.1' fill='%23B8C6E4'/%3E%3C/svg%3E");
+  --u-motif-taille: auto, 18px 18px;
+  --u-w-titre: 400; --u-style-titre: normal; --u-ls-titre: 0; --u-titre-echelle: 1.18;
+  --u-tab-bg: #FFFFFF; --u-tab-ink: #4A5478; --u-tab-actif: #1E2A5A; --u-tab-on: #1E2A5A; --u-tab-on-bg: #FFE86B; --u-tab-bord: 1.5px dashed #1E2A5A;
+  --u-icone: 1.9; --u-surligne: linear-gradient(transparent 58%, #FFE86B 58%, #FFE86B 92%, transparent 92%);
+}
+
+/* ---------- Washi : japonais minimal ---------- */
+:root[data-univers="washi"], [data-uapercu="washi"] {
+  --bg: #F3F2EE; --surface: #FBFBF9; --surface-2: #ECEAE3; --text: #1C1C1A; --ink: #1C1C1A; --muted: #57564F;
+  --border: #D9D6CC; --primary: #1C1C1A; --primary-strong: #A82C22; --primary-soft: #F3E3E0; --on-primary: #F3F2EE; --sage-light: #D9A39C;
+  --mint: #2F4A6D; --mint-soft: #E4E9EF; --mango: #E8DDC4; --mango-strong: #9A7A35; --mango-soft: #F1ECE0; --sky: #2F4A6D;
+  --ring-track: #E3E0D7; --pop-shadow: #D9D6CC; --danger: #A82C22;
+  --display: "Shippori Mincho", "Hiragino Mincho ProN", "Times New Roman", serif; --shadow: none; --radius: 0px;
+  --u-texte: "Zen Kaku Gothic New", "Hiragino Sans", "Helvetica Neue", sans-serif;
+  --u-ligne: #D9D6CC; --u-bord: 1px; --u-r-btn: 0px; --u-r-puce: 0px; --u-r-champ: 0px; --u-sh-btn: none;
+  --u-motif: none; --u-motif-taille: auto;
+  --u-w-titre: 600; --u-style-titre: normal; --u-ls-titre: .04em; --u-titre-echelle: 1;
+  --u-tab-bg: #F3F2EE; --u-tab-ink: #57564F; --u-tab-actif: #A82C22; --u-tab-on: #A82C22; --u-tab-on-bg: transparent; --u-tab-bord: 1px solid #D9D6CC;
+  --u-icone: 1.4; --u-surligne: none;
+}
+
+/* ---------- Herbier : nature et botanique ---------- */
+:root[data-univers="herbier"], [data-uapercu="herbier"] {
+  --bg: #E9EEDF; --surface: #F8FAF2; --surface-2: #DDE7CF; --text: #1F3324; --ink: #1F3324; --muted: #46584A;
+  --border: #B7C6A8; --primary: #2F5D3A; --primary-strong: #2F5D3A; --primary-soft: #E3ECD6; --on-primary: #F8FAF2; --sage-light: #9FBF95;
+  --mint: #5E9B6A; --mint-soft: #DCEBD7; --mango: #E4D9A6; --mango-strong: #C08A1F; --mango-soft: #F1ECCF; --sky: #3F7E99;
+  --ring-track: #DCE4D0; --pop-shadow: #B7C6A8; --danger: #8C3B5A;
+  --display: "Fraunces", "Iowan Old Style", Georgia, serif; --shadow: 0 1px 0 rgba(31, 51, 36, .06), 0 10px 24px -16px rgba(31, 51, 36, .45); --radius: 26px 6px 26px 6px;
+  --u-texte: "Karla", "Avenir Next", "Helvetica Neue", sans-serif;
+  --u-ligne: #B7C6A8; --u-bord: 1px; --u-r-btn: 999px 999px 999px 6px; --u-r-puce: 999px; --u-r-champ: 14px 4px 14px 4px; --u-sh-btn: none;
+  --u-motif: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cg fill='none' stroke='%23C9D5BA' stroke-width='1.4' stroke-linecap='round'%3E%3Cpath d='M20 90 Q30 60 52 40'/%3E%3Cpath d='M30 70 q-12 -4 -16 -14 q12 0 16 14z'/%3E%3Cpath d='M38 58 q12 -8 20 -2 q-10 8 -20 2z'/%3E%3Cpath d='M44 50 q-8 -12 -4 -22 q8 8 4 22z'/%3E%3Ccircle cx='86' cy='86' r='2.4'/%3E%3Ccircle cx='94' cy='80' r='1.8'/%3E%3C/g%3E%3C/svg%3E");
+  --u-motif-taille: 110px 110px;
+  --u-w-titre: 600; --u-style-titre: italic; --u-ls-titre: 0; --u-titre-echelle: 1;
+  --u-tab-bg: #F8FAF2; --u-tab-ink: #46584A; --u-tab-actif: #2F5D3A; --u-tab-on: #F8FAF2; --u-tab-on-bg: #2F5D3A; --u-tab-bord: 1px solid #B7C6A8;
+  --u-icone: 1.6; --u-surligne: none;
+}
+
+/* ---------- Cocon : doux pastel ---------- */
+:root[data-univers="cocon"], [data-uapercu="cocon"] {
+  --bg: #FCEFEA; --surface: #FFFFFF; --surface-2: #EAF5F1; --text: #3D3550; --ink: #3D3550; --muted: #625A74;
+  --border: #EADBD5; --primary: #F6BBAA; --primary-strong: #7A4E8A; --primary-soft: #FDE3DA; --on-primary: #3D3550; --sage-light: #F6BBAA;
+  --mint: #6FC0A6; --mint-soft: #E3F4EE; --mango: #FFE3A3; --mango-strong: #E9C15B; --mango-soft: #FFF3D6; --sky: #7BA7D9;
+  --ring-track: #F6E9E4; --pop-shadow: #F4E7E2; --danger: #A63D40;
+  --display: "Fredoka", "Arial Rounded MT Bold", "Helvetica Neue", sans-serif; --shadow: 0 14px 30px -18px rgba(120, 80, 100, .45); --radius: 28px;
+  --u-texte: "Nunito", "Avenir Next", "Helvetica Neue", sans-serif;
+  --u-ligne: transparent; --u-bord: 0px; --u-r-btn: 999px; --u-r-puce: 999px; --u-r-champ: 18px; --u-sh-btn: 0 8px 18px -10px rgba(240, 138, 126, .9);
+  --u-motif: radial-gradient(circle at 12% 6%, #FFD8CB 0, transparent 38%), radial-gradient(circle at 96% 34%, #DCEBFA 0, transparent 36%), radial-gradient(circle at 20% 92%, #DFF3EA 0, transparent 34%);
+  --u-motif-taille: auto;
+  --u-w-titre: 600; --u-style-titre: normal; --u-ls-titre: 0; --u-titre-echelle: 1;
+  --u-tab-bg: #FFFFFF; --u-tab-ink: #625A74; --u-tab-actif: #3D3550; --u-tab-on: #3D3550; --u-tab-on-bg: #FFE3A3; --u-tab-bord: 0 solid transparent;
+  --u-icone: 2; --u-surligne: none;
+}
+
+/* ---------- Kermesse : maximaliste coloré ---------- */
+:root[data-univers="kermesse"], [data-uapercu="kermesse"] {
+  --bg: #FFE6EE; --surface: #FFFFFF; --surface-2: #DDF5EE; --text: #1A1446; --ink: #1A1446; --muted: #3E3770;
+  --border: #CFC8EA; --primary: #2B3BDB; --primary-strong: #2B3BDB; --primary-soft: #E3E6FF; --on-primary: #FFFFFF; --sage-light: #FF8FB4;
+  --mint: #10B39A; --mint-soft: #DDF5EE; --mango: #FFD23F; --mango-strong: #FFB000; --mango-soft: #FFF4C7; --sky: #2B3BDB;
+  --ring-track: #F1E9F5; --pop-shadow: #FF4F8B; --danger: #B4123F;
+  --display: "Bricolage Grotesque", "Arial Black", sans-serif; --shadow: 5px 5px 0 #FF4F8B; --radius: 18px;
+  --u-texte: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+  --u-ligne: #1A1446; --u-bord: 2.5px; --u-r-btn: 14px; --u-r-puce: 999px; --u-r-champ: 12px; --u-sh-btn: 3px 3px 0 #1A1446;
+  /* Confettis plus petits et plus clairs que la maquette : ils restent derrière le contenu, jamais derrière un titre. */
+  --u-motif: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cpath d='M14 22 l10 -10 l4 14z' fill='%23FFD0E0'/%3E%3Ccircle cx='96' cy='20' r='6' fill='none' stroke='%23D6D9FF' stroke-width='3'/%3E%3Cpath d='M60 64 q6 -8 12 0 t12 0 t12 0' fill='none' stroke='%23BDEBDF' stroke-width='3' stroke-linecap='round'/%3E%3Crect x='18' y='96' width='10' height='10' fill='%23FFEBA6' transform='rotate(20 23 101)'/%3E%3Ccircle cx='118' cy='104' r='4' fill='%23FFD0E0'/%3E%3C/svg%3E");
+  --u-motif-taille: 170px 170px;
+  --u-w-titre: 800; --u-style-titre: normal; --u-ls-titre: -.02em; --u-titre-echelle: 1;
+  --u-tab-bg: #FFD23F; --u-tab-ink: #1A1446; --u-tab-actif: #1A1446; --u-tab-on: #FFD23F; --u-tab-on-bg: #1A1446; --u-tab-bord: 2.5px solid #1A1446;
+  --u-icone: 2.2; --u-surligne: none;
+}
+
+/* ==========================================================================
+   Application des jetons à toute l'appli (tout univers sauf Classique)
+   ========================================================================== */
+:root[data-univers] body {
+  font-family: var(--u-texte);
+  background-color: var(--bg);
+  background-image: var(--u-motif);
+  background-size: var(--u-motif-taille);
+}
+:root[data-univers] h1, :root[data-univers] h2, :root[data-univers] h3, :root[data-univers] .section-title,
+:root[data-univers] .sheet-head h2, :root[data-univers] .tl-head, :root[data-univers] .plus-titre {
+  font-family: var(--display); font-weight: var(--u-w-titre); font-style: var(--u-style-titre); letter-spacing: var(--u-ls-titre);
+}
+/* En-tête opaque : le motif du fond (confettis, feuilles) ne passe jamais derrière le titre. */
+:root[data-univers] .topbar { background: var(--bg); -webkit-backdrop-filter: none; backdrop-filter: none; }
+:root[data-univers] .topbar h1 { color: var(--ink); font-size: calc(24px * var(--u-titre-echelle, 1)); }
+:root[data-univers] .section-title, :root[data-univers] .plus-titre {
+  width: fit-content; max-width: 100%; padding: 0 6px; margin-left: -6px; border-radius: 6px;
+  background-color: var(--bg); background-image: var(--u-surligne);
+}
+
+/* Boutons, cartes, puces, champs */
+:root[data-univers] .btn {
+  border: var(--u-bord) solid var(--u-ligne); border-radius: var(--u-r-btn); box-shadow: var(--u-sh-btn);
+  background: var(--surface); color: var(--ink); font-family: var(--u-texte);
+}
+:root[data-univers] .btn:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
+:root[data-univers] .btn.primary { background: var(--primary); color: var(--on-primary); border-color: var(--u-ligne); }
+:root[data-univers] .btn.soft { background: var(--primary-soft); color: var(--ink); }
+:root[data-univers] .btn.small { box-shadow: var(--u-sh-btn); }
+:root[data-univers] .btn:disabled { box-shadow: none; }
+:root[data-univers] .quick3 .btn:first-child { background: var(--primary); color: var(--on-primary); }
+:root[data-univers] .quick3 .btn:nth-child(2) { background: var(--surface-2); }
+:root[data-univers] .quick3 .btn:nth-child(3) { background: var(--mango-soft); }
+:root[data-univers] .pet-actions .btn:first-child { background: var(--mint-soft); }
+:root[data-univers] .card, :root[data-univers] .hero, :root[data-univers] .ntable, :root[data-univers] .kcal-card,
+:root[data-univers] .slot-block, :root[data-univers] .tl-card, :root[data-univers] .scene, :root[data-univers] .bq-item,
+:root[data-univers] .prod-row, :root[data-univers] .macro-strip div, :root[data-univers] .day {
+  border: var(--u-bord) solid var(--u-ligne); box-shadow: var(--shadow);
+}
+:root[data-univers] .card, :root[data-univers] .hero { border-radius: var(--radius); }
+:root[data-univers] .chip { border: var(--u-bord) solid var(--u-ligne); border-radius: var(--u-r-puce); background: var(--surface); color: var(--ink); }
+:root[data-univers] .chip[aria-pressed="true"], :root[data-univers] .seg button[aria-pressed="true"], :root[data-univers] .segbar button[aria-pressed="true"] {
+  background: var(--primary); color: var(--on-primary); box-shadow: var(--u-sh-btn); opacity: 1;
+}
+:root[data-univers] .seg { background: var(--surface-2); border: var(--u-bord) solid var(--u-ligne); border-radius: var(--u-r-btn); }
+:root[data-univers] .seg button { border-radius: var(--u-r-btn); color: var(--ink); }
+:root[data-univers] .segbar button { border: var(--u-bord) solid var(--u-ligne); border-radius: var(--u-r-btn); background: var(--surface); color: var(--ink); font-family: var(--u-texte); }
+:root[data-univers] .input, :root[data-univers] select.input, :root[data-univers] textarea.input {
+  border: 1.5px solid var(--border); border-radius: var(--u-r-champ); background: var(--surface);
+}
+:root[data-univers] .input:focus { border-color: var(--primary-strong); box-shadow: 0 0 0 3px var(--primary-soft); }
+:root[data-univers] .icon-btn:hover { background: var(--surface-2); }
+
+/* Barre d'onglets */
+:root[data-univers] .tabbar { background: var(--u-tab-bg); border-top: var(--u-tab-bord); }
+:root[data-univers] .tabbar button { color: var(--u-tab-ink); }
+:root[data-univers] .tabbar button[aria-current="page"] { color: var(--u-tab-actif); }
+:root[data-univers] .tabbar button[aria-current="page"] svg { background: var(--u-tab-on-bg); color: var(--u-tab-on); box-shadow: none; }
+:root[data-univers="washi"] .tabbar button[aria-current="page"] span { border-bottom: 2px solid currentColor; }
+
+/* Icônes : épaisseur du trait propre à l'univers */
+:root[data-univers] .tabbar svg, :root[data-univers] .btn svg, :root[data-univers] .icon-btn svg,
+:root[data-univers] .plus-ico svg, :root[data-univers] .plus-ligne > svg, :root[data-univers] .bientot-ico svg { stroke-width: var(--u-icone); }
+
+/* Feuilles, bulles, bandeaux et petits éléments encore colorés en dur dans le cœur */
+:root[data-univers] .sheet { background: var(--surface); border-top: var(--u-bord) solid var(--u-ligne); }
+:root[data-univers] .sheet-grip { background: var(--border); }
+:root[data-univers] .toast { background: var(--ink); color: var(--bg); border-radius: var(--u-r-champ, 12px); }
+:root[data-univers] .pill { background: var(--ink); color: var(--surface); }
+:root[data-univers] .scene-bubble { background: var(--surface); color: var(--ink); border-color: var(--u-ligne); box-shadow: var(--u-sh-btn); }
+:root[data-univers] .scene-bubble::after { border-top-color: var(--surface); }
+:root[data-univers] .scene-bubble::before { border-top-color: var(--u-ligne); }
+:root[data-univers] .bubble { border-color: var(--u-ligne); }
+:root[data-univers] .fam.on { background: var(--primary-soft); color: var(--ink); border-color: var(--u-ligne); }
+:root[data-univers] .offline-banner { background: var(--mango-soft); color: var(--ink); }
+:root[data-univers] .tl-dot { background: var(--mango); border-color: var(--u-ligne); }
+:root[data-univers] .tl-now .tl-dot { background: var(--primary-strong); }
+:root[data-univers] .tl-now-line { color: var(--primary-strong); border-top-color: var(--primary-strong); }
+:root[data-univers] .tl-check { color: var(--primary-strong); }
+:root[data-univers] .tag.ahead { background: var(--mint-soft); color: var(--ink); }
+:root[data-univers] .fx-gain { background: var(--mango-soft); color: var(--ink); }
+:root[data-univers] .victoires { background: linear-gradient(160deg, var(--mango-soft), var(--surface)); }
+:root[data-univers] .auth .logo { color: var(--on-primary); }
+:root[data-univers] .logo.logo-img { border-color: var(--u-ligne); box-shadow: var(--u-sh-btn); }
+:root[data-univers] .scan-hero { background: linear-gradient(160deg, var(--primary-strong), var(--primary)); color: var(--on-primary); }
+:root[data-univers] .scan-hero .btn { background: var(--surface); color: var(--ink); }
+:root[data-univers] .plus-ico, :root[data-univers] .bientot-ico { background: var(--primary-soft); color: var(--primary-strong); border-radius: var(--u-r-champ, 10px); }
+:root[data-univers] .plus-ligne + .plus-ligne { border-top-color: var(--border); }
+:root[data-univers="carnet"] .card.hero::before {
+  content: ""; position: absolute; top: -9px; left: calc(50% - 30px); width: 60px; height: 18px;
+  background: color-mix(in srgb, var(--mango) 75%, transparent); transform: rotate(-4deg); pointer-events: none;
+}
+:root[data-univers="carnet"] .card.hero { position: relative; }
+
+/* Module Forme : ses ambiances de montagne cèdent la place à l'univers choisi */
+:root[data-univers] .forme[data-amb], :root[data-univers] .forme:not([data-amb]) {
+  --f-bg: var(--bg); --f-surface: var(--surface); --f-surface-2: var(--surface-2); --f-ink: var(--ink); --f-muted: var(--muted);
+  --f-accent: var(--primary); --f-on-accent: var(--on-primary); --f-accent-2: var(--sky); --f-soft: var(--primary-soft);
+  --f-line: var(--border); --f-radius: var(--radius); --f-shadow: var(--shadow);
+  --f-motif: linear-gradient(transparent, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) { :root[data-univers] .btn:active:not(:disabled) { transform: none; } }
+
+/* ==========================================================================
+   Plus › Univers : vignettes d'aperçu
+   ========================================================================== */
+.us-grille { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
+.us-apercu {
+  display: flex; flex-direction: column; gap: 8px; width: 100%; min-width: 0; text-align: left; padding: 12px; min-height: 172px;
+  background-color: var(--bg); background-image: var(--u-motif); background-size: var(--u-motif-taille);
+  color: var(--ink); font-family: var(--u-texte); border: 2px solid var(--border); border-radius: 16px; cursor: pointer;
+}
+.us-apercu[aria-pressed="true"] { outline: 3px solid var(--ink); outline-offset: 2px; }
+.us-apercu:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 2px; }
+.us-apercu-nom {
+  font-family: var(--display); font-weight: var(--u-w-titre); font-style: var(--u-style-titre); letter-spacing: var(--u-ls-titre);
+  font-size: 19px; line-height: 1.15; overflow-wrap: anywhere; background: var(--bg); align-self: flex-start; padding: 0 3px; border-radius: 4px;
+}
+.us-apercu-carte {
+  display: flex; align-items: center; gap: 8px; padding: 8px; background: var(--surface);
+  border: var(--u-bord) solid var(--u-ligne); border-radius: var(--radius); box-shadow: var(--shadow); min-width: 0;
+}
+.us-apercu-points { display: flex; gap: 4px; flex: none; }
+.us-apercu-points i { width: 10px; height: 10px; border-radius: 50%; display: block; }
+.us-apercu-points i:nth-child(1) { background: var(--primary); }
+.us-apercu-points i:nth-child(2) { background: var(--mint); }
+.us-apercu-points i:nth-child(3) { background: var(--mango-strong, var(--mango)); }
+.us-apercu-ligne { flex: 1; min-width: 0; height: 8px; border-radius: 4px; background: var(--surface-2); }
+.us-apercu-bouton {
+  margin-top: auto; align-self: flex-start; display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px;
+  background: var(--primary); color: var(--on-primary); border: var(--u-bord) solid var(--u-ligne); border-radius: var(--u-r-btn);
+  box-shadow: var(--u-sh-btn); font-weight: 700; font-size: 13px;
+}
+.us-apercu-famille { font-size: 13px; color: var(--muted); line-height: 1.3; }
+.us-choisi { font-size: 12px; font-weight: 700; color: var(--ink); background: var(--mango-soft); border-radius: 999px; padding: 2px 8px; align-self: flex-start; }
+.us-detail { padding: 16px; margin-top: 16px; }
+.us-detail h3 { margin: 0 0 4px; }
+.us-detail p { margin: 6px 0 0; }
+
+/* ==========================================================================
+   Plus › Sécurité et écran de verrouillage
+   ========================================================================== */
+.us-carte { padding: 16px; }
+.us-carte + .us-carte { margin-top: 14px; }
+.us-carte h3 { margin: 0 0 6px; }
+.us-carte p { margin: 6px 0 0; }
+.us-etat { display: flex; align-items: center; gap: 10px; }
+.us-etat-ico { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; flex: none; background: var(--primary-soft); color: var(--primary-strong); }
+.us-etat-ico svg { width: 22px; height: 22px; }
+.us-actions { display: grid; gap: 8px; margin-top: 12px; }
+.us-code { letter-spacing: .5em; font-size: 20px; text-align: center; font-variant-numeric: tabular-nums; }
+
+.us-verrou {
+  position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; overflow-y: auto;
+  padding: calc(16px + var(--safe-t)) 16px calc(16px + var(--safe-b));
+  background-color: var(--bg); background-image: var(--u-motif, none); background-size: var(--u-motif-taille, auto); color: var(--ink);
+}
+.us-verrou[hidden] { display: none; }
+.us-verrou-carte { width: 100%; max-width: 340px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.us-verrou-logo { width: 72px; height: 72px; border-radius: 18px; box-shadow: var(--shadow); }
+.us-verrou h2 { margin: 0; font-size: 22px; }
+.us-verrou p { margin: 0; }
+.us-points { display: flex; gap: 14px; justify-content: center; min-height: 18px; margin: 4px 0; }
+.us-points i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--ink); display: block; }
+.us-points i.plein { background: var(--ink); }
+.us-points.erreur { animation: us-secoue .35s; }
+@keyframes us-secoue { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+@media (prefers-reduced-motion: reduce) { .us-points.erreur { animation: none; } }
+.us-clavier { display: grid; grid-template-columns: repeat(3, 72px); gap: 12px; justify-content: center; }
+.us-touche {
+  width: 72px; height: 72px; border-radius: 50%; border: var(--u-bord, 2px) solid var(--u-ligne, var(--ink)); background: var(--surface); color: var(--ink);
+  font: inherit; font-size: 26px; font-weight: 700; display: grid; place-items: center; box-shadow: var(--u-sh-btn, none);
+}
+.us-touche:active { background: var(--primary-soft); }
+.us-touche.vide { visibility: hidden; }
+.us-touche svg { width: 26px; height: 26px; }
+.us-msg { min-height: 20px; font-weight: 700; color: var(--danger); font-size: 14px; }
+.us-verrou .btn { width: 100%; }
+@media (max-width: 359px) { .us-clavier { grid-template-columns: repeat(3, 64px); } .us-touche { width: 64px; height: 64px; } }
+
+/* Partage du sport (Forme › Réglages) et sauvegarde */
+.us-partage-liste { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.us-partage-liste li { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.us-interrupteur { display: flex; align-items: center; gap: 12px; min-height: 44px; }
+.us-interrupteur input { width: 22px; height: 22px; accent-color: var(--primary); flex: none; }
+.us-seance dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; margin: 0; }
+.us-seance dt { color: var(--muted); font-size: 14px; }
+.us-seance dd { margin: 0; font-weight: 600; }
+.us-tables { margin: 10px 0 0; padding-left: 18px; font-size: 14px; color: var(--muted); }

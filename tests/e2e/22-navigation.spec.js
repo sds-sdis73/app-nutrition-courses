@@ -42,7 +42,7 @@ module.exports = {
       await tab(page, 'plus');
       assert.deepEqual(await page.$$eval('.plus-ligne', (l) => l.map((b) => b.dataset.id)), ['reglages', 'univers', 'notifications', 'monsieur-cuisine', 'securite', 'sauvegarde', 'widget']);
       await page.click('.plus-ligne[data-id="sauvegarde"]');
-      await page.waitForSelector('[data-act="export-data"]');
+      await page.waitForSelector('[data-act="sauvegarde-exporter"]');
       assert.equal(await page.$eval('.tabbar [aria-current="page"]', (b) => b.dataset.tab), 'plus');
       await page.click('.plus-retour');
       await page.waitForSelector('.plus-ligne');

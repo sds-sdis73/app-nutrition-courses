@@ -29,13 +29,7 @@ Modules.register({ id: 'forme', onglet: 'forme', segment: 'Forme', ordre: 10, li
 Modules.register({ id: 'plus', onglet: 'plus', libelle: 'Plus', rendu: () => Nav.menuPlus() });
 Modules.register({ id: 'reglages', onglet: 'plus', segment: 'Réglages', ordre: 10, icone: I('<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>'), description: 'Compte, foyer, magasin, rappels', ouvrir: () => openSettings() });
 Modules.register({ id: 'monsieur-cuisine', onglet: 'plus', segment: 'Monsieur Cuisine', ordre: 40, icone: ICON.chef, description: 'Planning, courses et recettes du robot', ouvrir: () => mcSheet() });
-Modules.register({
-  id: 'sauvegarde', onglet: 'plus', segment: 'Sauvegarde', ordre: 60, icone: ICON.download, description: 'Exporter ou importer vos données', libelle: 'Sauvegarde',
-  rendu: () => `<section class="card" style="padding:16px">
-    <p style="margin-top:0">Un fichier de vos recettes, de votre planning et de vos réglages, à garder en lieu sûr.</p>
-    <div class="grid2"><button class="btn" data-act="export-data">${ICON.download} Exporter</button>
-      <label class="btn">${ICON.upload} Importer<input type="file" accept="application/json" data-import-data hidden></label></div></section>`,
-});
+// Sauvegarde (Plus › Sauvegarde) : module univers-securite (src/js/modules/univers-securite.js).
 Modules.register({ id: 'widget', onglet: 'plus', segment: 'Widget', ordre: 70, icone: I('<rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="18" height="8" rx="2"/>'), description: 'Le résumé du jour sur l\'écran d\'accueil', ouvrir: () => widgetSheet() });
 
 // Analyseurs du cœur : article de courses, repas, séance. Les événements et les tâches viennent des modules agenda et taches.
