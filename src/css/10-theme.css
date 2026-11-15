@@ -1,0 +1,47 @@
+/* Thème « Pop gourmand » : vanille, fraise, menthe, mangue et réglisse ; contours épais et boutons en relief */
+:root {
+  --bg: #fff3d1;
+  --surface: #ffffff;
+  --surface-2: #fff8e6;
+  --text: #27233a;
+  --ink: #27233a;
+  --muted: #6e6680;
+  --border: #efd9a3;
+  --primary: #dc3a3a;
+  --primary-strong: #b52a2d;
+  --primary-soft: #ffe1dc;
+  --sage-light: #ff9e94;
+  --on-primary: #ffffff;
+  --mint: #06d6a0;
+  --mint-soft: #d9f7e8;
+  --mango: #ffd166;
+  --mango-strong: #ffb703;
+  --mango-soft: #fff0c2;
+  --sky: #3aa6ff;
+  --ring-track: #ffe7c7;
+  --pop-shadow: #f2c35b;
+  --display: "Baloo 2", "Nunito", system-ui, sans-serif;
+  --danger: #c4553f;
+  --excellent: #2e8b57;
+  --bon: #8cc15a;
+  --mediocre: #eea84a;
+  --mauvais: #dd5b3e;
+  --shadow: 0 4px 0 var(--pop-shadow);
+  --radius: 18px;
+  --nav-h: 64px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-t: env(safe-area-inset-top, 0px);
+  color-scheme: light;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--text);
+  font: 16px/1.45 "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh; overflow-x: hidden;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: var(--primary-strong); }
+img { display: block; max-width: 100%; }
+

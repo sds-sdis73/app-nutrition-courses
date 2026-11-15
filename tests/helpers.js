@@ -5,7 +5,7 @@ const path = require('node:path');
 const ROOT = path.join(__dirname, '..');
 const FIXTURES = path.join(__dirname, 'fixtures');
 
-// Lecture de tests/.env (TEST_EMAIL, TEST_PASSWORD, CHROME_PATH, BASE_URL).
+// Lecture de tests/.env (TEST_EMAIL, TEST_PASSWORD, CHROME_PATH, BASE_URL facultatif).
 function loadEnv() {
   const env = { ...process.env };
   const file = path.join(__dirname, '.env');
@@ -17,7 +17,7 @@ function loadEnv() {
   }
   if (!env.TEST_EMAIL || !env.TEST_PASSWORD) throw new Error('tests/.env doit définir TEST_EMAIL et TEST_PASSWORD (voir tests/.env.example)');
   env.CHROME_PATH = env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-  env.BASE_URL = env.BASE_URL || 'http://127.0.0.1:8767/';
+  // BASE_URL facultatif : sans lui, le lanceur sert la copie courante sur un port libre choisi au hasard.
   return env;
 }
 

@@ -1,9 +1,11 @@
 {
-  "name": "miam-et-moi",
+  "name": "tribu-et-toutous",
   "version": "1.0.0",
   "private": true,
-  "description": "Miam & moi : tests automatisés (unitaires et bout en bout). L'application elle-même est index.html, sans étape de build.",
+  "description": "Tribu & Toutous : l'appli de la famille. Code dans src/, assemblé en index.html par tools/assemble.js ; tests unitaires et de bout en bout.",
   "scripts": {
+    "build": "node tools/assemble.js",
+    "build:verifier": "node tools/assemble.js --verifier",
     "test": "node tests/run.js",
     "test:unit": "node tests/run.js --unit",
     "test:e2e": "node tests/run.js --e2e",

@@ -32,15 +32,16 @@ module.exports = {
     await page.evaluate(async () => { const m = memberById(state.compte.member_id); await db.from('activites').delete().eq('member_id', m.id).eq('source', 'forme'); await Data.saveMember({ ...m, objectif: 'maintien' }); });
   },
   tests: [
-    { name: 'barre : Forme remplace Batch, Courses et Batch partagent un onglet avec un segment', fn: async ({ page }) => {
-      assert.deepEqual(await page.$$eval('.tabbar button', (b) => b.map((x) => x.dataset.tab)), ['aujourdhui', 'scan', 'recettes', 'planning', 'suivi', 'courses', 'forme']);
+    { name: 'barre : Forme est un des 5 onglets ; Courses et Batch sont deux segments de Cuisine', fn: async ({ page }) => {
+      assert.deepEqual(await page.$$eval('.tabbar button', (b) => b.map((x) => x.dataset.tab)), ['accueil', 'famille', 'cuisine', 'forme', 'plus']);
       await H.openTab(page, 'courses');
-      await page.click('.seg2 [data-v="batch"]');
+      await page.click('.segbar [data-tab="batch"]');
       assert.equal(await page.$eval('#title', (e) => e.textContent), 'Batch cooking');
-      await H.openTab(page, 'batch');
-      assert.equal(await page.evaluate(() => state.tab), 'courses');
-      await page.click('.seg2 [data-v="courses"]');
+      assert.equal(await page.evaluate(() => state.tab), 'batch');
+      await page.click('.segbar [data-tab="courses"]');
       assert.equal(await page.$eval('#title', (e) => e.textContent), 'Liste de courses');
+      await H.openTab(page, 'forme');
+      assert.equal(await page.$eval('.tabbar [aria-current="page"]', (e) => e.dataset.tab), 'forme');
     } },
     { name: 'compte sans « je suis » : choix du membre directement dans Forme', fn: async ({ page }) => {
       const id = await page.evaluate(() => state.compte.member_id);

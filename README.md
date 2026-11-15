@@ -1,12 +1,15 @@
 # app-nutrition-courses
 
-Application web mobile « Miam & moi » (logo : bulle « M&m ») : scan nutritionnel des produits, carnet de recettes, planning de la semaine, liste de courses (export Courses U) et batch cooking.
+Application web mobile « Tribu & Toutous » (nom court sur l'écran d'accueil : « T&T » ; icône : porte-manteau avec trois manteaux et deux laisses), l'appli de la famille, anciennement « Miam & moi ». Navigation en 5 onglets : Accueil · Famille (agenda, tâches et listes, messages, photos, carnet) · Cuisine (repas, courses, recettes, batch, scan) · Forme · Plus (réglages, univers, notifications, Monsieur Cuisine, sécurité, sauvegarde, widget).
 
 En ligne : https://sds-sdis73.github.io/app-nutrition-courses/
 
 ## Contenu
 
-- `index.html` : toute l'application (HTML, CSS et JavaScript, sans étape de build)
+- `src/` : les sources de l'application, découpées par domaine : `gabarit.html`, `css/*.css`, `js/NN-*.js` (le cœur, dans l'ordre d'exécution), `js/modules/<id>.js` et `css/modules/<id>.css` (un fichier par module, voir `src/js/modules/LISEZMOI.md`), `actifs/icone.svg`
+- `index.html` : l'application assemblée (HTML, CSS et JavaScript en un fichier), **produite par `npm run build`** (`tools/assemble.js`) : ne pas la modifier à la main
+- `forme-data.js` : bibliothèque d'exercices du module Forme (gros contenu gardé à part)
+- `tools/icones.js` : génération des icônes PNG depuis `src/actifs/icone.svg`
 - `sw.js` : service worker (ouverture hors ligne, cache des fichiers de l'app, réception des notifications)
 - `version.json` : version publiée, relue par l'app pour se recharger après une mise à jour
 - `aliments.json` : valeurs nutritionnelles de 3 484 aliments, extraites de la table Ciqual 2025 de l'Anses (Licence Ouverte Etalab 2.0), pour 100 g : énergie, protéines, glucides, sucres, lipides, AG saturés, fibres, sel, calcium, fer, vitamine C
@@ -33,7 +36,7 @@ Adresses d'action reconnues par l'app : `?action=noter`, `?action=eau`, `?action
 
 ## Publier une mise à jour
 
-1. Incrémenter `APP_VERSION` dans `index.html` **et** la même valeur dans `version.json`.
+1. Incrémenter `APP_VERSION` dans `src/js/10-configuration.js` **et** la même valeur dans `version.json`, puis `npm run build` (et changer `CACHE` dans `sw.js` si la liste des fichiers change).
 2. Pousser sur `main` : GitHub Pages publie en 1 à 2 minutes et les téléphones se rechargent automatiquement.
 
 Les fonctions de `supabase/functions/` se déploient séparément sur le projet Supabase (`supabase functions deploy <nom>`).

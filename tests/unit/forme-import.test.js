@@ -6,7 +6,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 const ROOT = path.join(__dirname, '..', '..');
-const code = fs.readFileSync(path.join(ROOT, 'forme-import.js'), 'utf8');
+const code = fs.readFileSync(path.join(ROOT, 'src', 'js', '03-forme-import.js'), 'utf8');
 const ctx = vm.createContext({ TextDecoder, console });
 vm.runInContext(code + ';globalThis.__x = { parseGPX, parseFIT, importActivityFile, elevationProfile };', ctx);
 const { parseGPX, parseFIT, importActivityFile, elevationProfile } = ctx.__x;

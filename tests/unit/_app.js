@@ -1,13 +1,14 @@
-// Charge le script de index.html dans un bac à sable Node (sans navigateur) et expose les fonctions de calcul.
+// Charge le script de la page (assemblée depuis src/) dans un bac à sable Node (sans navigateur) et expose les fonctions de calcul.
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
 const ROOT = path.join(__dirname, '..', '..');
-const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
-// Scripts du module Forme chargés avant le script principal (comme dans index.html), puis scripts en ligne.
-const FORME_FILES = ['forme-data.js', 'forme-import.js', 'forme.js'].filter((f) => fs.existsSync(path.join(ROOT, f)));
-const scripts = [...FORME_FILES.map((f) => fs.readFileSync(path.join(ROOT, f), 'utf8')), ...[...html.matchAll(/<script(?![^>]*src)[^>]*>([\s\S]*?)<\/script>/g)].map((m) => m[1])];
+// Page assemblée en mémoire depuis src/ (cœur + tous les modules de src/js/modules/), sans écrire index.html.
+const html = require(path.join(ROOT, 'tools', 'assemble.js')).assembler();
+// forme-data.js (gros contenu séparé) est chargé avant le script principal, comme dans la page.
+const EXTERNES = ['forme-data.js'].filter((f) => fs.existsSync(path.join(ROOT, f)));
+const scripts = [...EXTERNES.map((f) => fs.readFileSync(path.join(ROOT, f), 'utf8')), ...[...html.matchAll(/<script(?![^>]*src)[^>]*>([\s\S]*?)<\/script>/g)].map((m) => m[1])];
 
 const noop = () => {};
 const el = () => ({
@@ -35,9 +36,12 @@ sandbox.window = sandbox; sandbox.self = sandbox; sandbox.globalThis = sandbox;
 vm.createContext(sandbox);
 
 const NAMES = ['state', 'CQ', 'PL', 'needs', 'kcalNeed', 'bmrOf', 'ageOf', 'computedKcal', 'expense', 'waterGoal', 'waterTotal', 'waterDay', 'fmtL', 'dayCriteria', 'matchScore', 'nutriScore', 'computeScore', 'scoreLevel', 'offPer100', 'parseIngredientLine', 'ingGrams', 'guessAisle', 'recipeNutrition', 'recipeNutriScore', 'portionN', 'lateAfter', 'plusMin', 'periodOf', 'scaleN', 'addN', 'zeroN', 'memberDay', 'buildShopping', 'computeBatch', 'MET', 'MET_CATS', 'PLAT_CATS', 'isoDate', 'addDays', 'mondayOf', 'isoToDate', 'blankRecipe', 'detectAction', 'fmtNum', 'NUTRI_KEYS', 'REF_KCAL', 'ACTIVITY', 'OBJECTIF', 'SLOTS', 'SLOT_TIME', 'WATER_POINTS', 'store', 'Queue', 'APP_VERSION', 'companionOf', 'mealServings', 'restesFor', 'dayIndex', 'FRIANDISES', 'ACCESSOIRES', 'FONDS', 'parseMeal', 'weightTrend', 'weightAdvice', 'nlpFind',
-  'genSeance', 'genCourse', 'planWeek', 'checkinDecision', 'replanAfterMiss', 'formeCharge', 'formeVolumes', 'formeRecords', 'formeKcal', 'formeBonus', 'activeBonus', 'formeSteps', 'formeSeanceSecondes', 'formeSwap', 'formeProgression', 'formeIntensite', 'formeZonesFC', 'formeMeteoAlerte', 'formeDepart', 'formePool', 'formeExo', 'Forme', 'FORME_EXOS', 'FORME_PICTOS', 'FORME_COURSE'];
+  'genSeance', 'genCourse', 'planWeek', 'checkinDecision', 'replanAfterMiss', 'formeCharge', 'formeVolumes', 'formeRecords', 'formeKcal', 'formeBonus', 'activeBonus', 'formeSteps', 'formeSeanceSecondes', 'formeSwap', 'formeProgression', 'formeIntensite', 'formeZonesFC', 'formeMeteoAlerte', 'formeDepart', 'formePool', 'formeExo', 'Forme', 'FORME_EXOS', 'FORME_PICTOS', 'FORME_COURSE',
+  'Modules', 'ONGLETS', 'Nav', 'Sync', 'Accueil', 'Agenda', 'AjoutRapide', 'analysePhrase', 'analyseArticles', 'sansAccents', 'ACTIONS', 'T'];
 vm.runInContext(`${scripts.join('\n')}\n;globalThis.__app = { ${NAMES.join(', ')} };`, sandbox, { filename: 'index.html(script)' });
 const app = sandbox.__app;
+// Fonctions pures exposées par chaque module de src/js/modules/ (champ expose) : app.modules.<id>.
+app.modules = app.Modules.exposes();
 
 // Tables chargées une fois pour toute la session de tests.
 app.ready = (async () => { await app.CQ.load(); await app.PL.load(); return app; })();

@@ -1,7 +1,7 @@
 {
-  "name": "Miam & moi",
-  "short_name": "Miam & moi",
-  "description": "Bien manger, se sentir bien : repas, hydratation, activités et un compagnon qui t'encourage.",
+  "name": "Tribu & Toutous",
+  "short_name": "T&T",
+  "description": "L'appli de la famille : agenda, tâches, repas, courses, forme et tout le foyer au même endroit.",
   "lang": "fr",
   "start_url": "./",
   "scope": "./",

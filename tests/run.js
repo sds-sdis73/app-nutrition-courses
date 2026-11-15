@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 // Lanceur des tests : `node tests/run.js [--unit] [--e2e] [--seed] [--grep mot] [--headed]`.
 // Sans option : tests unitaires puis scénarios de bout en bout. Serveur statique local + Chrome (playwright-core).
+// La page index.html est d'abord réassemblée depuis src/ (tools/assemble.js).
+// Les scénarios de bout en bout partagent un compte Supabase : un verrou (/tmp/tt-e2e.lock) empêche deux copies
+// du dépôt de les lancer en même temps ; la seconde attend son tour.
 const fs = require('node:fs');
 const path = require('node:path');
 const http = require('node:http');
@@ -15,7 +18,37 @@ const onlyE2e = has('--e2e') || has('--seed');
 const OUT = path.join(__dirname, '.out');
 fs.mkdirSync(OUT, { recursive: true });
 
+// Verrou inter-processus par mkdir (atomique). Un verrou dont le processus n'existe plus est repris.
+const LOCK = process.env.E2E_LOCK || '/tmp/tt-e2e.lock';
+const vivant = (pid) => { try { process.kill(pid, 0); return true; } catch (e) { return e.code === 'EPERM'; } };
+async function prendreVerrou() {
+  const debut = Date.now();
+  let annonce = false;
+  for (;;) {
+    try {
+      fs.mkdirSync(LOCK);
+      fs.writeFileSync(path.join(LOCK, 'owner.json'), JSON.stringify({ pid: process.pid, dossier: H.ROOT, depuis: new Date().toISOString() }));
+      const liberer = () => { try { const o = JSON.parse(fs.readFileSync(path.join(LOCK, 'owner.json'), 'utf8')); if (o.pid === process.pid) fs.rmSync(LOCK, { recursive: true, force: true }); } catch { /* déjà libéré */ } };
+      process.on('exit', liberer);
+      for (const sig of ['SIGINT', 'SIGTERM', 'SIGHUP']) process.on(sig, () => { liberer(); process.exit(130); });
+      if (annonce) console.log(`Verrou obtenu après ${Math.round((Date.now() - debut) / 1000)} s.`);
+      return liberer;
+    } catch (e) {
+      if (e.code !== 'EEXIST') throw e;
+      let o = null;
+      try { o = JSON.parse(fs.readFileSync(path.join(LOCK, 'owner.json'), 'utf8')); } catch { /* en cours d'écriture */ }
+      const age = Date.now() - (fs.statSync(LOCK, { throwIfNoEntry: false })?.mtimeMs || Date.now());
+      if ((o && !vivant(o.pid)) || (!o && age > 30000)) { fs.rmSync(LOCK, { recursive: true, force: true }); continue; }
+      if (!annonce) { console.log(`Scénarios de bout en bout déjà en cours (${o ? `pid ${o.pid}, ${o.dossier}` : 'autre copie'}) : attente du verrou ${LOCK}…`); annonce = true; }
+      if (Date.now() - debut > Number(process.env.E2E_LOCK_WAIT_MIN || 90) * 60000) throw new Error(`verrou ${LOCK} toujours pris : abandon`);
+      await new Promise((r) => setTimeout(r, 3000));
+    }
+  }
+}
+
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.json': 'application/json', '.png': 'image/png', '.webmanifest': 'application/manifest+json', '.css': 'text/css' };
+// Serveur statique du dossier courant (la copie du dépôt où l'on travaille). Port 0 : un port libre au hasard.
+// Un port déjà occupé n'est jamais réutilisé : il pourrait servir une autre copie du dépôt.
 function serve(root, port) {
   const srv = http.createServer((req, res) => {
     let p = decodeURIComponent(req.url.split('?')[0]);
@@ -25,8 +58,8 @@ function serve(root, port) {
     res.writeHead(200, { 'Content-Type': MIME[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-store' });
     fs.createReadStream(file).pipe(res);
   });
-  return new Promise((resolve) => {
-    srv.on('error', (e) => { if (e.code === 'EADDRINUSE') { console.log(`Port ${port} déjà utilisé : on suppose qu'un serveur y sert le projet.`); resolve(null); } else throw e; });
+  return new Promise((resolve, reject) => {
+    srv.on('error', (e) => reject(e.code === 'EADDRINUSE' ? new Error(`Port ${port} déjà utilisé (peut-être par une autre copie du dépôt) : choisir un autre BASE_URL, ou ne pas le définir pour un port libre automatique.`) : e));
     srv.listen(port, '127.0.0.1', () => resolve(srv));
   });
 }
@@ -41,8 +74,10 @@ async function runE2e(env) {
   let chromium;
   try { ({ chromium } = require('playwright-core')); } catch { ({ chromium } = require(process.env.PLAYWRIGHT_CORE || '/Users/toutoune/Downloads/atelier/node_modules/playwright-core')); }
   const { devices } = require('playwright-core');
-  const url = new URL(env.BASE_URL);
-  const srv = url.hostname === '127.0.0.1' ? await serve(H.ROOT, Number(url.port || 80)) : null;
+  const url = new URL(env.BASE_URL || 'http://127.0.0.1:0/');
+  const srv = url.hostname === '127.0.0.1' ? await serve(H.ROOT, Number(url.port || 0)) : null;
+  if (srv) { url.port = String(srv.address().port); env.BASE_URL = url.href; }
+  console.log(`Page servie : ${env.BASE_URL}${srv ? ` (dossier ${H.ROOT})` : ''}`);
   const browser = await chromium.launch({ executablePath: env.CHROME_PATH, headless: !has('--headed') });
   const specs = has('--seed') ? [] : fs.readdirSync(path.join(__dirname, 'e2e')).filter((f) => f.endsWith('.spec.js')).sort();
   const results = [];
@@ -120,8 +155,10 @@ async function runE2e(env) {
 
 (async () => {
   const env = H.loadEnv();
+  const { execFileSync } = require('node:child_process');
+  execFileSync(process.execPath, [path.join(H.ROOT, 'tools', 'assemble.js')], { stdio: 'inherit' });
   let ok = true;
   if (!onlyE2e) ok = runUnit() && ok;
-  if (!onlyUnit) ok = (await runE2e(env)) && ok;
+  if (!onlyUnit) { const liberer = await prendreVerrou(); try { ok = (await runE2e(env)) && ok; } finally { liberer(); } }
   process.exit(ok ? 0 : 1);
 })().catch((e) => { console.error(e); process.exit(1); });

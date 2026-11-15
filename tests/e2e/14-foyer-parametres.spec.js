@@ -78,7 +78,7 @@ module.exports = {
       await dl.saveAs(file);
       const data = JSON.parse(fs.readFileSync(file, 'utf8'));
       assert.ok(Array.isArray(data.recipes) && data.recipes.length >= 3);
-      assert.equal(data.app, 'Miam & moi');
+      assert.equal(data.app, 'Tribu & Toutous');
       const imp = { app: 'Miam & moi', version: 1, recipes: [{ ...data.recipes[0], id: 'import-1', title: 'Recette importée test' }], meal_plan: [], product_links: [] };
       const impFile = path.join(__dirname, '..', '.out', 'import-test.json');
       fs.writeFileSync(impFile, JSON.stringify(imp));

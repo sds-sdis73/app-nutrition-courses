@@ -1,7 +1,8 @@
 const assert = require('node:assert/strict');
 const H = require('../helpers');
 
-const TABS = ['aujourdhui', 'scan', 'recettes', 'planning', 'courses', 'batch', 'suivi', 'forme'];
+// Tous les écrans du registre (cœur et modules), plus le menu « Plus ».
+const TABS = ['aujourdhui', 'accueil-famille', 'suivi', 'agenda', 'taches', 'messages', 'photos', 'carnet', 'planning', 'courses', 'recettes', 'batch', 'scan', 'forme', 'plus', 'univers', 'notifications', 'securite', 'sauvegarde'];
 const SHEETS = [
   ['Noter un repas', () => journalAdd('midi')],
   ['Quantité', () => quantitySheet({ slot: 'midi', label: 'Poke bowl au saumon', per100: { kcal: 144, prot: 6.5, gluc: 13.5, suc: 2, lip: 6.7, ags: 1, fib: 1.3, sel: 0.5 }, source: 'ciqual', ref: 'plat:m1', defaultGrams: 430, portionG: 430 })],
@@ -45,9 +46,9 @@ const build = (name, viewport) => ({
       await check(page, label);
       await H.closeSheets(page);
     } })),
-    { name: 'barre d\'onglets : 7 boutons sur une ligne', fn: async ({ page }) => {
+    { name: 'barre d\'onglets : 5 boutons sur une ligne', fn: async ({ page }) => {
       const rects = await page.$$eval('.tabbar button', (l) => l.map((b) => b.getBoundingClientRect().top));
-      assert.equal(rects.length, 7);
+      assert.equal(rects.length, 5);
       assert.ok(Math.max(...rects) - Math.min(...rects) < 2, 'tous sur la même ligne');
     } },
   ],

@@ -1,0 +1,37 @@
+/* Navigation à 5 onglets, segments, menu « Plus », bouton « + » et écrans « Bientôt ici » */
+.tabbar { grid-template-columns: repeat(5, 1fr); }
+.tabbar button { font-size: 11px; gap: 3px; }
+.tabbar button span { display: block; }
+.segbar {
+  display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  margin: 2px -16px 12px; padding: 2px 16px 4px;
+}
+.segbar::-webkit-scrollbar { display: none; }
+.segbar button {
+  flex: none; border: 2px solid var(--ink); background: var(--surface); color: var(--ink);
+  border-radius: 999px; padding: 7px 14px; font: inherit; font-weight: 800; font-size: 14px; min-height: 38px; white-space: nowrap;
+}
+.segbar button[aria-pressed="true"] { background: var(--primary); color: var(--on-primary); box-shadow: 0 2px 0 var(--ink); }
+.plus-retour { margin: 2px 0 12px; }
+.plus-retour svg { width: 16px; height: 16px; }
+.plus-liste { padding: 4px; display: flex; flex-direction: column; }
+.plus-ligne {
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; border: 0; background: none; color: inherit;
+  font: inherit; padding: 12px 10px; border-radius: 12px; min-height: 52px;
+}
+.plus-ligne + .plus-ligne { border-top: 1px solid var(--border); border-radius: 0; }
+.plus-ligne > svg { width: 18px; height: 18px; color: var(--muted); flex: none; }
+.plus-ico { width: 36px; height: 36px; border-radius: 10px; background: var(--primary-soft); color: var(--primary-strong); display: grid; place-items: center; flex: none; }
+.plus-ico svg { width: 20px; height: 20px; }
+.plus-titre { margin: 20px 4px 8px; font-size: 17px; }
+.plus-check { padding: 12px 10px; }
+.bientot { text-align: center; padding: 32px 20px; }
+.bientot h2 { margin: 8px 0 4px; }
+.bientot-ico { width: 56px; height: 56px; margin: 0 auto; border-radius: 16px; background: var(--primary-soft); color: var(--primary-strong); display: grid; place-items: center; }
+.bientot-ico svg { width: 30px; height: 30px; }
+.ajout-types { display: flex; flex-wrap: wrap; gap: 6px; }
+.ajout-types .btn[disabled] { opacity: .45; }
+.ajout-prop { display: flex; align-items: center; gap: 8px; text-align: left; }
+.ajout-prop svg { width: 18px; height: 18px; flex: none; }
+body.logged-out [data-act="ajout-rapide"] { display: none; }
+@media (prefers-reduced-motion: reduce) { .tabbar button svg { transition: none; } }

@@ -1,0 +1,43 @@
+/* Planning */
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--surface-2); border-radius: 12px; padding: 4px; gap: 4px; margin-bottom: 12px; }
+.seg button { border: 0; background: none; min-height: 40px; border-radius: 9px; font-weight: 700; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+.week-nav { display: flex; align-items: center; gap: 4px; margin-bottom: 12px; }
+.week-nav strong { flex: 1; text-align: center; }
+.day { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 10px 12px; }
+.day + .day { margin-top: 10px; }
+.day.today { outline: 2px solid var(--primary); }
+.day h3 { margin: 0 0 6px; font-size: 15px; display: flex; justify-content: space-between; }
+.slot { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 56px; border: 0; background: none; text-align: left; padding: 6px 0; border-radius: 10px; }
+.slot + .slot { border-top: 1px dashed var(--border); }
+.slot .when { width: 44px; flex: none; font-size: 12px; font-weight: 800; color: var(--muted); text-transform: uppercase; }
+.slot .sthumb { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; background: var(--primary-soft); flex: none; display: grid; place-items: center; color: var(--primary); }
+.slot .sthumb svg { width: 20px; height: 20px; }
+.slot .add { color: var(--primary-strong); font-weight: 700; display: flex; align-items: center; gap: 6px; }
+.slot .add svg { width: 20px; height: 20px; }
+.slot.target { background: var(--primary-soft); }
+.slot.moving { outline: 2px dashed var(--primary); }
+.move-banner { position: sticky; top: calc(64px + var(--safe-t)); z-index: 10; background: var(--text); color: var(--bg); border-radius: 12px; padding: 10px 12px; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-weight: 600; }
+.phase { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 14px; }
+.phase + .phase { margin-top: 12px; }
+.phase h3 { margin: 0 0 4px; font-size: 17px; display: flex; gap: 10px; align-items: center; }
+.phase h3 .num { width: 28px; height: 28px; border-radius: 50%; background: var(--primary); color: var(--on-primary); display: grid; place-items: center; font-size: 14px; flex: none; }
+.phase ul { margin: 8px 0 0; padding-left: 20px; }
+.phase li { margin: 6px 0; }
+.phase li .rec { font-size: 12px; font-weight: 700; color: var(--primary-strong); background: var(--primary-soft); border-radius: 6px; padding: 1px 6px; margin-right: 4px; }
+.summary-box { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+.summary-box div { background: var(--surface); border-radius: 14px; padding: 10px; text-align: center; box-shadow: var(--shadow); }
+.summary-box strong { display: block; font-size: 22px; }
+.summary-box span { font-size: 12px; color: var(--muted); }
+.aisle h3 { font-size: 15px; margin: 18px 0 6px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.shop-item { display: grid; grid-template-columns: 32px 1fr auto; gap: 8px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.shop-item input[type=checkbox] { width: 24px; height: 24px; accent-color: var(--primary); }
+.shop-item.done .nm { text-decoration: line-through; color: var(--muted); }
+.shop-item .nm { font-weight: 600; }
+.shop-item .for { font-size: 12px; color: var(--muted); }
+.shop-item .acts { display: flex; gap: 4px; }
+.shop-item .acts a, .shop-item .acts button { min-height: 36px; min-width: 36px; padding: 0 8px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: 13px; font-weight: 700; text-decoration: none; color: var(--text); }
+.shop-item .acts .linked { background: #e30613; border-color: #e30613; color: #fff; }
+.shop-item .acts svg { width: 18px; height: 18px; }
+@media (min-width: 700px) { .day-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } .day-grid .day + .day { margin-top: 0; } }
+
