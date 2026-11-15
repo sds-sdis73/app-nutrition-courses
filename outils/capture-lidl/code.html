@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><title>Code Monsieur Cuisine</title>
+<style>
+body { margin: 0; background: #fff3d1; color: #27233a; font: 16px/1.5 system-ui, -apple-system, sans-serif; }
+main { max-width: 640px; margin: 40px auto; padding: 0 20px; }
+h1 { color: #dc3a3a; font-size: 26px; }
+textarea { width: 100%; box-sizing: border-box; min-height: 120px; font: 13px ui-monospace, Menlo, monospace; border: 2px solid #27233a; border-radius: 12px; padding: 10px; }
+button { margin-top: 12px; font: 700 17px system-ui; background: #dc3a3a; color: #fff; border: 2px solid #27233a; border-radius: 14px; padding: 12px 22px; box-shadow: 0 3px 0 #27233a; cursor: pointer; }
+p.ok { font-weight: 700; color: #1f7a4d; }
+</style></head>
+<body><main>
+<h1>Connexion Lidl réussie</h1>
+<p>Voici l'adresse avec votre code de connexion. Copiez-la, puis collez-la dans Miam &amp; moi (Paramètres › Monsieur Cuisine) et validez <b>tout de suite</b> : le code n'est valable que quelques minutes.</p>
+<textarea id="adresse" readonly></textarea>
+<button id="copier">Copier l'adresse</button>
+<p id="etat"></p>
+</main><script src="code.js"></script></body></html>

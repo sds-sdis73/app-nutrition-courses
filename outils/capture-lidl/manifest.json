@@ -1,0 +1,9 @@
+{
+  "manifest_version": 3,
+  "name": "Miam & moi – connexion Monsieur Cuisine",
+  "version": "1.0.0",
+  "description": "Récupère, après la connexion Lidl, l'adresse contenant le code de connexion Monsieur Cuisine et l'affiche pour la coller dans Miam & moi. Ne lit que les redirections de accounts.lidl.com ; ni mot de passe ni cookie.",
+  "permissions": ["webRequest"],
+  "host_permissions": ["https://accounts.lidl.com/*"],
+  "background": { "service_worker": "background.js" }
+}

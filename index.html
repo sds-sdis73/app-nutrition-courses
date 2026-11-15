@@ -4097,6 +4097,67 @@ const WidgetSync = {
   },
 };
 const WIDGET_URL = 'widget/miam-et-moi.js';
+// Liaison Monsieur Cuisine (lecture seule) : la fonction serveur « monsieur-cuisine » garde les jetons chiffrés
+// et synchronise planning, liste de courses et recettes toutes les heures dans mc_planning, mc_courses, mc_recettes.
+function mcSheet() {
+  const el = openSheet(`${sheetHead('Monsieur Cuisine')}<div data-body><div class="spinner"></div></div>`);
+  const body = () => $('[data-body]', el);
+  const fmtDate = (d) => (d ? new Date(d).toLocaleString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'jamais');
+  const draw = async () => {
+    const [c, p] = await Promise.all([
+      db.from('mc_connexions').select('*').eq('foyer_id', foyer()).maybeSingle(),
+      db.from('mc_planning').select('date,titre').eq('foyer_id', foyer()).gte('date', isoDate(new Date())).order('date').limit(5),
+    ]);
+    if (c.error && /does not exist|schema cache/i.test(c.error.message)) { body().innerHTML = '<p class="muted">La liaison n\'est pas encore activée sur le serveur (migration 2026-11-15_monsieur_cuisine.sql).</p>'; return; }
+    const x = c.data;
+    const ok = x && ['ok', 'erreur'].includes(x.statut);
+    body().innerHTML = ok ? `
+      <p><b>Relié</b>${x.compte ? ` à ${esc(x.compte)}` : ''}. Dernière synchronisation : ${esc(fmtDate(x.derniere_synchro))}.</p>
+      ${x.statut === 'erreur' ? `<p class="small warn">Dernière erreur : ${esc(x.erreur || '')}</p>` : ''}
+      <p class="muted small">${x.stats?.planning ?? 0} repas planifiés · ${x.stats?.courses ?? 0} articles de courses · ${x.stats?.recettes ?? 0} recettes</p>
+      ${p.data?.length ? `<div class="ntable"><div class="nt-title">À venir</div>${p.data.map((r) => `<div class="nt-row"><span>${esc(r.titre)}</span><b class="muted small">${esc(fmtDay(isoToDate(r.date)))}</b></div>`).join('')}</div>` : ''}
+      <div class="grid2" style="margin-top:12px"><button class="btn primary" data-x="sync">Synchroniser maintenant</button><button class="btn" data-x="off">Déconnecter</button></div>
+      <p class="muted small">Synchronisation automatique toutes les heures. Lecture seule : rien n'est modifié dans Monsieur Cuisine.</p>`
+      : `${x?.statut === 'deconnecte' && x.erreur ? `<p class="small warn">${esc(x.erreur)}</p>` : ''}
+      <p>Reliez votre compte Monsieur Cuisine pour retrouver ici votre planning, votre liste de courses et vos recettes.</p>
+      <ol class="small" style="padding-left:18px">
+        <li><b>Sur ordinateur, dans Chrome</b> (sur iPhone, l'appli Monsieur Cuisine intercepterait la suite). Touchez « Ouvrir la page Lidl ».</li>
+        <li><b>Avant de vous connecter</b>, dans l'onglet Lidl : ouvrez les outils de développement (⌥ ⌘ I), onglet « Network » (Réseau), cochez « Preserve log » (Conserver le journal).</li>
+        <li>Connectez-vous (e-mail, mot de passe, captcha) et acceptez les conditions de Lidl si elles s'affichent. À la fin, la page semble ne plus rien faire : c'est normal.</li>
+        <li>Dans le filtre de l'onglet Network, tapez <code>code=</code>. Cliquez sur la ligne trouvée : dans « Headers », l'en-tête <code>location</code> contient une adresse qui commence par <code>lidl-com.monsieur-cuisine.Companion://</code>. Copiez-la (clic droit › Copy value).</li>
+        <li>Collez-la ci-dessous et validez.</li>
+      </ol>
+      <button class="btn primary block" data-x="start">Ouvrir la page Lidl</button>
+      <form class="stack" data-x="fin" style="margin-top:12px" hidden><textarea class="input" name="adresse" rows="3" placeholder="lidl-com.monsieur-cuisine.Companion://login/prod?code=…" required></textarea><button class="btn primary">Valider la connexion</button></form>
+      <p class="muted small">Votre mot de passe n'est jamais vu par Miam &amp; moi. Liaison non officielle : elle peut cesser de fonctionner si Monsieur Cuisine change son service.</p>`;
+  };
+  draw().catch((e) => fail(e));
+  el.addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-x]');
+    if (!b || b.tagName === 'FORM') return;
+    try {
+      if (b.dataset.x === 'start') {
+        const w = window.open('', '_blank');
+        const r = await Foyer.invoke('monsieur-cuisine', { action: 'debut' });
+        if (w) w.location = r.url; else location.href = r.url;
+        $('[data-x="fin"]', el).hidden = false;
+      }
+      if (b.dataset.x === 'sync') { b.disabled = true; b.textContent = 'Synchronisation…'; const r = await Foyer.invoke('monsieur-cuisine', { action: 'synchro' }); toast(`${r.stats.planning} repas, ${r.stats.courses} articles, ${r.stats.recettes} recettes`); await draw(); }
+      if (b.dataset.x === 'off' && await confirmSheet('Déconnecter Monsieur Cuisine ? Les données déjà copiées restent visibles.', 'Déconnecter')) { await Foyer.invoke('monsieur-cuisine', { action: 'deconnecter' }); await draw(); }
+    } catch (err) { fail(err); draw().catch(() => {}); }
+  });
+  el.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    const btn = $('button', f);
+    btn.disabled = true; btn.textContent = 'Connexion et première synchronisation…';
+    try {
+      const r = await Foyer.invoke('monsieur-cuisine', { action: 'fin', adresse: f.adresse.value });
+      toast(`Monsieur Cuisine relié : ${r.stats.planning} repas, ${r.stats.courses} articles, ${r.stats.recettes} recettes`);
+      await draw();
+    } catch (err) { btn.disabled = false; btn.textContent = 'Valider la connexion'; fail(err); }
+  });
+}
 function widgetSheet() {
   const el = openSheet(`${sheetHead('Widget iPhone')}
     <p class="muted small" style="margin-top:0">Le widget affiche ton compagnon, les calories, l'eau et l'activité du jour sur l'écran d'accueil, avec des boutons Noter et +250 ml. Il passe par l'app gratuite <b>Scriptable</b> : rien à publier sur l'App Store.</p>
@@ -4950,6 +5011,7 @@ function openSettings() {
     <button class="btn block" data-act="basiques" style="margin-bottom:10px">${ICON.cart} Basiques du placard · ${basiques().length}</button>
     <button class="btn block" data-x="rappels" style="margin-bottom:10px">${ICON.clock} Rappels (notifications)</button>
     <button class="btn block" data-act="widget-help" style="margin-bottom:10px">📱 Widget iPhone</button>
+    <button class="btn block" data-act="mc-sheet" style="margin-bottom:10px">🍲 Monsieur Cuisine</button>
     <button class="btn block" data-act="compagnon" style="margin-bottom:10px">${ICON.sparkle} Mon compagnon</button>
     <button class="btn soft block" data-x="foyer" style="margin-bottom:16px">${ICON.users} Mon foyer · ${state.members.length ? `${state.members.length} membre${state.members.length > 1 ? 's' : ''}` : 'à configurer'}</button>
     <form class="stack" data-form="settings">
@@ -5112,6 +5174,7 @@ const ACTIONS = {
   'weight-apply': async (b) => { const m = memberById(b.dataset.m); if (!m) return; try { await Data.saveMember({ ...m, kcal_perso: Number(b.dataset.kcal) }); toast(`Objectif ajusté : ${b.dataset.kcal} kcal/jour`); render(); } catch (e) { fail(e); } },
   'weight-later': (b) => { store.set(`weightLater:${b.dataset.m}`, isoDate(new Date())); render(); },
   'widget-help': () => widgetSheet(),
+  'mc-sheet': () => mcSheet(),
   'journal-del': async (b) => { try { await Data.deleteJournal(b.dataset.id); render(); } catch (e) { fail(e); } },
   'have-item': async (b) => {
     try { await Data.addPlacard({ name: b.dataset.n, ing_key: b.dataset.k, type: 'stock', until: isoDate(addDays(state.week, 6)) }); render(); toast('Mis de côté : vous l\'avez déjà'); } catch (e) { fail(e); }
