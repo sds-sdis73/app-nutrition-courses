@@ -22,7 +22,7 @@ module.exports = {
       await tab(page, 'famille');
       assert.deepEqual(await segments(page), ['agenda', 'taches', 'messages', 'photos', 'carnet']);
       assert.equal(await page.evaluate(() => state.tab), 'agenda');
-      assert.match(await page.$eval('#main', (e) => e.textContent), /Bientôt ici/);
+      assert.equal(await page.$eval('#title', (e) => e.textContent), 'Agenda familial');
       await page.click('.segbar [data-tab="carnet"]');
       assert.equal(await page.$eval('#title', (e) => e.textContent), 'Carnet de la famille');
       assert.ok(await H.noHorizontalScroll(page));
@@ -63,7 +63,8 @@ module.exports = {
     { name: 'bouton « + » : une phrase libre devient des articles de courses', fn: async ({ page }) => {
       await page.click('.topbar [data-act="ajout-rapide"]');
       await page.waitForSelector('.sheet-wrap.open [data-form="ajout-rapide"]');
-      assert.equal(await page.$eval('.sheet-wrap.open [data-t="evenement"]', (b) => b.disabled), true, 'événement : bientôt (module agenda)');
+      const grises = await page.$$eval('.sheet-wrap.open [data-t]', (l) => l.map((b) => [b.dataset.t, b.disabled]));
+      assert.deepEqual(await page.evaluate((g) => g.filter(([t, d]) => d === !!AjoutRapide.pour(t)).map(([t]) => t), grises), [], 'un type est grisé seulement sans analyseur');
       await page.fill('.sheet-wrap.open [name="txt"]', 'acheter du beurre d\'essai et 2 beurre d\'essai bio');
       await page.waitForSelector('.sheet-wrap.open .ajout-prop');
       assert.match(await page.$eval('.sheet-wrap.open .ajout-prop', (b) => b.textContent), /Article/);
