@@ -1,0 +1,90 @@
+/* Module « Carnet de la famille » : uniquement les jetons du thème, pour suivre chaque univers graphique. */
+.carnet { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.carnet-onglets { margin: 0 -16px; padding: 2px 16px 4px; }
+.carnet-carte { padding: 14px; min-width: 0; }
+.carnet-titre { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.carnet-titre h3 { flex: 1; min-width: 0; margin: 0; font-family: var(--display); font-size: 18px; }
+.carnet-vide, .carnet-note { margin: 4px 0 0; }
+.carnet-note { padding: 0 4px; }
+.carnet-sous { display: block; overflow: hidden; text-overflow: ellipsis; }
+
+/* Lignes de liste (rendez-vous, échéances, dépenses, contacts) */
+.carnet-ligne {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-width: 0; text-align: left;
+  border: 0; background: none; color: inherit; font: inherit; padding: 10px 2px;
+}
+.carnet-ligne + .carnet-ligne, .carnet-passes .carnet-ligne { border-top: 1px solid var(--border); }
+.carnet-ligne .grow { overflow: hidden; }
+.carnet-ligne-corps { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; text-align: left; border: 0; background: none; color: inherit; font: inherit; padding: 0; }
+.carnet-ico {
+  width: 36px; height: 36px; border-radius: 10px; flex: none; display: grid; place-items: center;
+  background: var(--primary-soft); color: var(--primary-strong);
+}
+.carnet-ico svg { width: 20px; height: 20px; }
+.carnet-quand { display: flex; flex-direction: column; align-items: flex-end; text-align: right; flex: none; max-width: 42%; font-size: 14px; }
+.carnet-fin { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex: none; }
+.carnet-fin .btn svg { width: 16px; height: 16px; }
+.carnet-passes summary { cursor: pointer; padding: 8px 2px 4px; }
+
+/* Pastilles d'état */
+.carnet-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 800; white-space: nowrap;
+  background: var(--surface-2); color: var(--muted); border: 1px solid var(--border);
+}
+.carnet-badge.retard { background: var(--primary-soft); color: var(--danger); border-color: var(--danger); }
+.carnet-badge.proche { background: var(--mango-soft); color: var(--ink); border-color: var(--mango-strong); }
+.carnet-badge.ok { background: var(--mint-soft); color: var(--ink); border-color: transparent; }
+
+/* Vaccins */
+.carnet-vaccin { padding: 10px 0; }
+.carnet-vaccin + .carnet-vaccin { border-top: 1px solid var(--border); }
+.carnet-doses { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+.carnet-doses li { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.carnet-doses li > span:last-child { min-width: 0; }
+.carnet-anciens { margin: 8px 0 0; }
+.carnet-age { margin: 14px 0 4px; font-size: 15px; color: var(--muted); }
+.carnet-dose { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid var(--border); min-width: 0; }
+.carnet-dose .check { align-items: flex-start; font-weight: 400; min-width: 0; }
+.carnet-dose .check input { flex: none; margin-top: 2px; }
+.carnet-date { width: 150px; min-height: 36px; padding: 4px 8px; flex: none; }
+
+/* Barres de progression */
+.carnet-barre { height: 10px; border-radius: 999px; background: var(--ring-track, var(--surface-2)); overflow: hidden; margin: 8px 0; }
+.carnet-barre i { display: block; height: 100%; border-radius: inherit; background: var(--mint); transition: width .4s ease; }
+.carnet-barre.fine { height: 6px; margin: 6px 0 2px; }
+.carnet-barre.depasse i { background: var(--danger); }
+
+/* Budget */
+.carnet-mois { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: -6px -6px 6px; }
+.carnet-mois b { text-transform: capitalize; font-family: var(--display); font-size: 17px; }
+.carnet-chiffres { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.carnet-chiffres > div { display: flex; flex-direction: column; min-width: 0; }
+.carnet-gros { font-family: var(--display); font-size: 26px; line-height: 1.1; }
+.carnet-rouge { color: var(--danger); }
+.carnet-actions { margin-top: 10px; gap: 8px; }
+.carnet-cat + .carnet-cat { margin-top: 10px; }
+.carnet-cat-ligne { gap: 6px; }
+.carnet-montant { width: 88px; flex: none; text-align: right; }
+
+/* Contacts et urgences */
+.carnet-appel { flex: none; text-decoration: none; }
+.carnet-appel svg { width: 16px; height: 16px; }
+.carnet-urgences-grille { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.carnet-urgence {
+  display: flex; align-items: center; gap: 12px; min-width: 0; padding: 10px 12px; border-radius: 12px;
+  background: var(--surface-2); border: 1px solid var(--border); color: inherit; text-decoration: none;
+}
+.carnet-urgence > span { min-width: 0; }
+.carnet-num {
+  flex: none; min-width: 64px; text-align: center; padding: 6px 8px; border-radius: 10px; font-family: var(--display); font-size: 18px;
+  background: var(--primary); color: var(--on-primary);
+}
+.carnet-urgence:nth-child(n+6) .carnet-num { font-size: 13px; }
+.carnet-alerte { border: 2px solid var(--danger); }
+
+/* Formulaires : pas de débordement à 360 px */
+.carnet-form .grid2 > * { min-width: 0; }
+.carnet-form .input { min-width: 0; max-width: 100%; }
+.carnet-modeles { flex-wrap: wrap; overflow: visible; }
+
+@media (prefers-reduced-motion: reduce) { .carnet-barre i { transition: none; } }
