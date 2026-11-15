@@ -250,6 +250,7 @@ function feuilleCalendriers(liste = caldav?.calendriers || []) {
   if (!liste.length) { toast('Aucun calendrier sur ce compte iCloud : crée-en un dans l\'app Calendrier'); return; }
   const el = openSheet(`${sheetHead('Quel calendrier iCloud ?')}
     <p class="muted small">Ses événements s'ajoutent à l'agenda de la famille, et ceux de la famille y sont copiés.</p>
+    ${caldav?.calendrier_url ? `<p class="muted small" data-changement>Changer de calendrier retire de l'agenda de la famille les événements reçus de « ${esc(caldav.calendrier_nom || 'l\'ancien calendrier')} », et retire de ce calendrier ceux que l'appli y avait copiés.</p>` : ''}
     <div class="stack">${liste.map((c) => `<button class="btn block async-cal" data-url="${esc(c.url)}"><span class="async-pastille" style="background:${/^#[0-9a-f]{6,8}$/i.test(c.couleur || '') ? c.couleur.slice(0, 7) : 'var(--primary)'}"></span>${esc(c.nom)}</button>`).join('')}</div>`);
   el.addEventListener('click', async (e) => {
     const b = e.target.closest('[data-url]');

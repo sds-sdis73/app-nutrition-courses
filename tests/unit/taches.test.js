@@ -190,6 +190,21 @@ describe('envies : « je m\'en occupe » caché à la personne concernée', () =
     assert.equal(M.reservationVisible(envie, null, 'm'), false);
     assert.equal(M.reservationVisible(envie, { ...resa, envie_id: 'autre' }, 'm'), false);
   });
+  test('compte pas encore relié à son profil : aucune réservation visible (il pourrait être la personne concernée)', () => {
+    assert.equal(M.reservationVisible(envie, resa, null), false);
+    assert.equal(M.reservationVisible(envie, resa, ''), false);
+  });
+  test('la politique SQL refuse la lecture sans profil relié (« <> » et non « is distinct from »)', () => {
+    const sql = require('node:fs').readFileSync(require('node:path').join(__dirname, '..', '..', 'supabase', 'migrations', '2026-11-16_taches.sql'), 'utf8');
+    const pol = sql.slice(sql.indexOf('create policy "foyer_sauf_beneficiaire"'), sql.indexOf('create index if not exists envies_reservations_foyer'));
+    assert.match(pol, /member_id <> \(select mon_membre\(\)\)/);
+    assert.doesNotMatch(pol, /is distinct from/);
+  });
+  test('une tâche confiée de nouveau à la même personne fait une nouvelle notification', () => {
+    const t = { id: 't1', responsable: 'm' };
+    assert.notEqual(M.idConfiee(t, 1000), M.idConfiee(t, 2000));
+    assert.match(M.idConfiee(t, 1000), /^tache-confiee:t1:m:/);
+  });
 });
 
 describe('enregistrement du module', () => {

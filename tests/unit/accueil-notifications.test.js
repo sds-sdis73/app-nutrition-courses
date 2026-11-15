@@ -191,3 +191,41 @@ test('modules : Accueil › Famille et Plus › Notifications enregistrés à la
   assert.ok(app.ACTIONS['accueil-ajout'] && app.ACTIONS['af-filtre']);
   assert.ok(app.Accueil.sources.some((s) => s.module === 'accueil-famille'));
 });
+
+test('rappels par personne de la fiche d\'un événement : programmés à l\'heure choisie, pour cette personne seulement', () => {
+  const maintenant = new Date(2026, 10, 16, 18, 0);
+  const debut = new Date(2026, 10, 17, 9, 0);
+  const r = A.rappelsPersonnes([
+    { evenement_id: 'vaccin', member_id: 'a', minutes: 1440, quand: new Date(2026, 10, 16, 9, 0), debut, titre: 'Vaccin de Zoé' },
+    { evenement_id: 'vaccin', member_id: 'm', minutes: 60, quand: new Date(2026, 10, 17, 8, 0), debut, titre: 'Vaccin de Zoé' },
+    { evenement_id: 'passe', member_id: 'm', minutes: 60, quand: new Date(2026, 10, 16, 8, 0), debut: new Date(2026, 10, 16, 9, 0), titre: 'Passé' },
+  ], maintenant);
+  eq(r.map((x) => [x.id, x.pour_membres, x.envoyer_a.getHours(), x.corps, 'evenement_a' in x]), [
+    ['evr:vaccin:a:1440:2026-11-17:2026-11-16', ['a'], 9, 'Demain à 9 h', false],
+    ['evr:vaccin:m:60:2026-11-17:2026-11-17', ['m'], 8, 'Demain à 9 h', false],
+  ]);
+  assert.equal(r[0].type, 'evenements');
+  assert.equal(+r[0].expire_a, +debut);
+});
+
+test('messages et photos : heures de silence par défaut (22 h à 7 h) même sans réglage enregistré', async () => {
+  const { couper } = await import(pathToFileURL(path.join(__dirname, '..', '..', 'supabase', 'functions', 'messages-notifier', 'regles.js')).href);
+  assert.equal(couper(undefined, {}, 'message', '23:30'), true); // Manon n'a jamais ouvert Plus › Notifications
+  assert.equal(couper(undefined, {}, 'message', '06:59'), true);
+  assert.equal(couper(undefined, {}, 'message', '07:00'), false);
+  assert.equal(couper(undefined, {}, 'photo', '12:00'), false);
+  assert.equal(couper({ silence_actif: false }, {}, 'message', '23:30'), false);
+  assert.equal(couper({ silence_debut: 21, silence_fin: 6 }, {}, 'message', '21:15'), true);
+  assert.equal(couper({ types: { messages: false } }, {}, 'message', '12:00'), true);
+  assert.equal(couper(undefined, { messages: false }, 'message', '12:00'), true);
+  assert.equal(couper(undefined, { photo: false }, 'photo', '12:00'), true);
+  assert.equal(couper({ types: { photo: true } }, { photo: false }, 'photo', '12:00'), false);
+  assert.equal(couper(undefined, { silence: { debut: '13:00', fin: '14:00' } }, 'message', '13:30'), true); // ancienne plage d'un appareil
+});
+
+test('briefing du soir : la file notif_file le réserve à la personne qui l\'a préparé (séances non partagées)', () => {
+  const sql = require('node:fs').readFileSync(path.join(__dirname, '..', '..', 'supabase', 'migrations', '2026-11-16_accueil-notifications.sql'), 'utf8');
+  const pol = sql.slice(sql.indexOf('create policy "foyer" on public.notif_file'), sql.indexOf('-- 3) Envois déjà faits'));
+  assert.match(pol, /using \(foyer_id = \(select mon_foyer\(\)\) and \(type <> 'briefing' or user_id = \(select auth\.uid\(\)\)\)\)/);
+  assert.match(pol, /with check \(foyer_id = \(select mon_foyer\(\)\) and \(type <> 'briefing' or user_id = \(select auth\.uid\(\)\)\)\)/);
+});

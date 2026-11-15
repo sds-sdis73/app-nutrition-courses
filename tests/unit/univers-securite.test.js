@@ -168,3 +168,29 @@ describe('sauvegarde', () => {
     assert.deepEqual(plain(d.product_links), []);
   });
 });
+
+describe('univers : couleurs des membres, scan, Forme', () => {
+  const hexa = /^#[0-9a-f]{6}$/i;
+  for (const id of ['carnet', 'washi', 'herbier', 'cocon', 'kermesse']) {
+    test(`${id} : six couleurs de membres définies et toutes différentes`, () => {
+      const t = jetons(id);
+      const c = [1, 2, 3, 4, 5, 6].map((i) => t[`m${i}`]);
+      c.forEach((x, i) => assert.match(x || '', hexa, `${id} --m${i + 1}`));
+      assert.equal(new Set(c.map((x) => x.toLowerCase())).size, 6, `${id} : ${c.join(' ')}`);
+      // Assez éloignées deux à deux pour se distinguer d'un coup d'œil (écart RVB).
+      const rvb = (h) => [1, 3, 5].map((k) => parseInt(h.substr(k, 2), 16));
+      for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) {
+        const [a, b] = [rvb(c[i]), rvb(c[j])];
+        assert.ok(Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]) > 60, `${id} : --m${i + 1} et --m${j + 1} trop proches`);
+      }
+    });
+  }
+  test('Forme : les choix cochés sont sur un fond clair (encre ≥ 4,5:1), plus sur --sky', () => {
+    const pont = CSS.slice(CSS.indexOf(':root[data-univers] .forme[data-amb]'), CSS.indexOf('@media (prefers-reduced-motion'));
+    assert.match(pont, /--f-accent-2: var\(--primary-soft\)/);
+  });
+  test('Scan : le champ du code-barres a un texte foncé dans les univers (fond clair)', () => {
+    assert.match(CSS, /:root\[data-univers\] \.manual \.input \{ color: var\(--ink\); \}/);
+    assert.match(CSS, /:root\[data-univers\] \.manual \.input::placeholder \{ color: var\(--muted\);/);
+  });
+});

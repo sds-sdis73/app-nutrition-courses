@@ -192,8 +192,9 @@ function copieModele(modele, elements, { titre, date_debut = null, date_fin = nu
   return { liste, elements: els };
 }
 
-// Réservation d'une envie visible par le compte courant ? Jamais pour la personne concernée (double sécurité, la RLS filtre déjà).
-const reservationVisible = (envie, resa, monMembre) => !!resa && resa.envie_id === envie.id && (!monMembre || envie.member_id !== monMembre);
+// Réservation d'une envie visible par le compte courant ? Jamais pour la personne concernée (double sécurité, la RLS filtre déjà),
+// ni pour un compte pas encore relié à son profil : il pourrait être la personne concernée.
+const reservationVisible = (envie, resa, monMembre) => !!monMembre && !!resa && resa.envie_id === envie.id && envie.member_id !== monMembre;
 
 // Éléments du fil de l'Accueil : tâches du jour et en retard (pour la personne, ou pour toute la famille).
 function elementsAccueil(taches, { iso, membre = null, famille = false, nom = () => '' } = {}) {
@@ -403,11 +404,13 @@ async function creerTache(donnees) {
   return t;
 }
 // Notification « tâche confiée » (module notifications) : seulement quand le responsable change et n'est pas soi.
+// Chaque attribution a son identifiant (une tâche peut revenir plus tard à la même personne).
+const idConfiee = (t, quand = Date.now()) => `tache-confiee:${t.id}:${t.responsable}:${quand.toString(36)}`;
 async function prevenirResponsable(t, avant) {
   const N = Modules.get('notifications')?.expose;
   if (!N?.programmer || !t.responsable || t.fait || avant?.responsable === t.responsable || t.responsable === monMembre()) return;
   const qui = nomMembre(state.compte?.member_id) || 'Quelqu\'un';
-  await N.programmer({ id: `tache-confiee:${t.id}:${t.responsable}`, type: 'taches', titre: 'Une tâche pour toi', corps: `${qui} : ${t.titre}${t.echeance ? ` (${libelleEcheance(t.echeance, aujourdhui()).toLowerCase()})` : ''}`, url: './#taches', pour_membres: [t.responsable], sauf_auteur: true });
+  await N.programmer({ id: idConfiee(t), type: 'taches', titre: 'Une tâche pour toi', corps: `${qui} : ${t.titre}${t.echeance ? ` (${libelleEcheance(t.echeance, aujourdhui()).toLowerCase()})` : ''}`, url: './#taches', pour_membres: [t.responsable], sauf_auteur: true });
 }
 
 async function basculerTache(t) {
@@ -849,7 +852,7 @@ function vueEnvies() {
   const carte = (e) => {
     const r = moi ? null : resaDe(e);
     let etat = '';
-    if (!moi) {
+    if (!moi && monMembre()) {
       if (!r) etat = `<button class="btn small primary" data-act="taches-envie-reserver" data-id="${e.id}">Je m'en occupe</button>`;
       else if (r.user_id === me()) {
         etat = `<span class="taches-pris moi">${r.offert ? 'Offert par toi' : 'Tu t\'en occupes'}</span>${r.offert ? '' : `<button class="btn small" data-act="taches-envie-offert" data-id="${e.id}">Offert</button>`}
@@ -865,7 +868,8 @@ function vueEnvies() {
   };
   const note = moi
     ? `<p class="muted small taches-aide">C'est ta liste : les autres voient qui s'occupe de quoi, toi non. La surprise reste entière.</p>`
-    : `<p class="muted small taches-aide">« Je m'en occupe » reste invisible pour ${esc(m.nom)}.${monMembre() ? '' : ' Relie ton compte à ton profil (Réglages › Foyer) pour que ta propre liste garde aussi la surprise.'}</p>`;
+    : monMembre() ? `<p class="muted small taches-aide">« Je m'en occupe » reste invisible pour ${esc(m.nom)}.</p>`
+      : `<p class="muted small taches-aide">Pour réserver un cadeau, relie d'abord ton compte à ton profil (Plus › Mon foyer › « Je suis… ») : la surprise reste ainsi gardée pour chacun.</p>`;
   return `<div class="chips taches-chips">${membres.map((x) => `<button class="chip" data-act="taches-envies-membre" data-v="${x.id}" aria-pressed="${x.id === m.id}">${esc(x.nom)}${x.id === monMembre() ? ' (moi)' : ''}</button>`).join('')}</div>
     <div class="row taches-entete"><h3 class="section-title grow">${moi ? 'Mes envies' : `Les envies de ${esc(m.nom)}`}</h3><button class="btn small" data-act="taches-envie-nouvelle">${ICON.plus} Ajouter</button></div>
     ${note}
@@ -968,7 +972,7 @@ const actions = {
   'taches-envie-modifier': (b) => { const e = D.envies.find((x) => x.id === b.dataset.id); if (e) feuilleEnvie(e); },
   'taches-envie-reserver': async (b) => {
     const e = D.envies.find((x) => x.id === b.dataset.id);
-    if (!e || e.member_id === monMembre()) return;
+    if (!e || !monMembre() || e.member_id === monMembre()) return;
     try { await enregistrer(T.envies_reservations, D.resas, { envie_id: e.id, member_id: e.member_id, offert: false }, { onConflict: 'envie_id' }); toast(`C'est noté : ${nomMembre(e.member_id)} n'en saura rien`); render(); } catch (err) { fail(err); }
   },
   'taches-envie-offert': async (b) => {
@@ -1046,5 +1050,5 @@ Modules.register({
     { type: 'taches', libelle: 'Tâches', description: 'Une tâche t\'est confiée, est faite, ou arrive à échéance.' },
     { type: 'liste-depart', libelle: 'Listes de départ', description: 'La veille d\'un départ, ce qui reste à cocher', defaut: false },
   ],
-  expose: { analyseTache, prochaineEcheance, libelleRecurrence, libelleEcheance, groupesTaches, progression, sectionsDe, titreVacances, copieModele, reservationVisible, elementsAccueil, MODELES, elementsModele },
+  expose: { idConfiee, analyseTache, prochaineEcheance, libelleRecurrence, libelleEcheance, groupesTaches, progression, sectionsDe, titreVacances, copieModele, reservationVisible, elementsAccueil, MODELES, elementsModele },
 });

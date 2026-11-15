@@ -209,6 +209,104 @@ test('CalDAV : plan de synchro dans les deux sens', async () => {
   assert.equal(C.empreinte([{ ...appli, recurrence: { freq: 'hebdo', jours: [1] } }]), C.empreinte([{ ...appli, recurrence: { jours: [1], freq: 'hebdo' } }]));
 });
 
+test('CalDAV : une série finie (COUNT) ou un événement lointain envoyé n\'est jamais supprimé à la synchro suivante', async () => {
+  const C = await partage('caldav.js');
+  const calUrl = 'https://p42-caldav.icloud.com/123/calendars/famille/';
+  const maintenant = new Date('2026-11-16T12:00:00Z');
+  const depuis = new Date(+maintenant - 90 * 864e5), jusqu = new Date(+maintenant + 730 * 864e5);
+  const base = { calendrier: calUrl, depuis, jusqu, nouvelId: () => 'nouveau', maintenant };
+  const ev = (id, debut, recurrence = null) => ({ id, titre: 'x', debut, fin: debut.replace('T08', 'T09'), journee: false, membres: [], exceptions: [], recurrence, source: null, source_uid: null });
+  // Cas 1 : « Bébé nageurs », 10 fois depuis le 06/06/2026 (finie le 08/08, avant la fenêtre) : ni envoyée, ni supprimée.
+  const nageurs = ev('aaaaaaaa-2222-4333-8444-555555555555', '2026-06-06T08:00:00Z', { freq: 'hebdo', jours: [6], nombre: 10 });
+  assert.equal(C.dernierJour(nageurs), '2026-08-08');
+  assert.equal(C.dansFenetre(nageurs, depuis, jusqu), false);
+  const p1 = C.planSynchro({ ...base, distants: [], liens: [], locaux: [nageurs] });
+  assert.equal(p1.envoyer.length, 0);
+  // Même déjà reliée (ancienne synchro) : iCloud ne la renvoie plus, l'appli la garde.
+  const lien = { href: `${calUrl}${nageurs.id}.ics`, etag: '"1"', uid: `${nageurs.id}@tribu-et-toutous`, evenement_ids: [nageurs.id], empreinte: C.empreinte([nageurs]) };
+  const p2 = C.planSynchro({ ...base, distants: [], liens: [lien], locaux: [nageurs] });
+  assert.deepEqual([p2.supprimer, p2.oublier], [[], []]);
+  // Cas 2 : « Mariage » le 10/02/2029, au-delà de 730 jours : pas envoyé, et gardé s'il était relié.
+  const mariage = ev('bbbbbbbb-2222-4333-8444-555555555555', '2029-02-10T08:00:00Z');
+  assert.equal(C.dansFenetre(mariage, depuis, jusqu), false);
+  assert.equal(C.planSynchro({ ...base, distants: [], liens: [], locaux: [mariage] }).envoyer.length, 0);
+  const lien2 = { ...lien, href: `${calUrl}${mariage.id}.ics`, uid: `${mariage.id}@tribu-et-toutous`, evenement_ids: [mariage.id] };
+  assert.deepEqual(C.planSynchro({ ...base, distants: [], liens: [lien2], locaux: [mariage] }).supprimer, []);
+  // Une série encore en cours (COUNT dans la fenêtre) disparue d'iCloud est bien supprimée.
+  const judo = ev('cccccccc-2222-4333-8444-555555555555', '2026-11-04T08:00:00Z', { freq: 'hebdo', jours: [3], nombre: 30 });
+  assert.equal(C.dansFenetre(judo, depuis, jusqu), true);
+  const lien3 = { ...lien, href: `${calUrl}${judo.id}.ics`, uid: `${judo.id}@tribu-et-toutous`, evenement_ids: [judo.id] };
+  assert.deepEqual(C.planSynchro({ ...base, distants: [], liens: [lien3], locaux: [judo] }).supprimer, [judo.id]);
+  // Règle d'un autre agenda sans date de fin calculable : dans le doute, le lien est oublié, rien n'est supprimé.
+  const crecheIcloud = { ...ev('dddddddd-2222-4333-8444-555555555555', '2024-01-09T08:00:00Z', { freq: 'mensuelle', nombre: 12, nonGere: true, rrule: 'FREQ=MONTHLY;BYDAY=2TU;COUNT=12' }), source: 'icloud', source_uid: 'creche@icloud' };
+  const lien4 = { ...lien, href: `${calUrl}creche.ics`, uid: 'creche@icloud', evenement_ids: [crecheIcloud.id] };
+  const p4 = C.planSynchro({ ...base, distants: [], liens: [lien4], locaux: [crecheIcloud] });
+  assert.deepEqual([p4.supprimer, p4.oublier], [[], [`${calUrl}creche.ics`]]);
+  // Dernière occurrence : quotidienne, mensuelle, annuelle, et jusqu'au prioritaire.
+  assert.equal(C.dernierJour(ev('e', '2026-01-01T08:00:00Z', { freq: 'quotidienne', intervalle: 2, nombre: 3 })), '2026-01-05');
+  assert.equal(C.dernierJour(ev('e', '2026-01-15T08:00:00Z', { freq: 'mensuelle', nombre: 3 })), '2026-03-15');
+  assert.equal(C.dernierJour(ev('e', '2026-01-15T08:00:00Z', { freq: 'annuelle', nombre: 2 })), '2027-01-15');
+  assert.equal(C.dernierJour(ev('e', '2026-01-15T08:00:00Z', { freq: 'annuelle', jusqu: '2030-01-15' })), '2030-01-15');
+  assert.equal(C.dernierJour(ev('e', '2026-01-15T08:00:00Z', { freq: 'hebdo' })), Infinity);
+});
+
+test('ICS : une règle non gérée (« 2e mardi du mois ») est gardée telle quelle et renvoyée à iCloud', async () => {
+  const I = await partage('ics.js');
+  const rec = I.depuisRRule('FREQ=MONTHLY;BYDAY=2TU');
+  assert.deepEqual(rec, { freq: 'mensuelle', nonGere: true, rrule: 'FREQ=MONTHLY;BYDAY=2TU' });
+  assert.equal(I.versRRule(rec), 'FREQ=MONTHLY;BYDAY=2TU');
+  // « Supprimer cette fois et les suivantes » dans l'appli : seule la fin change.
+  assert.equal(I.versRRule({ ...rec, jusqu: '2027-03-08' }, { journee: true }), 'FREQ=MONTHLY;BYDAY=2TU;UNTIL=20270308');
+  assert.equal(I.versRRule(I.depuisRRule('FREQ=MONTHLY;BYDAY=-1FR;COUNT=5')), 'FREQ=MONTHLY;BYDAY=-1FR;COUNT=5');
+  // Lieu corrigé dans l'appli : la ressource envoyée garde BYDAY=2TU.
+  const ev = { id: '11111111-2222-4333-8444-555555555555', titre: 'Réunion crèche', debut: '2026-11-10T17:00:00Z', fin: '2026-11-10T18:00:00Z', journee: false, lieu: 'Crèche', membres: [], exceptions: [], recurrence: rec, source: 'icloud', source_uid: 'creche@icloud' };
+  assert.match(I.ressource([ev]), /RRULE:FREQ=MONTHLY;BYDAY=2TU\r\n/);
+  // Une règle gérée ne porte pas de rrule.
+  assert.equal(I.depuisRRule('FREQ=WEEKLY;BYDAY=MO,TH').rrule, undefined);
+});
+
+test('ICS : le lien d\'abonnement publie l\'occurrence déplacée sur l\'iPhone (UID de la série + RECURRENCE-ID)', async () => {
+  const I = await partage('ics.js');
+  const id = '11111111-2222-4333-8444-555555555555';
+  const serie = { id, titre: 'Judo', debut: '2026-11-04T16:00:00Z', fin: '2026-11-04T17:00:00Z', journee: false, membres: [], exceptions: ['2026-11-25'], recurrence: { freq: 'hebdo', jours: [3] }, source: null, source_uid: null };
+  const decale = { id: 'decale', titre: 'Judo (décalé)', debut: '2026-11-25T17:00:00Z', fin: '2026-11-25T18:00:00Z', journee: false, membres: [], exceptions: [], recurrence: null, source: 'icloud', source_uid: `${id}@tribu-et-toutous#2026-11-25T16:00:00.000Z` };
+  const autre = { ...decale, id: 'autre', titre: 'Venu d\'iCloud', source_uid: 'x@icloud#2026-11-25T16:00:00.000Z' };
+  const icloud = { ...decale, id: 'ic', titre: 'Dentiste', source_uid: 'y@icloud' };
+  const v = I.veventsAbonnement([serie, decale, autre, icloud], { maintenant: new Date('2026-11-16T12:00:00Z') });
+  assert.equal(v.length, 2);
+  const txt = I.calendrier(v);
+  assert.match(txt, /EXDATE;TZID=Europe\/Paris:20261125T170000/);
+  assert.match(txt, /SUMMARY:Judo \(décalé\)/);
+  assert.match(v[1], new RegExp(`UID:${id}@tribu-et-toutous\\r\\n`));
+  assert.match(v[1], /RECURRENCE-ID;TZID=Europe\/Paris:20261125T170000/);
+  assert.doesNotMatch(txt, /Venu d'iCloud|Dentiste/);
+  // Relu par un agenda (Google…) : la série saute le 25 et l'occurrence décalée est à 18 h.
+  const evs = I.analyserIcs(txt).evenements;
+  assert.deepEqual(evs.map((e) => [e.titre, e.rid]), [['Judo', null], ['Judo (décalé)', '2026-11-25T16:00:00.000Z']]);
+});
+
+test('CalDAV : changement de calendrier, ce qui venait de l\'ancien quitte l\'agenda', async () => {
+  const C = await partage('caldav.js');
+  const app = '11111111-2222-4333-8444-555555555555';
+  const liens = [
+    { href: 'https://x/a.ics', etag: '"1"', uid: 'rdv-travail@icloud', evenement_ids: ['t1'] },
+    { href: `https://x/${app}.ics`, etag: '"2"', uid: `${app}@tribu-et-toutous`, evenement_ids: [app, 'deplace'] },
+  ];
+  const locaux = [{ id: 't1', source: 'icloud', source_uid: 'rdv-travail@icloud' }, { id: app, source: null, source_uid: null },
+    { id: 'deplace', source: 'icloud', source_uid: `${app}@tribu-et-toutous#2026-11-25` }];
+  assert.deepEqual(C.planChangement({ liens, locaux }), { supprimer: ['t1'], detacher: ['deplace'], effacer: [{ href: `https://x/${app}.ics`, etag: '"2"' }] });
+});
+
+test('lecture d\'un lien d\'agenda : adresses internes refusées, IPv6 et écritures détournées comprises', async () => {
+  const A = await partage('adresses.js');
+  for (const h of ['localhost', '127.0.0.1', '10.0.0.5', '169.254.169.254', '192.168.1.1', '172.20.0.1', '100.64.1.1', '0.0.0.0', '[::1]', '::ffff:7f00:1', '::ffff:127.0.0.1',
+    '[::ffff:a9fe:a9fe]', 'fd00::1', 'fe80::1', '2130706433', '0x7f000001', '127.1', 'nas', 'box.lan', 'imprimante.local', 'metadata.internal']) assert.equal(A.hoteInterdit(h), true, h);
+  for (const h of ['calendar.google.com', 'outlook.office365.com', 'p42-caldav.icloud.com', '8.8.8.8', '2a00:1450:4007:80f::200e']) assert.equal(A.hoteInterdit(h), false, h);
+  assert.equal(A.ipInterdite('calendar.google.com'), null);
+  assert.equal(A.ipInterdite('64:ff9b::a00:5'), true);
+  assert.equal(A.ipInterdite('2001:4860:4860::8888'), false);
+});
+
 test('module agenda-synchro : liens, adresses, éléments d\'agenda importés', () => {
   const S = app.modules['agenda-synchro'];
   const J = (x) => JSON.parse(JSON.stringify(x)); // tableaux du bac à sable → tableaux de ce contexte

@@ -31,7 +31,7 @@
 .agenda-rep svg { width: 16px; height: 16px; }
 .agenda-source { align-self: center; flex: none; font-size: 11px; font-weight: 700; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 1px 7px; }
 .agenda-vide { margin: 4px 0; color: var(--muted); font-size: 14px; }
-.agenda-jour-titre { display: flex; align-items: center; gap: 8px; width: 100%; border: 0; background: transparent; padding: 2px 0 8px; text-align: left; color: var(--ink); }
+.agenda-jour-titre { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 44px; border: 0; background: transparent; padding: 2px 0 8px; text-align: left; color: var(--ink); }
 .agenda-jour-titre b { flex: 1; font-size: 15px; }
 .agenda-jour-titre svg { width: 18px; height: 18px; color: var(--muted); }
 .agenda-jour.auj { box-shadow: var(--shadow), inset 0 0 0 2px var(--primary); }
@@ -89,12 +89,15 @@
 .agenda-couleur { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .agenda-couleur .grow { display: flex; align-items: center; min-width: 90px; }
 .agenda-nuancier { display: flex; gap: 6px; }
-.agenda-nuance { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--surface); background: var(--agenda-c); box-shadow: 0 0 0 1px var(--border); padding: 0; }
-.agenda-nuance[aria-checked="true"] { box-shadow: 0 0 0 3px var(--ink); }
+/* Pastille de 32 px dessinée au centre d'une cible de 44 px (fond clippé au contenu, bord transparent). */
+.agenda-nuance { width: 44px; height: 44px; border-radius: 50%; border: 6px solid transparent; background: var(--agenda-c) content-box; box-shadow: inset 0 0 0 2px var(--surface), 0 0 0 0 transparent; padding: 0; position: relative; }
+.agenda-nuance::after { content: ""; position: absolute; inset: 0; border-radius: 50%; box-shadow: 0 0 0 1px var(--border); pointer-events: none; }
+.agenda-nuance[aria-checked="true"]::after { box-shadow: 0 0 0 3px var(--ink); }
 .agenda-affichage { display: flex; flex-direction: column; margin-bottom: 8px; }
 @media (max-width: 370px) {
   .agenda-modes button { font-size: 12px; }
   .agenda-heure { width: 54px; }
-  .agenda-nuance { width: 28px; height: 28px; }
+  .agenda-nuancier { gap: 0; }
+  .agenda-nuance { width: 40px; height: 40px; border-width: 5px; }
 }
 @media (prefers-reduced-motion: reduce) { .agenda-item { transition: none; } }

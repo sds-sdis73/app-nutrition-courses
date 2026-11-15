@@ -109,6 +109,16 @@ describe('bouton « + » : analyseurs', () => {
     assert.equal(r.verbe, true);
     assert.deepEqual(r.items, [{ nom: 'Lait', qte: '' }, { nom: 'Œufs', qte: '6' }, { nom: 'Farine', qte: '' }]);
   });
+  test('articles : un mot qui commence comme un article (lait, levure, lessive, lentilles, dentifrice) reste entier', () => {
+    const noms = (t) => plain(app.analyseArticles(t)).items.map((a) => (a.qte ? `${a.qte} ${a.nom}` : a.nom));
+    assert.deepEqual(noms('acheter lait, levure et dentifrice'), ['Lait', 'Levure', 'Dentifrice']);
+    assert.deepEqual(noms('acheter lessive'), ['Lessive']);
+    assert.deepEqual(noms('racheter lentilles'), ['Lentilles']);
+    assert.deepEqual(noms('acheter 2 l lait'), ['2 l Lait']);
+    assert.deepEqual(noms('lait, œufs, pain'), ['Lait', 'Œufs', 'Pain']);
+    assert.deepEqual(noms('acheter de l\'huile, l’eau, d\'abricots et les lardons'), ['Huile', 'Eau', 'Abricots', 'Lardons']);
+    assert.deepEqual(noms('dentiste Julie jeudi'), ['Dentiste Julie jeudi']);
+  });
   test('« acheter du pain » est d\'abord un article ; « 30 min de course » d\'abord une séance', () => {
     const ctx = { maintenant: new Date(2026, 9, 21), membres: [] };
     assert.equal(app.AjoutRapide.analyser('acheter du pain', ctx)[0].type, 'article');

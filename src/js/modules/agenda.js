@@ -41,7 +41,8 @@ const aplatir = (s) => s.split('').map((c) => c.toLowerCase().normalize('NFD')[0
 
 // --- Récurrences (fonctions pures) ---------------------------------------------
 // recurrence = { freq: 'quotidienne' | 'hebdo' | 'mensuelle' | 'annuelle', intervalle?: n, jours?: [1-7] (hebdo, lundi = 1),
-//                jusqu?: 'AAAA-MM-JJ' (inclus), nombre?: n (occurrences, exceptions comprises, comme COUNT en iCalendar) }
+//                jusqu?: 'AAAA-MM-JJ' (inclus), nombre?: n (occurrences, exceptions comprises, comme COUNT en iCalendar),
+//                nonGere?, rrule? (règle d'un autre agenda, gardée telle quelle et non modifiable ici) }
 // exceptions = ['AAAA-MM-JJ'] : dates retirées de la série.
 const FREQS = { quotidienne: 'Tous les jours', hebdo: 'Chaque semaine', mensuelle: 'Chaque mois', annuelle: 'Chaque année' };
 
@@ -58,6 +59,29 @@ function bornes(ev) {
   return { debut: d, jours: 0, duree: f - d };
 }
 
+// Règle mensuelle « n-ième jour de la semaine » d'un autre agenda (rrule BYDAY=2TU, -1FR) → { rang, jour: 1-7 } ou null.
+function rangJour(rec) {
+  if (!rec?.rrule || rec.freq !== 'mensuelle') return null;
+  const kv = Object.fromEntries(String(rec.rrule).replace(/^RRULE:/i, '').split(';').map((x) => x.split('=')).filter((x) => x.length === 2).map(([k, v]) => [k.toUpperCase(), v.toUpperCase()]));
+  if (Object.keys(kv).some((k) => !['FREQ', 'INTERVAL', 'BYDAY', 'UNTIL', 'COUNT', 'WKST'].includes(k))) return null;
+  const m = String(kv.BYDAY || '').match(/^([+-]?[1-5])(MO|TU|WE|TH|FR|SA|SU)$/);
+  return m ? { rang: Number(m[1]), jour: RR_JOURS.indexOf(m[2]) + 1 } : null;
+}
+// n-ième jour (1-7) d'un mois (rang négatif : en partant de la fin) ; null si ce mois n'en a pas.
+function nemeJour(an, mois, { rang, jour }) {
+  const premier = new Date(an, mois, 1);
+  const nbJours = new Date(premier.getFullYear(), premier.getMonth() + 1, 0).getDate();
+  if (rang > 0) {
+    const j = 1 + ((jour - jourIso(premier) + 7) % 7) + (rang - 1) * 7;
+    return j <= nbJours ? new Date(premier.getFullYear(), premier.getMonth(), j) : null;
+  }
+  const dernier = new Date(premier.getFullYear(), premier.getMonth(), nbJours);
+  const j = nbJours - ((jourIso(dernier) - jour + 7) % 7) + (rang + 1) * 7;
+  return j >= 1 ? new Date(premier.getFullYear(), premier.getMonth(), j) : null;
+}
+// Règle d'un autre agenda que l'appli ne sait pas calculer exactement : dates affichées approximatives.
+const approximative = (rec) => !!rec?.nonGere && !rangJour(rec);
+
 // Dates candidates d'une série (minuit local), dans l'ordre ; null = mois ou année sans ce jour (sauté).
 function* candidats(rec, d0) {
   const n = Math.max(1, Math.floor(Number(rec.intervalle) || 1));
@@ -68,6 +92,14 @@ function* candidats(rec, d0) {
     for (let w = 0; ; w++) {
       const base = addDays(lundi, w * 7 * n);
       for (const j of jours) { const x = addDays(base, j - 1); if (x >= d0) yield x; }
+    }
+  }
+  const rj = rangJour(rec);
+  if (rec.freq === 'mensuelle' && rj) {
+    // « 2e mardi du mois », « dernier vendredi » (règle venue d'un autre agenda) : dates exactes.
+    for (let k = 0; ; k++) {
+      const x = nemeJour(d0.getFullYear(), d0.getMonth() + k * n, rj);
+      yield x && x >= d0 ? x : null;
     }
   }
   if (rec.freq === 'mensuelle') {
@@ -131,10 +163,12 @@ function regleTexte(rec, debut) {
     if (n === 1) t = jours.length === 7 ? 'Tous les jours' : jours.length ? `Tous les ${listeEt(jours.map((j) => JOURS_PLURIEL[j - 1]))}` : 'Chaque semaine';
     else t = `${n === 2 ? 'Une semaine sur deux' : `Toutes les ${n} semaines`}${jours.length ? `, ${listeEt(jours.map((j) => `le ${JOURS[j - 1]}`))}` : ''}`;
   }
-  if (rec.freq === 'mensuelle') t = `${n === 1 ? 'Tous les mois' : `Tous les ${n} mois`}${d ? `, le ${quantieme(d.getDate())}` : ''}`;
+  const rj = rangJour(rec);
+  if (rec.freq === 'mensuelle') t = `${n === 1 ? 'Tous les mois' : `Tous les ${n} mois`}${rj ? `, le ${rj.rang === -1 ? 'dernier ' : rj.rang === -2 ? 'avant-dernier ' : rj.rang === 1 ? '1er ' : `${Math.abs(rj.rang)}e `}${JOURS[rj.jour - 1]}${rj.rang < -2 ? ' en partant de la fin' : ''}` : d ? `, le ${quantieme(d.getDate())}` : ''}`;
   if (rec.freq === 'annuelle') t = `${n === 1 ? 'Tous les ans' : `Tous les ${n} ans`}${d ? `, le ${quantieme(d.getDate())} ${MOIS[d.getMonth()]}` : ''}`;
   if (rec.jusqu) t += `, jusqu'au ${fmtDate(dIso(rec.jusqu))}`;
   else if (rec.nombre) t += `, ${rec.nombre} fois`;
+  if (approximative(rec)) t += ' (règle d\'un autre agenda : dates approximatives)';
   return t;
 }
 
@@ -143,10 +177,11 @@ const RR_FREQ = { quotidienne: 'DAILY', hebdo: 'WEEKLY', mensuelle: 'MONTHLY', a
 const RR_JOURS = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'];
 function versRRule(rec, { journee = false } = {}) {
   if (!rec || !RR_FREQ[rec.freq]) return '';
-  const p = [`FREQ=${RR_FREQ[rec.freq]}`];
+  // Règle d'un autre agenda : renvoyée telle quelle, seule la fin suit l'appli.
+  const p = rec.rrule ? String(rec.rrule).replace(/^RRULE:/i, '').split(';').filter((x) => x && !/^(UNTIL|COUNT)=/i.test(x)) : [`FREQ=${RR_FREQ[rec.freq]}`];
   const n = Math.max(1, Math.floor(Number(rec.intervalle) || 1));
-  if (n > 1) p.push(`INTERVAL=${n}`);
-  if (rec.freq === 'hebdo' && rec.jours && rec.jours.length) p.push(`BYDAY=${[...new Set(rec.jours.map(Number))].sort().map((j) => RR_JOURS[j - 1]).join(',')}`);
+  if (n > 1 && !rec.rrule) p.push(`INTERVAL=${n}`);
+  if (rec.freq === 'hebdo' && rec.jours && rec.jours.length && !rec.rrule) p.push(`BYDAY=${[...new Set(rec.jours.map(Number))].sort().map((j) => RR_JOURS[j - 1]).join(',')}`);
   if (rec.jusqu) {
     const f = dIso(rec.jusqu);
     if (journee) p.push(`UNTIL=${f.getFullYear()}${pad(f.getMonth() + 1)}${pad(f.getDate())}`);
@@ -178,7 +213,7 @@ function depuisRRule(texte) {
       rec.jusqu = isoDate(d);
     }
   }
-  if (nonGere) rec.nonGere = true;
+  if (nonGere) { rec.nonGere = true; rec.rrule = s; }
   return rec;
 }
 
@@ -623,11 +658,14 @@ async function enregistrer(row) {
   return ligneEnr;
 }
 // Notification « agenda modifié » aux autres comptes (module notifications ; coupée par défaut, chacun l'active).
+// Identifiant par tranche de 2 minutes : les retouches rapprochées n'en font qu'une, chaque modification plus tardive
+// fait une nouvelle ligne (une ligne déjà envoyée ne repart jamais).
+const idModif = (evId, t = Date.now()) => `agenda-modif:${evId}:${Math.floor(t / 120000)}`;
 function prevenirModif(ev, verbe) {
   const N = Modules.get('notifications')?.expose;
   if (!N?.programmer || ev.source) return;
   const qui = memberById(state.compte?.member_id)?.nom || 'Quelqu\'un';
-  N.programmer({ id: `agenda-modif:${ev.id}`, type: 'agenda_modifs', titre: 'Agenda de la famille', corps: `${qui} a ${verbe} « ${ev.titre} »`, url: './#agenda', sauf_auteur: true, envoyer_a: new Date(Date.now() + 2 * 60000) }).catch(() => {});
+  N.programmer({ id: idModif(ev.id), type: 'agenda_modifs', titre: 'Agenda de la famille', corps: `${qui} a ${verbe} « ${ev.titre} »`, url: './#agenda', sauf_auteur: true, envoyer_a: new Date(Date.now() + 2 * 60000) }).catch(() => {});
 }
 async function supprimer(ev, portee, date) {
   if (portee === 'une') { await enregistrer({ ...ev, exceptions: [...new Set([...(ev.exceptions || []), date])] }); toast('Cette fois est retirée de la série'); }
@@ -670,7 +708,7 @@ function formulaire(ev = null, { occurrence = null } = {}) {
       ${state.members.length ? `<div class="field"><span>Pour qui ?</span><div class="chips wrap" role="group" aria-label="Pour qui">${state.members.map((m) => `<button type="button" class="chip" data-membre="${m.id}" aria-pressed="${membresSel.has(m.id)}">${pastille(couleurMembre(m.id))}${esc(m.nom)}</button>`).join('')}</div><small class="muted">Personne de choisi : toute la famille.</small></div>
       <div class="grid2"><label class="field"><span>Qui s'en occupe (aller)</span><select class="input" name="responsable">${optsMembres(base.responsable)}</select></label>
         <label class="field"><span>Retour</span><select class="input" name="responsable_retour">${optsMembres(base.responsable_retour)}</select></label></div>` : ''}
-      ${occurrence ? '' : `<label class="field"><span>Répétition</span><select class="input" name="freq">${opt('', rec?.freq, 'Ne se répète pas')}${Object.entries(FREQS).map(([k, l]) => opt(k, rec?.freq, l)).join('')}</select></label>
+      ${occurrence ? '' : rec?.nonGere ? `<div class="field" data-rec-figee><span>Répétition</span><p class="muted small">${esc(regleTexte(rec, base.debut))}. Cette règle vient d'un autre agenda : modifie-la là-bas, elle est gardée telle quelle ici.</p></div>` : `<label class="field"><span>Répétition</span><select class="input" name="freq">${opt('', rec?.freq, 'Ne se répète pas')}${Object.entries(FREQS).map(([k, l]) => opt(k, rec?.freq, l)).join('')}</select></label>
       <div class="agenda-rec stack" data-si="rec">
         <label class="field agenda-inter"><span>Intervalle</span><span class="row">Toutes les <input class="input" type="number" name="intervalle" min="1" max="52" inputmode="numeric" value="${esc(rec?.intervalle || 1)}"> <span data-unite></span></span></label>
         <div class="field" data-si="hebdo"><span>Les jours</span><div class="agenda-jours" role="group" aria-label="Jours de la semaine">${JOURS.map((j, i) => `<button type="button" class="chip" data-jour="${i + 1}" aria-label="${j}" aria-pressed="${(rec?.jours || [jourIso(deb)]).includes(i + 1)}">${JOURS_COURT[i]}</button>`).join('')}</div></div>
@@ -738,7 +776,7 @@ function formulaire(ev = null, { occurrence = null } = {}) {
     const p = { titre: titreSaisi, categorie: $('[data-cat][aria-pressed="true"]', f)?.dataset.cat || 'evenement', journee: f.journee.checked, date: f.date.value, heure: f.heure.value || '09:00',
       dateFin: f.date_fin.value || f.date.value, heureFin: f.heure_fin.value, lieu: f.lieu.value.trim(), notes: f.notes.value.trim(),
       membres: $$('[data-membre][aria-pressed="true"]', f).map((b) => b.dataset.membre), responsable: f.responsable?.value || null, responsableRetour: f.responsable_retour?.value || null,
-      recurrence: occurrence ? null : lireRec(), exceptions: occurrence ? [] : base.exceptions || [],
+      recurrence: occurrence ? null : rec?.nonGere ? rec : lireRec(), exceptions: occurrence ? [] : base.exceptions || [],
       rappels: state.members.filter((m) => f[`rappel_${m.id}`] && f[`rappel_${m.id}`].value !== '').map((m) => ({ member_id: m.id, minutes: Number(f[`rappel_${m.id}`].value) })) };
     const debutN = p.journee ? dIso(p.date) : avecHeure(dIso(p.date), p.heure);
     const finN = p.journee ? dIso(p.dateFin) : avecHeure(dIso(p.dateFin), p.heureFin || p.heure);
@@ -873,6 +911,6 @@ Modules.register({
       formulaire({ ...versLigne(p), id: undefined });
     },
   },
-  expose: { occurrences, prochaine, regleTexte, versRRule, depuisRRule, rappelsPeriode, parseEvenement, versLigne, joursFeries, paques, feriesDepuisApi, vacancesDepuisApi,
+  expose: { occurrences, prochaine, regleTexte, versRRule, depuisRRule, rappelsPeriode, idModif, rappelsPersonnes: (a, b) => rappelsPeriode(evenements, a, b), parseEvenement, versLigne, joursFeries, paques, feriesDepuisApi, vacancesDepuisApi,
     fetesFamille, anniversairesMembres, slotMembre, fmtHeure, fmtJourCourt, titrePeriode, periode, bornes },
 });

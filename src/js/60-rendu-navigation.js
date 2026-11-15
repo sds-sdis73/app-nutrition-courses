@@ -13,6 +13,7 @@ function render() {
   let vue;
   try { vue = m.rendu(); } catch (e) { console.error(`écran ${m.id}`, e); vue = `<div class="empty"><p>Cet écran n'a pas pu s'afficher.</p></div>`; }
   main.innerHTML = (state.offline ? `<div class="offline-banner">${ICON.info} Hors ligne : données du dernier chargement${Queue.size() ? ` · ${Queue.size()} saisie(s) en attente` : ''}</div>` : '') + Nav.segments(m) + vue;
+  Nav.centrerSegment(main);
 }
 // Ouvre un écran ou un onglet (dans ce cas, son dernier écran affiché).
 function switchTab(tab) {

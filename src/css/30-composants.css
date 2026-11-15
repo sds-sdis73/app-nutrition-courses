@@ -28,7 +28,7 @@
 .chips { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 8px; scrollbar-width: none; }
 .chips::-webkit-scrollbar { display: none; }
 .chip {
-  flex: none; min-height: 36px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--border);
+  flex: none; min-height: 44px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--border);
   background: var(--surface); font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;
 }
 .chip[aria-pressed="true"] { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
@@ -40,6 +40,8 @@
 }
 .input:focus { border-color: var(--primary); }
 textarea.input { resize: vertical; min-height: 72px; }
+/* iPhone : Safari agrandit la page dès qu'on touche un champ ou un menu écrit en moins de 16 px. */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]), select, textarea { font-size: max(16px, 1em) !important; }
 .empty { text-align: center; padding: 40px 16px; color: var(--muted); }
 .empty svg { width: 56px; height: 56px; color: var(--primary); opacity: .8; }
 .toast {

@@ -27,6 +27,8 @@
 
 /* ---------- Carnet de bord : papeterie, bullet journal ---------- */
 :root[data-univers="carnet"], [data-uapercu="carnet"] {
+  /* Couleurs des membres (agenda, fil, briefing) : six teintes bien distinctes. */
+  --m1: #2D47C9; --m2: #D9480F; --m3: #0F766E; --m4: #B83280; --m5: #7C3AED; --m6: #8A6D00;
   --bg: #FAFAF6; --surface: #FFFFFF; --surface-2: #EEF2FA; --text: #1E2A5A; --ink: #1E2A5A; --muted: #4A5478;
   --border: #C9D2E6; --primary: #2D47C9; --primary-strong: #2D47C9; --primary-soft: #E3E8FB; --on-primary: #FFFFFF; --sage-light: #9AA8E6;
   --mint: #2B9BC4; --mint-soft: #E1F1F7; --mango: #FFE86B; --mango-strong: #E9A21B; --mango-soft: #FFF6C4; --sky: #2B9BC4;
@@ -43,6 +45,8 @@
 
 /* ---------- Washi : japonais minimal ---------- */
 :root[data-univers="washi"], [data-uapercu="washi"] {
+  /* Couleurs des membres (agenda, fil, briefing) : six teintes bien distinctes. */
+  --m1: #A82C22; --m2: #2F4A6D; --m3: #5B7A2F; --m4: #C08A1F; --m5: #7A4F9A; --m6: #8A8A84;
   --bg: #F3F2EE; --surface: #FBFBF9; --surface-2: #ECEAE3; --text: #1C1C1A; --ink: #1C1C1A; --muted: #57564F;
   --border: #D9D6CC; --primary: #1C1C1A; --primary-strong: #A82C22; --primary-soft: #F3E3E0; --on-primary: #F3F2EE; --sage-light: #D9A39C;
   --mint: #2F4A6D; --mint-soft: #E4E9EF; --mango: #E8DDC4; --mango-strong: #9A7A35; --mango-soft: #F1ECE0; --sky: #2F4A6D;
@@ -58,6 +62,8 @@
 
 /* ---------- Herbier : nature et botanique ---------- */
 :root[data-univers="herbier"], [data-uapercu="herbier"] {
+  /* Couleurs des membres (agenda, fil, briefing) : six teintes bien distinctes. */
+  --m1: #2F5D3A; --m2: #2E86AB; --m3: #C2571A; --m4: #8C3B5A; --m5: #A89A2A; --m6: #6B57A8;
   --bg: #E9EEDF; --surface: #F8FAF2; --surface-2: #DDE7CF; --text: #1F3324; --ink: #1F3324; --muted: #46584A;
   --border: #B7C6A8; --primary: #2F5D3A; --primary-strong: #2F5D3A; --primary-soft: #E3ECD6; --on-primary: #F8FAF2; --sage-light: #9FBF95;
   --mint: #5E9B6A; --mint-soft: #DCEBD7; --mango: #E4D9A6; --mango-strong: #C08A1F; --mango-soft: #F1ECCF; --sky: #3F7E99;
@@ -74,6 +80,8 @@
 
 /* ---------- Cocon : doux pastel ---------- */
 :root[data-univers="cocon"], [data-uapercu="cocon"] {
+  /* Couleurs des membres (agenda, fil, briefing) : six teintes bien distinctes. */
+  --m1: #E0705A; --m2: #5B8FCF; --m3: #3FA88C; --m4: #9A6BB0; --m5: #D9A93A; --m6: #D6589A;
   --bg: #FCEFEA; --surface: #FFFFFF; --surface-2: #EAF5F1; --text: #3D3550; --ink: #3D3550; --muted: #625A74;
   --border: #EADBD5; --primary: #F6BBAA; --primary-strong: #7A4E8A; --primary-soft: #FDE3DA; --on-primary: #3D3550; --sage-light: #F6BBAA;
   --mint: #6FC0A6; --mint-soft: #E3F4EE; --mango: #FFE3A3; --mango-strong: #E9C15B; --mango-soft: #FFF3D6; --sky: #7BA7D9;
@@ -90,6 +98,8 @@
 
 /* ---------- Kermesse : maximaliste coloré ---------- */
 :root[data-univers="kermesse"], [data-uapercu="kermesse"] {
+  /* Couleurs des membres (agenda, fil, briefing) : six teintes bien distinctes. */
+  --m1: #2B3BDB; --m2: #FF4F8B; --m3: #10B39A; --m4: #FFB000; --m5: #8B2FC9; --m6: #E8590C;
   --bg: #FFE6EE; --surface: #FFFFFF; --surface-2: #DDF5EE; --text: #1A1446; --ink: #1A1446; --muted: #3E3770;
   --border: #CFC8EA; --primary: #2B3BDB; --primary-strong: #2B3BDB; --primary-soft: #E3E6FF; --on-primary: #FFFFFF; --sage-light: #FF8FB4;
   --mint: #10B39A; --mint-soft: #DDF5EE; --mango: #FFD23F; --mango-strong: #FFB000; --mango-soft: #FFF4C7; --sky: #2B3BDB;
@@ -157,6 +167,11 @@
   border: 1.5px solid var(--border); border-radius: var(--u-r-champ); background: var(--surface);
 }
 :root[data-univers] .input:focus { border-color: var(--primary-strong); box-shadow: 0 0 0 3px var(--primary-soft); }
+/* Scan : le champ du code-barres prend le fond clair des univers, donc le texte sombre. */
+:root[data-univers] .manual .input { color: var(--ink); }
+:root[data-univers] .manual .input::placeholder { color: var(--muted); opacity: 1; }
+/* Forme : choix cochés écrits en encre foncée sur un fond clair (--f-accent-2 = --primary-soft), bien repérables. */
+:root[data-univers] .f-chip input:checked + span { outline: 2px solid var(--primary-strong); outline-offset: -2px; }
 :root[data-univers] .icon-btn:hover { background: var(--surface-2); }
 
 /* Barre d'onglets */
@@ -203,7 +218,7 @@
 /* Module Forme : ses ambiances de montagne cèdent la place à l'univers choisi */
 :root[data-univers] .forme[data-amb], :root[data-univers] .forme:not([data-amb]) {
   --f-bg: var(--bg); --f-surface: var(--surface); --f-surface-2: var(--surface-2); --f-ink: var(--ink); --f-muted: var(--muted);
-  --f-accent: var(--primary); --f-on-accent: var(--on-primary); --f-accent-2: var(--sky); --f-soft: var(--primary-soft);
+  --f-accent: var(--primary); --f-on-accent: var(--on-primary); --f-accent-2: var(--primary-soft); --f-soft: var(--primary-soft);
   --f-line: var(--border); --f-radius: var(--radius); --f-shadow: var(--shadow);
   --f-motif: linear-gradient(transparent, transparent);
 }

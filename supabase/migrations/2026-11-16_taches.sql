@@ -124,7 +124,9 @@ create trigger envies_membre_fixe before update on public.envies for each row ex
 --    (envie_id, member_id, foyer_id) → envies : impossible de mentir sur le bénéficiaire ; l'envie ne change
 --    jamais de destinataire (déclencheur ci-dessus) et sa suppression emporte la réservation.
 --    La politique exclut toute ligne dont member_id = mon_membre() : la personne concernée ne peut ni la lire,
---    ni la créer, ni la modifier, ni la supprimer. Pas de publication Realtime pour cette table.
+--    ni la créer, ni la modifier, ni la supprimer. Un compte pas encore relié à son membre (mon_membre() vide)
+--    n'y a aucun accès (« <> » avec null est faux) : il pourrait être la personne concernée. Le changement de
+--    membre relié est verrouillé par 2026-11-16_comptes.sql. Pas de publication Realtime pour cette table.
 create table if not exists public.envies_reservations (
   id uuid primary key default gen_random_uuid(),
   foyer_id uuid not null default mon_foyer() references public.foyers(id) on delete cascade,
@@ -139,8 +141,8 @@ create table if not exists public.envies_reservations (
 alter table public.envies_reservations enable row level security;
 drop policy if exists "foyer_sauf_beneficiaire" on public.envies_reservations;
 create policy "foyer_sauf_beneficiaire" on public.envies_reservations for all to authenticated
-  using (foyer_id = (select mon_foyer()) and member_id is distinct from (select mon_membre()))
-  with check (foyer_id = (select mon_foyer()) and member_id is distinct from (select mon_membre()));
+  using (foyer_id = (select mon_foyer()) and member_id <> (select mon_membre()))
+  with check (foyer_id = (select mon_foyer()) and member_id <> (select mon_membre()));
 create index if not exists envies_reservations_foyer on public.envies_reservations (foyer_id);
 
 -- 5. Cochage en direct : Realtime sur les tâches, les listes, leurs éléments et les envies (RLS appliquée par Supabase).

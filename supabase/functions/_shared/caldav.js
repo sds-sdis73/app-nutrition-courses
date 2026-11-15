@@ -1,7 +1,7 @@
 // CalDAV (iCloud) : corps des requêtes, lecture des réponses « multistatus » et plan de synchronisation.
 // Fonctions pures (sans réseau), utilisées par la fonction agenda-synchro et vérifiées par tests/unit/agenda-synchro.test.js.
 // Deno n'a pas de DOMParser : les réponses XML sont lues par expressions régulières, quel que soit le préfixe d'espace de noms.
-import { analyserIcs, ressource, uidDe, DOMAINE_UID } from './ics.js';
+import { analyserIcs, ressource, uidDe, jourParis, DOMAINE_UID } from './ics.js';
 
 export const ICLOUD = 'https://caldav.icloud.com/';
 const XML = '<?xml version="1.0" encoding="utf-8"?>';
@@ -106,7 +106,8 @@ const uidAppli = new RegExp(`^([0-9a-f-]{36})@${DOMAINE_UID}$`, 'i');
 //   calendrier: url du calendrier iCloud, depuis: Date (début de la fenêtre), nouvelId: () => uuid
 // }
 // → { creer, maj, supprimer: [id], envoyer: [{ href, etag|null, ics, lien }], effacer: [{ href, etag }], liens: [lien], oublier: [href] }
-export function planSynchro({ distants, liens, locaux, calendrier, depuis, nouvelId, noms = {}, maintenant = new Date() }) {
+export function planSynchro({ distants, liens, locaux, calendrier, depuis, jusqu = null, nouvelId, noms = {}, maintenant = new Date() }) {
+  const fin = jusqu || new Date(+new Date(depuis) + 820 * 864e5);
   const plan = { creer: [], maj: [], supprimer: [], envoyer: [], effacer: [], liens: [], oublier: [] };
   const parId = new Map(locaux.map((r) => [r.id, r]));
   const lienDe = new Map(liens.map((l) => [l.href, l]));
@@ -147,23 +148,90 @@ export function planSynchro({ distants, liens, locaux, calendrier, depuis, nouve
     plan.liens.push({ href: d.href, etag: d.etag, uid, evenement_ids: ids, empreinte: empreinte(resultat), brut: null });
   }
 
-  // Ressources disparues d'iCloud : supprimées là-bas, sauf si elles sont simplement sorties de la fenêtre.
+  // Ressources disparues d'iCloud : supprimées là-bas seulement si elles devaient être dans la fenêtre lue.
+  // Sorties de la fenêtre (série finie, événement lointain) : rien ne change. Dans le doute (règle d'un autre
+  // agenda que l'appli ne sait pas calculer) : on oublie le lien sans rien supprimer.
   for (const l of liens) {
     if (distantsHref.has(l.href)) continue;
     const lignes = (l.evenement_ids || []).map((id) => parId.get(id)).filter(Boolean);
     lignes.forEach((r) => vus.add(r.id));
-    const dansFenetre = lignes.some((r) => (r.recurrence ? !r.recurrence.jusqu || r.recurrence.jusqu >= isoJour(depuis) : +new Date(r.fin || r.debut) >= +depuis));
-    if (!lignes.length || dansFenetre) { plan.supprimer.push(...lignes.map((r) => r.id)); plan.oublier.push(l.href); }
+    const etats = lignes.map((r) => dansFenetre(r, depuis, fin));
+    if (!lignes.length || etats.includes(true)) { plan.supprimer.push(...lignes.map((r) => r.id)); plan.oublier.push(l.href); }
+    else if (etats.includes(null)) plan.oublier.push(l.href);
   }
 
-  // Événements créés dans l'appli, jamais envoyés : nouvelles ressources.
+  // Événements créés dans l'appli, jamais envoyés : nouvelles ressources (seulement dans la fenêtre lue,
+  // sinon la synchro suivante les croirait effacés sur iCloud).
   for (const r of locaux) {
     if (vus.has(r.id) || r.source) continue;
-    const actuel = r.recurrence ? !r.recurrence.jusqu || r.recurrence.jusqu >= isoJour(depuis) : +new Date(r.fin || r.debut) >= +depuis;
-    if (!actuel) continue;
+    if (dansFenetre(r, depuis, fin) !== true) continue;
     const href = absolu(nomFichier(r.id), calendrier.endsWith('/') ? calendrier : `${calendrier}/`);
     plan.envoyer.push({ href, etag: null, ics: ressource([r], { noms, maintenant }), lien: { href, uid: uidDe(r), evenement_ids: [r.id], empreinte: empreinte([r]), brut: null } });
   }
   return plan;
 }
 const isoJour = (d) => new Date(d).toISOString().slice(0, 10);
+const JOUR_MS = 864e5;
+const jourUtc = (iso) => Date.UTC(...iso.split('-').map((x, i) => Number(x) - (i === 1 ? 1 : 0)));
+const versIso = (t) => new Date(t).toISOString().slice(0, 10);
+
+// Dernier jour d'occurrence d'une série (« AAAA-MM-JJ », heure de Paris), COUNT compris ; Infinity si elle ne finit
+// jamais ; null si on ne sait pas le calculer (règle d'un autre agenda sans date de fin). Jamais plus tard que la
+// vraie dernière occurrence : « dans la fenêtre » reste donc une certitude.
+export function dernierJour(r) {
+  const rec = r.recurrence;
+  const d0 = jourParis(r.debut);
+  if (!rec) return d0;
+  if (rec.jusqu) return rec.jusqu;
+  if (!rec.nombre) return Infinity;
+  if (rec.nonGere) return null;
+  const n = Math.max(1, Math.floor(Number(rec.intervalle) || 1));
+  const k = Math.max(1, Math.floor(rec.nombre)) - 1;
+  const t0 = jourUtc(d0);
+  const [a, m, j] = d0.split('-').map(Number);
+  if (rec.freq === 'quotidienne') return versIso(t0 + k * n * JOUR_MS);
+  // Mois ou années sans ce jour (31, 29 février) : sautés sans compter, la vraie fin ne peut qu'être plus tard.
+  if (rec.freq === 'mensuelle') return versIso(Date.UTC(a, m - 1 + k * n, j));
+  if (rec.freq === 'annuelle') return versIso(Date.UTC(a + k * n, m - 1, j));
+  if (rec.freq === 'hebdo') {
+    const jours = [...new Set((rec.jours?.length ? rec.jours : [((new Date(t0).getUTCDay() + 6) % 7) + 1]).map(Number))].filter((x) => x >= 1 && x <= 7).sort();
+    const lundi = t0 - ((new Date(t0).getUTCDay() + 6) % 7) * JOUR_MS;
+    let compte = 0;
+    for (let w = 0; w < 100000; w++) {
+      for (const x of jours) {
+        const t = lundi + (w * 7 * n + x - 1) * JOUR_MS;
+        if (t >= t0 && ++compte > k) return versIso(t);
+      }
+    }
+  }
+  return null;
+}
+// L'événement (ou une de ses occurrences) touche-t-il la fenêtre [depuis, jusqu] ? true / false / null (on ne sait pas).
+export function dansFenetre(r, depuis, jusqu) {
+  const premier = jourParis(r.debut);
+  if (premier > jourParis(jusqu)) return false;
+  if (!r.recurrence) return +new Date(r.fin || r.debut) >= +new Date(depuis);
+  const dernier = dernierJour(r);
+  if (dernier === null) return null;
+  const duree = r.fin ? Math.max(0, Math.ceil((+new Date(r.fin) - +new Date(r.debut)) / JOUR_MS)) : 0;
+  return dernier === Infinity || versIso(jourUtc(dernier) + duree * JOUR_MS) >= jourParis(depuis);
+}
+
+// Changement de calendrier iCloud : ce qui venait de l'ancien calendrier quitte l'agenda de la famille, et ce que
+// l'appli y avait envoyé en est retiré (il sera renvoyé vers le nouveau calendrier à la synchro suivante).
+// → { supprimer: [id] (lignes reçues d'iCloud), detacher: [id] (occurrences déplacées d'une série de l'appli : elles
+//     redeviennent des événements de l'appli), effacer: [{ href, etag }] (ressources créées par l'appli) }
+export function planChangement({ liens, locaux }) {
+  const parId = new Map(locaux.map((r) => [r.id, r]));
+  const out = { supprimer: [], detacher: [], effacer: [] };
+  for (const l of liens) {
+    const appli = uidAppli.test(String(l.uid || ''));
+    if (appli) out.effacer.push({ href: l.href, etag: l.etag || null });
+    for (const id of l.evenement_ids || []) {
+      const r = parId.get(id);
+      if (!r || r.source !== 'icloud') continue;
+      if (appli) out.detacher.push(id); else out.supprimer.push(id);
+    }
+  }
+  return out;
+}

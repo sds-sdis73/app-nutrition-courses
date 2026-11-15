@@ -34,7 +34,8 @@ Modules.register({ id: 'widget', onglet: 'plus', segment: 'Widget', ordre: 70, i
 
 // Analyseurs du cœur : article de courses, repas, séance. Les événements et les tâches viennent des modules agenda et taches.
 const ARTICLE_VERBE = /^\s*(?:acheter|achète|achete|ajoute[rz]?|prendre|racheter|il (?:faut|manque)|plus de|courses?\s*:?)\s+/i;
-const ARTICLE_DET = /^(?:du|de la|de l'|de l’|des|de|d'|d’|un|une|le|la|les|l'|l’)\s*/i;
+// Article en tête : mot entier suivi d'une espace (« la », « les »…), ou élision (« l' », « d' ») : « lait » et « levure » restent entiers.
+const ARTICLE_DET = /^(?:(?:de l|d|l)['’]\s*|(?:du|de la|des|de|un|une|le|la|les)\s+)/i;
 function analyseArticles(texte) {
   const verbe = ARTICLE_VERBE.test(texte);
   const items = texte.replace(ARTICLE_VERBE, '').split(/\s*(?:,|;|\n|\bet\b|\+)\s*/i).map((x) => x.trim()).filter(Boolean).map((x) => {

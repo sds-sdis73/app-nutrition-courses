@@ -3,7 +3,8 @@
 // Format d'un événement (celui de la table evenements) :
 //   { id, titre, categorie, debut: ISO, fin: ISO | null, journee, lieu, notes, membres: [uuid], recurrence | null, exceptions: ['AAAA-MM-JJ'] }
 //   journée entière : debut = minuit du premier jour, fin = minuit du dernier jour (inclus), heure de Paris.
-//   recurrence = { freq: quotidienne|hebdo|mensuelle|annuelle, intervalle?, jours?: [1-7, lundi = 1], jusqu?: 'AAAA-MM-JJ', nombre?, nonGere? }
+//   recurrence = { freq: quotidienne|hebdo|mensuelle|annuelle, intervalle?, jours?: [1-7, lundi = 1], jusqu?: 'AAAA-MM-JJ', nombre?, nonGere?, rrule? }
+//   (nonGere + rrule : règle d'un autre agenda que l'appli ne sait pas modifier, gardée telle quelle)
 
 export const TZ = 'Europe/Paris';
 export const PRODID = '-//Tribu & Toutous//Agenda familial//FR';
@@ -151,17 +152,23 @@ export function duree(v) {
 const RR_FREQ = { quotidienne: 'DAILY', hebdo: 'WEEKLY', mensuelle: 'MONTHLY', annuelle: 'YEARLY' };
 const RR_JOURS = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'];
 
+// Fin de la série (UNTIL ou COUNT) au format RRULE.
+const finRRule = (rec, journee) => (rec.jusqu ? [`UNTIL=${journee ? compact(rec.jusqu) : utcCompact(instantDe(...rec.jusqu.split('-').map(Number), 23, 59, 59, TZ))}`]
+  : rec.nombre ? [`COUNT=${Math.floor(rec.nombre)}`] : []);
 export function versRRule(rec, { journee = false } = {}) {
   if (!rec || !RR_FREQ[rec.freq]) return '';
+  // Règle d'un autre agenda que l'appli ne sait pas représenter (« 2e mardi du mois ») : renvoyée telle quelle,
+  // seule la fin (UNTIL / COUNT) suit l'appli (« supprimer cette fois et les suivantes »).
+  if (rec.rrule) return [...String(rec.rrule).replace(/^RRULE:/i, '').split(';').filter((x) => x && !/^(UNTIL|COUNT)=/i.test(x)), ...finRRule(rec, journee)].join(';');
   const p = [`FREQ=${RR_FREQ[rec.freq]}`];
   const n = Math.max(1, Math.floor(Number(rec.intervalle) || 1));
   if (n > 1) p.push(`INTERVAL=${n}`);
   if (rec.freq === 'hebdo' && rec.jours?.length) p.push(`BYDAY=${[...new Set(rec.jours.map(Number))].sort().map((j) => RR_JOURS[j - 1]).join(',')}`);
-  if (rec.jusqu) p.push(`UNTIL=${journee ? compact(rec.jusqu) : utcCompact(instantDe(...rec.jusqu.split('-').map(Number), 23, 59, 59, TZ))}`);
-  else if (rec.nombre) p.push(`COUNT=${Math.floor(rec.nombre)}`);
+  p.push(...finRRule(rec, journee));
   return p.join(';');
 }
-// « 2e mardi du mois » et autres règles non gérées : la fréquence est gardée, nonGere: true le signale.
+// « 2e mardi du mois » et autres règles non gérées : la fréquence est gardée, nonGere: true le signale,
+// et la règle d'origine est conservée (rrule) pour être renvoyée telle quelle et calculer les dates exactes quand c'est possible.
 export function depuisRRule(texte, dtstart = null) {
   const s = String(texte || '').replace(/^RRULE:/i, '').trim();
   if (!s) return null;
@@ -183,7 +190,7 @@ export function depuisRRule(texte, dtstart = null) {
   if (kv.BYMONTH && !(d0 && kv.BYMONTH.split(',').length === 1 && Number(kv.BYMONTH) === d0[1] && freq === 'annuelle')) nonGere = true;
   if (kv.COUNT) rec.nombre = Math.floor(Number(kv.COUNT));
   if (kv.UNTIL) { const u = lireDate({ valeur: kv.UNTIL, params: {} }); if (u) rec.jusqu = jourDe(u); }
-  if (nonGere) rec.nonGere = true;
+  if (nonGere) { rec.nonGere = true; rec.rrule = s; }
   return rec;
 }
 
@@ -246,6 +253,21 @@ export function calendrier(vevents, { nom = 'Tribu & Toutous', methode = true, r
   const tete = ['BEGIN:VCALENDAR', 'VERSION:2.0', `PRODID:${PRODID}`, 'CALSCALE:GREGORIAN'];
   if (methode) tete.push('METHOD:PUBLISH', `X-WR-CALNAME:${echapper(nom)}`, `X-WR-TIMEZONE:${TZ}`, `REFRESH-INTERVAL;VALUE=DURATION:${rafraichir}`, `X-PUBLISHED-TTL:${rafraichir}`);
   return [...tete.map(plier), VTIMEZONE_PARIS, ...vevents, 'END:VCALENDAR'].join('\r\n') + '\r\n';
+}
+
+// Lien d'abonnement (.ics) : les événements créés dans l'appli, et les occurrences de leurs séries modifiées ailleurs
+// (sur l'iPhone par CalDAV : lignes source « icloud » dont le source_uid vaut « <uid de la série>#<date> »).
+// Ces occurrences sont publiées avec l'UID de la série et un RECURRENCE-ID, comme dans la ressource CalDAV.
+export function veventsAbonnement(lignes, { noms = {}, maintenant = new Date() } = {}) {
+  const series = (lignes || []).filter((r) => !r.source);
+  const uids = new Set(series.map((r) => uidDe(r)));
+  const out = series.map((r) => vevent(r, { noms, maintenant }));
+  for (const r of lignes || []) {
+    const [uid, rid] = String(r.source_uid || '').split('#');
+    if (!r.source || !rid || !uids.has(uid)) continue;
+    out.push(vevent(r, { uid, recurrenceId: rid, noms, maintenant }));
+  }
+  return out;
 }
 
 // Un événement de l'appli et ses exceptions modifiées (lignes avec source_uid « uid#date ») → ressource CalDAV.

@@ -903,7 +903,7 @@ body.logged-out .tabbar, body.logged-out [data-act="settings"] { display: none; 
 .chips { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 8px; scrollbar-width: none; }
 .chips::-webkit-scrollbar { display: none; }
 .chip {
-  flex: none; min-height: 36px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--border);
+  flex: none; min-height: 44px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--border);
   background: var(--surface); font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;
 }
 .chip[aria-pressed="true"] { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
@@ -915,6 +915,8 @@ body.logged-out .tabbar, body.logged-out [data-act="settings"] { display: none; 
 }
 .input:focus { border-color: var(--primary); }
 textarea.input { resize: vertical; min-height: 72px; }
+/* iPhone : Safari agrandit la page dès qu'on touche un champ ou un menu écrit en moins de 16 px. */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]), select, textarea { font-size: max(16px, 1em) !important; }
 .empty { text-align: center; padding: 40px 16px; color: var(--muted); }
 .empty svg { width: 56px; height: 56px; color: var(--primary); opacity: .8; }
 .toast {
@@ -1189,8 +1191,12 @@ h1, h2, h3, .sheet-head h2, .section-title, .tl-head { font-weight: 800; letter-
 .segbar::-webkit-scrollbar { display: none; }
 .segbar button {
   flex: none; border: 2px solid var(--ink); background: var(--surface); color: var(--ink);
-  border-radius: 999px; padding: 7px 14px; font: inherit; font-weight: 800; font-size: 14px; min-height: 38px; white-space: nowrap;
+  border-radius: 999px; padding: 7px 14px; font: inherit; font-weight: 800; font-size: 14px; min-height: 44px; white-space: nowrap;
 }
+/* La barre défile : fondu sur le bord qui cache encore des segments (classes posées par Nav.centrerSegment). */
+.segbar.fondu-droite { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 32px), transparent); }
+.segbar.fondu-gauche { -webkit-mask-image: linear-gradient(90deg, transparent, #000 32px); mask-image: linear-gradient(90deg, transparent, #000 32px); }
+.segbar.fondu-gauche.fondu-droite { -webkit-mask-image: linear-gradient(90deg, transparent, #000 32px, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(90deg, transparent, #000 32px, #000 calc(100% - 32px), transparent); }
 .segbar button[aria-pressed="true"] { background: var(--primary); color: var(--on-primary); box-shadow: 0 2px 0 var(--ink); }
 .plus-retour { margin: 2px 0 12px; }
 .plus-retour svg { width: 16px; height: 16px; }
@@ -1276,13 +1282,13 @@ button.af-carte:active { transform: translateY(1px); }
 .async-erreur { color: var(--danger); }
 .async-alerte { color: var(--primary-strong); background: var(--primary-soft); border-radius: 12px; padding: 8px 10px; margin: 0 0 6px; }
 .async-aide { font-size: 14px; }
-.async-aide summary { cursor: pointer; font-weight: 700; color: var(--primary-strong); min-height: 32px; display: flex; align-items: center; }
+.async-aide summary { cursor: pointer; font-weight: 700; color: var(--primary-strong); min-height: 44px; display: flex; align-items: center; }
 .async-aide ol, .async-etapes { margin: 6px 0 0; padding-left: 22px; display: flex; flex-direction: column; gap: 6px; line-height: 1.4; }
 .async-etapes { font-size: 15px; margin-bottom: 12px; }
 .async-cal { justify-content: flex-start; gap: 10px; }
 .async-pastille { width: 14px; height: 14px; border-radius: 50%; flex: none; border: 1.5px solid var(--ink); }
 .async-notes { white-space: pre-line; overflow-wrap: anywhere; }
-.btn-link { background: none; border: 0; padding: 0; font: inherit; color: var(--primary-strong); text-decoration: underline; cursor: pointer; }
+.btn-link { background: none; border: 0; padding: 0; font: inherit; color: var(--primary-strong); text-decoration: underline; cursor: pointer; min-height: 44px; display: inline-flex; align-items: center; }
 /* ==== module agenda ==== */
 /* Module « Agenda familial » : uniquement des jetons du thème (la couleur d'un membre arrive par --agenda-c). */
 .agenda { display: block; }
@@ -1317,7 +1323,7 @@ button.af-carte:active { transform: translateY(1px); }
 .agenda-rep svg { width: 16px; height: 16px; }
 .agenda-source { align-self: center; flex: none; font-size: 11px; font-weight: 700; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 1px 7px; }
 .agenda-vide { margin: 4px 0; color: var(--muted); font-size: 14px; }
-.agenda-jour-titre { display: flex; align-items: center; gap: 8px; width: 100%; border: 0; background: transparent; padding: 2px 0 8px; text-align: left; color: var(--ink); }
+.agenda-jour-titre { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 44px; border: 0; background: transparent; padding: 2px 0 8px; text-align: left; color: var(--ink); }
 .agenda-jour-titre b { flex: 1; font-size: 15px; }
 .agenda-jour-titre svg { width: 18px; height: 18px; color: var(--muted); }
 .agenda-jour.auj { box-shadow: var(--shadow), inset 0 0 0 2px var(--primary); }
@@ -1375,13 +1381,16 @@ button.af-carte:active { transform: translateY(1px); }
 .agenda-couleur { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .agenda-couleur .grow { display: flex; align-items: center; min-width: 90px; }
 .agenda-nuancier { display: flex; gap: 6px; }
-.agenda-nuance { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--surface); background: var(--agenda-c); box-shadow: 0 0 0 1px var(--border); padding: 0; }
-.agenda-nuance[aria-checked="true"] { box-shadow: 0 0 0 3px var(--ink); }
+/* Pastille de 32 px dessinée au centre d'une cible de 44 px (fond clippé au contenu, bord transparent). */
+.agenda-nuance { width: 44px; height: 44px; border-radius: 50%; border: 6px solid transparent; background: var(--agenda-c) content-box; box-shadow: inset 0 0 0 2px var(--surface), 0 0 0 0 transparent; padding: 0; position: relative; }
+.agenda-nuance::after { content: ""; position: absolute; inset: 0; border-radius: 50%; box-shadow: 0 0 0 1px var(--border); pointer-events: none; }
+.agenda-nuance[aria-checked="true"]::after { box-shadow: 0 0 0 3px var(--ink); }
 .agenda-affichage { display: flex; flex-direction: column; margin-bottom: 8px; }
 @media (max-width: 370px) {
   .agenda-modes button { font-size: 12px; }
   .agenda-heure { width: 54px; }
-  .agenda-nuance { width: 28px; height: 28px; }
+  .agenda-nuancier { gap: 0; }
+  .agenda-nuance { width: 40px; height: 40px; border-width: 5px; }
 }
 @media (prefers-reduced-motion: reduce) { .agenda-item { transition: none; } }
 /* ==== module carnet ==== */
@@ -1980,6 +1989,8 @@ button.af-carte:active { transform: translateY(1px); }
 
 /* ---------- Carnet de bord : papeterie, bullet journal ---------- */
 :root[data-univers="carnet"], [data-uapercu="carnet"] {
+  /* Couleurs des membres (agenda, fil, briefing) : six teintes bien distinctes. */
+  --m1: #2D47C9; --m2: #D9480F; --m3: #0F766E; --m4: #B83280; --m5: #7C3AED; --m6: #8A6D00;
   --bg: #FAFAF6; --surface: #FFFFFF; --surface-2: #EEF2FA; --text: #1E2A5A; --ink: #1E2A5A; --muted: #4A5478;
   --border: #C9D2E6; --primary: #2D47C9; --primary-strong: #2D47C9; --primary-soft: #E3E8FB; --on-primary: #FFFFFF; --sage-light: #9AA8E6;
   --mint: #2B9BC4; --mint-soft: #E1F1F7; --mango: #FFE86B; --mango-strong: #E9A21B; --mango-soft: #FFF6C4; --sky: #2B9BC4;
@@ -1996,6 +2007,8 @@ button.af-carte:active { transform: translateY(1px); }
 
 /* ---------- Washi : japonais minimal ---------- */
 :root[data-univers="washi"], [data-uapercu="washi"] {
+  /* Couleurs des membres (agenda, fil, briefing) : six teintes bien distinctes. */
+  --m1: #A82C22; --m2: #2F4A6D; --m3: #5B7A2F; --m4: #C08A1F; --m5: #7A4F9A; --m6: #8A8A84;
   --bg: #F3F2EE; --surface: #FBFBF9; --surface-2: #ECEAE3; --text: #1C1C1A; --ink: #1C1C1A; --muted: #57564F;
   --border: #D9D6CC; --primary: #1C1C1A; --primary-strong: #A82C22; --primary-soft: #F3E3E0; --on-primary: #F3F2EE; --sage-light: #D9A39C;
   --mint: #2F4A6D; --mint-soft: #E4E9EF; --mango: #E8DDC4; --mango-strong: #9A7A35; --mango-soft: #F1ECE0; --sky: #2F4A6D;
@@ -2011,6 +2024,8 @@ button.af-carte:active { transform: translateY(1px); }
 
 /* ---------- Herbier : nature et botanique ---------- */
 :root[data-univers="herbier"], [data-uapercu="herbier"] {
+  /* Couleurs des membres (agenda, fil, briefing) : six teintes bien distinctes. */
+  --m1: #2F5D3A; --m2: #2E86AB; --m3: #C2571A; --m4: #8C3B5A; --m5: #A89A2A; --m6: #6B57A8;
   --bg: #E9EEDF; --surface: #F8FAF2; --surface-2: #DDE7CF; --text: #1F3324; --ink: #1F3324; --muted: #46584A;
   --border: #B7C6A8; --primary: #2F5D3A; --primary-strong: #2F5D3A; --primary-soft: #E3ECD6; --on-primary: #F8FAF2; --sage-light: #9FBF95;
   --mint: #5E9B6A; --mint-soft: #DCEBD7; --mango: #E4D9A6; --mango-strong: #C08A1F; --mango-soft: #F1ECCF; --sky: #3F7E99;
@@ -2027,6 +2042,8 @@ button.af-carte:active { transform: translateY(1px); }
 
 /* ---------- Cocon : doux pastel ---------- */
 :root[data-univers="cocon"], [data-uapercu="cocon"] {
+  /* Couleurs des membres (agenda, fil, briefing) : six teintes bien distinctes. */
+  --m1: #E0705A; --m2: #5B8FCF; --m3: #3FA88C; --m4: #9A6BB0; --m5: #D9A93A; --m6: #D6589A;
   --bg: #FCEFEA; --surface: #FFFFFF; --surface-2: #EAF5F1; --text: #3D3550; --ink: #3D3550; --muted: #625A74;
   --border: #EADBD5; --primary: #F6BBAA; --primary-strong: #7A4E8A; --primary-soft: #FDE3DA; --on-primary: #3D3550; --sage-light: #F6BBAA;
   --mint: #6FC0A6; --mint-soft: #E3F4EE; --mango: #FFE3A3; --mango-strong: #E9C15B; --mango-soft: #FFF3D6; --sky: #7BA7D9;
@@ -2043,6 +2060,8 @@ button.af-carte:active { transform: translateY(1px); }
 
 /* ---------- Kermesse : maximaliste coloré ---------- */
 :root[data-univers="kermesse"], [data-uapercu="kermesse"] {
+  /* Couleurs des membres (agenda, fil, briefing) : six teintes bien distinctes. */
+  --m1: #2B3BDB; --m2: #FF4F8B; --m3: #10B39A; --m4: #FFB000; --m5: #8B2FC9; --m6: #E8590C;
   --bg: #FFE6EE; --surface: #FFFFFF; --surface-2: #DDF5EE; --text: #1A1446; --ink: #1A1446; --muted: #3E3770;
   --border: #CFC8EA; --primary: #2B3BDB; --primary-strong: #2B3BDB; --primary-soft: #E3E6FF; --on-primary: #FFFFFF; --sage-light: #FF8FB4;
   --mint: #10B39A; --mint-soft: #DDF5EE; --mango: #FFD23F; --mango-strong: #FFB000; --mango-soft: #FFF4C7; --sky: #2B3BDB;
@@ -2110,6 +2129,11 @@ button.af-carte:active { transform: translateY(1px); }
   border: 1.5px solid var(--border); border-radius: var(--u-r-champ); background: var(--surface);
 }
 :root[data-univers] .input:focus { border-color: var(--primary-strong); box-shadow: 0 0 0 3px var(--primary-soft); }
+/* Scan : le champ du code-barres prend le fond clair des univers, donc le texte sombre. */
+:root[data-univers] .manual .input { color: var(--ink); }
+:root[data-univers] .manual .input::placeholder { color: var(--muted); opacity: 1; }
+/* Forme : choix cochés écrits en encre foncée sur un fond clair (--f-accent-2 = --primary-soft), bien repérables. */
+:root[data-univers] .f-chip input:checked + span { outline: 2px solid var(--primary-strong); outline-offset: -2px; }
 :root[data-univers] .icon-btn:hover { background: var(--surface-2); }
 
 /* Barre d'onglets */
@@ -2156,7 +2180,7 @@ button.af-carte:active { transform: translateY(1px); }
 /* Module Forme : ses ambiances de montagne cèdent la place à l'univers choisi */
 :root[data-univers] .forme[data-amb], :root[data-univers] .forme:not([data-amb]) {
   --f-bg: var(--bg); --f-surface: var(--surface); --f-surface-2: var(--surface-2); --f-ink: var(--ink); --f-muted: var(--muted);
-  --f-accent: var(--primary); --f-on-accent: var(--on-primary); --f-accent-2: var(--sky); --f-soft: var(--primary-soft);
+  --f-accent: var(--primary); --f-on-accent: var(--on-primary); --f-accent-2: var(--primary-soft); --f-soft: var(--primary-soft);
   --f-line: var(--border); --f-radius: var(--radius); --f-shadow: var(--shadow);
   --f-motif: linear-gradient(transparent, transparent);
 }
@@ -4839,6 +4863,24 @@ const Nav = {
     if (vues.length < 2) return '';
     const o = ONGLETS.find((x) => x.id === m.onglet);
     return `<nav class="segbar" aria-label="Sections ${esc(o.libelle)}">${vues.map((v) => `<button data-act="tab" data-tab="${v.id}" aria-pressed="${v.id === m.id}">${esc(v.segment)}</button>`).join('')}</nav>`;
+  },
+  // Après chaque rendu : la barre de segments (reconstruite, donc revenue au début) est ramenée sur le segment actif,
+  // sans faire défiler la page ; un fondu sur le bord indique qu'elle défile.
+  centrerSegment(racine = document) {
+    const bar = racine?.querySelector?.('.segbar');
+    if (!bar) return;
+    const b = bar.querySelector('[aria-pressed="true"]');
+    if (b) {
+      const rb = b.getBoundingClientRect(), rr = bar.getBoundingClientRect();
+      bar.scrollLeft = Math.max(0, bar.scrollLeft + (rb.left + rb.width / 2) - (rr.left + rr.width / 2));
+    }
+    const bords = () => {
+      const max = bar.scrollWidth - bar.clientWidth;
+      bar.classList.toggle('fondu-gauche', max > 1 && bar.scrollLeft > 1);
+      bar.classList.toggle('fondu-droite', max > 1 && bar.scrollLeft < max - 1);
+    };
+    bords();
+    bar.addEventListener('scroll', bords, { passive: true });
   },
   menuPlus() {
     const lignes = Modules.vues('plus').map((v) => `<button class="plus-ligne" data-act="plus-ouvrir" data-id="${v.id}">
@@ -8819,6 +8861,7 @@ function render() {
   let vue;
   try { vue = m.rendu(); } catch (e) { console.error(`écran ${m.id}`, e); vue = `<div class="empty"><p>Cet écran n'a pas pu s'afficher.</p></div>`; }
   main.innerHTML = (state.offline ? `<div class="offline-banner">${ICON.info} Hors ligne : données du dernier chargement${Queue.size() ? ` · ${Queue.size()} saisie(s) en attente` : ''}</div>` : '') + Nav.segments(m) + vue;
+  Nav.centrerSegment(main);
 }
 // Ouvre un écran ou un onglet (dans ce cas, son dernier écran affiché).
 function switchTab(tab) {
@@ -9015,7 +9058,8 @@ Modules.register({ id: 'widget', onglet: 'plus', segment: 'Widget', ordre: 70, i
 
 // Analyseurs du cœur : article de courses, repas, séance. Les événements et les tâches viennent des modules agenda et taches.
 const ARTICLE_VERBE = /^\s*(?:acheter|achète|achete|ajoute[rz]?|prendre|racheter|il (?:faut|manque)|plus de|courses?\s*:?)\s+/i;
-const ARTICLE_DET = /^(?:du|de la|de l'|de l’|des|de|d'|d’|un|une|le|la|les|l'|l’)\s*/i;
+// Article en tête : mot entier suivi d'une espace (« la », « les »…), ou élision (« l' », « d' ») : « lait » et « levure » restent entiers.
+const ARTICLE_DET = /^(?:(?:de l|d|l)['’]\s*|(?:du|de la|des|de|un|une|le|la|les)\s+)/i;
 function analyseArticles(texte) {
   const verbe = ARTICLE_VERBE.test(texte);
   const items = texte.replace(ARTICLE_VERBE, '').split(/\s*(?:,|;|\n|\bet\b|\+)\s*/i).map((x) => x.trim()).filter(Boolean).map((x) => {
@@ -9181,6 +9225,9 @@ function openFoyerComptes() {
     try { await Foyer.loadComptes(); } catch (e) { fail(e); }
     const f = state.foyer;
     const admin = Foyer.isAdmin();
+    // « Je suis… » : choisi une fois ; ensuite seul un administrateur le change (règle 2026-11-16_comptes.sql).
+    const verrouMoi = !admin && !!state.compte?.member_id;
+    const pris = new Set((state.comptes || []).filter((c) => c.user_id !== me() && c.member_id).map((c) => c.member_id));
     const comptes = state.comptes.map((c) => {
       const m = memberById(c.member_id);
       const mine = c.user_id === me();
@@ -9195,9 +9242,9 @@ function openFoyerComptes() {
         <p class="muted small" style="margin:6px 0 0">Un proche crée son compte, puis saisit ce code dans Paramètres › Mon foyer › Rejoindre : il verra et modifiera les mêmes recettes, planning et courses.</p>
       </div>
       ${admin ? `<form class="row" data-form="foyer-nom" style="margin-bottom:12px"><input class="input grow" name="nom" value="${esc(f.nom)}" maxlength="60" aria-label="Nom du foyer"><button class="btn">Renommer</button></form>` : ''}
-      <label class="field" style="margin-bottom:12px"><span>Je suis…</span><select class="input" data-x="me">
-        <option value="">— non précisé —</option>${state.members.map((m) => `<option value="${m.id}" ${state.compte?.member_id === m.id ? 'selected' : ''}>${esc(m.nom)}</option>`).join('')}</select>
-        <span class="muted small" style="font-weight:400">Le suivi et le journal s'ouvrent sur ce membre.</span></label>
+      <label class="field" style="margin-bottom:12px"><span>Je suis…</span><select class="input" data-x="me" ${verrouMoi ? 'disabled' : ''}>
+        <option value="">— non précisé —</option>${state.members.map((m) => `<option value="${m.id}" ${state.compte?.member_id === m.id ? 'selected' : ''} ${pris.has(m.id) ? 'disabled' : ''}>${esc(m.nom)}${pris.has(m.id) ? ' (déjà relié)' : ''}</option>`).join('')}</select>
+        <span class="muted small" style="font-weight:400">${verrouMoi ? 'Pour corriger ce choix, demande à un administrateur du foyer : il protège les surprises (envies de cadeaux).' : 'Le suivi et le journal s\'ouvrent sur ce membre. Un seul choix : ensuite, seul un administrateur peut le corriger.'}</span></label>
       <div class="ntable"><div class="nt-title">Comptes du foyer</div>${comptes}</div>
       <details class="ndetails"><summary>Rejoindre un autre foyer</summary>
         <p class="muted small">Vos données actuelles resteront dans votre foyer actuel. Saisissez le code reçu :</p>
@@ -9571,6 +9618,22 @@ function rappelsAgenda(elements, maintenant) {
   return out;
 }
 
+// Rappels choisis pour une personne dans la fiche d'un événement (« Antoine : la veille »), venus de rappelsPeriode
+// de l'agenda : [{ evenement_id, member_id, minutes, quand, debut, titre }]. Un rappel par personne et par occurrence,
+// à l'heure choisie (pas d'evenement_a : le délai général de chacun ne s'applique pas).
+function rappelsPersonnes(rappels, maintenant) {
+  const out = [];
+  for (const r of rappels || []) {
+    if (!r.member_id || !(r.debut > maintenant)) continue;
+    const jourEv = isoDate(r.debut);
+    const jour = isoDate(maintenant) === jourEv ? 'Aujourd\'hui' : isoDate(addDays(maintenant, 1)) === jourEv ? 'Demain' : `Le ${jourEv.split('-').reverse().slice(0, 2).join('/')}`;
+    const heure = `${String(r.debut.getHours()).padStart(2, '0')}:${String(r.debut.getMinutes()).padStart(2, '0')}`;
+    out.push({ id: `evr:${r.evenement_id}:${r.member_id}:${r.minutes}:${jourEv}:${isoDate(r.quand)}`, type: 'evenements', titre: r.titre, corps: `${jour} à ${heureFr(heure)}`, url: './#agenda',
+      pour_membres: [r.member_id], envoyer_a: r.quand, expire_a: r.debut });
+  }
+  return out;
+}
+
 // ---------------------------------------------------------------------------
 // État et données
 // ---------------------------------------------------------------------------
@@ -9651,7 +9714,8 @@ async function planifier() {
     const sig = `${ligne.corps}|${p.briefing_heure}`;
     if (faits[ligne.id] !== sig) { await N.programmer(ligne); faits[ligne.id] = sig; briefing = true; }
   }
-  const rappels = rappelsAgenda(await Agenda.elements(maintenant, addDays(maintenant, 2)), maintenant);
+  const parPersonne = Modules.get('agenda')?.expose?.rappelsPersonnes?.(maintenant, addDays(maintenant, 2)) || [];
+  const rappels = [...rappelsAgenda(await Agenda.elements(maintenant, addDays(maintenant, 2)), maintenant), ...rappelsPersonnes(parPersonne, maintenant)];
   const ids = new Set(rappels.map((r) => r.id));
   let nb = 0;
   for (const r of rappels) {
@@ -9663,7 +9727,7 @@ async function planifier() {
   }
   // Événements supprimés ou déplacés : leur rappel est retiré de la file.
   for (const id of Object.keys(faits)) {
-    if (!/^(evt|tache):/.test(id) || ids.has(id)) continue;
+    if (!/^(evt|evr|tache):/.test(id) || ids.has(id)) continue;
     const date = id.split(':').pop();
     if (date >= isoDate(maintenant)) await N.annuler(id).catch(() => {});
     delete faits[id];
@@ -9766,7 +9830,7 @@ Modules.register({
       if (champ) champ.insertAdjacentHTML('afterend', '<p class="muted small af-dictee"><span aria-hidden="true">🎙️</span> Pour dicter, touche le micro du clavier.</p>');
     },
   },
-  expose: { couleurMembre, concerne, filtrerFil, briefingVisible, detecterTrajet, classerBriefing, composerBriefing, resumeBriefing, briefingPourMoi, rappelsAgenda, heureFr, planifier },
+  expose: { couleurMembre, concerne, filtrerFil, briefingVisible, detecterTrajet, classerBriefing, composerBriefing, resumeBriefing, briefingPourMoi, rappelsAgenda, rappelsPersonnes, heureFr, planifier },
 });
 })();
 // ==== module agenda-synchro ====
@@ -10023,6 +10087,7 @@ function feuilleCalendriers(liste = caldav?.calendriers || []) {
   if (!liste.length) { toast('Aucun calendrier sur ce compte iCloud : crée-en un dans l\'app Calendrier'); return; }
   const el = openSheet(`${sheetHead('Quel calendrier iCloud ?')}
     <p class="muted small">Ses événements s'ajoutent à l'agenda de la famille, et ceux de la famille y sont copiés.</p>
+    ${caldav?.calendrier_url ? `<p class="muted small" data-changement>Changer de calendrier retire de l'agenda de la famille les événements reçus de « ${esc(caldav.calendrier_nom || 'l\'ancien calendrier')} », et retire de ce calendrier ceux que l'appli y avait copiés.</p>` : ''}
     <div class="stack">${liste.map((c) => `<button class="btn block async-cal" data-url="${esc(c.url)}"><span class="async-pastille" style="background:${/^#[0-9a-f]{6,8}$/i.test(c.couleur || '') ? c.couleur.slice(0, 7) : 'var(--primary)'}"></span>${esc(c.nom)}</button>`).join('')}</div>`);
   el.addEventListener('click', async (e) => {
     const b = e.target.closest('[data-url]');
@@ -10239,7 +10304,8 @@ const aplatir = (s) => s.split('').map((c) => c.toLowerCase().normalize('NFD')[0
 
 // --- Récurrences (fonctions pures) ---------------------------------------------
 // recurrence = { freq: 'quotidienne' | 'hebdo' | 'mensuelle' | 'annuelle', intervalle?: n, jours?: [1-7] (hebdo, lundi = 1),
-//                jusqu?: 'AAAA-MM-JJ' (inclus), nombre?: n (occurrences, exceptions comprises, comme COUNT en iCalendar) }
+//                jusqu?: 'AAAA-MM-JJ' (inclus), nombre?: n (occurrences, exceptions comprises, comme COUNT en iCalendar),
+//                nonGere?, rrule? (règle d'un autre agenda, gardée telle quelle et non modifiable ici) }
 // exceptions = ['AAAA-MM-JJ'] : dates retirées de la série.
 const FREQS = { quotidienne: 'Tous les jours', hebdo: 'Chaque semaine', mensuelle: 'Chaque mois', annuelle: 'Chaque année' };
 
@@ -10256,6 +10322,29 @@ function bornes(ev) {
   return { debut: d, jours: 0, duree: f - d };
 }
 
+// Règle mensuelle « n-ième jour de la semaine » d'un autre agenda (rrule BYDAY=2TU, -1FR) → { rang, jour: 1-7 } ou null.
+function rangJour(rec) {
+  if (!rec?.rrule || rec.freq !== 'mensuelle') return null;
+  const kv = Object.fromEntries(String(rec.rrule).replace(/^RRULE:/i, '').split(';').map((x) => x.split('=')).filter((x) => x.length === 2).map(([k, v]) => [k.toUpperCase(), v.toUpperCase()]));
+  if (Object.keys(kv).some((k) => !['FREQ', 'INTERVAL', 'BYDAY', 'UNTIL', 'COUNT', 'WKST'].includes(k))) return null;
+  const m = String(kv.BYDAY || '').match(/^([+-]?[1-5])(MO|TU|WE|TH|FR|SA|SU)$/);
+  return m ? { rang: Number(m[1]), jour: RR_JOURS.indexOf(m[2]) + 1 } : null;
+}
+// n-ième jour (1-7) d'un mois (rang négatif : en partant de la fin) ; null si ce mois n'en a pas.
+function nemeJour(an, mois, { rang, jour }) {
+  const premier = new Date(an, mois, 1);
+  const nbJours = new Date(premier.getFullYear(), premier.getMonth() + 1, 0).getDate();
+  if (rang > 0) {
+    const j = 1 + ((jour - jourIso(premier) + 7) % 7) + (rang - 1) * 7;
+    return j <= nbJours ? new Date(premier.getFullYear(), premier.getMonth(), j) : null;
+  }
+  const dernier = new Date(premier.getFullYear(), premier.getMonth(), nbJours);
+  const j = nbJours - ((jourIso(dernier) - jour + 7) % 7) + (rang + 1) * 7;
+  return j >= 1 ? new Date(premier.getFullYear(), premier.getMonth(), j) : null;
+}
+// Règle d'un autre agenda que l'appli ne sait pas calculer exactement : dates affichées approximatives.
+const approximative = (rec) => !!rec?.nonGere && !rangJour(rec);
+
 // Dates candidates d'une série (minuit local), dans l'ordre ; null = mois ou année sans ce jour (sauté).
 function* candidats(rec, d0) {
   const n = Math.max(1, Math.floor(Number(rec.intervalle) || 1));
@@ -10266,6 +10355,14 @@ function* candidats(rec, d0) {
     for (let w = 0; ; w++) {
       const base = addDays(lundi, w * 7 * n);
       for (const j of jours) { const x = addDays(base, j - 1); if (x >= d0) yield x; }
+    }
+  }
+  const rj = rangJour(rec);
+  if (rec.freq === 'mensuelle' && rj) {
+    // « 2e mardi du mois », « dernier vendredi » (règle venue d'un autre agenda) : dates exactes.
+    for (let k = 0; ; k++) {
+      const x = nemeJour(d0.getFullYear(), d0.getMonth() + k * n, rj);
+      yield x && x >= d0 ? x : null;
     }
   }
   if (rec.freq === 'mensuelle') {
@@ -10329,10 +10426,12 @@ function regleTexte(rec, debut) {
     if (n === 1) t = jours.length === 7 ? 'Tous les jours' : jours.length ? `Tous les ${listeEt(jours.map((j) => JOURS_PLURIEL[j - 1]))}` : 'Chaque semaine';
     else t = `${n === 2 ? 'Une semaine sur deux' : `Toutes les ${n} semaines`}${jours.length ? `, ${listeEt(jours.map((j) => `le ${JOURS[j - 1]}`))}` : ''}`;
   }
-  if (rec.freq === 'mensuelle') t = `${n === 1 ? 'Tous les mois' : `Tous les ${n} mois`}${d ? `, le ${quantieme(d.getDate())}` : ''}`;
+  const rj = rangJour(rec);
+  if (rec.freq === 'mensuelle') t = `${n === 1 ? 'Tous les mois' : `Tous les ${n} mois`}${rj ? `, le ${rj.rang === -1 ? 'dernier ' : rj.rang === -2 ? 'avant-dernier ' : rj.rang === 1 ? '1er ' : `${Math.abs(rj.rang)}e `}${JOURS[rj.jour - 1]}${rj.rang < -2 ? ' en partant de la fin' : ''}` : d ? `, le ${quantieme(d.getDate())}` : ''}`;
   if (rec.freq === 'annuelle') t = `${n === 1 ? 'Tous les ans' : `Tous les ${n} ans`}${d ? `, le ${quantieme(d.getDate())} ${MOIS[d.getMonth()]}` : ''}`;
   if (rec.jusqu) t += `, jusqu'au ${fmtDate(dIso(rec.jusqu))}`;
   else if (rec.nombre) t += `, ${rec.nombre} fois`;
+  if (approximative(rec)) t += ' (règle d\'un autre agenda : dates approximatives)';
   return t;
 }
 
@@ -10341,10 +10440,11 @@ const RR_FREQ = { quotidienne: 'DAILY', hebdo: 'WEEKLY', mensuelle: 'MONTHLY', a
 const RR_JOURS = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'];
 function versRRule(rec, { journee = false } = {}) {
   if (!rec || !RR_FREQ[rec.freq]) return '';
-  const p = [`FREQ=${RR_FREQ[rec.freq]}`];
+  // Règle d'un autre agenda : renvoyée telle quelle, seule la fin suit l'appli.
+  const p = rec.rrule ? String(rec.rrule).replace(/^RRULE:/i, '').split(';').filter((x) => x && !/^(UNTIL|COUNT)=/i.test(x)) : [`FREQ=${RR_FREQ[rec.freq]}`];
   const n = Math.max(1, Math.floor(Number(rec.intervalle) || 1));
-  if (n > 1) p.push(`INTERVAL=${n}`);
-  if (rec.freq === 'hebdo' && rec.jours && rec.jours.length) p.push(`BYDAY=${[...new Set(rec.jours.map(Number))].sort().map((j) => RR_JOURS[j - 1]).join(',')}`);
+  if (n > 1 && !rec.rrule) p.push(`INTERVAL=${n}`);
+  if (rec.freq === 'hebdo' && rec.jours && rec.jours.length && !rec.rrule) p.push(`BYDAY=${[...new Set(rec.jours.map(Number))].sort().map((j) => RR_JOURS[j - 1]).join(',')}`);
   if (rec.jusqu) {
     const f = dIso(rec.jusqu);
     if (journee) p.push(`UNTIL=${f.getFullYear()}${pad(f.getMonth() + 1)}${pad(f.getDate())}`);
@@ -10376,7 +10476,7 @@ function depuisRRule(texte) {
       rec.jusqu = isoDate(d);
     }
   }
-  if (nonGere) rec.nonGere = true;
+  if (nonGere) { rec.nonGere = true; rec.rrule = s; }
   return rec;
 }
 
@@ -10821,11 +10921,14 @@ async function enregistrer(row) {
   return ligneEnr;
 }
 // Notification « agenda modifié » aux autres comptes (module notifications ; coupée par défaut, chacun l'active).
+// Identifiant par tranche de 2 minutes : les retouches rapprochées n'en font qu'une, chaque modification plus tardive
+// fait une nouvelle ligne (une ligne déjà envoyée ne repart jamais).
+const idModif = (evId, t = Date.now()) => `agenda-modif:${evId}:${Math.floor(t / 120000)}`;
 function prevenirModif(ev, verbe) {
   const N = Modules.get('notifications')?.expose;
   if (!N?.programmer || ev.source) return;
   const qui = memberById(state.compte?.member_id)?.nom || 'Quelqu\'un';
-  N.programmer({ id: `agenda-modif:${ev.id}`, type: 'agenda_modifs', titre: 'Agenda de la famille', corps: `${qui} a ${verbe} « ${ev.titre} »`, url: './#agenda', sauf_auteur: true, envoyer_a: new Date(Date.now() + 2 * 60000) }).catch(() => {});
+  N.programmer({ id: idModif(ev.id), type: 'agenda_modifs', titre: 'Agenda de la famille', corps: `${qui} a ${verbe} « ${ev.titre} »`, url: './#agenda', sauf_auteur: true, envoyer_a: new Date(Date.now() + 2 * 60000) }).catch(() => {});
 }
 async function supprimer(ev, portee, date) {
   if (portee === 'une') { await enregistrer({ ...ev, exceptions: [...new Set([...(ev.exceptions || []), date])] }); toast('Cette fois est retirée de la série'); }
@@ -10868,7 +10971,7 @@ function formulaire(ev = null, { occurrence = null } = {}) {
       ${state.members.length ? `<div class="field"><span>Pour qui ?</span><div class="chips wrap" role="group" aria-label="Pour qui">${state.members.map((m) => `<button type="button" class="chip" data-membre="${m.id}" aria-pressed="${membresSel.has(m.id)}">${pastille(couleurMembre(m.id))}${esc(m.nom)}</button>`).join('')}</div><small class="muted">Personne de choisi : toute la famille.</small></div>
       <div class="grid2"><label class="field"><span>Qui s'en occupe (aller)</span><select class="input" name="responsable">${optsMembres(base.responsable)}</select></label>
         <label class="field"><span>Retour</span><select class="input" name="responsable_retour">${optsMembres(base.responsable_retour)}</select></label></div>` : ''}
-      ${occurrence ? '' : `<label class="field"><span>Répétition</span><select class="input" name="freq">${opt('', rec?.freq, 'Ne se répète pas')}${Object.entries(FREQS).map(([k, l]) => opt(k, rec?.freq, l)).join('')}</select></label>
+      ${occurrence ? '' : rec?.nonGere ? `<div class="field" data-rec-figee><span>Répétition</span><p class="muted small">${esc(regleTexte(rec, base.debut))}. Cette règle vient d'un autre agenda : modifie-la là-bas, elle est gardée telle quelle ici.</p></div>` : `<label class="field"><span>Répétition</span><select class="input" name="freq">${opt('', rec?.freq, 'Ne se répète pas')}${Object.entries(FREQS).map(([k, l]) => opt(k, rec?.freq, l)).join('')}</select></label>
       <div class="agenda-rec stack" data-si="rec">
         <label class="field agenda-inter"><span>Intervalle</span><span class="row">Toutes les <input class="input" type="number" name="intervalle" min="1" max="52" inputmode="numeric" value="${esc(rec?.intervalle || 1)}"> <span data-unite></span></span></label>
         <div class="field" data-si="hebdo"><span>Les jours</span><div class="agenda-jours" role="group" aria-label="Jours de la semaine">${JOURS.map((j, i) => `<button type="button" class="chip" data-jour="${i + 1}" aria-label="${j}" aria-pressed="${(rec?.jours || [jourIso(deb)]).includes(i + 1)}">${JOURS_COURT[i]}</button>`).join('')}</div></div>
@@ -10936,7 +11039,7 @@ function formulaire(ev = null, { occurrence = null } = {}) {
     const p = { titre: titreSaisi, categorie: $('[data-cat][aria-pressed="true"]', f)?.dataset.cat || 'evenement', journee: f.journee.checked, date: f.date.value, heure: f.heure.value || '09:00',
       dateFin: f.date_fin.value || f.date.value, heureFin: f.heure_fin.value, lieu: f.lieu.value.trim(), notes: f.notes.value.trim(),
       membres: $$('[data-membre][aria-pressed="true"]', f).map((b) => b.dataset.membre), responsable: f.responsable?.value || null, responsableRetour: f.responsable_retour?.value || null,
-      recurrence: occurrence ? null : lireRec(), exceptions: occurrence ? [] : base.exceptions || [],
+      recurrence: occurrence ? null : rec?.nonGere ? rec : lireRec(), exceptions: occurrence ? [] : base.exceptions || [],
       rappels: state.members.filter((m) => f[`rappel_${m.id}`] && f[`rappel_${m.id}`].value !== '').map((m) => ({ member_id: m.id, minutes: Number(f[`rappel_${m.id}`].value) })) };
     const debutN = p.journee ? dIso(p.date) : avecHeure(dIso(p.date), p.heure);
     const finN = p.journee ? dIso(p.dateFin) : avecHeure(dIso(p.dateFin), p.heureFin || p.heure);
@@ -11071,7 +11174,7 @@ Modules.register({
       formulaire({ ...versLigne(p), id: undefined });
     },
   },
-  expose: { occurrences, prochaine, regleTexte, versRRule, depuisRRule, rappelsPeriode, parseEvenement, versLigne, joursFeries, paques, feriesDepuisApi, vacancesDepuisApi,
+  expose: { occurrences, prochaine, regleTexte, versRRule, depuisRRule, rappelsPeriode, idModif, rappelsPersonnes: (a, b) => rappelsPeriode(evenements, a, b), parseEvenement, versLigne, joursFeries, paques, feriesDepuisApi, vacancesDepuisApi,
     fetesFamille, anniversairesMembres, slotMembre, fmtHeure, fmtJourCourt, titrePeriode, periode, bornes },
 });
 })();
@@ -12344,15 +12447,25 @@ async function ajouterArticle(nom, qte = '') {
 // Rendu : liaison
 // ---------------------------------------------------------------------------
 const ICO_SYNC = I('<path d="M21 12a9 9 0 1 1-2.6-6.4L21 8"/><path d="M21 3v5h-5"/>');
+// État de la liaison → { etat, texte (HTML), jamais } ; jamais : rien n'a encore été reçu du robot.
+function etatLiaison(l, donnees, ilYaTxt = ilYa) {
+  const etat = !l ? 'attente' : l.statut;
+  const actif = !!l && ['ok', 'erreur'].includes(l.statut);
+  const jamais = !donnees && !l?.derniere_synchro;
+  let texte;
+  if (actif && l.derniere_synchro) texte = `Synchronisé ${esc(ilYaTxt(l.derniere_synchro))}${l.statut === 'erreur' ? ' · <span class="cmc-alerte">dernière synchro en échec</span>' : ''}`;
+  else if (actif) texte = 'Relié · en attente de la première synchronisation';
+  else if (jamais) texte = 'Pas encore relié : la liste et le planning arriveront après la première synchronisation.';
+  else if (etat === 'deconnecte') texte = '<span class="cmc-alerte">Liaison à refaire</span> · dernières données conservées';
+  else texte = 'Liaison coupée · dernières données conservées';
+  return { etat: jamais && !actif ? 'attente' : etat, texte, jamais };
+}
 function carteLiaison() {
-  const etat = !liaison ? 'attente' : liaison.statut;
-  const texte = lie()
-    ? `Synchronisé ${esc(ilYa(liaison.derniere_synchro))}${liaison.statut === 'erreur' ? ' · <span class="cmc-alerte">dernière synchro en échec</span>' : ''}`
-    : etat === 'deconnecte' ? '<span class="cmc-alerte">Liaison à refaire</span> · dernières données conservées' : 'Liaison non active · dernières données conservées';
+  const { etat, texte, jamais } = etatLiaison(liaison, planning.length > 0 || coursesMc.length > 0 || recettes.size > 0);
   return `<div class="cmc-liaison card"><span class="cmc-pastille" data-etat="${esc(etat)}" aria-hidden="true"></span>
     <div class="grow"><b>Monsieur Cuisine</b><div class="muted small">${texte}</div></div>
     ${lie() ? `<button class="btn small" data-act="cmc-synchro" aria-label="Synchroniser maintenant">${ICO_SYNC}<span>Synchroniser</span></button>` : ''}
-    <button class="icon-btn" data-act="mc-sheet" aria-label="État de la liaison Monsieur Cuisine">${ICON.info}</button></div>`;
+    ${jamais && !lie() ? '<button class="btn small" data-act="mc-sheet">Comment relier ?</button>' : `<button class="icon-btn" data-act="mc-sheet" aria-label="État de la liaison Monsieur Cuisine">${ICON.info}</button>`}</div>`;
 }
 function choixSource() {
   const src = store.get('cmc:source', 'mc');
@@ -12687,7 +12800,7 @@ Modules.register({
   },
   expose: {
     RAYONS, rayonDe, rayonMc, lireNombre, decouperQuantite, uniteBase, formatQuantite, formatQuantites, uniteLisible, nettoyerNom, cleArticle, estMateriel,
-    analyserLigne, construireListe, cocheActive, texteListe, ingredientsRecette, etapesLisibles, versIngredientCoeur, nutrimentsMc, repasDeLaSemaine, prochainRepas, ilYa,
+    analyserLigne, construireListe, cocheActive, texteListe, ingredientsRecette, etapesLisibles, versIngredientCoeur, nutrimentsMc, repasDeLaSemaine, prochainRepas, ilYa, etatLiaison,
     // Pour les tests de bout en bout : simule un changement reçu en direct d'un autre téléphone.
     recevoir,
   },
@@ -14290,8 +14403,9 @@ function copieModele(modele, elements, { titre, date_debut = null, date_fin = nu
   return { liste, elements: els };
 }
 
-// Réservation d'une envie visible par le compte courant ? Jamais pour la personne concernée (double sécurité, la RLS filtre déjà).
-const reservationVisible = (envie, resa, monMembre) => !!resa && resa.envie_id === envie.id && (!monMembre || envie.member_id !== monMembre);
+// Réservation d'une envie visible par le compte courant ? Jamais pour la personne concernée (double sécurité, la RLS filtre déjà),
+// ni pour un compte pas encore relié à son profil : il pourrait être la personne concernée.
+const reservationVisible = (envie, resa, monMembre) => !!monMembre && !!resa && resa.envie_id === envie.id && envie.member_id !== monMembre;
 
 // Éléments du fil de l'Accueil : tâches du jour et en retard (pour la personne, ou pour toute la famille).
 function elementsAccueil(taches, { iso, membre = null, famille = false, nom = () => '' } = {}) {
@@ -14501,11 +14615,13 @@ async function creerTache(donnees) {
   return t;
 }
 // Notification « tâche confiée » (module notifications) : seulement quand le responsable change et n'est pas soi.
+// Chaque attribution a son identifiant (une tâche peut revenir plus tard à la même personne).
+const idConfiee = (t, quand = Date.now()) => `tache-confiee:${t.id}:${t.responsable}:${quand.toString(36)}`;
 async function prevenirResponsable(t, avant) {
   const N = Modules.get('notifications')?.expose;
   if (!N?.programmer || !t.responsable || t.fait || avant?.responsable === t.responsable || t.responsable === monMembre()) return;
   const qui = nomMembre(state.compte?.member_id) || 'Quelqu\'un';
-  await N.programmer({ id: `tache-confiee:${t.id}:${t.responsable}`, type: 'taches', titre: 'Une tâche pour toi', corps: `${qui} : ${t.titre}${t.echeance ? ` (${libelleEcheance(t.echeance, aujourdhui()).toLowerCase()})` : ''}`, url: './#taches', pour_membres: [t.responsable], sauf_auteur: true });
+  await N.programmer({ id: idConfiee(t), type: 'taches', titre: 'Une tâche pour toi', corps: `${qui} : ${t.titre}${t.echeance ? ` (${libelleEcheance(t.echeance, aujourdhui()).toLowerCase()})` : ''}`, url: './#taches', pour_membres: [t.responsable], sauf_auteur: true });
 }
 
 async function basculerTache(t) {
@@ -14947,7 +15063,7 @@ function vueEnvies() {
   const carte = (e) => {
     const r = moi ? null : resaDe(e);
     let etat = '';
-    if (!moi) {
+    if (!moi && monMembre()) {
       if (!r) etat = `<button class="btn small primary" data-act="taches-envie-reserver" data-id="${e.id}">Je m'en occupe</button>`;
       else if (r.user_id === me()) {
         etat = `<span class="taches-pris moi">${r.offert ? 'Offert par toi' : 'Tu t\'en occupes'}</span>${r.offert ? '' : `<button class="btn small" data-act="taches-envie-offert" data-id="${e.id}">Offert</button>`}
@@ -14963,7 +15079,8 @@ function vueEnvies() {
   };
   const note = moi
     ? `<p class="muted small taches-aide">C'est ta liste : les autres voient qui s'occupe de quoi, toi non. La surprise reste entière.</p>`
-    : `<p class="muted small taches-aide">« Je m'en occupe » reste invisible pour ${esc(m.nom)}.${monMembre() ? '' : ' Relie ton compte à ton profil (Réglages › Foyer) pour que ta propre liste garde aussi la surprise.'}</p>`;
+    : monMembre() ? `<p class="muted small taches-aide">« Je m'en occupe » reste invisible pour ${esc(m.nom)}.</p>`
+      : `<p class="muted small taches-aide">Pour réserver un cadeau, relie d'abord ton compte à ton profil (Plus › Mon foyer › « Je suis… ») : la surprise reste ainsi gardée pour chacun.</p>`;
   return `<div class="chips taches-chips">${membres.map((x) => `<button class="chip" data-act="taches-envies-membre" data-v="${x.id}" aria-pressed="${x.id === m.id}">${esc(x.nom)}${x.id === monMembre() ? ' (moi)' : ''}</button>`).join('')}</div>
     <div class="row taches-entete"><h3 class="section-title grow">${moi ? 'Mes envies' : `Les envies de ${esc(m.nom)}`}</h3><button class="btn small" data-act="taches-envie-nouvelle">${ICON.plus} Ajouter</button></div>
     ${note}
@@ -15066,7 +15183,7 @@ const actions = {
   'taches-envie-modifier': (b) => { const e = D.envies.find((x) => x.id === b.dataset.id); if (e) feuilleEnvie(e); },
   'taches-envie-reserver': async (b) => {
     const e = D.envies.find((x) => x.id === b.dataset.id);
-    if (!e || e.member_id === monMembre()) return;
+    if (!e || !monMembre() || e.member_id === monMembre()) return;
     try { await enregistrer(T.envies_reservations, D.resas, { envie_id: e.id, member_id: e.member_id, offert: false }, { onConflict: 'envie_id' }); toast(`C'est noté : ${nomMembre(e.member_id)} n'en saura rien`); render(); } catch (err) { fail(err); }
   },
   'taches-envie-offert': async (b) => {
@@ -15144,7 +15261,7 @@ Modules.register({
     { type: 'taches', libelle: 'Tâches', description: 'Une tâche t\'est confiée, est faite, ou arrive à échéance.' },
     { type: 'liste-depart', libelle: 'Listes de départ', description: 'La veille d\'un départ, ce qui reste à cocher', defaut: false },
   ],
-  expose: { analyseTache, prochaineEcheance, libelleRecurrence, libelleEcheance, groupesTaches, progression, sectionsDe, titreVacances, copieModele, reservationVisible, elementsAccueil, MODELES, elementsModele },
+  expose: { idConfiee, analyseTache, prochaineEcheance, libelleRecurrence, libelleEcheance, groupesTaches, progression, sectionsDe, titreVacances, copieModele, reservationVisible, elementsAccueil, MODELES, elementsModele },
 });
 })();
 // ==== module univers-securite ====

@@ -263,3 +263,20 @@ describe('cuisine-mc : planning et accueil', () => {
     assert.equal(props[0].resume, 'Lait, 2 kg Pommes');
   });
 });
+
+describe('carte de liaison', () => {
+  const t = (s) => String(s).replace(/<[^>]+>/g, '');
+  test('jamais relié : pas de « dernières données conservées », et un renvoi vers l\'aide', () => {
+    const r = plain(m.etatLiaison(null, false));
+    assert.equal(r.jamais, true);
+    assert.equal(r.etat, 'attente');
+    assert.match(r.texte, /^Pas encore relié/);
+    assert.doesNotMatch(r.texte, /conservées/);
+  });
+  test('liaison coupée avec des données : elles sont dites conservées', () => {
+    assert.match(t(m.etatLiaison(null, true).texte), /Liaison coupée · dernières données conservées/);
+    assert.match(t(m.etatLiaison({ statut: 'deconnecte', derniere_synchro: '2026-10-20T10:00:00Z' }, true).texte), /Liaison à refaire · dernières données conservées/);
+    assert.match(m.etatLiaison({ statut: 'ok', derniere_synchro: '2026-10-21T09:00:00Z' }, true, () => 'il y a 3 h').texte, /^Synchronisé il y a 3 h/);
+    assert.match(m.etatLiaison({ statut: 'ok', derniere_synchro: null }, false).texte, /en attente de la première synchronisation/);
+  });
+});

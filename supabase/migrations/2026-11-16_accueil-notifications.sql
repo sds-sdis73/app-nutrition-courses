@@ -52,9 +52,13 @@ create table if not exists public.notif_file (
 create index if not exists notif_file_a_envoyer on public.notif_file (envoyer_a) where envoye_le is null;
 create index if not exists notif_file_foyer on public.notif_file (foyer_id, type);
 alter table public.notif_file enable row level security;
+--    Le briefing du soir est personnel (il contient les séances de sport prévues, même non partagées) : seule la
+--    personne qui l'a préparé le lit ou le modifie. Les autres lignes (rappels, tâches, modifications) restent
+--    communes au foyer : chaque appli les programme sous le même identifiant pour n'envoyer qu'une fois.
 drop policy if exists "foyer" on public.notif_file;
 create policy "foyer" on public.notif_file for all to authenticated
-  using (foyer_id = (select mon_foyer())) with check (foyer_id = (select mon_foyer()));
+  using (foyer_id = (select mon_foyer()) and (type <> 'briefing' or user_id = (select auth.uid())))
+  with check (foyer_id = (select mon_foyer()) and (type <> 'briefing' or user_id = (select auth.uid())));
 
 -- 3) Envois déjà faits : la table rappels_envoyes existante (clé primaire foyer_id, type, key) sert aussi
 --    à la file, avec la clé « file:<id>:<compte> » : une seule fois par destinataire. Rien à changer.

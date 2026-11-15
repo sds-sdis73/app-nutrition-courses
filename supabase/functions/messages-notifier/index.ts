@@ -1,18 +1,16 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 import webpush from "npm:web-push@3.6.7";
+import { couper } from "./regles.js";
 
 // Appelée par l'appli juste après un envoi (module « Messages et photos ») :
 //   { type: "message", id }       → nouveau message dans la discussion de la famille ;
 //   { type: "photo", ids: [...] } → photos ajoutées à l'album.
 // Prévient les AUTRES comptes du foyer par notification push, une seule fois (table rappels_envoyes),
-// en respectant leurs préférences : prefs[type] === false coupe ce type ; heures de silence
-// prefs.silence = { debut: "22:00", fin: "07:00" } (ou prefs.silence_debut / prefs.silence_fin), heure de Paris.
+// en respectant leurs réglages (Plus › Notifications) et leurs heures de silence (22 h à 7 h par défaut), heure de Paris.
 
 const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type", "Access-Control-Allow-Methods": "POST, OPTIONS" };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...CORS, "Content-Type": "application/json" } });
-
-type Prefs = Record<string, unknown> & { silence?: { debut?: string; fin?: string } };
 
 // Heure de Paris « HH:MM ».
 function heureParis(d = new Date()) {
@@ -20,27 +18,8 @@ function heureParis(d = new Date()) {
   const p = Object.fromEntries(f.formatToParts(d).map((x) => [x.type, x.value]));
   return `${String(Number(p.hour) % 24).padStart(2, "0")}:${p.minute}`;
 }
-// Vrai si l'heure tombe dans la plage de silence (la plage peut passer minuit : 22:00 → 07:00).
-function enSilence(prefs: Prefs, heure: string) {
-  const debut = String(prefs.silence?.debut ?? prefs.silence_debut ?? "");
-  const fin = String(prefs.silence?.fin ?? prefs.silence_fin ?? "");
-  if (!/^\d{2}:\d{2}$/.test(debut) || !/^\d{2}:\d{2}$/.test(fin) || debut === fin) return false;
-  return debut < fin ? heure >= debut && heure < fin : heure >= debut || heure < fin;
-}
-// Réglages du module Notifications (table notif_prefs, heures entières) : ils passent avant push_abonnements.prefs.
-// Type « message » côté fonction = interrupteur « messages » de l'écran Plus › Notifications.
-const CLE_NOTIF: Record<string, string> = { message: "messages", photo: "photo" };
-type NotifPrefs = { types?: Record<string, boolean>; silence_actif?: boolean; silence_debut?: number; silence_fin?: number };
-function coupeParNotifPrefs(np: NotifPrefs | undefined, type: string, heure: string): boolean | null {
-  if (!np) return null;
-  if (np.types?.[CLE_NOTIF[type] ?? type] === false) return true;
-  if (np.silence_actif === false) return false;
-  const d = Number.isInteger(np.silence_debut) ? np.silence_debut! : 22;
-  const f = Number.isInteger(np.silence_fin) ? np.silence_fin! : 7;
-  const h = Number(heure.slice(0, 2));
-  if (d === f) return false;
-  return d < f ? h >= d && h < f : h >= d || h < f;
-}
+// Réglages : notif_prefs (Plus › Notifications), sinon anciens réglages de l'appareil, sinon valeurs par défaut
+// (heures de silence de 22 h à 7 h) : voir ./regles.js, qui reprend les règles de send-reminders.
 const court = (t: string, max = 140) => (t.length > max ? `${t.slice(0, max - 1).trimEnd()}…` : t);
 
 Deno.serve(async (req) => {
@@ -91,12 +70,10 @@ Deno.serve(async (req) => {
   const { data: subs } = await admin.from("push_abonnements").select("*").eq("foyer_id", compte.foyer_id).neq("user_id", user.id);
   // notif_prefs peut ne pas exister encore (migration non appliquée) : l'erreur est ignorée.
   const { data: np } = await admin.from("notif_prefs").select("*").eq("foyer_id", compte.foyer_id);
-  const parUser = new Map((np ?? []).map((r: NotifPrefs & { user_id: string }) => [r.user_id, r]));
+  const parUser = new Map((np ?? []).map((r: { user_id: string }) => [r.user_id, r]));
   let sent = 0;
   for (const s of subs ?? []) {
-    const prefs = (s.prefs ?? {}) as Prefs;
-    const coupe = coupeParNotifPrefs(parUser.get(s.user_id), msg.type, heure);
-    if (coupe ?? (prefs[msg.type] === false || enSilence(prefs, heure))) continue;
+    if (couper(parUser.get(s.user_id), s.prefs ?? {}, msg.type, heure)) continue;
     try { await webpush.sendNotification({ endpoint: s.endpoint, keys: s.keys }, JSON.stringify(msg)); sent++; }
     catch (e) { const code = (e as { statusCode?: number }).statusCode; if (code === 410 || code === 404) await admin.from("push_abonnements").delete().eq("endpoint", s.endpoint); }
   }

@@ -1,7 +1,8 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2.45.4";
 import { analyserIcs } from "../_shared/ics.js";
-import { basic, calendriers, corpsRequete, CORPS_CALENDRIERS, CORPS_DOSSIER, CORPS_PRINCIPAL, hrefDe, ICLOUD, motDePasseAppValide, planSynchro, ressources } from "../_shared/caldav.js";
+import { hoteInterdit, ipInterdite } from "../_shared/adresses.js";
+import { basic, calendriers, corpsRequete, CORPS_CALENDRIERS, CORPS_DOSSIER, CORPS_PRINCIPAL, hrefDe, ICLOUD, motDePasseAppValide, planChangement, planSynchro, ressources } from "../_shared/caldav.js";
 
 // Synchronisation des agendas (module « Agendas reliés »), pour un membre connecté :
 //   { action: "importer", id }            lit un lien ICS (Google, Outlook, iCloud public) enregistré dans agenda_abonnements ;
@@ -58,14 +59,36 @@ function urlSure(brute: string): string {
   let u: URL;
   try { u = new URL(s); } catch { throw new Erreur("Adresse invalide : copie le lien complet, qui commence par https:// ou webcal://"); }
   if (u.protocol !== "https:" && u.protocol !== "http:") throw new Erreur("Le lien doit commencer par https:// ou webcal://");
-  const h = u.hostname.toLowerCase().replace(/^\[|\]$/g, "");
-  if (h === "localhost" || h.endsWith(".local") || h.endsWith(".internal") || /^(127\.|10\.|192\.168\.|169\.254\.|0\.|172\.(1[6-9]|2\d|3[01])\.)/.test(h) || h === "::1" || /^f[cd]/.test(h)) throw new Erreur("Adresse non autorisée");
+  if (u.username || u.password || (u.port && !["80", "443"].includes(u.port))) throw new Erreur("Adresse non autorisée");
+  if (hoteInterdit(u.hostname)) throw new Erreur("Adresse non autorisée");
   return u.href;
 }
+// Le nom doit aussi se résoudre vers des adresses publiques uniquement (un nom peut pointer vers 127.0.0.1 ou 10.x).
+async function hotePublic(url: string) {
+  const h = new URL(url).hostname.replace(/^\[|\]$/g, "");
+  if (ipInterdite(h) !== null) return; // adresse IP déjà vérifiée par urlSure
+  const ips: string[] = [];
+  for (const type of ["A", "AAAA"] as const) { try { ips.push(...await Deno.resolveDns(h, type)); } catch { /* pas d'adresse de ce type */ } }
+  if (!ips.length || ips.some((ip) => ipInterdite(ip) !== false)) throw new Erreur("Ce lien ne répond pas : vérifie qu'il est public et réessaie plus tard.");
+}
+// Lecture avec les redirections suivies à la main : chaque étape est revérifiée (5 au plus).
+async function lireSure(depart: string): Promise<Response> {
+  let url = urlSure(depart);
+  for (let saut = 0; saut <= 5; saut++) {
+    await hotePublic(url);
+    let r: Response;
+    try { r = await fetch(url, { headers: { Accept: "text/calendar, */*", "User-Agent": "TribuEtToutous/1.0 (agenda familial)" }, redirect: "manual", signal: AbortSignal.timeout(20000) }); }
+    catch { throw new Erreur("Ce lien ne répond pas : vérifie qu'il est public et réessaie plus tard."); }
+    if (r.status < 300 || r.status >= 400) return r;
+    const suite = r.headers.get("Location");
+    await r.body?.cancel();
+    if (!suite) break;
+    try { url = urlSure(new URL(suite, url).href); } catch { break; }
+  }
+  throw new Erreur("Ce lien ne répond pas : vérifie qu'il est public et réessaie plus tard.");
+}
 async function lireIcs(url: string) {
-  let r: Response;
-  try { r = await fetch(urlSure(url), { headers: { Accept: "text/calendar, */*", "User-Agent": "TribuEtToutous/1.0 (agenda familial)" }, redirect: "follow", signal: AbortSignal.timeout(20000) }); }
-  catch (e) { if (e instanceof Erreur) throw e; throw new Erreur("Ce lien ne répond pas : vérifie qu'il est public et réessaie plus tard."); }
+  const r = await lireSure(url);
   if (r.status === 404 || r.status === 410) throw new Erreur("Ce lien n'existe plus (le calendrier a peut-être cessé d'être partagé).");
   if (r.status === 401 || r.status === 403) throw new Erreur("Ce lien est privé : il faut l'adresse secrète ou publique du calendrier.");
   if (!r.ok) throw new Erreur(`Le serveur de ce calendrier répond en erreur (${r.status}).`);
@@ -115,7 +138,7 @@ async function synchroniser(admin: SupabaseClient, foyerId: string) {
     ]);
     if (e1) throw new Erreur("Agenda du foyer illisible (migration de l'agenda appliquée ?)", 500);
     const noms = Object.fromEntries((membres ?? []).map((m: { id: string; nom: string }) => [m.id, m.nom]));
-    const plan = planSynchro({ distants, liens: liens ?? [], locaux: locaux ?? [], calendrier: cx.calendrier_url, depuis, nouvelId: () => crypto.randomUUID(), noms, maintenant });
+    const plan = planSynchro({ distants, liens: liens ?? [], locaux: locaux ?? [], calendrier: cx.calendrier_url, depuis, jusqu, nouvelId: () => crypto.randomUUID(), noms, maintenant });
     const propre = (l: Record<string, unknown>) => ({ ...l, membres: ((l.membres as string[]) ?? []).filter((id) => id in noms) });
 
     // 1) Changements venus d'iCloud → agenda du foyer.
@@ -149,6 +172,26 @@ async function synchroniser(admin: SupabaseClient, foyerId: string) {
     await admin.from("agenda_caldav").update({ statut: "erreur", erreur: (e as Error).message.slice(0, 300), updated_at: new Date().toISOString() }).eq("foyer_id", foyerId);
     throw e;
   }
+}
+
+// Changement de calendrier : les événements reçus de l'ancien quittent l'agenda de la famille, et ceux que l'appli
+// y avait envoyés en sont retirés (ils partent vers le nouveau calendrier à la synchro qui suit).
+async function quitterCalendrier(admin: SupabaseClient, foyerId: string) {
+  const [{ data: liens }, { data: locaux }] = await Promise.all([
+    admin.from("agenda_caldav_liens").select("*").eq("foyer_id", foyerId),
+    admin.from("evenements").select("id, source, source_uid").eq("foyer_id", foyerId).not("source", "is", null).limit(5000),
+  ]);
+  const p = planChangement({ liens: liens ?? [], locaux: locaux ?? [] });
+  if (p.supprimer.length) await admin.from("evenements").delete().in("id", p.supprimer).eq("foyer_id", foyerId);
+  if (p.detacher.length) await admin.from("evenements").update({ source: null, source_uid: null }).in("id", p.detacher).eq("foyer_id", foyerId);
+  if (!p.effacer.length) return;
+  try {
+    const s = await lireSecrets(admin, foyerId);
+    const auth = basic(s.identifiant, s.mot_de_passe);
+    for (const e of p.effacer) {
+      try { await fetch(e.href, { method: "DELETE", headers: { Authorization: auth, ...(e.etag ? { "If-Match": e.etag } : {}) }, signal: AbortSignal.timeout(30000) }); } catch { /* l'ancien calendrier garde cet événement */ }
+    }
+  } catch { /* compte iCloud illisible : l'ancien calendrier reste tel quel */ }
 }
 
 // ---------------------------------------------------------------------------
@@ -207,9 +250,10 @@ Deno.serve(async (req) => {
     }
 
     if (body.action === "caldav-choisir") {
-      const { data: cx } = await admin.from("agenda_caldav").select("calendriers").eq("foyer_id", foyerId).maybeSingle();
+      const { data: cx } = await admin.from("agenda_caldav").select("calendriers, calendrier_url").eq("foyer_id", foyerId).maybeSingle();
       const cal = ((cx?.calendriers ?? []) as { url: string; nom: string }[]).find((c) => c.url === body.url);
       if (!cal) return json({ error: "Calendrier inconnu : relie de nouveau iCloud." }, 400);
+      if (cx?.calendrier_url && cx.calendrier_url !== cal.url) await quitterCalendrier(admin, foyerId);
       await admin.from("agenda_caldav_liens").delete().eq("foyer_id", foyerId);
       await admin.from("agenda_caldav").update({ calendrier_url: cal.url, calendrier_nom: cal.nom, statut: "ok", updated_at: new Date().toISOString() }).eq("foyer_id", foyerId);
       return json({ ok: true, stats: await synchroniser(admin, foyerId) });

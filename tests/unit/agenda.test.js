@@ -200,3 +200,26 @@ describe('agenda : fériés, fêtes, vacances, anniversaires', () => {
     assert.deepEqual(plain(A.periode('mois', d('2026-10-21')).map((x) => app.isoDate(x))), ['2026-09-28', '2026-11-01']);
   });
 });
+
+describe('règles venues d\'un autre agenda et notifications de modification', () => {
+  test('« 2e mardi du mois » (BYDAY=2TU) : dates exactes, règle gardée et libellé lisible', () => {
+    const rec = plain(A.depuisRRule('FREQ=MONTHLY;BYDAY=2TU'));
+    assert.deepEqual(rec, { freq: 'mensuelle', nonGere: true, rrule: 'FREQ=MONTHLY;BYDAY=2TU' });
+    const e = ev(d('2026-11-10', '18:00'), d('2026-11-10', '19:00'), { recurrence: rec });
+    assert.deepEqual(dates(A.occurrences(e, d('2026-11-01'), d('2027-01-31'))), ['2026-11-10', '2026-12-08', '2027-01-12']);
+    assert.equal(A.regleTexte(rec, e.debut), 'Tous les mois, le 2e mardi');
+    assert.equal(A.versRRule(rec), 'FREQ=MONTHLY;BYDAY=2TU');
+    // Dernier vendredi, 3 fois.
+    const der = ev(d('2026-10-30', '18:00'), d('2026-10-30', '19:00'), { recurrence: plain(A.depuisRRule('FREQ=MONTHLY;BYDAY=-1FR;COUNT=3')) });
+    assert.deepEqual(dates(A.occurrences(der, d('2026-10-01'), d('2027-03-31'))), ['2026-10-30', '2026-11-27', '2026-12-25']);
+    assert.equal(A.regleTexte(der.recurrence, der.debut), 'Tous les mois, le dernier vendredi, 3 fois');
+    // Autre règle non calculable : dates signalées approximatives.
+    assert.match(A.regleTexte(plain(A.depuisRRule('FREQ=MONTHLY;BYMONTHDAY=1,15')), e.debut), /dates approximatives/);
+  });
+  test('« agenda modifié » : un nouvel identifiant à chaque modification (regroupées par 2 minutes)', () => {
+    const t = Date.UTC(2026, 10, 16, 10, 0, 0);
+    assert.equal(A.idModif('e1', t), A.idModif('e1', t + 60000));
+    assert.notEqual(A.idModif('e1', t), A.idModif('e1', t + 24 * 3600e3));
+    assert.match(A.idModif('e1', t), /^agenda-modif:e1:\d+$/);
+  });
+});

@@ -119,6 +119,9 @@ function openFoyerComptes() {
     try { await Foyer.loadComptes(); } catch (e) { fail(e); }
     const f = state.foyer;
     const admin = Foyer.isAdmin();
+    // « Je suis… » : choisi une fois ; ensuite seul un administrateur le change (règle 2026-11-16_comptes.sql).
+    const verrouMoi = !admin && !!state.compte?.member_id;
+    const pris = new Set((state.comptes || []).filter((c) => c.user_id !== me() && c.member_id).map((c) => c.member_id));
     const comptes = state.comptes.map((c) => {
       const m = memberById(c.member_id);
       const mine = c.user_id === me();
@@ -133,9 +136,9 @@ function openFoyerComptes() {
         <p class="muted small" style="margin:6px 0 0">Un proche crée son compte, puis saisit ce code dans Paramètres › Mon foyer › Rejoindre : il verra et modifiera les mêmes recettes, planning et courses.</p>
       </div>
       ${admin ? `<form class="row" data-form="foyer-nom" style="margin-bottom:12px"><input class="input grow" name="nom" value="${esc(f.nom)}" maxlength="60" aria-label="Nom du foyer"><button class="btn">Renommer</button></form>` : ''}
-      <label class="field" style="margin-bottom:12px"><span>Je suis…</span><select class="input" data-x="me">
-        <option value="">— non précisé —</option>${state.members.map((m) => `<option value="${m.id}" ${state.compte?.member_id === m.id ? 'selected' : ''}>${esc(m.nom)}</option>`).join('')}</select>
-        <span class="muted small" style="font-weight:400">Le suivi et le journal s'ouvrent sur ce membre.</span></label>
+      <label class="field" style="margin-bottom:12px"><span>Je suis…</span><select class="input" data-x="me" ${verrouMoi ? 'disabled' : ''}>
+        <option value="">— non précisé —</option>${state.members.map((m) => `<option value="${m.id}" ${state.compte?.member_id === m.id ? 'selected' : ''} ${pris.has(m.id) ? 'disabled' : ''}>${esc(m.nom)}${pris.has(m.id) ? ' (déjà relié)' : ''}</option>`).join('')}</select>
+        <span class="muted small" style="font-weight:400">${verrouMoi ? 'Pour corriger ce choix, demande à un administrateur du foyer : il protège les surprises (envies de cadeaux).' : 'Le suivi et le journal s\'ouvrent sur ce membre. Un seul choix : ensuite, seul un administrateur peut le corriger.'}</span></label>
       <div class="ntable"><div class="nt-title">Comptes du foyer</div>${comptes}</div>
       <details class="ndetails"><summary>Rejoindre un autre foyer</summary>
         <p class="muted small">Vos données actuelles resteront dans votre foyer actuel. Saisissez le code reçu :</p>

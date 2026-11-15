@@ -458,15 +458,25 @@ async function ajouterArticle(nom, qte = '') {
 // Rendu : liaison
 // ---------------------------------------------------------------------------
 const ICO_SYNC = I('<path d="M21 12a9 9 0 1 1-2.6-6.4L21 8"/><path d="M21 3v5h-5"/>');
+// État de la liaison → { etat, texte (HTML), jamais } ; jamais : rien n'a encore été reçu du robot.
+function etatLiaison(l, donnees, ilYaTxt = ilYa) {
+  const etat = !l ? 'attente' : l.statut;
+  const actif = !!l && ['ok', 'erreur'].includes(l.statut);
+  const jamais = !donnees && !l?.derniere_synchro;
+  let texte;
+  if (actif && l.derniere_synchro) texte = `Synchronisé ${esc(ilYaTxt(l.derniere_synchro))}${l.statut === 'erreur' ? ' · <span class="cmc-alerte">dernière synchro en échec</span>' : ''}`;
+  else if (actif) texte = 'Relié · en attente de la première synchronisation';
+  else if (jamais) texte = 'Pas encore relié : la liste et le planning arriveront après la première synchronisation.';
+  else if (etat === 'deconnecte') texte = '<span class="cmc-alerte">Liaison à refaire</span> · dernières données conservées';
+  else texte = 'Liaison coupée · dernières données conservées';
+  return { etat: jamais && !actif ? 'attente' : etat, texte, jamais };
+}
 function carteLiaison() {
-  const etat = !liaison ? 'attente' : liaison.statut;
-  const texte = lie()
-    ? `Synchronisé ${esc(ilYa(liaison.derniere_synchro))}${liaison.statut === 'erreur' ? ' · <span class="cmc-alerte">dernière synchro en échec</span>' : ''}`
-    : etat === 'deconnecte' ? '<span class="cmc-alerte">Liaison à refaire</span> · dernières données conservées' : 'Liaison non active · dernières données conservées';
+  const { etat, texte, jamais } = etatLiaison(liaison, planning.length > 0 || coursesMc.length > 0 || recettes.size > 0);
   return `<div class="cmc-liaison card"><span class="cmc-pastille" data-etat="${esc(etat)}" aria-hidden="true"></span>
     <div class="grow"><b>Monsieur Cuisine</b><div class="muted small">${texte}</div></div>
     ${lie() ? `<button class="btn small" data-act="cmc-synchro" aria-label="Synchroniser maintenant">${ICO_SYNC}<span>Synchroniser</span></button>` : ''}
-    <button class="icon-btn" data-act="mc-sheet" aria-label="État de la liaison Monsieur Cuisine">${ICON.info}</button></div>`;
+    ${jamais && !lie() ? '<button class="btn small" data-act="mc-sheet">Comment relier ?</button>' : `<button class="icon-btn" data-act="mc-sheet" aria-label="État de la liaison Monsieur Cuisine">${ICON.info}</button>`}</div>`;
 }
 function choixSource() {
   const src = store.get('cmc:source', 'mc');
@@ -801,7 +811,7 @@ Modules.register({
   },
   expose: {
     RAYONS, rayonDe, rayonMc, lireNombre, decouperQuantite, uniteBase, formatQuantite, formatQuantites, uniteLisible, nettoyerNom, cleArticle, estMateriel,
-    analyserLigne, construireListe, cocheActive, texteListe, ingredientsRecette, etapesLisibles, versIngredientCoeur, nutrimentsMc, repasDeLaSemaine, prochainRepas, ilYa,
+    analyserLigne, construireListe, cocheActive, texteListe, ingredientsRecette, etapesLisibles, versIngredientCoeur, nutrimentsMc, repasDeLaSemaine, prochainRepas, ilYa, etatLiaison,
     // Pour les tests de bout en bout : simule un changement reçu en direct d'un autre téléphone.
     recevoir,
   },

@@ -9,8 +9,12 @@
 .segbar::-webkit-scrollbar { display: none; }
 .segbar button {
   flex: none; border: 2px solid var(--ink); background: var(--surface); color: var(--ink);
-  border-radius: 999px; padding: 7px 14px; font: inherit; font-weight: 800; font-size: 14px; min-height: 38px; white-space: nowrap;
+  border-radius: 999px; padding: 7px 14px; font: inherit; font-weight: 800; font-size: 14px; min-height: 44px; white-space: nowrap;
 }
+/* La barre défile : fondu sur le bord qui cache encore des segments (classes posées par Nav.centrerSegment). */
+.segbar.fondu-droite { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 32px), transparent); }
+.segbar.fondu-gauche { -webkit-mask-image: linear-gradient(90deg, transparent, #000 32px); mask-image: linear-gradient(90deg, transparent, #000 32px); }
+.segbar.fondu-gauche.fondu-droite { -webkit-mask-image: linear-gradient(90deg, transparent, #000 32px, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(90deg, transparent, #000 32px, #000 calc(100% - 32px), transparent); }
 .segbar button[aria-pressed="true"] { background: var(--primary); color: var(--on-primary); box-shadow: 0 2px 0 var(--ink); }
 .plus-retour { margin: 2px 0 12px; }
 .plus-retour svg { width: 16px; height: 16px; }

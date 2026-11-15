@@ -142,6 +142,22 @@ function rappelsAgenda(elements, maintenant) {
   return out;
 }
 
+// Rappels choisis pour une personne dans la fiche d'un événement (« Antoine : la veille »), venus de rappelsPeriode
+// de l'agenda : [{ evenement_id, member_id, minutes, quand, debut, titre }]. Un rappel par personne et par occurrence,
+// à l'heure choisie (pas d'evenement_a : le délai général de chacun ne s'applique pas).
+function rappelsPersonnes(rappels, maintenant) {
+  const out = [];
+  for (const r of rappels || []) {
+    if (!r.member_id || !(r.debut > maintenant)) continue;
+    const jourEv = isoDate(r.debut);
+    const jour = isoDate(maintenant) === jourEv ? 'Aujourd\'hui' : isoDate(addDays(maintenant, 1)) === jourEv ? 'Demain' : `Le ${jourEv.split('-').reverse().slice(0, 2).join('/')}`;
+    const heure = `${String(r.debut.getHours()).padStart(2, '0')}:${String(r.debut.getMinutes()).padStart(2, '0')}`;
+    out.push({ id: `evr:${r.evenement_id}:${r.member_id}:${r.minutes}:${jourEv}:${isoDate(r.quand)}`, type: 'evenements', titre: r.titre, corps: `${jour} à ${heureFr(heure)}`, url: './#agenda',
+      pour_membres: [r.member_id], envoyer_a: r.quand, expire_a: r.debut });
+  }
+  return out;
+}
+
 // ---------------------------------------------------------------------------
 // État et données
 // ---------------------------------------------------------------------------
@@ -222,7 +238,8 @@ async function planifier() {
     const sig = `${ligne.corps}|${p.briefing_heure}`;
     if (faits[ligne.id] !== sig) { await N.programmer(ligne); faits[ligne.id] = sig; briefing = true; }
   }
-  const rappels = rappelsAgenda(await Agenda.elements(maintenant, addDays(maintenant, 2)), maintenant);
+  const parPersonne = Modules.get('agenda')?.expose?.rappelsPersonnes?.(maintenant, addDays(maintenant, 2)) || [];
+  const rappels = [...rappelsAgenda(await Agenda.elements(maintenant, addDays(maintenant, 2)), maintenant), ...rappelsPersonnes(parPersonne, maintenant)];
   const ids = new Set(rappels.map((r) => r.id));
   let nb = 0;
   for (const r of rappels) {
@@ -234,7 +251,7 @@ async function planifier() {
   }
   // Événements supprimés ou déplacés : leur rappel est retiré de la file.
   for (const id of Object.keys(faits)) {
-    if (!/^(evt|tache):/.test(id) || ids.has(id)) continue;
+    if (!/^(evt|evr|tache):/.test(id) || ids.has(id)) continue;
     const date = id.split(':').pop();
     if (date >= isoDate(maintenant)) await N.annuler(id).catch(() => {});
     delete faits[id];
@@ -337,5 +354,5 @@ Modules.register({
       if (champ) champ.insertAdjacentHTML('afterend', '<p class="muted small af-dictee"><span aria-hidden="true">🎙️</span> Pour dicter, touche le micro du clavier.</p>');
     },
   },
-  expose: { couleurMembre, concerne, filtrerFil, briefingVisible, detecterTrajet, classerBriefing, composerBriefing, resumeBriefing, briefingPourMoi, rappelsAgenda, heureFr, planifier },
+  expose: { couleurMembre, concerne, filtrerFil, briefingVisible, detecterTrajet, classerBriefing, composerBriefing, resumeBriefing, briefingPourMoi, rappelsAgenda, rappelsPersonnes, heureFr, planifier },
 });

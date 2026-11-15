@@ -265,6 +265,24 @@ const Nav = {
     const o = ONGLETS.find((x) => x.id === m.onglet);
     return `<nav class="segbar" aria-label="Sections ${esc(o.libelle)}">${vues.map((v) => `<button data-act="tab" data-tab="${v.id}" aria-pressed="${v.id === m.id}">${esc(v.segment)}</button>`).join('')}</nav>`;
   },
+  // Après chaque rendu : la barre de segments (reconstruite, donc revenue au début) est ramenée sur le segment actif,
+  // sans faire défiler la page ; un fondu sur le bord indique qu'elle défile.
+  centrerSegment(racine = document) {
+    const bar = racine?.querySelector?.('.segbar');
+    if (!bar) return;
+    const b = bar.querySelector('[aria-pressed="true"]');
+    if (b) {
+      const rb = b.getBoundingClientRect(), rr = bar.getBoundingClientRect();
+      bar.scrollLeft = Math.max(0, bar.scrollLeft + (rb.left + rb.width / 2) - (rr.left + rr.width / 2));
+    }
+    const bords = () => {
+      const max = bar.scrollWidth - bar.clientWidth;
+      bar.classList.toggle('fondu-gauche', max > 1 && bar.scrollLeft > 1);
+      bar.classList.toggle('fondu-droite', max > 1 && bar.scrollLeft < max - 1);
+    };
+    bords();
+    bar.addEventListener('scroll', bords, { passive: true });
+  },
   menuPlus() {
     const lignes = Modules.vues('plus').map((v) => `<button class="plus-ligne" data-act="plus-ouvrir" data-id="${v.id}">
       <span class="plus-ico">${v.icone || ICON.next}</span><span class="grow"><b>${esc(v.segment)}</b>${v.description ? `<br><span class="muted small">${esc(v.description)}</span>` : ''}</span>${ICON.next}</button>`).join('');
