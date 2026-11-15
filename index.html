@@ -1215,140 +1215,97 @@ h1, h2, h3, .sheet-head h2, .section-title, .tl-head { font-weight: 800; letter-
 .ajout-prop svg { width: 18px; height: 18px; flex: none; }
 body.logged-out [data-act="ajout-rapide"] { display: none; }
 @media (prefers-reduced-motion: reduce) { .tabbar button svg { transition: none; } }
-/* ==== module taches ==== */
-/* Module « Tâches et listes » : uniquement les jetons du thème (univers graphiques) */
-.taches { padding-bottom: 8px; }
-.taches svg { flex: none; }
-.taches-vues button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit; }
-.taches-pastille {
-  min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; font-size: 12px; line-height: 20px; font-weight: 800;
-  background: var(--surface-2); color: var(--ink); border: 1px solid var(--border);
-}
-.taches-pastille.retard { background: var(--danger); color: var(--on-primary); border-color: var(--danger); }
-.taches-aide { margin: 0 2px 10px; }
-.taches-vide { padding: 28px 16px; }
-.taches-vide svg { width: 44px; height: 44px; }
-.taches-vide-court { margin: 4px 2px 8px; }
-.taches-entete { margin-top: 4px; }
-.taches-entete .section-title { margin: 14px 0 8px; }
-.taches-entete .btn svg { width: 18px; height: 18px; }
+/* ==== module carnet ==== */
+/* Module « Carnet de la famille » : uniquement les jetons du thème, pour suivre chaque univers graphique. */
+.carnet { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.carnet-onglets { margin: 0 -16px; padding: 2px 16px 4px; }
+.carnet-carte { padding: 14px; min-width: 0; }
+.carnet-titre { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.carnet-titre h3 { flex: 1; min-width: 0; margin: 0; font-family: var(--display); font-size: 18px; }
+.carnet-vide, .carnet-note { margin: 4px 0 0; }
+.carnet-note { padding: 0 4px; }
+.carnet-sous { display: block; overflow: hidden; text-overflow: ellipsis; }
 
-/* Saisie rapide */
-.taches-saisie { display: flex; gap: 8px; padding: 8px; align-items: center; margin-bottom: 10px; }
-.taches-saisie .input { flex: 1; min-width: 0; }
-.taches-saisie .btn { flex: none; width: 44px; padding: 0; }
-.taches-chips { margin: 0 -16px; padding-left: 16px; padding-right: 16px; }
-
-/* Groupes et lignes de tâches */
-.taches-groupe { display: flex; align-items: center; gap: 8px; margin: 18px 2px 8px; font-size: 17px; }
-.taches-groupe.retard { color: var(--danger); }
-.taches-compte { font-size: 13px; font-weight: 800; color: var(--muted); background: var(--surface-2); border-radius: 999px; padding: 1px 8px; }
-.taches-liste { padding: 2px 4px; }
-.taches-ligne, .taches-el { display: flex; align-items: center; gap: 10px; padding: 6px 6px; min-height: 52px; }
-.taches-ligne + .taches-ligne, .taches-el + .taches-el { border-top: 1px solid var(--border); }
-.taches-coche {
-  width: 30px; height: 30px; flex: none; border-radius: 50%; border: 2px solid var(--ink); background: var(--surface);
-  display: grid; place-items: center; color: transparent; padding: 0; transition: background .15s, color .15s;
+/* Lignes de liste (rendez-vous, échéances, dépenses, contacts) */
+.carnet-ligne {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-width: 0; text-align: left;
+  border: 0; background: none; color: inherit; font: inherit; padding: 10px 2px;
 }
-.taches-coche svg { width: 18px; height: 18px; stroke-width: 3; }
-.taches-coche[aria-checked="true"] { background: var(--mint); color: var(--ink); animation: taches-pop .28s ease-out; }
-.taches-corps, .taches-el-texte, .taches-envie-corps {
-  flex: 1; min-width: 0; border: 0; background: none; padding: 6px 0; text-align: left; font: inherit; color: inherit;
-  display: flex; flex-direction: column; gap: 3px; cursor: pointer;
-}
-.taches-el-texte { display: block; overflow-wrap: anywhere; }
-.taches-titre { font-weight: 700; overflow-wrap: anywhere; }
-.taches-meta { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 13px; color: var(--muted); }
-.taches-meta > span { display: inline-flex; align-items: center; gap: 4px; }
-.taches-meta svg { width: 14px; height: 14px; }
-.taches-retard { color: var(--danger); font-weight: 700; }
-.taches-badge { background: var(--mango-soft); color: var(--ink); border-radius: 999px; padding: 0 8px; font-weight: 800; font-size: 12px; }
-.taches-avatar {
-  width: 18px; height: 18px; border-radius: 50%; display: inline-grid; place-items: center; font-size: 11px; font-weight: 800;
+.carnet-ligne + .carnet-ligne, .carnet-passes .carnet-ligne { border-top: 1px solid var(--border); }
+.carnet-ligne .grow { overflow: hidden; }
+.carnet-ligne-corps { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; text-align: left; border: 0; background: none; color: inherit; font: inherit; padding: 0; }
+.carnet-ico {
+  width: 36px; height: 36px; border-radius: 10px; flex: none; display: grid; place-items: center;
   background: var(--primary-soft); color: var(--primary-strong);
 }
-.taches-ligne.fait .taches-titre, .taches-el.fait .taches-el-texte > span:first-child { text-decoration: line-through; color: var(--muted); }
-.taches-ligne.en-retard .taches-coche { border-color: var(--danger); }
-.taches-voir-faites { margin-top: 16px; }
-.taches-voir-faites + .taches-liste { margin-top: 10px; }
+.carnet-ico svg { width: 20px; height: 20px; }
+.carnet-quand { display: flex; flex-direction: column; align-items: flex-end; text-align: right; flex: none; max-width: 42%; font-size: 14px; }
+.carnet-fin { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex: none; }
+.carnet-fin .btn svg { width: 16px; height: 16px; }
+.carnet-passes summary { cursor: pointer; padding: 8px 2px 4px; }
 
-/* Cartes de listes */
-.taches-cartes { display: flex; flex-direction: column; gap: 10px; }
-.taches-carte {
-  display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px; text-align: left; font: inherit; color: inherit; cursor: pointer;
+/* Pastilles d'état */
+.carnet-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 800; white-space: nowrap;
+  background: var(--surface-2); color: var(--muted); border: 1px solid var(--border);
 }
-.taches-carte > svg { width: 18px; height: 18px; color: var(--muted); }
-.taches-carte .grow { display: flex; flex-direction: column; gap: 3px; }
-.taches-carte-titre { overflow-wrap: anywhere; }
-.taches-carte-desc { line-height: 1.3; }
-.taches-carte-ico {
-  width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; flex: none;
-  background: var(--primary-soft); color: var(--primary-strong);
+.carnet-badge.retard { background: var(--primary-soft); color: var(--danger); border-color: var(--danger); }
+.carnet-badge.proche { background: var(--mango-soft); color: var(--ink); border-color: var(--mango-strong); }
+.carnet-badge.ok { background: var(--mint-soft); color: var(--ink); border-color: transparent; }
+
+/* Vaccins */
+.carnet-vaccin { padding: 10px 0; }
+.carnet-vaccin + .carnet-vaccin { border-top: 1px solid var(--border); }
+.carnet-doses { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+.carnet-doses li { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.carnet-doses li > span:last-child { min-width: 0; }
+.carnet-anciens { margin: 8px 0 0; }
+.carnet-age { margin: 14px 0 4px; font-size: 15px; color: var(--muted); }
+.carnet-dose { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid var(--border); min-width: 0; }
+.carnet-dose .check { align-items: flex-start; font-weight: 400; min-width: 0; }
+.carnet-dose .check input { flex: none; margin-top: 2px; }
+.carnet-date { width: 150px; min-height: 36px; padding: 4px 8px; flex: none; }
+
+/* Barres de progression */
+.carnet-barre { height: 10px; border-radius: 999px; background: var(--ring-track, var(--surface-2)); overflow: hidden; margin: 8px 0; }
+.carnet-barre i { display: block; height: 100%; border-radius: inherit; background: var(--mint); transition: width .4s ease; }
+.carnet-barre.fine { height: 6px; margin: 6px 0 2px; }
+.carnet-barre.depasse i { background: var(--danger); }
+
+/* Budget */
+.carnet-mois { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: -6px -6px 6px; }
+.carnet-mois b { text-transform: capitalize; font-family: var(--display); font-size: 17px; }
+.carnet-chiffres { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.carnet-chiffres > div { display: flex; flex-direction: column; min-width: 0; }
+.carnet-gros { font-family: var(--display); font-size: 26px; line-height: 1.1; }
+.carnet-rouge { color: var(--danger); }
+.carnet-actions { margin-top: 10px; gap: 8px; }
+.carnet-cat + .carnet-cat { margin-top: 10px; }
+.carnet-cat-ligne { gap: 6px; }
+.carnet-montant { width: 88px; flex: none; text-align: right; }
+
+/* Contacts et urgences */
+.carnet-appel { flex: none; text-decoration: none; }
+.carnet-appel svg { width: 16px; height: 16px; }
+.carnet-urgences-grille { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.carnet-urgence {
+  display: flex; align-items: center; gap: 12px; min-width: 0; padding: 10px 12px; border-radius: 12px;
+  background: var(--surface-2); border: 1px solid var(--border); color: inherit; text-decoration: none;
 }
-.taches-carte-ico svg { width: 22px; height: 22px; }
-.taches-barre { display: block; height: 8px; border-radius: 6px; background: var(--ring-track); overflow: hidden; margin-top: 4px; }
-.taches-barre i { display: block; height: 100%; background: var(--mint); border-radius: 6px; transition: width .3s ease; }
-.taches-modele { position: relative; }
-.taches-modele .taches-carte { padding-right: 104px; }
-.taches-modele .taches-carte > svg:last-child { display: none; }
-.taches-lancer { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); }
-.taches-lancer:active:not(:disabled) { transform: translateY(calc(-50% + 2px)); }
-.taches-lancer svg, .taches-detail .btn svg { width: 16px; height: 16px; }
-.taches-finies summary { cursor: pointer; list-style: none; }
-.taches-finies summary::-webkit-details-marker { display: none; }
-.taches-finies summary::before { content: "▸ "; color: var(--muted); }
-.taches-finies[open] summary::before { content: "▾ "; }
-
-/* Détail d'une liste */
-.taches-detail { padding: 14px; }
-.taches-detail-titre { margin: 0; font-size: 20px; line-height: 1.2; overflow-wrap: anywhere; }
-.taches-detail > .taches-barre { margin: 12px 0 4px; }
-.taches-detail > .taches-aide { margin: 10px 0 4px; }
-.taches-section { margin-top: 12px; }
-.taches-section-titre { border-bottom: 2px solid var(--border); padding-bottom: 4px; margin-bottom: 2px; }
-.taches-section-titre h4 { margin: 0; font-size: 15px; font-family: var(--display); }
-.taches-puce { width: 10px; height: 10px; border-radius: 50%; background: var(--border); margin: 0 10px 0 8px; flex: none; }
-.taches-bravo {
-  display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 12px; padding: 10px 12px; border-radius: 14px;
-  background: var(--mint-soft); font-weight: 700; animation: taches-apparait .3s ease-out;
+.carnet-urgence > span { min-width: 0; }
+.carnet-num {
+  flex: none; min-width: 64px; text-align: center; padding: 6px 8px; border-radius: 10px; font-family: var(--display); font-size: 18px;
+  background: var(--primary); color: var(--on-primary);
 }
-.taches-bravo > svg { width: 20px; height: 20px; color: var(--ink); }
-.taches-ajout { display: grid; grid-template-columns: minmax(0, 1fr) 44px; grid-template-areas: "texte bouton" "rubrique rubrique"; gap: 8px; margin-top: 14px; }
-.taches-ajout .input:first-child { grid-area: texte; min-width: 0; }
-.taches-ajout select.input { grid-area: rubrique; min-width: 0; }
-.taches-ajout .btn { grid-area: bouton; width: 44px; padding: 0; }
-.taches-menu { justify-content: flex-start; text-align: left; }
+.carnet-urgence:nth-child(n+6) .carnet-num { font-size: 13px; }
+.carnet-alerte { border: 2px solid var(--danger); }
 
-/* Feuilles */
-.taches-form .grid2 { gap: 10px; }
-.taches-form .grid2 .input { min-width: 0; }
-.taches-genres { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px; }
-.taches-genres legend { padding: 0; margin-bottom: 6px; font-weight: 600; }
-.taches-genre { cursor: pointer; }
-.taches-genre input { position: absolute; opacity: 0; pointer-events: none; }
-.taches-genre svg { width: 16px; height: 16px; }
-.taches-genre:has(input:checked) { background: var(--primary); color: var(--on-primary); }
-.taches-genre:has(input:focus-visible) { outline: 3px solid var(--mango); outline-offset: 2px; }
+/* Formulaires : pas de débordement à 360 px */
+.carnet-form .grid2 > * { min-width: 0; }
+.carnet-form .input { min-width: 0; max-width: 100%; }
+.carnet-modeles { flex-wrap: wrap; overflow: visible; }
 
-/* Envies */
-.taches-envies { display: flex; flex-direction: column; gap: 10px; }
-.taches-envie { padding: 10px 12px; }
-.taches-envie.prise { background: var(--surface-2); }
-.taches-envie-corps { padding: 2px 0; }
-.taches-envie-corps b { overflow-wrap: anywhere; }
-.taches-envie-detail { display: block; }
-.taches-envie-actions { margin-top: 8px; gap: 8px; }
-.taches-lien { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; font-size: 14px; }
-.taches-lien svg { width: 16px; height: 16px; }
-.taches-pris { font-size: 14px; font-weight: 800; color: var(--muted); }
-.taches-pris.moi { color: var(--primary-strong); }
-
-@keyframes taches-pop { 0% { transform: scale(.8); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
-@keyframes taches-apparait { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) {
-  .taches-coche[aria-checked="true"], .taches-bravo { animation: none; }
-  .taches-barre i, .taches-coche { transition: none; }
-}
+@media (prefers-reduced-motion: reduce) { .carnet-barre i { transition: none; } }
 </style>
 </head>
 <body>
@@ -8555,14 +8512,805 @@ Modules.register({
 })();
 // ==== module carnet ====
 (function () {
-// Module « Carnet de la famille » : emplacement réservé, à construire (voir LISEZMOI.md).
+// Module « Carnet de la famille » (Famille › Carnet).
+// Quatre volets : Santé (rendez-vous, vaccins selon le calendrier vaccinal français, contacts santé),
+// Maison et animaux (échéances périodiques, avec une tâche créée à l'approche), Budget du mois
+// (catégories, dépenses, abonnements et prélèvements) et Contacts utiles (urgences, appel en un geste).
+// Tout est partagé par le foyer. Lecture hors ligne depuis le cache, saisies en file d'attente (Sync).
+
+const cache = Modules.cache('carnet');
+const TABLES = {
+  rdv: 'carnet_rdv', vaccins: 'carnet_vaccins', echeances: 'carnet_echeances', categories: 'carnet_categories',
+  depenses: 'carnet_depenses', abonnements: 'carnet_abonnements', contacts: 'carnet_contacts',
+};
+const D = { rdv: [], vaccins: [], echeances: [], categories: [], depenses: [], abonnements: [], contacts: [], manque: false };
+let vue = store.get('carnet:vue', 'sante');
+let moisBudget = null; // 'AAAA-MM' affiché dans Budget (null : mois courant)
+
+const IC = {
+  sante: I('<path d="M12 21s-7-4.4-9.2-9A5 5 0 0 1 12 6a5 5 0 0 1 9.2 6c-2.2 4.6-9.2 9-9.2 9z"/><path d="M12 10v4M10 12h4"/>'),
+  seringue: I('<path d="m18 2 4 4M17 7l3-3M19 9 9 19l-4 1 1-4L16 6zM14 8l2 2M11 11l2 2"/>'),
+  maison: I('<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>'),
+  voiture: I('<path d="M5 17h14M3 17v-4l2-5h14l2 5v4"/><circle cx="7.5" cy="17.5" r="1.8"/><circle cx="16.5" cy="17.5" r="1.8"/>'),
+  patte: I('<circle cx="6" cy="10" r="2"/><circle cx="10" cy="6" r="2"/><circle cx="14" cy="6" r="2"/><circle cx="18" cy="10" r="2"/><path d="M8 17c0-3 2-5 4-5s4 2 4 5c0 2-2 3-4 2-2 1-4 0-4-2z"/>'),
+  tel: I('<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/>'),
+  euro: I('<path d="M18 7a6.5 6.5 0 1 0 0 10"/><path d="M4 10h9M4 14h9"/>'),
+  agenda: I('<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>'),
+};
+const VUES = [['sante', 'Santé'], ['maison', 'Maison & animaux'], ['budget', 'Budget'], ['contacts', 'Contacts']];
+
+// ---------------------------------------------------------------------------
+// Dates et montants (fonctions pures)
+// ---------------------------------------------------------------------------
+const pl = (n, un, plusieurs = `${un}s`) => `${n} ${n > 1 || n < -1 ? plusieurs : un}`;
+function ajouterMois(iso, n) {
+  const [y, m, d] = iso.split('-').map(Number);
+  const t = new Date(y, m - 1 + n, 1);
+  t.setDate(Math.min(d, new Date(t.getFullYear(), t.getMonth() + 1, 0).getDate()));
+  return isoDate(t);
+}
+function ajouterPeriode(iso, nb, unite) {
+  if (unite === 'jour') return isoDate(addDays(isoToDate(iso), nb));
+  if (unite === 'semaine') return isoDate(addDays(isoToDate(iso), 7 * nb));
+  if (unite === 'an') return ajouterMois(iso, 12 * nb);
+  return ajouterMois(iso, nb);
+}
+// Nombre de jours de a à b (positif si b est après a).
+const ecartJours = (a, b) => Math.round((isoToDate(b) - isoToDate(a)) / 864e5);
+const finDuMois = (mois) => { const [y, m] = mois.split('-').map(Number); return isoDate(new Date(y, m, 0)); };
+const moisDe = (d) => isoDate(d).slice(0, 7);
+const decalerMois = (mois, n) => ajouterMois(`${mois}-01`, n).slice(0, 7);
+const arrondi = (x) => Math.round(x * 100) / 100;
+const fmtEuros = (x) => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(arrondi(Number(x) || 0)).replace(/ /g, ' ');
+// « 45,90 € », « 1 200 », « 12.5 » → nombre (ou null).
+function lireMontant(s) {
+  const t = String(s ?? '').replace(/[\s  €]/g, '').replace(',', '.');
+  if (!/^\d+(\.\d{1,2})?$/.test(t)) return null;
+  const v = Number(t);
+  return v > 0 ? v : null;
+}
+const libellePeriode = (nb, unite) => {
+  if (!nb || !unite) return 'Une seule fois';
+  const u = { jour: ['jour', 'jours'], semaine: ['semaine', 'semaines'], mois: ['mois', 'mois'], an: ['an', 'ans'] }[unite];
+  if (nb === 1) return { jour: 'Tous les jours', semaine: 'Toutes les semaines', mois: 'Tous les mois', an: 'Tous les ans' }[unite];
+  return `${unite === 'semaine' ? 'Toutes les' : 'Tous les'} ${nb} ${u[1]}`;
+};
+const nomMois = (mois) => { const [y, m] = mois.split('-').map(Number); return new Date(y, m - 1, 1).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }); };
+function fmtDate(iso, aujourdhui = isoDate(new Date())) {
+  const d = isoToDate(iso);
+  const o = { weekday: 'short', day: 'numeric', month: 'short' };
+  if (iso.slice(0, 4) !== aujourdhui.slice(0, 4)) o.year = 'numeric';
+  return d.toLocaleDateString('fr-FR', o);
+}
+// « aujourd'hui », « demain », « dans 3 jours », « il y a 2 jours », sinon la date.
+function quand(iso, aujourdhui = isoDate(new Date())) {
+  const n = ecartJours(aujourdhui, iso);
+  if (n === 0) return 'aujourd\'hui';
+  if (n === 1) return 'demain';
+  if (n === -1) return 'hier';
+  if (n > 1 && n <= 14) return `dans ${n} jours`;
+  if (n < -1 && n >= -14) return `il y a ${-n} jours`;
+  return `le ${fmtDate(iso, aujourdhui)}`;
+}
+// « 09:30:00 » → « 9 h 30 », « 14:00 » → « 14 h ».
+const fmtHeure = (h) => { const [hh, mm] = String(h || '').split(':'); return hh ? `${Number(hh)} h${mm && mm !== '00' ? ` ${mm}` : ''}` : ''; };
+// Téléphone : lien tel: et affichage par paires (« 06 12 34 56 78 »).
+function telHref(num) {
+  const t = String(num || '').trim().replace(/[^\d+]/g, '').replace(/(?!^)\+/g, '');
+  return t.replace('+', '').length >= 2 ? `tel:${t}` : '';
+}
+function fmtTel(num) {
+  const t = String(num || '').replace(/[^\d+]/g, '');
+  if (/^0\d{9}$/.test(t)) return t.replace(/(\d{2})(?=\d)/g, '$1 ');
+  if (/^\+33\d{9}$/.test(t)) return `+33 ${t.slice(3, 4)} ${t.slice(4).replace(/(\d{2})(?=\d)/g, '$1 ')}`;
+  return String(num || '').trim();
+}
+
+// ---------------------------------------------------------------------------
+// Calendrier vaccinal français (calendrier des vaccinations 2025, en vigueur en 2025-2026).
+// mois : âge de la dose ; marge : mois pendant lesquels la dose reste « à faire » avant d'être en retard ;
+// limite : âge au-delà duquel la dose ne se fait plus (rotavirus) ; apres + delai : dose suivant une autre.
+// nesDepuis / nesAvant : dates de naissance concernées (méningocoques B et ACWY obligatoires pour les nés depuis 2025).
+// ---------------------------------------------------------------------------
+const HEXA = { nom: 'DTCaP-Hib-HépB', detail: 'Diphtérie, tétanos, coqueluche, polio, Haemophilus b, hépatite B', oblig: true };
+const PNEUMO = { nom: 'Pneumocoque', oblig: true };
+const ROTA = { nom: 'Rotavirus', detail: 'Par la bouche ; 2 ou 3 doses selon le vaccin', oblig: false, nesDepuis: '2022-01-01' };
+const MENB = { nom: 'Méningocoque B', oblig: true, nesDepuis: '2025-01-01' };
+const ACWY = { nom: 'Méningocoques ACWY', oblig: true, nesDepuis: '2025-01-01' };
+const MENC = { nom: 'Méningocoque C', oblig: true, nesDepuis: '2017-01-01', nesAvant: '2025-01-01' };
+const ROR = { nom: 'ROR', detail: 'Rougeole, oreillons, rubéole', oblig: true };
+const HPV = { nom: 'Papillomavirus (HPV)', detail: 'Filles et garçons, 2 doses de 11 à 14 ans', oblig: false };
+const VACCINS = [
+  { code: 'hexa-1', ...HEXA, dose: '1re dose', age: '2 mois', mois: 2, marge: 1 },
+  { code: 'pneumo-1', ...PNEUMO, dose: '1re dose', age: '2 mois', mois: 2, marge: 1 },
+  { code: 'rota-1', ...ROTA, dose: '1re dose', age: '2 mois', mois: 2, marge: 1, limite: 6 },
+  { code: 'menb-1', ...MENB, dose: '1re dose', age: '3 mois', mois: 3, marge: 1 },
+  { code: 'rota-2', ...ROTA, dose: '2e dose', age: '3 mois', mois: 3, marge: 1, limite: 6 },
+  { code: 'hexa-2', ...HEXA, dose: '2e dose', age: '4 mois', mois: 4, marge: 1 },
+  { code: 'pneumo-2', ...PNEUMO, dose: '2e dose', age: '4 mois', mois: 4, marge: 1 },
+  { code: 'rota-3', ...ROTA, dose: '3e dose, selon le vaccin', age: '4 mois', mois: 4, marge: 1, limite: 8 },
+  { code: 'menb-2', ...MENB, dose: '2e dose', age: '5 mois', mois: 5, marge: 1 },
+  { code: 'menc-1', ...MENC, dose: '1re dose', age: '5 mois', mois: 5, marge: 1 },
+  { code: 'acwy-1', ...ACWY, dose: '1re dose', age: '6 mois', mois: 6, marge: 1 },
+  { code: 'hexa-3', ...HEXA, dose: 'rappel', age: '11 mois', mois: 11, marge: 1 },
+  { code: 'pneumo-3', ...PNEUMO, dose: 'rappel', age: '11 mois', mois: 11, marge: 1 },
+  { code: 'ror-1', ...ROR, dose: '1re dose', age: '12 mois', mois: 12, marge: 1 },
+  { code: 'menb-3', ...MENB, dose: 'rappel', age: '12 mois', mois: 12, marge: 1 },
+  { code: 'acwy-2', ...ACWY, dose: 'rappel', age: '12 mois', mois: 12, marge: 1 },
+  { code: 'menc-2', ...MENC, dose: 'rappel', age: '12 mois', mois: 12, marge: 1 },
+  { code: 'ror-2', ...ROR, dose: '2e dose', age: '16 à 18 mois', mois: 16, marge: 2 },
+  { code: 'dtcap-6', nom: 'DTCaP', detail: 'Diphtérie, tétanos, coqueluche, polio', oblig: false, dose: 'rappel', age: '6 ans', mois: 72, marge: 12 },
+  { code: 'dtcap-11', nom: 'dTcaP', detail: 'Diphtérie, tétanos, coqueluche, polio', oblig: false, dose: 'rappel', age: '11 à 13 ans', mois: 132, marge: 24 },
+  { code: 'hpv-1', ...HPV, dose: '1re dose', age: '11 à 14 ans', mois: 132, marge: 36 },
+  { code: 'hpv-2', ...HPV, dose: '2e dose', age: '6 à 13 mois après la 1re', mois: 138, marge: 7, apres: 'hpv-1', delai: 6 },
+  { code: 'acwy-ado', ...ACWY, oblig: false, nesDepuis: null, dose: 'rappel de l\'adolescent', age: '11 à 14 ans', mois: 132, marge: 36 },
+  { code: 'dtp-25', nom: 'dTcaP', detail: 'Rappel de l\'adulte, avec la coqueluche', oblig: false, dose: 'rappel', age: '25 ans', mois: 300, marge: 12 },
+  { code: 'dtp-45', nom: 'dTP', detail: 'Diphtérie, tétanos, polio', oblig: false, dose: 'rappel', age: '45 ans', mois: 540, marge: 12 },
+  { code: 'dtp-65', nom: 'dTP', detail: 'Diphtérie, tétanos, polio', oblig: false, dose: 'rappel', age: '65 ans', mois: 780, marge: 12 },
+  { code: 'dtp-75', nom: 'dTP', detail: 'Puis tous les 10 ans', oblig: false, dose: 'rappel', age: '75 ans', mois: 900, marge: 12 },
+];
+// « 11 à 14 ans » → « entre 11 et 14 ans » ; « 2 mois » → « à 2 mois ».
+const quandDose = (age) => (/^\d+ à \d+/.test(age) ? age.replace(/^(\d+) à (\d+)/, 'entre $1 et $2') : `à ${age}`);
+const concerne = (v, naissance) => (!v.nesDepuis || naissance >= v.nesDepuis) && (!v.nesAvant || naissance < v.nesAvant);
+// Doses d'un membre avec leur statut : fait, a_venir, a_faire, retard (moins d'un an de retard),
+// ancien (plus d'un an de retard : sans doute fait mais pas noté), expire (rotavirus trop tard).
+function vaccinsPour(membre, faits = [], aujourdhui = isoDate(new Date())) {
+  if (!membre?.naissance) return [];
+  const n = membre.naissance;
+  const sienne = (code) => faits.find((f) => f.member_id === membre.id && f.dose === code);
+  return VACCINS.filter((v) => concerne(v, n)).map((v) => {
+    const fait = sienne(v.code);
+    let cible = ajouterMois(n, v.mois);
+    const avant = v.apres && sienne(v.apres);
+    if (avant?.fait_le) cible = ajouterMois(avant.fait_le, v.delai);
+    const limite = ajouterMois(cible, v.marge);
+    let statut;
+    if (fait) statut = 'fait';
+    else if (aujourdhui < cible) statut = 'a_venir';
+    else if (v.limite && aujourdhui > ajouterMois(n, v.limite)) statut = 'expire';
+    else if (aujourdhui <= limite) statut = 'a_faire';
+    else statut = ecartJours(limite, aujourdhui) > 365 ? 'ancien' : 'retard';
+    return { ...v, cible, limite, statut, fait_le: fait?.fait_le || null, id: fait?.id || null };
+  });
+}
+function resumeVaccins(doses) {
+  const de = (s) => doses.filter((d) => d.statut === s);
+  return {
+    faits: de('fait').length,
+    total: doses.filter((d) => d.statut !== 'expire').length,
+    aFaire: [...de('retard'), ...de('a_faire')].sort((a, b) => a.cible.localeCompare(b.cible)),
+    // Doses à venir : celles des 5 prochaines années (au moins la suivante), 3 au plus.
+    prochains: de('a_venir').sort((a, b) => a.cible.localeCompare(b.cible)).filter((d, i, l) => i === 0 || d.cible <= ajouterMois(l[0].cible, 60)).slice(0, 3),
+    anciens: de('ancien'),
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Échéances : maison, véhicules, animaux
+// ---------------------------------------------------------------------------
+const CATEGORIES = {
+  maison: { libelle: 'Maison', icone: IC.maison, sujet: 'Pièce ou appareil (facultatif)' },
+  vehicule: { libelle: 'Véhicules', icone: IC.voiture, sujet: 'Véhicule (ex. Clio, vélo cargo)' },
+  animal: { libelle: 'Animaux', icone: IC.patte, sujet: 'Animal (ex. prénom du chien, « les chiens »)' },
+};
+const MODELES = {
+  maison: [['Entretien de la chaudière', 1, 'an'], ['Ramonage', 1, 'an'], ['Filtres de la VMC', 6, 'mois'], ['Piles des détecteurs de fumée', 1, 'an'], ['Filtre du lave-vaisselle', 3, 'mois']],
+  vehicule: [['Contrôle technique', 2, 'an'], ['Vidange', 1, 'an'], ['Révision', 1, 'an'], ['Pneus hiver (loi Montagne, du 1er novembre au 31 mars)', 1, 'an'], ['Pneus été', 1, 'an']],
+  animal: [['Vaccins', 1, 'an'], ['Vermifuge', 3, 'mois'], ['Antiparasitaire (puces, tiques)', 1, 'mois'], ['Visite chez le vétérinaire', 1, 'an'], ['Croquettes à racheter', 4, 'semaine']],
+};
+const PERIODES = [['', 'Une seule fois'], ['1:semaine', 'Toutes les semaines'], ['2:semaine', 'Toutes les 2 semaines'], ['4:semaine', 'Toutes les 4 semaines'],
+  ['1:mois', 'Tous les mois'], ['2:mois', 'Tous les 2 mois'], ['3:mois', 'Tous les 3 mois'], ['6:mois', 'Tous les 6 mois'],
+  ['1:an', 'Tous les ans'], ['2:an', 'Tous les 2 ans'], ['3:an', 'Tous les 3 ans'], ['5:an', 'Tous les 5 ans']];
+const DELAI_PROCHE = 14; // jours : une échéance « approche »
+const DELAI_TACHE = 7;   // jours : une tâche est créée dans le module taches
+
+// Prochaine date d'une échéance : la date saisie, sinon la dernière fois + la périodicité.
+function prochaineDate(e) {
+  if (e.prochain) return e.prochain;
+  if (e.dernier && e.periode_nb && e.periode_unite) return ajouterPeriode(e.dernier, e.periode_nb, e.periode_unite);
+  return null;
+}
+function etatEcheance(e, aujourdhui = isoDate(new Date())) {
+  const date = prochaineDate(e);
+  if (!date) return { date: null, jours: null, niveau: 'aucune' };
+  const jours = ecartJours(aujourdhui, date);
+  return { date, jours, niveau: jours < 0 ? 'retard' : jours <= DELAI_PROCHE ? 'proche' : 'ok' };
+}
+// Marquer « fait » : dernière fois = ce jour, prochaine = ce jour + périodicité (ou plus rien si ponctuelle).
+function marquerFait(e, jour = isoDate(new Date())) {
+  return { ...e, dernier: jour, prochain: e.periode_nb && e.periode_unite ? ajouterPeriode(jour, e.periode_nb, e.periode_unite) : null, tache_pour: null };
+}
+const titreEcheance = (e) => (e.sujet ? `${e.titre} · ${e.sujet}` : e.titre);
+// Échéances pour lesquelles il faut créer une tâche (à J-7 ou en retard, une seule fois par date).
+const tachesACreer = (echeances, aujourdhui = isoDate(new Date()), delai = DELAI_TACHE) => echeances.filter((e) => {
+  const d = prochaineDate(e);
+  return d && ecartJours(aujourdhui, d) <= delai && e.tache_pour !== d;
+});
+
+// Point d'extension vers le module taches : s'il expose creerTache (ou ajouterTache),
+// le carnet l'appelle avec { titre, echeance: 'AAAA-MM-JJ', detail, source: 'carnet', cle }.
+function apiTaches() {
+  const t = Modules.get('taches')?.expose || {};
+  return typeof t.creerTache === 'function' ? t.creerTache : typeof t.ajouterTache === 'function' ? t.ajouterTache : null;
+}
+async function creerTaches() {
+  const api = apiTaches();
+  if (!api || state.offline || D.manque) return 0;
+  let n = 0;
+  for (const e of tachesACreer(D.echeances)) {
+    const date = prochaineDate(e);
+    try {
+      await api({ titre: titreEcheance(e), echeance: date, detail: `Carnet · ${CATEGORIES[e.categorie]?.libelle || ''}`, source: 'carnet', cle: `carnet:${e.id}:${date}` });
+      await enregistrer('echeances', { ...e, tache_pour: date });
+      n++;
+    } catch (err) { console.warn('carnet : tâche non créée', err); }
+  }
+  return n;
+}
+
+// ---------------------------------------------------------------------------
+// Budget : prélèvements et total du mois
+// ---------------------------------------------------------------------------
+const JOURS_UNITE = { jour: 1, semaine: 7, mois: 30.44, an: 365.25 };
+// Dates de prélèvement d'un abonnement entre debut et fin (inclus), à partir de sa date de référence.
+function occurrences(a, debut, fin) {
+  if (!a || a.actif === false || !a.date_ref) return [];
+  const nb = a.periode_nb || 1, unite = a.periode_unite || 'mois';
+  const pas = nb * JOURS_UNITE[unite];
+  let k = Math.floor(ecartJours(a.date_ref, debut) / pas) - 1;
+  const out = [];
+  for (let i = 0; i < 400; i++, k++) {
+    const d = ajouterPeriode(a.date_ref, k * nb, unite);
+    if (d > fin) break;
+    if (d >= debut && !out.includes(d)) out.push(d);
+  }
+  return out;
+}
+function budgetMois(mois, { categories = [], depenses = [], abonnements = [] } = {}, aujourdhui = isoDate(new Date())) {
+  const debut = `${mois}-01`, fin = finDuMois(mois);
+  const deps = depenses.filter((d) => d.date >= debut && d.date <= fin).sort((a, b) => b.date.localeCompare(a.date));
+  const prels = abonnements.flatMap((a) => occurrences(a, debut, fin).map((date) => ({ abonnement: a, date, montant: Number(a.montant) || 0, categorie_id: a.categorie_id || null, passe: date <= aujourdhui })))
+    .sort((a, b) => a.date.localeCompare(b.date));
+  const somme = (l) => arrondi(l.reduce((s, x) => s + (Number(x.montant) || 0), 0));
+  const connues = new Set(categories.map((c) => c.id));
+  const ligne = (c, filtre) => {
+    const depense = somme([...deps.filter(filtre), ...prels.filter(filtre)]);
+    const budget = Number(c.montant) || 0;
+    return { id: c.id, nom: c.nom, budget, depense, reste: arrondi(budget - depense), part: budget ? depense / budget : depense ? 1 : 0, depasse: budget > 0 && depense > budget };
+  };
+  const parCategorie = [...categories].sort((a, b) => (a.ordre || 0) - (b.ordre || 0)).map((c) => ligne(c, (x) => x.categorie_id === c.id));
+  const sans = (x) => !x.categorie_id || !connues.has(x.categorie_id);
+  if (deps.some(sans) || prels.some(sans)) parCategorie.push(ligne({ id: null, nom: 'Sans catégorie', montant: 0 }, sans));
+  const totalDepenses = somme(deps), totalPrelevements = somme(prels);
+  const budget = somme(categories.map((c) => ({ montant: c.montant })));
+  const total = arrondi(totalDepenses + totalPrelevements);
+  return { mois, debut, fin, depenses: deps, prelevements: prels, aVenir: prels.filter((p) => !p.passe), parCategorie, totalDepenses, totalPrelevements, total, budget, reste: arrondi(budget - total) };
+}
+const CATEGORIES_BUDGET = ['Courses', 'Maison', 'Transport', 'Santé', 'Enfants', 'Animaux', 'Loisirs', 'Abonnements', 'Divers'];
+
+// ---------------------------------------------------------------------------
+// Contacts
+// ---------------------------------------------------------------------------
+const GROUPES = { sante: 'Santé', garde: 'Garde des enfants', voisins: 'Voisins', autres: 'Autres' };
+const ROLES = { sante: ['Médecin traitant', 'Pédiatre', 'Dentiste', 'Pharmacie', 'Kinésithérapeute', 'Vétérinaire'], garde: ['Crèche', 'Nounou', 'Baby-sitter', 'Grands-parents'], voisins: ['Voisin', 'Voisine'], autres: ['École', 'Plombier', 'Électricien', 'Assurance'] };
+const URGENCES = [
+  ['15', 'SAMU', 'Urgence médicale'],
+  ['18', 'Pompiers', 'Incendie, accident, secours'],
+  ['17', 'Police secours', 'Agression, danger immédiat'],
+  ['112', 'Urgence européenne', 'Depuis n\'importe quel téléphone, en France et en Europe'],
+  ['114', 'Urgence par SMS', 'Si tu ne peux pas parler ou entendre'],
+  ['0472116911', 'Centre antipoison de Lyon', 'Ingestion ou contact avec un produit toxique'],
+  ['3237', 'Pharmacie de garde', 'Service payant, 0,35 € la minute'],
+];
+
+// ---------------------------------------------------------------------------
+// Sources partagées : fil de l'Accueil et agenda (fonctions pures sur les données)
+// ---------------------------------------------------------------------------
+const nomMembre = (membres, id) => membres.find((m) => m.id === id)?.nom || '';
+function rappelsDuJour(d, iso, membres = []) {
+  const out = [];
+  for (const r of d.rdv.filter((x) => x.date === iso)) {
+    out.push({ heure: r.heure ? r.heure.slice(0, 5) : null, titre: r.titre, detail: [nomMembre(membres, r.member_id), r.lieu].filter(Boolean).join(' · ') || 'Rendez-vous', icone: IC.sante, act: 'carnet-rdv', data: { id: r.id }, priorite: 2 });
+  }
+  for (const e of d.echeances) {
+    const et = etatEcheance(e, iso);
+    if (et.date && et.jours <= 0) out.push({ heure: null, titre: titreEcheance(e), detail: et.jours === 0 ? 'À faire aujourd\'hui' : `En retard de ${pl(-et.jours, 'jour')}`, icone: CATEGORIES[e.categorie]?.icone, act: 'carnet-vue', data: { vue: 'maison' }, priorite: et.jours < 0 ? 2 : 1 });
+  }
+  for (const a of d.abonnements) {
+    if (occurrences(a, iso, iso).length) out.push({ heure: null, titre: `Prélèvement : ${a.libelle}`, detail: fmtEuros(a.montant), icone: IC.euro, act: 'carnet-vue', data: { vue: 'budget' }, priorite: 0 });
+  }
+  for (const m of membres) {
+    const r = resumeVaccins(vaccinsPour(m, d.vaccins, iso));
+    if (r.aFaire.length) out.push({ heure: null, titre: `Vaccin à faire pour ${m.nom}`, detail: r.aFaire.map((v) => `${v.nom}, ${v.dose}`).join(' ; '), icone: IC.seringue, act: 'carnet-vaccins', data: { membre: m.id }, priorite: 1 });
+  }
+  return out;
+}
+function elementsAgenda(d, debut, fin, membres = [], aujourdhui = isoDate(new Date())) {
+  const out = [];
+  for (const r of d.rdv) {
+    if (r.date < debut || r.date > fin) continue;
+    out.push({ id: `carnet-rdv:${r.id}`, date: r.date, heure: r.heure ? r.heure.slice(0, 5) : null, titre: r.titre, detail: [nomMembre(membres, r.member_id), r.lieu].filter(Boolean).join(' · ') || null, membres: r.member_id ? [r.member_id] : [], act: 'carnet-rdv', data: { id: r.id } });
+  }
+  for (const e of d.echeances) {
+    const date = prochaineDate(e);
+    if (date && date >= debut && date <= fin) out.push({ id: `carnet-echeance:${e.id}`, date, titre: titreEcheance(e), detail: `${CATEGORIES[e.categorie]?.libelle || 'Carnet'} · ${libellePeriode(e.periode_nb, e.periode_unite)}`, act: 'carnet-vue', data: { vue: 'maison' } });
+  }
+  for (const a of d.abonnements) {
+    for (const date of occurrences(a, debut, fin)) out.push({ id: `carnet-prelevement:${a.id}:${date}`, date, titre: `Prélèvement : ${a.libelle}`, detail: fmtEuros(a.montant), act: 'carnet-vue', data: { vue: 'budget' } });
+  }
+  for (const m of membres) {
+    for (const v of vaccinsPour(m, d.vaccins, aujourdhui)) {
+      if (!['a_venir', 'a_faire', 'retard'].includes(v.statut) || v.cible < debut || v.cible > fin) continue;
+      out.push({ id: `carnet-vaccin:${m.id}:${v.code}`, date: v.cible, titre: `Vaccin : ${v.nom}, ${v.dose}`, detail: `${m.nom} · ${quandDose(v.age)}`, membres: [m.id], act: 'carnet-vaccins', data: { membre: m.id } });
+    }
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------------------
+// Données : chargement, cache et écriture
+// ---------------------------------------------------------------------------
+const sauver = () => { for (const k of Object.keys(TABLES)) cache.set(k, D[k]); };
+const restaurer = () => { for (const k of Object.keys(TABLES)) D[k] = cache.get(k, []); };
+const tableAbsente = (e) => /42P01|PGRST205|does not exist|schema cache/i.test(`${e?.code || ''} ${e?.message || ''}`);
+async function charger(force, { horsLigne } = {}) {
+  if (horsLigne || !foyer()) { restaurer(); return; }
+  try {
+    const depuis = `${decalerMois(moisDe(new Date()), -12)}-01`;
+    const lots = await Promise.all(Object.entries(TABLES).map(async ([k, t]) => {
+      let q = db.from(t).select('*').eq('foyer_id', foyer());
+      if (k === 'depenses') q = q.gte('date', depuis);
+      const { data, error } = await q;
+      if (error) throw error;
+      return [k, data || []];
+    }));
+    for (const [k, l] of lots) D[k] = l;
+    D.manque = false;
+    sauver();
+  } catch (e) {
+    restaurer();
+    if (tableAbsente(e)) { D.manque = true; return; }
+    if (!isNetworkError(e)) throw e;
+  }
+  creerTaches().catch((e) => console.warn('carnet : tâches', e));
+}
+async function enregistrer(cle, ligne, options) {
+  const r = await Sync.upsert(TABLES[cle], ligne, options);
+  const l = D[cle];
+  const i = l.findIndex((x) => x.id === r.id || (cle === 'vaccins' && x.member_id === r.member_id && x.dose === r.dose));
+  if (i >= 0) l[i] = r; else l.push(r);
+  sauver();
+  return r;
+}
+async function retirer(cle, id) {
+  await Sync.supprimer(TABLES[cle], id);
+  D[cle] = D[cle].filter((x) => x.id !== id);
+  sauver();
+}
+const aujourdhui = () => isoDate(new Date());
+
+// ---------------------------------------------------------------------------
+// Rendu
+// ---------------------------------------------------------------------------
+const champ = (libelle, html, cls = '') => `<label class="field ${cls}"><span>${esc(libelle)}</span>${html}</label>`;
+const options = (liste, val) => liste.map(([v, l]) => `<option value="${esc(v)}" ${String(v) === String(val ?? '') ? 'selected' : ''}>${esc(l)}</option>`).join('');
+const optMembres = (val, tous = 'Tout le foyer') => options([['', tous], ...state.members.map((m) => [m.id, m.nom])], val);
+const badge = (niveau, texte) => `<span class="carnet-badge ${niveau}">${esc(texte)}</span>`;
+const titreSection = (titre, bouton = '') => `<div class="carnet-titre"><h3>${esc(titre)}</h3>${bouton}</div>`;
+const boutonAjout = (act, libelle, data = '') => `<button class="btn small soft" data-act="${act}" ${data}>${ICON.plus} ${esc(libelle)}</button>`;
+function texteEcheance(et) {
+  if (et.niveau === 'aucune') return 'Sans date';
+  if (et.jours === 0) return 'Aujourd\'hui';
+  if (et.jours < 0) return `En retard de ${pl(-et.jours, 'jour')}`;
+  if (et.jours <= DELAI_PROCHE) return et.jours === 1 ? 'Demain' : `Dans ${et.jours} jours`;
+  return fmtDate(et.date);
+}
+
+function vueSante() {
+  const auj = aujourdhui();
+  const avenir = D.rdv.filter((r) => r.date >= auj).sort((a, b) => (a.date + (a.heure || '')).localeCompare(b.date + (b.heure || '')));
+  const passes = D.rdv.filter((r) => r.date < auj).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 10);
+  const ligneRdv = (r) => `<button class="carnet-ligne" data-act="carnet-rdv" data-id="${esc(r.id)}">
+      <span class="carnet-ico">${IC.agenda}</span>
+      <span class="grow"><b>${esc(r.titre)}</b><span class="muted small carnet-sous">${esc([nomMembre(state.members, r.member_id), r.lieu].filter(Boolean).join(' · ') || 'Tout le foyer')}</span></span>
+      <span class="carnet-quand"><b>${esc(quand(r.date, auj))}</b>${r.heure ? `<span class="muted small">${esc(fmtHeure(r.heure))}</span>` : ''}</span></button>`;
+  const rdv = `<section class="card carnet-carte">${titreSection('Rendez-vous médicaux', boutonAjout('carnet-rdv', 'Ajouter'))}
+    ${avenir.length ? avenir.map(ligneRdv).join('') : '<p class="muted small carnet-vide">Aucun rendez-vous à venir. Ils apparaissent aussi dans l\'agenda de la famille.</p>'}
+    ${passes.length ? `<details class="carnet-passes"><summary class="muted small">Rendez-vous passés (${passes.length})</summary>${passes.map(ligneRdv).join('')}</details>` : ''}</section>`;
+  const membres = state.members.filter((m) => m.naissance).sort((a, b) => b.naissance.localeCompare(a.naissance));
+  const carteVaccins = (m) => {
+    const r = resumeVaccins(vaccinsPour(m, D.vaccins, auj));
+    const lignes = [
+      ...r.aFaire.map((v) => `<li>${badge(v.statut === 'retard' ? 'retard' : 'proche', v.statut === 'retard' ? 'En retard' : 'À faire')} <span><b>${esc(v.nom)}</b>, ${esc(v.dose)} <span class="muted">· ${esc(quandDose(v.age))}</span></span></li>`),
+      ...r.prochains.map((v) => `<li>${badge('ok', fmtDate(v.cible, auj))} <span><b>${esc(v.nom)}</b>, ${esc(v.dose)} <span class="muted">· ${esc(quandDose(v.age))}</span></span></li>`),
+    ];
+    return `<div class="carnet-vaccin" data-membre="${esc(m.id)}">
+      <div class="row"><span class="carnet-ico">${IC.seringue}</span><span class="grow"><b>${esc(m.nom)}</b><span class="muted small carnet-sous">${r.faits} dose${r.faits > 1 ? 's' : ''} notée${r.faits > 1 ? 's' : ''} sur ${r.total}</span></span>
+      <button class="btn small" data-act="carnet-vaccins" data-membre="${esc(m.id)}">Carnet</button></div>
+      <div class="carnet-barre" aria-hidden="true"><i style="width:${r.total ? Math.round((100 * r.faits) / r.total) : 0}%"></i></div>
+      ${lignes.length ? `<ul class="carnet-doses">${lignes.join('')}</ul>` : '<p class="muted small">Aucune dose prévue prochainement.</p>'}
+      ${r.anciens.length ? `<p class="muted small carnet-anciens">${pl(r.anciens.length, 'dose ancienne non notée', 'doses anciennes non notées')}. <button class="btn small" data-act="carnet-vaccins-anciens" data-membre="${esc(m.id)}">Tout marquer comme fait</button></p>` : ''}
+    </div>`;
+  };
+  const vaccins = `<section class="card carnet-carte">${titreSection('Vaccins')}
+    ${membres.length ? membres.map(carteVaccins).join('') : '<p class="muted small carnet-vide">Ajoute les dates de naissance dans Réglages › Mon foyer pour suivre les vaccins.</p>'}
+    <p class="muted small carnet-note">D'après le calendrier des vaccinations 2025 (ministère de la Santé). Le médecin reste la référence, notamment pour les rattrapages.</p></section>`;
+  return rdv + vaccins + carteContacts('sante');
+}
+
+function vueMaison() {
+  const auj = aujourdhui();
+  const blocs = Object.entries(CATEGORIES).map(([cat, c]) => {
+    const liste = D.echeances.filter((e) => e.categorie === cat).map((e) => ({ e, et: etatEcheance(e, auj) }))
+      .sort((a, b) => (a.et.date || '9999').localeCompare(b.et.date || '9999'));
+    const lignes = liste.map(({ e, et }) => `<div class="carnet-ligne carnet-echeance" data-id="${esc(e.id)}">
+        <button class="carnet-ligne-corps" data-act="carnet-echeance" data-id="${esc(e.id)}"><span class="carnet-ico">${c.icone}</span>
+        <span class="grow"><b>${esc(e.titre)}</b><span class="muted small carnet-sous">${esc([e.sujet, libellePeriode(e.periode_nb, e.periode_unite)].filter(Boolean).join(' · '))}</span></span></button>
+        <span class="carnet-fin">${badge(et.niveau, texteEcheance(et))}<button class="btn small" data-act="carnet-fait" data-id="${esc(e.id)}" aria-label="Marquer « ${esc(e.titre)} » comme fait">${ICON.check} Fait</button></span></div>`).join('');
+    return `<section class="card carnet-carte">${titreSection(c.libelle, boutonAjout('carnet-echeance', 'Ajouter', `data-categorie="${cat}"`))}
+      ${lignes || `<p class="muted small carnet-vide">${cat === 'animal' ? 'Vaccins, vermifuge, antiparasitaire, croquettes… pour les deux chiens.' : cat === 'vehicule' ? 'Contrôle technique, vidange, pneus…' : 'Chaudière, ramonage, filtres…'}</p>`}</section>`;
+  });
+  const tache = apiTaches() ? `Une tâche est créée ${DELAI_TACHE} jours avant chaque échéance.` : `Les échéances apparaissent dans l'agenda et dans le fil du jour.`;
+  return `${blocs.join('')}<p class="muted small carnet-note">${tache} « Fait » reporte la suivante selon la périodicité.</p>`;
+}
+
+function vueBudget() {
+  const auj = aujourdhui();
+  const mois = moisBudget || moisDe(new Date());
+  const b = budgetMois(mois, D, auj);
+  const tete = `<div class="carnet-mois"><button class="icon-btn" data-act="carnet-mois" data-n="-1" aria-label="Mois précédent">${ICON.back}</button>
+    <b>${esc(nomMois(mois))}</b><button class="icon-btn" data-act="carnet-mois" data-n="1" aria-label="Mois suivant">${ICON.next}</button></div>`;
+  const pct = b.budget ? Math.min(100, Math.round((100 * b.total) / b.budget)) : 0;
+  const total = `<section class="card carnet-carte carnet-total">${tete}
+    <div class="carnet-chiffres"><div><span class="muted small">Total du mois</span><b class="carnet-gros" data-total>${esc(fmtEuros(b.total))}</b></div>
+      <div><span class="muted small">${b.budget ? (b.reste >= 0 ? 'Reste' : 'Dépassement') : 'Budget'}</span><b class="${b.reste < 0 && b.budget ? 'carnet-rouge' : ''}">${b.budget ? esc(fmtEuros(Math.abs(b.reste))) : 'à définir'}</b></div></div>
+    ${b.budget ? `<div class="carnet-barre ${b.reste < 0 ? 'depasse' : ''}" aria-hidden="true"><i style="width:${pct}%"></i></div><p class="muted small">${esc(fmtEuros(b.totalDepenses))} de dépenses saisies et ${esc(fmtEuros(b.totalPrelevements))} de prélèvements, pour un budget de ${esc(fmtEuros(b.budget))}.</p>` : ''}
+    <div class="row wrap carnet-actions">${boutonAjout('carnet-depense', 'Dépense')}<button class="btn small" data-act="carnet-categories">Catégories et budgets</button></div></section>`;
+  const cats = b.parCategorie.filter((c) => c.budget || c.depense);
+  const categories = cats.length ? `<section class="card carnet-carte">${titreSection('Par catégorie')}${cats.map((c) => `<div class="carnet-cat">
+      <div class="row"><span class="grow">${esc(c.nom)}</span><span class="small"><b>${esc(fmtEuros(c.depense))}</b>${c.budget ? ` <span class="muted">/ ${esc(fmtEuros(c.budget))}</span>` : ''}</span></div>
+      ${c.budget ? `<div class="carnet-barre fine ${c.depasse ? 'depasse' : ''}" aria-hidden="true"><i style="width:${Math.min(100, Math.round(100 * c.part))}%"></i></div>` : ''}</div>`).join('')}</section>` : '';
+  const nomCat = (id) => D.categories.find((c) => c.id === id)?.nom || 'Sans catégorie';
+  const aVenir = `<section class="card carnet-carte">${titreSection('Prélèvements du mois', boutonAjout('carnet-abonnement', 'Abonnement'))}
+    ${b.prelevements.length ? b.prelevements.map((p) => `<button class="carnet-ligne" data-act="carnet-abonnement" data-id="${esc(p.abonnement.id)}">
+        <span class="grow"><b>${esc(p.abonnement.libelle)}</b><span class="muted small carnet-sous">${esc(libellePeriode(p.abonnement.periode_nb, p.abonnement.periode_unite))} · ${esc(nomCat(p.categorie_id))}</span></span>
+        <span class="carnet-quand"><b>${esc(fmtEuros(p.montant))}</b><span class="muted small">${p.passe ? 'prélevé' : 'prévu'} ${esc(fmtDate(p.date, auj))}</span></span></button>`).join('')
+      : '<p class="muted small carnet-vide">Loyer, électricité, box, assurances, Netflix… Ajoute-les une fois, ils reviennent chaque mois.</p>'}
+    ${D.abonnements.some((a) => a.actif === false) ? `<p class="muted small">${pl(D.abonnements.filter((a) => a.actif === false).length, 'abonnement en pause', 'abonnements en pause')}.</p>` : ''}</section>`;
+  const deps = `<section class="card carnet-carte">${titreSection('Dépenses saisies')}
+    ${b.depenses.length ? b.depenses.map((d) => `<button class="carnet-ligne" data-act="carnet-depense" data-id="${esc(d.id)}">
+        <span class="grow"><b>${esc(d.libelle || nomCat(d.categorie_id))}</b><span class="muted small carnet-sous">${esc(fmtDate(d.date, auj))} · ${esc(nomCat(d.categorie_id))}</span></span>
+        <b>${esc(fmtEuros(d.montant))}</b></button>`).join('') : '<p class="muted small carnet-vide">Aucune dépense saisie ce mois-ci.</p>'}</section>`;
+  return total + categories + aVenir + deps;
+}
+
+function carteContacts(groupe) {
+  const liste = D.contacts.filter((c) => c.groupe === groupe).sort((a, b) => (a.ordre || 0) - (b.ordre || 0) || a.nom.localeCompare(b.nom));
+  const titre = groupe === 'sante' ? 'Contacts santé' : GROUPES[groupe];
+  const lignes = liste.map((c) => {
+    const href = telHref(c.telephone);
+    return `<div class="carnet-ligne carnet-contact" data-id="${esc(c.id)}">
+      <button class="carnet-ligne-corps" data-act="carnet-contact" data-id="${esc(c.id)}"><span class="grow"><b>${esc(c.nom)}</b><span class="muted small carnet-sous">${esc([c.role, fmtTel(c.telephone)].filter(Boolean).join(' · '))}</span></span></button>
+      ${href ? `<a class="btn small primary carnet-appel" href="${esc(href)}" aria-label="Appeler ${esc(c.nom)}">${IC.tel} Appeler</a>` : ''}</div>`;
+  }).join('');
+  return `<section class="card carnet-carte" data-groupe="${groupe}">${titreSection(titre, boutonAjout('carnet-contact', 'Ajouter', `data-groupe="${groupe}"`))}
+    ${lignes || `<p class="muted small carnet-vide">${groupe === 'sante' ? 'Médecin, pédiatre, dentiste, pharmacie…' : groupe === 'garde' ? 'Crèche, nounou, baby-sitter…' : 'Aucun contact pour l\'instant.'}</p>`}</section>`;
+}
+function vueContacts() {
+  const urgences = `<section class="card carnet-carte carnet-urgences">${titreSection('Urgences')}
+    <div class="carnet-urgences-grille">${URGENCES.map(([num, nom, detail]) => `<a class="carnet-urgence" href="${esc(telHref(num))}" aria-label="Appeler ${esc(nom)} (${esc(fmtTel(num))})">
+      <b class="carnet-num">${esc(fmtTel(num))}</b><span><b>${esc(nom)}</b><span class="muted small carnet-sous">${esc(detail)}</span></span></a>`).join('')}</div></section>`;
+  return urgences + ['garde', 'sante', 'voisins', 'autres'].map(carteContacts).join('');
+}
+
+function rendu() {
+  const onglets = `<div class="chips carnet-onglets" role="tablist">${VUES.map(([id, l]) => `<button class="chip" role="tab" data-act="carnet-vue" data-vue="${id}" aria-pressed="${vue === id}">${esc(l)}</button>`).join('')}</div>`;
+  const manque = D.manque ? `<section class="card carnet-carte carnet-alerte"><b>Le carnet attend sa base de données.</b>
+    <p class="muted small">Colle le fichier supabase/migrations/2026-11-16_carnet.sql dans l'éditeur SQL de Supabase, puis recharge l'appli.</p></section>` : '';
+  const corps = { sante: vueSante, maison: vueMaison, budget: vueBudget, contacts: vueContacts }[vue] || vueSante;
+  return `<div class="carnet">${onglets}${manque}${corps()}</div>`;
+}
+
+// ---------------------------------------------------------------------------
+// Feuilles de saisie
+// ---------------------------------------------------------------------------
+// Ouvre une feuille avec un formulaire ; lire(f) → ligne ou message d'erreur (string).
+function feuille(titre, html, { cle, ligne, lire, apres, suppression }) {
+  const el = openSheet(`${sheetHead(titre)}<form class="stack carnet-form" data-form="carnet-${cle}" novalidate>${html}
+    <button class="btn primary block">Enregistrer</button>
+    ${ligne?.id && suppression ? `<button type="button" class="btn danger block" data-x="del">${ICON.trash} Supprimer</button>` : ''}</form>`);
+  const f = $('form', el);
+  f.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const r = lire(f);
+    if (typeof r === 'string') { toast(r); return; }
+    try {
+      const enr = await enregistrer(cle, { ...(ligne?.id ? { id: ligne.id } : {}), ...r });
+      closeSheet();
+      await apres?.(enr);
+      render();
+    } catch (err) { fail(err, 'Enregistrement impossible'); }
+  });
+  $('[data-x="del"]', el)?.addEventListener('click', async () => {
+    if (!(await confirmSheet(suppression, 'Supprimer'))) return;
+    try { await retirer(cle, ligne.id); closeSheet(); render(); } catch (err) { fail(err); }
+  });
+  return el;
+}
+const texte = (f, n) => f[n]?.value.trim() || null;
+
+function feuilleRdv(r) {
+  const v = r || { titre: '', member_id: '', date: aujourdhui(), heure: '', lieu: '', contact_id: '', note: '' };
+  const sante = D.contacts.filter((c) => c.groupe === 'sante');
+  return feuille(r ? 'Rendez-vous' : 'Nouveau rendez-vous', `
+    ${champ('Rendez-vous', `<input class="input" name="titre" maxlength="80" required value="${esc(v.titre)}" placeholder="Ex. Pédiatre, dentiste, ophtalmo">`)}
+    ${champ('Pour', `<select class="input" name="member_id">${optMembres(v.member_id)}</select>`)}
+    <div class="grid2">${champ('Date', `<input class="input" type="date" name="date" required value="${esc(v.date)}">`)}${champ('Heure', `<input class="input" type="time" name="heure" value="${esc((v.heure || '').slice(0, 5))}">`)}</div>
+    ${sante.length ? champ('Avec', `<select class="input" name="contact_id">${options([['', '—'], ...sante.map((c) => [c.id, `${c.nom}${c.role ? ` (${c.role})` : ''}`])], v.contact_id)}</select>`) : ''}
+    ${champ('Lieu', `<input class="input" name="lieu" maxlength="120" value="${esc(v.lieu || '')}" placeholder="Cabinet, hôpital…">`)}
+    ${champ('Note', `<input class="input" name="note" maxlength="300" value="${esc(v.note || '')}" placeholder="Ex. apporter le carnet de santé">`)}
+    <p class="muted small">Inutile d'écrire des détails médicaux : le carnet sert à ne rien oublier.</p>`, {
+    cle: 'rdv', ligne: r, suppression: 'Supprimer ce rendez-vous ?',
+    lire: (f) => {
+      const titre = texte(f, 'titre');
+      if (!titre) return 'Indique le rendez-vous';
+      if (!f.date.value) return 'Indique la date';
+      const contact = sante.find((c) => c.id === f.contact_id?.value);
+      return { titre, member_id: f.member_id.value || null, date: f.date.value, heure: f.heure.value || null, contact_id: contact?.id || null, lieu: texte(f, 'lieu') || contact?.adresse || null, note: texte(f, 'note') };
+    },
+    apres: () => toast('Rendez-vous enregistré'),
+  });
+}
+
+function feuilleVaccins(membreId) {
+  const m = memberById(membreId);
+  if (!m) return null;
+  const el = openSheet(`${sheetHead(`Vaccins de ${m.nom}`)}
+    <button type="button" class="btn small block" data-x="tout">${ICON.check} Tout cocher jusqu'à aujourd'hui (sans date)</button><div data-liste></div>
+    <p class="muted small">Coche une dose une fois faite ; la date reste modifiable. Source : calendrier des vaccinations 2025.</p>`, { full: false });
+  const dessiner = () => {
+    const doses = vaccinsPour(m, D.vaccins, aujourdhui()).filter((d) => d.statut !== 'expire' || d.id);
+    const ages = [...new Set(doses.map((d) => d.age))];
+    $('[data-liste]', el).innerHTML = ages.map((age) => `<h4 class="carnet-age">${esc(age === '6 à 13 mois après la 1re' ? 'HPV, 2e dose' : quandDose(age).replace(/^./, (x) => x.toUpperCase()))}</h4>${doses.filter((d) => d.age === age).map((d) => `
+      <div class="carnet-dose ${d.statut}">
+        <label class="check grow"><input type="checkbox" data-dose="${d.code}" ${d.statut === 'fait' ? 'checked' : ''}>
+          <span><b>${esc(d.nom)}</b>, ${esc(d.dose)}${d.oblig ? '' : ' <span class="muted small">(recommandé)</span>'}${d.detail ? `<span class="muted small carnet-sous">${esc(d.detail)}</span>` : ''}</span></label>
+        ${d.statut === 'fait' ? `<input class="input carnet-date" type="date" data-date="${d.code}" value="${esc(d.fait_le || '')}" aria-label="Date de la dose">`
+          : badge(d.statut === 'a_venir' ? 'ok' : d.statut === 'a_faire' ? 'proche' : d.statut === 'retard' ? 'retard' : 'aucune', d.statut === 'a_venir' ? fmtDate(d.cible) : d.statut === 'a_faire' ? 'À faire' : d.statut === 'retard' ? 'En retard' : 'Non notée')}
+      </div>`).join('')}`).join('');
+  };
+  dessiner();
+  const ecrire = async (code, faitLe) => {
+    const ex = D.vaccins.find((x) => x.member_id === m.id && x.dose === code);
+    await enregistrer('vaccins', { ...(ex ? { id: ex.id } : {}), member_id: m.id, dose: code, fait_le: faitLe }, { onConflict: 'member_id,dose' });
+  };
+  $('[data-x="tout"]', el).addEventListener('click', async () => {
+    const a = vaccinsPour(m, D.vaccins, aujourdhui()).filter((d) => ['a_faire', 'retard', 'ancien'].includes(d.statut));
+    if (!a.length) { toast('Rien à cocher'); return; }
+    try { for (const d of a) await ecrire(d.code, null); dessiner(); render(); toast(`${pl(a.length, 'dose notée', 'doses notées')}`); } catch (err) { fail(err); }
+  });
+  el.addEventListener('change', async (e) => {
+    try {
+      const c = e.target.closest('[data-dose]');
+      const d = e.target.closest('[data-date]');
+      if (c) {
+        if (c.checked) await ecrire(c.dataset.dose, aujourdhui());
+        else { const ex = D.vaccins.find((x) => x.member_id === m.id && x.dose === c.dataset.dose); if (ex) await retirer('vaccins', ex.id); }
+      } else if (d) await ecrire(d.dataset.date, d.value || null);
+      else return;
+      dessiner();
+      render();
+    } catch (err) { fail(err); }
+  });
+  return el;
+}
+
+function feuilleEcheance(e, categorie = 'maison') {
+  const cat = e?.categorie || categorie;
+  const v = e || { titre: '', sujet: '', periode_nb: null, periode_unite: null, dernier: '', prochain: '', note: '' };
+  const per = v.periode_nb && v.periode_unite ? `${v.periode_nb}:${v.periode_unite}` : '';
+  const modeles = e ? '' : `<div class="field"><span>Modèles</span><div class="chips carnet-modeles">${MODELES[cat].map(([t, nb, u], i) => `<button type="button" class="chip" data-modele="${i}">${esc(t.replace(/ \(.*\)$/, ''))}</button>`).join('')}</div></div>`;
+  const el = feuille(e ? titreEcheance(e) : `Nouvelle échéance · ${CATEGORIES[cat].libelle}`, `${modeles}
+    ${champ('Quoi', `<input class="input" name="titre" maxlength="80" required value="${esc(v.titre)}" placeholder="Ex. Entretien de la chaudière">`)}
+    ${champ(CATEGORIES[cat].sujet, `<input class="input" name="sujet" maxlength="60" value="${esc(v.sujet || '')}">`)}
+    ${champ('Périodicité', `<select class="input" name="periode">${options(PERIODES, per)}</select>`)}
+    <div class="grid2">${champ('Dernière fois', `<input class="input" type="date" name="dernier" value="${esc(v.dernier || '')}">`)}${champ('Prochaine fois', `<input class="input" type="date" name="prochain" value="${esc(v.prochain || '')}">`)}</div>
+    <p class="muted small" data-calc></p>
+    ${champ('Note', `<input class="input" name="note" maxlength="300" value="${esc(v.note || '')}" placeholder="Ex. société, référence du filtre, marque des croquettes">`)}`, {
+    cle: 'echeances', ligne: e, suppression: 'Supprimer cette échéance ?',
+    lire: (f) => {
+      const titre = texte(f, 'titre');
+      if (!titre) return 'Indique ce qu\'il faut faire';
+      const [nb, unite] = f.periode.value ? f.periode.value.split(':') : [null, null];
+      const base = { categorie: cat, titre, sujet: texte(f, 'sujet'), periode_nb: nb ? Number(nb) : null, periode_unite: unite, dernier: f.dernier.value || null, prochain: f.prochain.value || null, note: texte(f, 'note') };
+      if (!base.prochain) base.prochain = prochaineDate(base);
+      if (!base.prochain && !base.dernier) return 'Indique la prochaine date (ou la dernière fois)';
+      if (e && base.prochain !== prochaineDate(e)) base.tache_pour = null; else if (e) base.tache_pour = e.tache_pour || null;
+      return base;
+    },
+    apres: async () => { toast('Échéance enregistrée'); await creerTaches(); },
+  });
+  const f = $('form', el);
+  const calc = () => {
+    const [nb, unite] = f.periode.value ? f.periode.value.split(':') : [null, null];
+    const p = !f.prochain.value && f.dernier.value && nb ? ajouterPeriode(f.dernier.value, Number(nb), unite) : null;
+    $('[data-calc]', el).textContent = p ? `Prochaine fois calculée : ${fmtDate(p)}.` : '';
+  };
+  f.addEventListener('input', calc);
+  f.addEventListener('change', calc);
+  el.addEventListener('click', (ev) => {
+    const b = ev.target.closest('[data-modele]');
+    if (!b) return;
+    const [t, nb, u] = MODELES[cat][Number(b.dataset.modele)];
+    f.titre.value = t;
+    f.periode.value = `${nb}:${u}`;
+    $$('[data-modele]', el).forEach((x) => x.setAttribute('aria-pressed', x === b));
+    calc();
+  });
+  return el;
+}
+
+async function preparerCategories() {
+  if (D.categories.length) return;
+  for (const [i, nom] of CATEGORIES_BUDGET.entries()) await enregistrer('categories', { nom, montant: 0, ordre: i });
+}
+function feuilleCategories() {
+  const el = openSheet(`${sheetHead('Catégories et budgets')}<form class="stack" data-form="carnet-categories" novalidate>
+    <p class="muted small">Montant prévu chaque mois pour chaque catégorie ; laisse 0 pour suivre sans plafond.</p>
+    <div data-liste class="stack"></div>
+    <div class="row"><input class="input grow" name="nouvelle" maxlength="40" placeholder="Nouvelle catégorie" aria-label="Nouvelle catégorie"><button type="button" class="btn" data-x="ajouter">${ICON.plus}</button></div>
+    <button class="btn primary block">Enregistrer</button></form>`);
+  const f = $('form', el);
+  const dessiner = () => {
+    $('[data-liste]', el).innerHTML = [...D.categories].sort((a, b) => (a.ordre || 0) - (b.ordre || 0)).map((c) => `<div class="row carnet-cat-ligne">
+      <input class="input grow" data-nom="${esc(c.id)}" maxlength="40" value="${esc(c.nom)}" aria-label="Nom de la catégorie">
+      <input class="input carnet-montant" data-montant="${esc(c.id)}" inputmode="decimal" value="${c.montant ? esc(String(c.montant).replace('.', ',')) : ''}" placeholder="0" aria-label="Budget mensuel de ${esc(c.nom)}">
+      <span class="muted">€</span><button type="button" class="icon-btn" data-suppr="${esc(c.id)}" aria-label="Supprimer ${esc(c.nom)}">${ICON.trash}</button></div>`).join('');
+  };
+  dessiner();
+  el.addEventListener('click', async (ev) => {
+    try {
+      if (ev.target.closest('[data-x="ajouter"]')) {
+        const nom = f.nouvelle.value.trim();
+        if (!nom) return;
+        await enregistrer('categories', { nom, montant: 0, ordre: D.categories.length });
+        f.nouvelle.value = '';
+        dessiner();
+      }
+      const s = ev.target.closest('[data-suppr]');
+      if (s && (await confirmSheet('Supprimer cette catégorie ? Ses dépenses passeront « sans catégorie ».', 'Supprimer'))) { await retirer('categories', s.dataset.suppr); dessiner(); }
+    } catch (err) { fail(err); }
+  });
+  f.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    try {
+      for (const c of D.categories) {
+        const nom = $(`[data-nom="${c.id}"]`, el)?.value.trim() || c.nom;
+        const brut = $(`[data-montant="${c.id}"]`, el)?.value.trim() || '';
+        const montant = brut ? lireMontant(brut) : 0;
+        if (montant === null) { toast(`Montant illisible pour « ${nom} »`); return; }
+        if (nom !== c.nom || Number(c.montant) !== montant) await enregistrer('categories', { ...c, nom, montant });
+      }
+      closeSheet(); render(); toast('Budgets enregistrés');
+    } catch (err) { fail(err); }
+  });
+  return el;
+}
+const optCategories = (val) => options([['', 'Sans catégorie'], ...[...D.categories].sort((a, b) => (a.ordre || 0) - (b.ordre || 0)).map((c) => [c.id, c.nom])], val);
+
+function feuilleDepense(d) {
+  const v = d || { date: aujourdhui(), montant: '', categorie_id: '', libelle: '' };
+  return feuille(d ? 'Dépense' : 'Nouvelle dépense', `
+    <div class="grid2">${champ('Montant (€)', `<input class="input" name="montant" inputmode="decimal" required value="${v.montant ? esc(String(v.montant).replace('.', ',')) : ''}" placeholder="0,00">`)}${champ('Date', `<input class="input" type="date" name="date" required value="${esc(v.date)}">`)}</div>
+    ${champ('Catégorie', `<select class="input" name="categorie_id">${optCategories(v.categorie_id)}</select>`)}
+    ${champ('Libellé', `<input class="input" name="libelle" maxlength="80" value="${esc(v.libelle || '')}" placeholder="Ex. marché, pharmacie, plein d'essence">`)}`, {
+    cle: 'depenses', ligne: d, suppression: 'Supprimer cette dépense ?',
+    lire: (f) => {
+      const montant = lireMontant(f.montant.value);
+      if (!montant) return 'Montant illisible (ex. 12,50)';
+      if (!f.date.value) return 'Indique la date';
+      return { montant, date: f.date.value, categorie_id: f.categorie_id.value || null, libelle: texte(f, 'libelle') };
+    },
+    apres: (r) => { moisBudget = r.date.slice(0, 7); toast('Dépense enregistrée'); },
+  });
+}
+
+function feuilleAbonnement(a) {
+  const v = a || { libelle: '', montant: '', categorie_id: D.categories.find((c) => c.nom === 'Abonnements')?.id || '', date_ref: aujourdhui(), periode_nb: 1, periode_unite: 'mois', actif: true };
+  const pers = PERIODES.filter(([p]) => /semaine|mois|an/.test(p));
+  return feuille(a ? a.libelle : 'Nouvel abonnement', `
+    ${champ('Abonnement ou prélèvement', `<input class="input" name="libelle" maxlength="60" required value="${esc(v.libelle)}" placeholder="Ex. électricité, box, assurance auto">`)}
+    <div class="grid2">${champ('Montant (€)', `<input class="input" name="montant" inputmode="decimal" required value="${v.montant ? esc(String(v.montant).replace('.', ',')) : ''}" placeholder="0,00">`)}${champ('Prochain prélèvement', `<input class="input" type="date" name="date_ref" required value="${esc(v.date_ref)}">`)}</div>
+    ${champ('Périodicité', `<select class="input" name="periode">${options(pers, `${v.periode_nb}:${v.periode_unite}`)}</select>`)}
+    ${champ('Catégorie', `<select class="input" name="categorie_id">${optCategories(v.categorie_id)}</select>`)}
+    <label class="check"><input type="checkbox" name="actif" ${v.actif !== false ? 'checked' : ''}> Actif (décoche pour le mettre en pause)</label>`, {
+    cle: 'abonnements', ligne: a, suppression: 'Supprimer cet abonnement ?',
+    lire: (f) => {
+      const libelle = texte(f, 'libelle');
+      const montant = lireMontant(f.montant.value);
+      if (!libelle) return 'Indique le nom de l\'abonnement';
+      if (!montant) return 'Montant illisible (ex. 13,49)';
+      if (!f.date_ref.value) return 'Indique la date du prochain prélèvement';
+      const [nb, unite] = f.periode.value.split(':');
+      return { libelle, montant, date_ref: f.date_ref.value, periode_nb: Number(nb), periode_unite: unite, categorie_id: f.categorie_id.value || null, actif: f.actif.checked };
+    },
+    apres: () => toast('Abonnement enregistré'),
+  });
+}
+
+function feuilleContact(c, groupe = 'autres') {
+  const v = c || { nom: '', groupe, role: '', telephone: '', adresse: '', note: '' };
+  const el = feuille(c ? c.nom : 'Nouveau contact', `
+    ${champ('Nom', `<input class="input" name="nom" maxlength="60" required value="${esc(v.nom)}" placeholder="Ex. Dr Martin, crèche Les Lutins">`)}
+    <div class="grid2">${champ('Groupe', `<select class="input" name="groupe">${options(Object.entries(GROUPES), v.groupe)}</select>`)}${champ('Rôle', `<input class="input" name="role" maxlength="40" list="carnet-roles" value="${esc(v.role || '')}" placeholder="Ex. Pédiatre">`)}</div>
+    <datalist id="carnet-roles">${Object.values(ROLES).flat().map((r) => `<option value="${esc(r)}">`).join('')}</datalist>
+    ${champ('Téléphone', `<input class="input" type="tel" name="telephone" maxlength="30" value="${esc(v.telephone || '')}" placeholder="06 12 34 56 78">`)}
+    ${champ('Adresse', `<input class="input" name="adresse" maxlength="160" value="${esc(v.adresse || '')}">`)}
+    ${champ('Note', `<input class="input" name="note" maxlength="300" value="${esc(v.note || '')}" placeholder="Horaires, code de la porte…">`)}`, {
+    cle: 'contacts', ligne: c, suppression: 'Supprimer ce contact ?',
+    lire: (f) => {
+      const nom = texte(f, 'nom');
+      if (!nom) return 'Indique le nom';
+      const tel = texte(f, 'telephone');
+      if (tel && !telHref(tel)) return 'Numéro de téléphone illisible';
+      return { nom, groupe: f.groupe.value, role: texte(f, 'role'), telephone: tel, adresse: texte(f, 'adresse'), note: texte(f, 'note'), ordre: c?.ordre ?? D.contacts.length };
+    },
+    apres: () => toast('Contact enregistré'),
+  });
+  return el;
+}
+
+// ---------------------------------------------------------------------------
+// Enregistrement du module
+// ---------------------------------------------------------------------------
+const ouvrirCarnet = (v) => { vue = v; store.set('carnet:vue', v); if (state.tab !== 'carnet') switchTab('carnet'); else render(); };
 Modules.register({
   id: 'carnet',
   onglet: 'famille',
   segment: 'Carnet',
   ordre: 50,
   libelle: 'Carnet de la famille',
-  rendu: () => Modules.bientot('Carnet de la famille', 'Santé et vaccins, maison et animaux, budget du mois et contacts utiles.'),
+  tables: Object.fromEntries(Object.values(TABLES).map((t) => [t, t])),
+  charger,
+  rendu,
+  actions: {
+    'carnet-vue': (b) => ouvrirCarnet(b.dataset.vue || 'sante'),
+    'carnet-rdv': (b) => feuilleRdv(D.rdv.find((r) => r.id === b.dataset.id) || null),
+    'carnet-vaccins': (b) => { if (state.tab !== 'carnet' || vue !== 'sante') ouvrirCarnet('sante'); feuilleVaccins(b.dataset.membre); },
+    'carnet-vaccins-anciens': async (b) => {
+      const m = memberById(b.dataset.membre);
+      const anciens = resumeVaccins(vaccinsPour(m, D.vaccins, aujourdhui())).anciens;
+      if (!anciens.length || !(await confirmSheet(`Marquer ${pl(anciens.length, 'dose ancienne', 'doses anciennes')} de ${m.nom} comme faite${anciens.length > 1 ? 's' : ''}, sans date ?`, 'Marquer', false))) return;
+      try { for (const v of anciens) await enregistrer('vaccins', { member_id: m.id, dose: v.code, fait_le: null }, { onConflict: 'member_id,dose' }); render(); toast('Doses notées'); } catch (e) { fail(e); }
+    },
+    'carnet-echeance': (b) => feuilleEcheance(D.echeances.find((e) => e.id === b.dataset.id) || null, b.dataset.categorie),
+    'carnet-fait': async (b) => {
+      const e = D.echeances.find((x) => x.id === b.dataset.id);
+      if (!e) return;
+      try {
+        const r = await enregistrer('echeances', marquerFait(e, aujourdhui()));
+        render();
+        toast(r.prochain ? `C'est noté. Prochaine fois : ${fmtDate(r.prochain)}` : 'C\'est noté');
+      } catch (err) { fail(err); }
+    },
+    'carnet-mois': (b) => { moisBudget = decalerMois(moisBudget || moisDe(new Date()), Number(b.dataset.n)); render(); },
+    'carnet-depense': async (b) => { try { if (!b.dataset.id) await preparerCategories(); } catch (e) { fail(e); return; } feuilleDepense(D.depenses.find((d) => d.id === b.dataset.id) || null); },
+    'carnet-categories': async () => { try { await preparerCategories(); } catch (e) { fail(e); return; } feuilleCategories(); },
+    'carnet-abonnement': (b) => feuilleAbonnement(D.abonnements.find((a) => a.id === b.dataset.id) || null),
+    'carnet-contact': (b) => feuilleContact(D.contacts.find((c) => c.id === b.dataset.id) || null, b.dataset.groupe),
+  },
+  sourcesAccueil: (ctx) => rappelsDuJour(D, ctx.iso, state.members),
+  agenda: (debut, fin) => elementsAgenda(D, isoDate(debut), isoDate(fin), state.members),
+  notifications: [
+    { type: 'carnet-rdv', libelle: 'Rendez-vous médicaux', description: 'La veille de chaque rendez-vous.' },
+    { type: 'carnet-vaccins', libelle: 'Vaccins à faire', description: 'Quand une dose du calendrier vaccinal arrive.' },
+    { type: 'carnet-echeances', libelle: 'Échéances de la maison et des animaux', description: 'Chaudière, contrôle technique, vermifuge, croquettes…' },
+    { type: 'carnet-prelevements', libelle: 'Prélèvements à venir', description: 'La veille d\'un prélèvement.', defaut: false },
+  ],
+  expose: {
+    VACCINS, ajouterMois, fmtHeure, quandDose, ajouterPeriode, ecartJours, lireMontant, fmtEuros, libellePeriode, telHref, fmtTel, quand,
+    vaccinsPour, resumeVaccins, prochaineDate, etatEcheance, marquerFait, tachesACreer, occurrences, budgetMois, rappelsDuJour, elementsAgenda,
+  },
 });
 })();
 // ==== module messages ====
@@ -8619,1046 +9367,14 @@ Modules.register({
 })();
 // ==== module taches ====
 (function () {
-// Module « Tâches et listes » (Famille › Tâches & listes).
-// - Tâches ponctuelles : responsable, échéance (et heure), « importante », notes.
-//   Tâches récurrentes sans rotation : cocher une tâche récurrente crée sa prochaine occurrence.
-// - Listes libres partagées (valise, cadeaux, bricolage, films…), cochées en direct (Supabase Realtime).
-// - Listes types réutilisables (Avant départ, Avant nounou, Valise ski, Valise plage, Mode vacances) :
-//   fournies pré-remplies, modifiables ; « lancer » une liste type crée une copie à cocher.
-// - Listes d'envies de cadeaux par membre ; « je m'en occupe » est rangé dans une table à part
-//   (envies_reservations) que la personne concernée ne peut pas lire (RLS, voir la migration).
-// - Bouton « + » : « sortir les poubelles mardi », « appeler le véto avant vendredi Antoine ».
-// - Fil de l'Accueil : tâches du jour et en retard. Agenda : tâches datées.
-//
-// API publique pour les autres modules (le carnet, par exemple : échéance maison → tâche) :
-//   await Taches.creer({ titre, echeance?: 'AAAA-MM-JJ', heure?: 'HH:MM', responsable?: member_id, notes?, priorite?: 0|1,
-//                        recurrence?: { freq: 'jour'|'semaine'|'mois'|'an', n: 1 }, origine?: 'carnet', origine_id?: 'chaudiere' })
-//     → la tâche enregistrée. Avec origine + origine_id, une tâche ouverte de même origine est mise à jour (pas de doublon).
-//   await Taches.terminer(id) ; await Taches.supprimerOrigine(origine, origine_id) ;
-//   Taches.liste({ ouvertes: true }) → tâches en mémoire ; Taches.ouvrir(id) → feuille de la tâche ;
-//   await Taches.lancerListe(cle, { date_debut, date_fin }) → liste créée depuis une liste type.
-// ---------------------------------------------------------------------------
-const cache = Modules.cache('taches');
-const D = { taches: [], listes: [], elements: [], envies: [], resas: [], ok: false };
-const ui = { vue: store.get('taches:vue', 'taches'), filtre: 'tous', faites: false, ouverte: null, membreEnvies: null };
-let pretResoudre;
-const pret = new Promise((r) => { pretResoudre = r; });
-
-// ---------------------------------------------------------------------------
-// Fonctions pures (testées dans tests/unit/taches.test.js)
-// ---------------------------------------------------------------------------
-const aplatir = (s) => s.split('').map((c) => c.toLowerCase().normalize('NFD')[0] || c).join('');
-const majuscule = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
-const isoVersDate = (s) => { const [y, m, d] = String(s).slice(0, 10).split('-').map(Number); return new Date(y, m - 1, d); };
-const ecartJours = (a, b) => Math.round((isoVersDate(b) - isoVersDate(a)) / 864e5);
-const plusJours = (iso, n) => isoDate(addDays(isoVersDate(iso), n));
-const joursDuMois = (an, mois) => new Date(an, mois + 1, 0).getDate();
-const JOURS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
-
-// Verbes d'action qui annoncent une tâche (forme sans accent, premier mot de la phrase).
-const VERBES_TACHE = new Set(['sortir', 'rentrer', 'appeler', 'rappeler', 'telephoner', 'reserver', 'payer', 'regler', 'ranger', 'nettoyer', 'laver', 'faire',
-  'envoyer', 'reparer', 'changer', 'vider', 'tondre', 'arroser', 'remplir', 'renouveler', 'deposer', 'recuperer', 'inscrire', 'commander', 'poster',
-  'imprimer', 'signer', 'preparer', 'trier', 'passer', 'aller', 'contacter', 'ecrire', 'repondre', 'verifier', 'organiser', 'demander', 'chercher',
-  'rendre', 'rapporter', 'installer', 'nourrir', 'promener', 'brosser', 'vacciner', 'vermifuger', 'repasser', 'plier', 'aspirer', 'descendre',
-  'monter', 'porter', 'resilier', 'declarer', 'remplacer', 'purger', 'ramoner', 'entretenir', 'emmener', 'amener', 'planter', 'tailler', 'degivrer',
-  'detartrer', 'mettre', 'donner', 'finir', 'terminer', 'demonter', 'peindre', 'fixer', 'accrocher', 'jeter', 'recycler', 'relancer', 'confirmer',
-  'annuler', 'prevenir', 'inviter', 'souhaiter', 'feter', 'telecharger', 'scanner', 'classer', 'faxer', 'renvoyer', 'retourner', 'echanger', 'recharger']);
-const RE_INTRO = /^(?:il faut |faut |penser a |pense a |ne pas oublier (?:de |d['’])|n['’]oublie pas (?:de |d['’])|rappel ?: ?|tache ?: ?|todo ?: ?|a faire ?: ?)/;
-const RE_REC = / (?:tous les|toutes les|chaque) (?:(\d{1,3}) )?(jours?|semaines?|mois|ans|annees?|matins?|soirs?|lundis?|mardis?|mercredis?|jeudis?|vendredis?|samedis?|dimanches?)(?= )/;
-const RE_LIMITE = / (?:avant|d['’]ici|au plus tard|pour)(?= (?:le |ce )?(?:lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche|demain|apres|aujourd|ce soir|ce midi|ce matin|1er|\d))/;
-const RE_PRIORITE = / (?:urgent|urgente|important|importante|prioritaire)(?= )/;
-
-// Analyse d'une phrase libre en tâche : titre, échéance, heure, responsable, priorité, récurrence et score (0-1).
-// analyseTache('appeler le véto avant vendredi Antoine', { maintenant, membres })
-//   → { titre: 'Appeler le véto', echeance: '2026-10-23', heure: null, responsable: idAntoine, priorite: 0, recurrence: null, score: 0.85 }
-function analyseTache(texte, { maintenant = new Date(), membres = [] } = {}) {
-  let t = ` ${String(texte || '').replace(/\s+/g, ' ').trim()} `;
-  const couper = (m) => { t = `${t.slice(0, m.index)} ${t.slice(m.index + m[0].length)}`; };
-  const aujourdhui = isoDate(maintenant);
-  let recurrence = null;
-  let jourSemaine = null;
-  let priorite = 0;
-  let limite = false;
-  let m = aplatir(t).match(RE_REC);
-  if (m) {
-    const n = Math.max(1, Number(m[1] || 1));
-    const u = m[2];
-    if (/^(jour|matin|soir)/.test(u)) recurrence = { freq: 'jour', n };
-    else if (/^semaine/.test(u)) recurrence = { freq: 'semaine', n };
-    else if (u === 'mois') recurrence = { freq: 'mois', n };
-    else if (/^(an|annee)/.test(u)) recurrence = { freq: 'an', n };
-    else { recurrence = { freq: 'semaine', n }; jourSemaine = JOURS.indexOf(u.replace(/s$/, '')); }
-    couper(m);
-  }
-  if (/!/.test(t)) { priorite = 1; t = t.replace(/!+/g, ' '); }
-  if ((m = aplatir(t).match(RE_PRIORITE))) { priorite = 1; couper(m); }
-  if ((m = aplatir(t).match(RE_LIMITE))) { limite = true; couper(m); }
-  const p = analysePhrase(t, { maintenant, membres });
-  let echeance = p.date;
-  if (!echeance && jourSemaine != null) echeance = plusJours(aujourdhui, (jourSemaine - maintenant.getDay() + 7) % 7);
-  if (recurrence?.freq === 'mois' && echeance) recurrence.jour = isoVersDate(echeance).getDate();
-  let titre = p.texte;
-  const intro = aplatir(titre).match(RE_INTRO);
-  if (intro) titre = titre.slice(intro[0].length);
-  for (let i = 0; i < 3; i++) titre = titre.replace(/[\s,;:.–-]+$/, '').replace(/\s+(?:le|la|les|de|du|des|d['’]|a|à|au|et|pour|avec)$/i, '');
-  titre = majuscule(titre.replace(/^[\s,;:.–-]+/, '').trim());
-  const premier = aplatir(titre).split(/[\s'’]/)[0];
-  const verbe = VERBES_TACHE.has(premier);
-  const rdv = /^prendre (?:un )?(?:rendez-vous|rdv)\b/.test(aplatir(titre));
-  let score;
-  if (!titre) score = 0;
-  else if (intro || rdv || (verbe && (limite || recurrence))) score = 0.85;
-  else if (verbe) score = 0.75;
-  else if (limite) score = 0.6;
-  else if (recurrence) score = 0.45;
-  else if (/[,;+]/.test(titre)) score = 0.1;
-  else if (echeance) score = 0.4;
-  else score = 0.2;
-  return { titre, echeance, heure: p.heure, responsable: p.membres[0] || null, priorite, recurrence, score };
-}
-
-// Date suivante d'une récurrence, toujours après aujourd'hui (une tâche en retard reprend au prochain créneau).
-function prochaineEcheance(echeance, rec, aujourdhui) {
-  if (!rec || !rec.freq) return null;
-  const n = Math.max(1, Number(rec.n) || 1);
-  let d = echeance || aujourdhui;
-  const jourRef = rec.jour || isoVersDate(d).getDate();
-  const avancer = (iso) => {
-    const x = isoVersDate(iso);
-    if (rec.freq === 'jour') return plusJours(iso, n);
-    if (rec.freq === 'semaine') return plusJours(iso, 7 * n);
-    const an = x.getFullYear() + (rec.freq === 'an' ? n : 0);
-    const mois = x.getMonth() + (rec.freq === 'mois' ? n : 0);
-    const cible = new Date(an, mois, 1);
-    cible.setDate(Math.min(rec.freq === 'mois' ? jourRef : x.getDate(), joursDuMois(cible.getFullYear(), cible.getMonth())));
-    if (rec.freq === 'an') cible.setDate(Math.min(jourRef, joursDuMois(cible.getFullYear(), cible.getMonth())));
-    return isoDate(cible);
-  };
-  for (let i = 0; i < 5000; i++) { d = avancer(d); if (d > aujourdhui) return d; }
-  return d;
-}
-
-function libelleRecurrence(rec) {
-  if (!rec || !rec.freq) return '';
-  const n = Math.max(1, Number(rec.n) || 1);
-  const L = { jour: ['Chaque jour', `Tous les ${n} jours`], semaine: ['Chaque semaine', `Toutes les ${n} semaines`], mois: ['Chaque mois', `Tous les ${n} mois`], an: ['Chaque année', `Tous les ${n} ans`] }[rec.freq];
-  return L ? L[n === 1 ? 0 : 1] : '';
-}
-
-// Échéance lisible : « Aujourd'hui », « Demain », « Hier », « Vendredi » (dans la semaine) ou « ven. 23 oct. ».
-function libelleEcheance(iso, aujourdhui) {
-  if (!iso) return '';
-  const e = ecartJours(aujourdhui, iso);
-  if (e === 0) return 'Aujourd\'hui';
-  if (e === 1) return 'Demain';
-  if (e === -1) return 'Hier';
-  const d = isoVersDate(iso);
-  if (e > 1 && e < 7) return majuscule(JOURS[d.getDay()]);
-  const opts = { weekday: 'short', day: 'numeric', month: 'short' };
-  if (d.getFullYear() !== isoVersDate(aujourdhui).getFullYear()) opts.year = 'numeric';
-  return d.toLocaleDateString('fr-FR', opts);
-}
-
-const trierTaches = (a, b) => (a.echeance || '9999').localeCompare(b.echeance || '9999') || (a.heure || '99').localeCompare(b.heure || '99')
-  || (b.priorite || 0) - (a.priorite || 0) || String(a.titre).localeCompare(String(b.titre), 'fr');
-
-// Tâches ouvertes rangées : En retard, Aujourd'hui, Demain, Cette semaine, Plus tard, Sans échéance (groupes vides omis).
-function groupesTaches(taches, aujourdhui) {
-  const G = [['retard', 'En retard'], ['jour', 'Aujourd\'hui'], ['demain', 'Demain'], ['semaine', 'Cette semaine'], ['tard', 'Plus tard'], ['sans', 'Sans échéance']];
-  const cle = (t) => {
-    if (!t.echeance) return 'sans';
-    const e = ecartJours(aujourdhui, t.echeance);
-    return e < 0 ? 'retard' : e === 0 ? 'jour' : e === 1 ? 'demain' : e < 7 ? 'semaine' : 'tard';
-  };
-  return G.map(([c, titre]) => ({ cle: c, titre, taches: taches.filter((t) => !t.fait && cle(t) === c).sort(trierTaches) })).filter((g) => g.taches.length);
-}
-
-const progression = (elements) => {
-  const total = elements.length;
-  const faits = elements.filter((e) => e.coche).length;
-  return { faits, total, pct: total ? Math.round((100 * faits) / total) : 0 };
-};
-
-// Sections d'une liste, dans l'ordre de leur premier élément (les éléments sans section d'abord).
-function sectionsDe(elements) {
-  const tri = [...elements].sort((a, b) => (a.ordre ?? 0) - (b.ordre ?? 0));
-  const out = [];
-  for (const e of tri) {
-    const s = e.section || '';
-    let g = out.find((x) => x.section === s);
-    if (!g) { g = { section: s, elements: [] }; out.push(g); }
-    g.elements.push(e);
-  }
-  return out.sort((a, b) => (a.section ? 1 : 0) - (b.section ? 1 : 0));
-}
-
-const fmtJourMois = (iso) => isoVersDate(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
-// « Vacances du 19 au 26 décembre », « Vacances du 30 décembre au 4 janvier ».
-function titreVacances(debut, fin, base = 'Vacances') {
-  if (!debut) return base;
-  if (!fin || fin === debut) return `${base} du ${fmtJourMois(debut)}`;
-  const a = isoVersDate(debut), b = isoVersDate(fin);
-  const memeMois = a.getMonth() === b.getMonth() && a.getFullYear() === b.getFullYear();
-  const jourA = a.getDate() === 1 ? '1er' : String(a.getDate());
-  return `${base} du ${memeMois ? jourA : fmtJourMois(debut).replace(/^1 /, '1er ')} au ${fmtJourMois(fin).replace(/^1 /, '1er ')}`;
-}
-
-// Copie d'une liste type en liste à cocher : nouvelle liste et ses éléments décochés.
-function copieModele(modele, elements, { titre, date_debut = null, date_fin = null, nouvelId = uid } = {}) {
-  const id = nouvelId();
-  const t = titre || (modele.genre === 'vacances' && date_debut ? titreVacances(date_debut, date_fin) : modele.titre);
-  const liste = { id, titre: t, genre: modele.genre || 'libre', est_modele: false, cle: null, modele_id: modele.id && !String(modele.id).startsWith('modele:') ? modele.id : null,
-    date_debut, date_fin, archivee: false };
-  const els = [...elements].sort((a, b) => (a.ordre ?? 0) - (b.ordre ?? 0)).map((e, i) => ({ id: nouvelId(), liste_id: id, texte: e.texte, section: e.section || null, coche: false, coche_par: null, coche_le: null, ordre: i }));
-  return { liste, elements: els };
-}
-
-// Réservation d'une envie visible par le compte courant ? Jamais pour la personne concernée (double sécurité, la RLS filtre déjà).
-const reservationVisible = (envie, resa, monMembre) => !!resa && resa.envie_id === envie.id && (!monMembre || envie.member_id !== monMembre);
-
-// Éléments du fil de l'Accueil : tâches du jour et en retard (pour la personne, ou pour toute la famille).
-function elementsAccueil(taches, { iso, membre = null, famille = false, nom = () => '' } = {}) {
-  return taches.filter((t) => !t.fait && t.echeance && t.echeance <= iso && (famille || !membre || !t.responsable || t.responsable === membre.id))
-    .sort(trierTaches).map((t) => {
-      const retard = t.echeance < iso;
-      const qui = t.responsable ? nom(t.responsable) : '';
-      return { heure: t.heure || null, titre: t.titre, detail: [retard ? `En retard (${libelleEcheance(t.echeance, iso).toLowerCase()})` : 'À faire aujourd\'hui', qui].filter(Boolean).join(' · '),
-        icone: ICON.check, act: 'taches-ouvrir', data: { id: t.id }, priorite: retard ? 2 : t.priorite ? 1 : 0 };
-    });
-}
-
-// ---------------------------------------------------------------------------
-// Listes types fournies (modifiables : la première modification en garde une copie pour le foyer)
-// ---------------------------------------------------------------------------
-const MODELES = [
-  { cle: 'avant-depart', titre: 'Avant départ', genre: 'depart', description: 'Pour partir l\'esprit tranquille, même pour un week-end.', sections: {
-    Maison: ['Fermer les fenêtres et les volets', 'Baisser le chauffage', 'Éteindre les lumières', 'Débrancher les appareils en veille', 'Vider la poubelle', 'Fermer la porte à clé'],
-    Affaires: ['Clés, papiers et cartes bancaires', 'Chargeurs de téléphone', 'Doudou et tétines de Zoé', 'Couches et lingettes', 'Médicaments', 'Eau et goûters pour la route'],
-    Chiens: ['Laisses et colliers', 'Croquettes et gamelles', 'Sacs à crottes'],
-    Voiture: ['Siège auto de Zoé', 'Faire le plein'],
-  } },
-  { cle: 'avant-nounou', titre: 'Avant nounou', genre: 'nounou', description: 'Tout ce que la nounou doit trouver en arrivant.', sections: {
-    Zoé: ['Repas et goûter préparés', 'Gourde d\'eau remplie', 'Couches et lingettes en place', 'Un change complet', 'Doudou et tétine', 'Médicaments et posologie notés si besoin'],
-    Consignes: ['Horaires de la journée notés', 'Heure de retour prévue indiquée', 'Allergies et consignes rappelées', 'Numéros d\'urgence affichés', 'Carnet de santé à portée de main', 'Clés ou code d\'entrée transmis'],
-    Chiens: ['Chiens sortis et nourris', 'Consignes pour les chiens laissées'],
-  } },
-  { cle: 'valise-ski', titre: 'Valise ski', genre: 'ski', description: 'Pour la montagne en hiver, avec Zoé et les chiens.', sections: {
-    Vêtements: ['Combinaison de ski de Zoé', 'Vestes de ski', 'Pantalons de ski', 'Sous-vêtements thermiques', 'Polaires', 'Chaussettes de ski', 'Gants et moufles', 'Bonnets et cache-cous', 'Après-skis', 'Pyjamas'],
-    Équipement: ['Casques', 'Masques et lunettes de soleil', 'Forfaits', 'Luge', 'Porte-bébé'],
-    Soins: ['Crème solaire haute protection', 'Stick à lèvres', 'Crème hydratante', 'Trousse à pharmacie'],
-    Chiens: ['Croquettes', 'Manteaux des chiens', 'Serviette pour les chiens'],
-  } },
-  { cle: 'valise-plage', titre: 'Valise plage', genre: 'plage', description: 'Pour la mer ou le lac en été.', sections: {
-    Vêtements: ['Maillots de bain', 'Maillot couche de Zoé', 'T-shirts anti-UV', 'Chapeaux et casquettes', 'Shorts et robes légères', 'Sandales', 'Pyjamas'],
-    Plage: ['Serviettes de plage', 'Tente anti-UV ou parasol', 'Seau, pelle et râteau', 'Brassards', 'Glacière'],
-    Soins: ['Crème solaire', 'Après-soleil', 'Lunettes de soleil', 'Anti-moustiques', 'Trousse à pharmacie'],
-    Chiens: ['Gamelle pliable et eau', 'Croquettes', 'Laisses'],
-  } },
-  { cle: 'vacances', titre: 'Mode vacances', genre: 'vacances', description: 'Valise, maison et courses de départ, avec les dates du séjour.', sections: {
-    Valise: ['Vêtements pour tout le séjour', 'Pyjamas', 'Affaires de toilette', 'Médicaments et ordonnances', 'Papiers d\'identité et cartes Vitale', 'Chargeurs', 'Doudou et tétines de Zoé', 'Couches et lingettes', 'Jouets et livres pour la route'],
-    Chiens: ['Garde des chiens organisée ou affaires prêtes', 'Croquettes pour tout le séjour', 'Carnets de santé des chiens', 'Laisses et gamelles'],
-    Maison: ['Fermer les volets', 'Arroser les plantes ou les confier', 'Sortir les poubelles', 'Faire suivre ou relever le courrier', 'Vider le réfrigérateur', 'Couper l\'eau', 'Mettre le chauffage en hors-gel', 'Débrancher les appareils', 'Prévenir un voisin', 'Fermer à clé'],
-    'Courses de départ': ['Eau et goûters pour la route', 'Petits pots et lait de Zoé', 'Pique-nique du trajet', 'Croquettes', 'Crème solaire'],
-  } },
-];
-const elementsModele = (m) => Object.entries(m.sections).flatMap(([section, l]) => l.map((texte) => ({ texte, section })))
-  .map((e, i) => ({ ...e, id: `m:${m.cle}:${i}`, liste_id: `modele:${m.cle}`, ordre: i, coche: false }));
-
-const GENRES = {
-  libre: { libelle: 'Liste', icone: I('<path d="M9 6h11M9 12h11M9 18h11"/><path d="M4.5 6h.01M4.5 12h.01M4.5 18h.01"/>') },
-  valise: { libelle: 'Valise', icone: I('<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/>') },
-  cadeaux: { libelle: 'Cadeaux', icone: I('<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v9h14v-9M12 8S10.5 3 8 3a2.5 2.5 0 0 0 0 5M12 8s1.5-5 4-5a2.5 2.5 0 0 1 0 5"/>') },
-  bricolage: { libelle: 'Bricolage', icone: I('<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/>') },
-  films: { libelle: 'Films', icone: I('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4"/>') },
-  vacances: { libelle: 'Vacances', icone: I('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>') },
-  depart: { libelle: 'Départ', icone: I('<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>') },
-  nounou: { libelle: 'Nounou', icone: ICON.heart },
-  ski: { libelle: 'Ski', icone: I('<path d="m3 20 6.5-11 4 6.5L16 12l5 8z"/>') },
-  plage: { libelle: 'Plage', icone: I('<path d="M12 3a9 9 0 0 1 9 9H3a9 9 0 0 1 9-9zM12 12v7a2 2 0 0 0 4 0"/>') },
-};
-const GENRES_LIBRES = ['libre', 'valise', 'cadeaux', 'bricolage', 'films', 'vacances'];
-const iconeGenre = (g) => (GENRES[g] || GENRES.libre).icone;
-const REC_CHOIX = [['', 'Une seule fois'], ['jour:1', 'Chaque jour'], ['semaine:1', 'Chaque semaine'], ['semaine:2', 'Toutes les 2 semaines'], ['mois:1', 'Chaque mois'],
-  ['mois:3', 'Tous les 3 mois'], ['mois:6', 'Tous les 6 mois'], ['an:1', 'Chaque année']];
-
-// ---------------------------------------------------------------------------
-// Données : chargement, cache hors ligne, écritures (Sync et lots)
-// ---------------------------------------------------------------------------
-const aujourdhui = () => isoDate(new Date());
-const maintenantIso = () => new Date().toISOString();
-const monMembre = () => state.compte?.member_id || null;
-const nomMembre = (id) => memberById(id)?.nom || '';
-function nomCompte(userId) {
-  if (!userId) return '';
-  if (userId === me()) return 'toi';
-  const c = state.comptes.find((x) => x.user_id === userId);
-  return nomMembre(c?.member_id) || (c?.email ? c.email.split('@')[0] : 'quelqu\'un');
-}
-const sauverCache = () => cache.set('donnees', { taches: D.taches, listes: D.listes, elements: D.elements, envies: D.envies, resas: D.resas });
-const remplacer = (tab, ligne) => { const i = tab.findIndex((x) => x.id === ligne.id); if (i >= 0) tab[i] = { ...tab[i], ...ligne }; else tab.push(ligne); return ligne; };
-
-async function enregistrer(table, tab, ligne, opts) {
-  const l = await Sync.upsert(table, { ...ligne, updated_at: maintenantIso() }, opts);
-  remplacer(tab, l);
-  sauverCache();
-  return l;
-}
-async function retirer(table, tab, id) {
-  await Sync.supprimer(table, id);
-  const i = tab.findIndex((x) => x.id === id);
-  if (i >= 0) tab.splice(i, 1);
-  sauverCache();
-}
-// Écriture groupée (lancer une liste type : une seule requête) ; hors ligne, chaque ligne part dans la file.
-async function ecrireLot(table, lignes) {
-  if (!lignes.length) return [];
-  const rows = lignes.map((l) => ({ ...own(), ...l, updated_at: maintenantIso() }));
-  try {
-    const { data, error } = await db.from(table).upsert(rows, { onConflict: 'id' }).select();
-    if (error) throw error;
-    return data;
-  } catch (e) {
-    if (!isNetworkError(e)) throw e;
-    for (const row of rows) Queue.push({ type: 'upsert', table, row, onConflict: 'id' });
-    return rows;
-  }
-}
-
-async function charger(force, { horsLigne } = {}) {
-  if (horsLigne) {
-    Object.assign(D, cache.get('donnees', {}), { ok: true });
-    pretResoudre();
-    return;
-  }
-  try {
-    const depuis = new Date(Date.now() - 30 * 864e5).toISOString();
-    const [t, l, e, v, r] = await Promise.all([
-      db.from(T.taches).select('*').eq('foyer_id', foyer()).or(`fait.eq.false,fait_le.gte.${depuis}`),
-      db.from(T.listes).select('*').eq('foyer_id', foyer()),
-      db.from(T.liste_elements).select('*').eq('foyer_id', foyer()),
-      db.from(T.envies).select('*').eq('foyer_id', foyer()),
-      db.from(T.envies_reservations).select('*').eq('foyer_id', foyer()),
-    ]);
-    for (const x of [t, l, e, v, r]) if (x.error) throw x.error;
-    Object.assign(D, { taches: t.data, listes: l.data, elements: e.data, envies: v.data, resas: r.data, ok: true });
-    sauverCache();
-    if (!state.comptes.length) Foyer.loadComptes().catch(() => {});
-    TempsReel.abonner();
-  } catch (err) {
-    if (isNetworkError(err)) Object.assign(D, cache.get('donnees', {}), { ok: true });
-    throw err;
-  } finally {
-    pretResoudre();
-  }
-}
-
-// Cochage en direct : changements des autres téléphones reçus par Supabase Realtime.
-const TempsReel = {
-  canal: null,
-  foyer: null,
-  tableaux: () => ({ [T.taches]: D.taches, [T.listes]: D.listes, [T.liste_elements]: D.elements, [T.envies]: D.envies }),
-  abonner() {
-    if (typeof db.channel !== 'function' || !foyer()) return;
-    if (this.canal && this.foyer === foyer()) return;
-    this.desabonner();
-    try {
-      this.foyer = foyer();
-      this.canal = db.channel(`taches-${foyer()}`);
-      for (const table of Object.keys(this.tableaux())) {
-        this.canal.on('postgres_changes', { event: '*', schema: 'public', table }, (p) => this.recevoir({ table, eventType: p.eventType, new: p.new, old: p.old }));
-      }
-      this.canal.subscribe();
-    } catch (e) { console.warn('temps réel des listes', e); this.canal = null; }
-  },
-  desabonner() { if (this.canal) { try { db.removeChannel(this.canal); } catch { /* déjà fermé */ } } this.canal = null; },
-  recevoir({ table, eventType, new: nouveau, old }) {
-    const tab = this.tableaux()[table];
-    if (!tab) return;
-    if (eventType === 'DELETE') {
-      const i = tab.findIndex((x) => x.id === old?.id);
-      if (i >= 0) tab.splice(i, 1);
-      if (table === T.listes) D.elements = D.elements.filter((x) => x.liste_id !== old?.id);
-    } else if (nouveau?.id && (!nouveau.foyer_id || nouveau.foyer_id === foyer())) remplacer(tab, nouveau);
-    sauverCache();
-    rafraichir();
-  },
-};
-
-// Nouveau rendu de l'écran sans perdre une saisie en cours : on ne retouche alors que les cases à cocher.
-function rafraichir() {
-  if (state.tab !== 'taches' || sheets.length) return;
-  const actif = document.activeElement;
-  if (actif && actif.closest?.('#main') && /^(INPUT|TEXTAREA|SELECT)$/.test(actif.tagName)) {
-    for (const e of D.elements) {
-      const b = document.querySelector(`[data-act="taches-el-cocher"][data-id="${e.id}"]`);
-      if (!b) continue;
-      b.setAttribute('aria-checked', String(!!e.coche));
-      b.closest('.taches-el')?.classList.toggle('fait', !!e.coche);
-    }
-    return;
-  }
-  render();
-}
-let dernierRafraichissement = Date.now();
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState !== 'visible' || !state.loaded || !navigator.onLine || Date.now() - dernierRafraichissement < 30000) return;
-  dernierRafraichissement = Date.now();
-  charger(true, { horsLigne: false }).then(rafraichir).catch(() => {});
-});
-
-// ---------------------------------------------------------------------------
-// Tâches : création, cochage (récurrence), feuille d'édition
-// ---------------------------------------------------------------------------
-const champsTache = (t) => ({ id: t.id, titre: String(t.titre || '').trim().slice(0, 200), notes: t.notes || null, responsable: t.responsable || null, echeance: t.echeance || null,
-  heure: t.heure || null, priorite: t.priorite ? 1 : 0, recurrence: t.recurrence || null, fait: !!t.fait, fait_le: t.fait_le || null, fait_par: t.fait_par || null,
-  precedente_id: t.precedente_id || null, origine: t.origine || null, origine_id: t.origine_id != null ? String(t.origine_id) : null });
-
-async function creerTache(donnees) {
-  await pret;
-  if (!String(donnees.titre || '').trim()) throw new Error('tâche sans titre');
-  let base = null;
-  if (donnees.origine && donnees.origine_id != null) base = D.taches.find((t) => !t.fait && t.origine === donnees.origine && t.origine_id === String(donnees.origine_id));
-  return enregistrer(T.taches, D.taches, champsTache({ ...(base || {}), ...donnees, id: base?.id || donnees.id }));
-}
-
-async function basculerTache(t) {
-  if (!t.fait) {
-    await enregistrer(T.taches, D.taches, champsTache({ ...t, fait: true, fait_le: maintenantIso(), fait_par: me() }));
-    if (t.recurrence) {
-      const suivante = prochaineEcheance(t.echeance, t.recurrence, aujourdhui());
-      await enregistrer(T.taches, D.taches, champsTache({ ...t, id: uid(), echeance: suivante, fait: false, fait_le: null, fait_par: null, precedente_id: t.id }));
-      return `Faite. Prochaine fois : ${libelleEcheance(suivante, aujourdhui()).toLowerCase()}`;
-    }
-    return 'Tâche faite';
-  }
-  await enregistrer(T.taches, D.taches, champsTache({ ...t, fait: false, fait_le: null, fait_par: null }));
-  // Une tâche récurrente décochée reprend sa place : l'occurrence suivante créée au cochage disparaît.
-  for (const s of D.taches.filter((x) => x.precedente_id === t.id && !x.fait)) await retirer(T.taches, D.taches, s.id);
-  return 'Tâche à refaire';
-}
-
-const optionsMembres = (choisi, vide = 'Personne en particulier') => `<option value="">${esc(vide)}</option>${state.members.map((m) => `<option value="${m.id}" ${m.id === choisi ? 'selected' : ''}>${esc(m.nom)}</option>`).join('')}`;
-const cleRec = (r) => (r?.freq ? `${r.freq}:${Math.max(1, Number(r.n) || 1)}` : '');
-
-function feuilleTache(t = {}) {
-  const neuve = !t.id || !D.taches.some((x) => x.id === t.id);
-  const rc = cleRec(t.recurrence);
-  const choix = REC_CHOIX.some(([v]) => v === rc) ? REC_CHOIX : [...REC_CHOIX, [rc, libelleRecurrence(t.recurrence)]];
-  const el = openSheet(`${sheetHead(neuve ? 'Nouvelle tâche' : 'Tâche')}
-    <form data-form="taches-tache" class="stack taches-form">
-      <label class="field"><span>Quoi ?</span><input class="input" name="titre" required maxlength="200" value="${esc(t.titre || '')}" placeholder="Appeler le vétérinaire"></label>
-      <label class="field"><span>Qui s'en charge ?</span><select class="input" name="responsable">${optionsMembres(t.responsable)}</select></label>
-      <div class="grid2">
-        <label class="field"><span>Échéance</span><input class="input" type="date" name="echeance" value="${esc(t.echeance || '')}"></label>
-        <label class="field"><span>Heure</span><input class="input" type="time" name="heure" value="${esc(t.heure || '')}"></label>
-      </div>
-      <label class="field"><span>Répétition</span><select class="input" name="recurrence">${choix.map(([v, l]) => `<option value="${v}" ${v === rc ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></label>
-      <label class="check"><input type="checkbox" name="priorite" ${t.priorite ? 'checked' : ''}> Importante</label>
-      <label class="field"><span>Notes</span><textarea class="input" name="notes" rows="2" maxlength="2000" placeholder="Numéro, adresse, détails…">${esc(t.notes || '')}</textarea></label>
-      <p class="muted small taches-aide">Une tâche répétée revient d'elle-même quand tu la coches : la suivante est créée à la bonne date.</p>
-      <div class="grid2">${neuve ? '<button type="button" class="btn" data-x="annuler">Annuler</button>' : '<button type="button" class="btn danger" data-x="supprimer">Supprimer</button>'}
-        <button class="btn primary">${neuve ? 'Ajouter' : 'Enregistrer'}</button></div>
-    </form>`);
-  $('form', el).addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const f = e.target;
-    const [freq, n] = f.recurrence.value.split(':');
-    const recurrence = freq ? { freq, n: Number(n) } : null;
-    if (recurrence?.freq === 'mois' && f.echeance.value) recurrence.jour = isoVersDate(f.echeance.value).getDate();
-    try {
-      await creerTache({ ...t, id: neuve ? undefined : t.id, titre: f.titre.value, responsable: f.responsable.value || null, echeance: f.echeance.value || null,
-        heure: f.heure.value || null, recurrence, priorite: f.priorite.checked ? 1 : 0, notes: f.notes.value.trim() || null });
-      closeSheet();
-      toast(neuve ? 'Tâche ajoutée' : 'Tâche enregistrée');
-      render();
-    } catch (err) { fail(err); }
-  });
-  el.addEventListener('click', async (e) => {
-    const b = e.target.closest('[data-x]');
-    if (!b) return;
-    if (b.dataset.x === 'annuler') closeSheet();
-    if (b.dataset.x === 'supprimer') {
-      closeSheet();
-      if (!(await confirmSheet(`Supprimer la tâche « ${t.titre} » ?`, 'Supprimer'))) return;
-      try { await retirer(T.taches, D.taches, t.id); toast('Tâche supprimée'); render(); } catch (err) { fail(err); }
-    }
-  });
-  return el;
-}
-
-// ---------------------------------------------------------------------------
-// Listes et listes types
-// ---------------------------------------------------------------------------
-const elementsDe = (listeId) => {
-  if (String(listeId).startsWith('modele:')) { const m = MODELES.find((x) => `modele:${x.cle}` === listeId); return m ? elementsModele(m) : []; }
-  return D.elements.filter((e) => e.liste_id === listeId);
-};
-// Listes types : celles du foyer (modifiées ou créées), puis les listes fournies pas encore modifiées.
-function modeles() {
-  const perso = D.listes.filter((l) => l.est_modele);
-  const fournis = MODELES.filter((m) => !perso.some((l) => l.cle === m.cle)).map((m) => ({ id: `modele:${m.cle}`, titre: m.titre, genre: m.genre, cle: m.cle, est_modele: true, virtuel: true }));
-  const ordre = (l) => { const i = MODELES.findIndex((m) => m.cle === l.cle); return i < 0 ? 99 : i; };
-  return [...perso, ...fournis].sort((a, b) => ordre(a) - ordre(b) || String(a.titre).localeCompare(String(b.titre), 'fr'));
-}
-const listeParId = (id) => (String(id).startsWith('modele:') ? modeles().find((m) => m.id === id) : D.listes.find((l) => l.id === id)) || null;
-const descriptionModele = (l) => MODELES.find((m) => m.cle === l.cle)?.description || '';
-
-// Première modification d'une liste type fournie : le foyer en garde sa propre copie (même clé).
-async function materialiser(listeId) {
-  if (!String(listeId).startsWith('modele:')) return listeId;
-  const m = MODELES.find((x) => `modele:${x.cle}` === listeId);
-  const liste = await enregistrer(T.listes, D.listes, { id: uid(), titre: m.titre, genre: m.genre, est_modele: true, cle: m.cle, archivee: false });
-  const els = elementsModele(m).map((e) => ({ id: uid(), liste_id: liste.id, texte: e.texte, section: e.section, coche: false, ordre: e.ordre }));
-  D.elements.push(...await ecrireLot(T.liste_elements, els));
-  sauverCache();
-  if (ui.ouverte === listeId) ui.ouverte = liste.id;
-  return liste.id;
-}
-
-async function lancerListe(modeleId, { titre, date_debut = null, date_fin = null } = {}) {
-  await pret;
-  const id = MODELES.some((m) => m.cle === modeleId) ? (D.listes.find((l) => l.est_modele && l.cle === modeleId)?.id || `modele:${modeleId}`) : modeleId;
-  const modele = listeParId(id);
-  if (!modele) throw new Error(`liste type inconnue : ${modeleId}`);
-  const copie = copieModele(modele, elementsDe(id), { titre, date_debut, date_fin });
-  const l = await enregistrer(T.listes, D.listes, copie.liste);
-  D.elements.push(...await ecrireLot(T.liste_elements, copie.elements));
-  sauverCache();
-  return l;
-}
-
-async function basculerElement(e) {
-  const coche = !e.coche;
-  return enregistrer(T.liste_elements, D.elements, { ...e, coche, coche_par: coche ? me() : null, coche_le: coche ? maintenantIso() : null });
-}
-
-async function ajouterElement(listeId, texte, section) {
-  const id = await materialiser(listeId);
-  const ordre = Math.max(-1, ...elementsDe(id).map((e) => e.ordre ?? 0)) + 1;
-  return enregistrer(T.liste_elements, D.elements, { id: uid(), liste_id: id, texte: texte.slice(0, 200), section: section || null, coche: false, ordre });
-}
-
-function feuilleNouvelleListe() {
-  const el = openSheet(`${sheetHead('Nouvelle liste')}
-    <form data-form="taches-liste" class="stack taches-form">
-      <label class="field"><span>Nom</span><input class="input" name="titre" required maxlength="120" placeholder="Films à voir, cadeaux de Noël…"></label>
-      <fieldset class="taches-genres"><legend class="muted small">Genre</legend>
-        ${GENRES_LIBRES.map((g, i) => `<label class="chip taches-genre"><input type="radio" name="genre" value="${g}" ${i === 0 ? 'checked' : ''}>${GENRES[g].icone}${esc(GENRES[g].libelle)}</label>`).join('')}</fieldset>
-      <div class="grid2">
-        <label class="field"><span>Du (facultatif)</span><input class="input" type="date" name="debut"></label>
-        <label class="field"><span>Au</span><input class="input" type="date" name="fin"></label>
-      </div>
-      <label class="check"><input type="checkbox" name="modele"> C'est une liste type (à relancer plusieurs fois)</label>
-      <button class="btn primary block">Créer la liste</button>
-    </form>`);
-  $('form', el).addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const f = e.target;
-    try {
-      const l = await enregistrer(T.listes, D.listes, { id: uid(), titre: f.titre.value.trim().slice(0, 120), genre: f.genre.value, est_modele: f.modele.checked,
-        date_debut: f.debut.value || null, date_fin: f.fin.value || f.debut.value || null, archivee: false });
-      closeSheet();
-      ui.ouverte = l.id;
-      render();
-      setTimeout(() => $('[data-form="taches-element"] [name="texte"]')?.focus(), 80);
-    } catch (err) { fail(err); }
-  });
-  setTimeout(() => $('[name="titre"]', el)?.focus(), 60);
-}
-
-function feuilleLancer(modeleId) {
-  const m = listeParId(modeleId);
-  if (!m) return;
-  const vac = m.genre === 'vacances';
-  const n = elementsDe(modeleId).length;
-  const el = openSheet(`${sheetHead(`Lancer « ${m.titre} »`)}
-    <form data-form="taches-lancer" class="stack taches-form">
-      <p class="muted small" style="margin:0">Une copie de ${n} élément${n > 1 ? 's' : ''} à cocher ; la liste type reste intacte pour la prochaine fois.</p>
-      <label class="field"><span>Nom</span><input class="input" name="titre" maxlength="120" value="${esc(vac ? '' : m.titre)}" placeholder="${vac ? 'Vacances du… (rempli avec les dates)' : ''}"></label>
-      <div class="grid2">
-        <label class="field"><span>${vac ? 'Départ' : 'Le (facultatif)'}</span><input class="input" type="date" name="debut" ${vac ? 'required' : ''}></label>
-        <label class="field"><span>${vac ? 'Retour' : 'Jusqu\'au'}</span><input class="input" type="date" name="fin"></label>
-      </div>
-      <button class="btn primary block">${ICON.play} Lancer la liste</button>
-    </form>`);
-  $('form', el).addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const f = e.target;
-    const debut = f.debut.value || null;
-    const fin = f.fin.value || null;
-    if (debut && fin && fin < debut) { toast('Le retour doit suivre le départ'); return; }
-    try {
-      const l = await lancerListe(modeleId, { titre: f.titre.value.trim() || null, date_debut: debut, date_fin: fin || debut });
-      closeSheet();
-      ui.ouverte = l.id;
-      toast('Liste lancée : à toi de cocher');
-      render();
-      window.scrollTo({ top: 0 });
-    } catch (err) { fail(err); }
-  });
-}
-
-function feuilleElement(e) {
-  const liste = listeParId(e.liste_id);
-  const sections = [...new Set(elementsDe(e.liste_id).map((x) => x.section).filter(Boolean))];
-  const el = openSheet(`${sheetHead('Élément de la liste')}
-    <form data-form="taches-el" class="stack taches-form">
-      <label class="field"><span>Texte</span><input class="input" name="texte" required maxlength="200" value="${esc(e.texte)}"></label>
-      <label class="field"><span>Rubrique</span><input class="input" name="section" maxlength="60" list="taches-sections" value="${esc(e.section || '')}" placeholder="Sans rubrique">
-        <datalist id="taches-sections">${sections.map((s) => `<option value="${esc(s)}">`).join('')}</datalist></label>
-      <div class="grid2"><button type="button" class="btn danger" data-x="supprimer">Retirer</button><button class="btn primary">Enregistrer</button></div>
-    </form>`);
-  $('form', el).addEventListener('submit', async (ev) => {
-    ev.preventDefault();
-    const f = ev.target;
-    try {
-      const id = await materialiser(e.liste_id);
-      const cible = id === e.liste_id ? e : D.elements.find((x) => x.liste_id === id && x.ordre === e.ordre) || e;
-      await enregistrer(T.liste_elements, D.elements, { ...cible, texte: f.texte.value.trim().slice(0, 200), section: f.section.value.trim() || null });
-      closeSheet();
-      render();
-    } catch (err) { fail(err); }
-  });
-  el.addEventListener('click', async (ev) => {
-    if (!ev.target.closest('[data-x="supprimer"]')) return;
-    try {
-      const id = await materialiser(e.liste_id);
-      const cible = id === e.liste_id ? e : D.elements.find((x) => x.liste_id === id && x.ordre === e.ordre);
-      if (cible) await retirer(T.liste_elements, D.elements, cible.id);
-      closeSheet();
-      toast(`Retiré de « ${liste?.titre || 'la liste'} »`);
-      render();
-    } catch (err) { fail(err); }
-  });
-}
-
-function feuilleMenuListe(l) {
-  const els = elementsDe(l.id);
-  const options = l.est_modele
-    ? [['lancer', ICON.play, 'Lancer cette liste'], ['renommer', ICON.edit, 'Renommer'],
-      ...(l.virtuel ? [] : l.cle ? [['retablir', ICON.swap, 'Rétablir la liste d\'origine']] : [['supprimer', ICON.trash, 'Supprimer la liste type']])]
-    : [['renommer', ICON.edit, 'Renommer et dates'], ['decocher', ICON.swap, 'Tout décocher'], ['modele', ICON.copy, 'Enregistrer comme liste type'],
-      [l.archivee ? 'reprendre' : 'archiver', ICON.check, l.archivee ? 'Remettre en cours' : 'Terminer la liste'], ['supprimer', ICON.trash, 'Supprimer la liste']];
-  const el = openSheet(`${sheetHead(l.titre)}<div class="stack">${options.map(([x, ic, t]) => `<button class="btn block taches-menu ${x === 'supprimer' ? 'danger' : ''}" data-x="${x}">${ic}<span class="grow">${esc(t)}</span></button>`).join('')}</div>`);
-  el.addEventListener('click', async (e) => {
-    const b = e.target.closest('[data-x]');
-    if (!b) return;
-    const x = b.dataset.x;
-    closeSheet();
-    try {
-      if (x === 'lancer') return feuilleLancer(l.id);
-      if (x === 'renommer') return feuilleRenommer(l);
-      if (x === 'decocher') {
-        await ecrireLot(T.liste_elements, els.filter((y) => y.coche).map((y) => ({ ...y, coche: false, coche_par: null, coche_le: null })));
-        els.forEach((y) => { y.coche = false; y.coche_par = null; y.coche_le = null; });
-        sauverCache();
-        toast('Tout est décoché');
-      }
-      if (x === 'modele') {
-        const id = uid();
-        await enregistrer(T.listes, D.listes, { id, titre: l.titre, genre: l.genre, est_modele: true, archivee: false });
-        D.elements.push(...await ecrireLot(T.liste_elements, copieModele(l, els, { nouvelId: uid }).elements.map((y) => ({ ...y, liste_id: id }))));
-        sauverCache();
-        toast('Liste type enregistrée');
-      }
-      if (x === 'archiver' || x === 'reprendre') {
-        await enregistrer(T.listes, D.listes, { ...l, archivee: x === 'archiver' });
-        if (x === 'archiver') { ui.ouverte = null; toast('Liste terminée, bravo !'); }
-      }
-      if (x === 'retablir') {
-        if (!(await confirmSheet(`Rétablir « ${l.titre} » telle qu'elle était fournie ? Tes modifications seront perdues.`, 'Rétablir'))) return;
-        await retirer(T.listes, D.listes, l.id);
-        D.elements = D.elements.filter((y) => y.liste_id !== l.id);
-        sauverCache();
-        ui.ouverte = `modele:${l.cle}`;
-        toast('Liste type rétablie');
-      }
-      if (x === 'supprimer') {
-        if (!(await confirmSheet(`Supprimer « ${l.titre} » et ses ${els.length} élément${els.length > 1 ? 's' : ''} ?`, 'Supprimer'))) return;
-        await retirer(T.listes, D.listes, l.id);
-        D.elements = D.elements.filter((y) => y.liste_id !== l.id);
-        sauverCache();
-        ui.ouverte = null;
-        toast('Liste supprimée');
-      }
-      render();
-    } catch (err) { fail(err); }
-  });
-}
-
-function feuilleRenommer(l) {
-  const el = openSheet(`${sheetHead('Renommer')}
-    <form class="stack taches-form">
-      <label class="field"><span>Nom</span><input class="input" name="titre" required maxlength="120" value="${esc(l.titre)}"></label>
-      ${l.est_modele ? '' : `<div class="grid2"><label class="field"><span>Du</span><input class="input" type="date" name="debut" value="${esc(l.date_debut || '')}"></label>
-        <label class="field"><span>Au</span><input class="input" type="date" name="fin" value="${esc(l.date_fin || '')}"></label></div>`}
-      <button class="btn primary block">Enregistrer</button>
-    </form>`);
-  $('form', el).addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const f = e.target;
-    try {
-      const id = await materialiser(l.id);
-      const base = D.listes.find((x) => x.id === id) || l;
-      await enregistrer(T.listes, D.listes, { ...base, titre: f.titre.value.trim().slice(0, 120), ...(l.est_modele ? {} : { date_debut: f.debut.value || null, date_fin: f.fin.value || null }) });
-      closeSheet();
-      render();
-    } catch (err) { fail(err); }
-  });
-}
-
-// ---------------------------------------------------------------------------
-// Envies de cadeaux
-// ---------------------------------------------------------------------------
-const resaDe = (envie) => D.resas.find((r) => reservationVisible(envie, r, monMembre())) || null;
-
-function feuilleEnvie(envie = {}) {
-  const neuve = !envie.id;
-  const pour = envie.member_id || ui.membreEnvies || state.members[0]?.id;
-  const el = openSheet(`${sheetHead(neuve ? 'Nouvelle envie' : 'Envie')}
-    <form class="stack taches-form">
-      <label class="field"><span>Pour</span><select class="input" name="pour" ${neuve ? '' : 'disabled'}>${state.members.map((m) => `<option value="${m.id}" ${m.id === pour ? 'selected' : ''}>${esc(m.nom)}</option>`).join('')}</select></label>
-      <label class="field"><span>Envie</span><input class="input" name="titre" required maxlength="160" value="${esc(envie.titre || '')}" placeholder="Un livre, un jeu, une sortie…"></label>
-      <label class="field"><span>Précisions</span><input class="input" name="detail" maxlength="300" value="${esc(envie.detail || '')}" placeholder="Taille, couleur, édition…"></label>
-      <div class="grid2">
-        <label class="field"><span>Lien</span><input class="input" name="lien" type="url" inputmode="url" maxlength="500" value="${esc(envie.lien || '')}" placeholder="https://…"></label>
-        <label class="field"><span>Prix indicatif</span><input class="input" name="prix" maxlength="30" value="${esc(envie.prix || '')}" placeholder="25 €"></label>
-      </div>
-      <div class="grid2">${neuve ? '<button type="button" class="btn" data-x="annuler">Annuler</button>' : '<button type="button" class="btn danger" data-x="supprimer">Retirer</button>'}
-        <button class="btn primary">${neuve ? 'Ajouter' : 'Enregistrer'}</button></div>
-    </form>`);
-  $('form', el).addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const f = e.target;
-    const lien = f.lien.value.trim();
-    if (lien && !safeUrl(lien)) { toast('Lien invalide : il doit commencer par https://'); return; }
-    try {
-      await enregistrer(T.envies, D.envies, { ...(neuve ? { id: uid(), member_id: f.pour.value } : envie), titre: f.titre.value.trim().slice(0, 160), detail: f.detail.value.trim() || null,
-        lien: lien ? safeUrl(lien) : null, prix: f.prix.value.trim() || null });
-      if (neuve) ui.membreEnvies = f.pour.value;
-      closeSheet();
-      toast(neuve ? 'Envie ajoutée' : 'Envie enregistrée');
-      render();
-    } catch (err) { fail(err); }
-  });
-  el.addEventListener('click', async (e) => {
-    const b = e.target.closest('[data-x]');
-    if (!b) return;
-    if (b.dataset.x === 'annuler') closeSheet();
-    if (b.dataset.x === 'supprimer') {
-      try { await retirer(T.envies, D.envies, envie.id); D.resas = D.resas.filter((r) => r.envie_id !== envie.id); sauverCache(); closeSheet(); toast('Envie retirée'); render(); } catch (err) { fail(err); }
-    }
-  });
-}
-
-// ---------------------------------------------------------------------------
-// Rendu
-// ---------------------------------------------------------------------------
-const avatar = (id) => { const n = nomMembre(id); return n ? `<span class="taches-avatar" aria-hidden="true">${esc(n.charAt(0).toUpperCase())}</span>` : ''; };
-
-function ligneTache(t, auj) {
-  const retard = !t.fait && t.echeance && t.echeance < auj;
-  const meta = [
-    t.priorite ? '<span class="taches-badge">Importante</span>' : '',
-    t.echeance ? `<span class="${retard ? 'taches-retard' : ''}">${ICON.clock}${esc(libelleEcheance(t.echeance, auj))}${t.heure ? ` à ${esc(t.heure.replace(':', ' h '))}` : ''}</span>` : '',
-    t.recurrence ? `<span>${ICON.swap}${esc(libelleRecurrence(t.recurrence))}</span>` : '',
-    t.responsable && nomMembre(t.responsable) ? `<span>${avatar(t.responsable)}${esc(nomMembre(t.responsable))}</span>` : '',
-    t.notes ? `<span>${ICON.edit}Notes</span>` : '',
-  ].filter(Boolean).join('');
-  return `<div class="taches-ligne ${t.fait ? 'fait' : ''} ${retard ? 'en-retard' : ''}">
-    <button class="taches-coche" role="checkbox" aria-checked="${!!t.fait}" data-act="taches-cocher" data-id="${t.id}" aria-label="${t.fait ? 'Décocher' : 'Cocher'} « ${esc(t.titre)} »">${ICON.check}</button>
-    <button class="taches-corps" data-act="taches-ouvrir" data-id="${t.id}"><span class="taches-titre">${esc(t.titre)}</span>${meta ? `<span class="taches-meta">${meta}</span>` : ''}</button>
-  </div>`;
-}
-
-function vueTaches() {
-  const auj = aujourdhui();
-  const filtre = (t) => ui.filtre === 'tous' || (ui.filtre === 'aucun' ? !t.responsable : t.responsable === ui.filtre);
-  const liste = D.taches.filter(filtre);
-  const groupes = groupesTaches(liste, auj);
-  const faites = liste.filter((t) => t.fait).sort((a, b) => String(b.fait_le || '').localeCompare(String(a.fait_le || '')));
-  const chips = [['tous', 'Tout le monde'], ...state.members.map((m) => [m.id, m.nom]), ['aucun', 'Sans responsable']]
-    .map(([v, l]) => `<button class="chip" data-act="taches-filtre" data-v="${v}" aria-pressed="${ui.filtre === v}">${esc(l)}</button>`).join('');
-  const corps = groupes.length
-    ? groupes.map((g) => `<h3 class="section-title taches-groupe ${g.cle === 'retard' ? 'retard' : ''}">${esc(g.titre)} <span class="taches-compte">${g.taches.length}</span></h3>
-      <div class="card taches-liste">${g.taches.map((t) => ligneTache(t, auj)).join('')}</div>`).join('')
-    : `<div class="empty taches-vide">${ICON.check}<p><b>Rien à faire${ui.filtre !== 'tous' ? ' de ce côté' : ''} !</b><br>Écris une tâche ci-dessus, ou touche le « + » en haut de l'écran.</p></div>`;
-  const blocFaites = faites.length ? `<button class="btn block taches-voir-faites" data-act="taches-faites" aria-expanded="${ui.faites}">${ui.faites ? 'Masquer' : 'Voir'} les tâches faites (${faites.length})</button>
-    ${ui.faites ? `<div class="card taches-liste">${faites.slice(0, 40).map((t) => ligneTache(t, auj)).join('')}</div>` : ''}` : '';
-  return `<form data-form="taches-rapide" class="card taches-saisie" autocomplete="off">
-      <input class="input" name="texte" maxlength="200" placeholder="Poubelles mardi, véto…" aria-label="Nouvelle tâche en une phrase">
-      <button class="btn primary" aria-label="Ajouter la tâche">${ICON.plus}</button>
-      <button type="button" class="btn" data-act="taches-nouvelle" aria-label="Nouvelle tâche détaillée">${ICON.edit}</button>
-    </form>
-    <div class="chips taches-chips">${chips}</div>${corps}${blocFaites}`;
-}
-
-function carteListe(l) {
-  const p = progression(elementsDe(l.id));
-  const dates = l.date_debut ? (l.date_fin && l.date_fin !== l.date_debut ? `${fmtJourMois(l.date_debut)} → ${fmtJourMois(l.date_fin)}` : fmtJourMois(l.date_debut)) : '';
-  return `<button class="card taches-carte" data-act="taches-liste-ouvrir" data-id="${l.id}">
-    <span class="taches-carte-ico">${iconeGenre(l.genre)}</span>
-    <span class="grow"><b class="taches-carte-titre">${esc(l.titre)}</b>
-      <span class="muted small">${l.est_modele ? `${p.total} élément${p.total > 1 ? 's' : ''}${l.virtuel ? '' : ' · modifiée'}` : `${p.faits}/${p.total} coché${p.faits > 1 ? 's' : ''}`}${dates ? ` · ${esc(dates)}` : ''}</span>
-      ${l.est_modele ? `<span class="muted small taches-carte-desc">${esc(descriptionModele(l))}</span>` : `<span class="taches-barre" aria-hidden="true"><i style="width:${p.pct}%"></i></span>`}</span>
-    ${ICON.next}</button>`;
-}
-
-function vueListes() {
-  if (ui.ouverte && listeParId(ui.ouverte)) return vueListe(listeParId(ui.ouverte));
-  ui.ouverte = null;
-  const enCours = D.listes.filter((l) => !l.est_modele && !l.archivee).sort((a, b) => String(a.date_debut || '9').localeCompare(String(b.date_debut || '9')) || String(b.updated_at || '').localeCompare(String(a.updated_at || '')));
-  const finies = D.listes.filter((l) => !l.est_modele && l.archivee);
-  return `<div class="row taches-entete"><h3 class="section-title grow">En cours</h3><button class="btn small" data-act="taches-liste-nouvelle">${ICON.plus} Nouvelle liste</button></div>
-    ${enCours.length ? `<div class="taches-cartes">${enCours.map(carteListe).join('')}</div>` : '<p class="muted taches-vide-court">Aucune liste en cours. Crée une liste libre, ou lance une liste type ci-dessous.</p>'}
-    <h3 class="section-title">Listes types</h3>
-    <p class="muted small taches-aide">Lance une liste type : elle crée une copie à cocher, et le modèle reste prêt pour la prochaine fois. Touche une liste type pour la modifier.</p>
-    <div class="taches-cartes">${modeles().map((m) => `<div class="taches-modele">${carteListe(m)}<button class="btn small primary taches-lancer" data-act="taches-lancer" data-id="${m.id}">${ICON.play} Lancer</button></div>`).join('')}</div>
-    ${finies.length ? `<details class="taches-finies"><summary class="section-title">Listes terminées (${finies.length})</summary><div class="taches-cartes">${finies.map(carteListe).join('')}</div></details>` : ''}`;
-}
-
-function vueListe(l) {
-  const els = elementsDe(l.id);
-  const p = progression(els);
-  const groupes = sectionsDe(els);
-  const sections = groupes.map((g) => g.section).filter(Boolean);
-  const dates = l.date_debut ? `${fmtJourMois(l.date_debut)}${l.date_fin && l.date_fin !== l.date_debut ? ` → ${fmtJourMois(l.date_fin)}` : ''}` : '';
-  const ligne = (e) => {
-    const par = e.coche && e.coche_par && e.coche_par !== me() ? nomCompte(e.coche_par) : '';
-    return `<div class="taches-el ${e.coche ? 'fait' : ''}">
-      ${l.est_modele ? `<span class="taches-puce" aria-hidden="true"></span>` : `<button class="taches-coche" role="checkbox" aria-checked="${!!e.coche}" data-act="taches-el-cocher" data-id="${e.id}" aria-label="${esc(e.texte)}">${ICON.check}</button>`}
-      <button class="taches-el-texte" data-act="taches-el-modifier" data-id="${e.id}" data-liste="${l.id}"><span>${esc(e.texte)}</span>${par ? `<span class="muted small"> · ${esc(par)}</span>` : ''}</button>
-    </div>`;
-  };
-  const versCourses = (s) => (!l.est_modele && /courses/i.test(s) ? `<button class="btn small soft" data-act="taches-vers-courses" data-id="${l.id}" data-section="${esc(s)}">${ICON.cart} Ajouter aux courses</button>` : '');
-  const fini = !l.est_modele && p.total && p.faits === p.total;
-  return `<div class="row taches-entete"><button class="btn small" data-act="taches-liste-retour">${ICON.back} Listes</button><span class="grow"></span>
-      ${l.est_modele ? `<button class="btn small primary" data-act="taches-lancer" data-id="${l.id}">${ICON.play} Lancer</button>` : ''}
-      <button class="icon-btn" data-act="taches-liste-menu" data-id="${l.id}" aria-label="Actions de la liste">${ICON.dots}</button></div>
-    <section class="card taches-detail">
-      <div class="row"><span class="taches-carte-ico">${iconeGenre(l.genre)}</span><div class="grow"><h2 class="taches-detail-titre">${esc(l.titre)}</h2>
-        <div class="muted small">${l.est_modele ? `Liste type · ${p.total} élément${p.total > 1 ? 's' : ''}` : `<span data-taches-prog>${p.faits}/${p.total} coché${p.faits > 1 ? 's' : ''}</span>`}${dates ? ` · ${esc(dates)}` : ''}</div></div></div>
-      ${l.est_modele ? `<p class="muted small taches-aide">${esc(descriptionModele(l) || 'Liste type du foyer.')} Les modifications servent aux prochains lancements.</p>` : `<span class="taches-barre" aria-hidden="true"><i style="width:${p.pct}%"></i></span>`}
-      ${fini ? `<div class="taches-bravo">${ICON.sparkle}<span class="grow">Tout est coché !</span><button class="btn small primary" data-act="taches-liste-terminer" data-id="${l.id}">Terminer la liste</button></div>` : ''}
-      ${groupes.map((g) => `<div class="taches-section">${g.section ? `<div class="row taches-section-titre"><h4 class="grow">${esc(g.section)}</h4>${versCourses(g.section)}</div>` : ''}${g.elements.map(ligne).join('')}</div>`).join('')
-        || '<p class="muted taches-vide-court">La liste est vide : ajoute un premier élément.</p>'}
-      <form data-form="taches-element" data-liste="${l.id}" class="taches-ajout" autocomplete="off">
-        <input class="input" name="texte" maxlength="200" placeholder="Ajouter un élément" aria-label="Nouvel élément">
-        ${sections.length ? `<select class="input" name="section" aria-label="Rubrique"><option value="">Sans rubrique</option>${sections.map((s) => `<option ${s === ui.derniereSection ? 'selected' : ''}>${esc(s)}</option>`).join('')}</select>` : ''}
-        <button class="btn primary" aria-label="Ajouter">${ICON.plus}</button>
-      </form>
-    </section>`;
-}
-
-function vueEnvies() {
-  const membres = state.members;
-  if (!membres.length) return '<div class="empty"><p>Ajoute d\'abord les membres du foyer (Réglages › Foyer).</p></div>';
-  if (!memberById(ui.membreEnvies)) ui.membreEnvies = membres.find((m) => m.id !== monMembre())?.id || membres[0].id;
-  const m = memberById(ui.membreEnvies);
-  const moi = m.id === monMembre();
-  const envies = D.envies.filter((e) => e.member_id === m.id).sort((a, b) => String(a.created_at || '').localeCompare(String(b.created_at || '')));
-  const carte = (e) => {
-    const r = moi ? null : resaDe(e);
-    let etat = '';
-    if (!moi) {
-      if (!r) etat = `<button class="btn small primary" data-act="taches-envie-reserver" data-id="${e.id}">Je m'en occupe</button>`;
-      else if (r.user_id === me()) {
-        etat = `<span class="taches-pris moi">${r.offert ? 'Offert par toi' : 'Tu t\'en occupes'}</span>${r.offert ? '' : `<button class="btn small" data-act="taches-envie-offert" data-id="${e.id}">Offert</button>`}
-          <button class="btn small" data-act="taches-envie-liberer" data-id="${e.id}">Annuler</button>`;
-      } else etat = `<span class="taches-pris">${esc(majuscule(nomCompte(r.user_id)))} ${r.offert ? 'l\'a offert' : 's\'en occupe'}</span>`;
-    }
-    const lien = e.lien && safeUrl(e.lien) ? `<a class="taches-lien" href="${esc(safeUrl(e.lien))}" target="_blank" rel="noopener noreferrer">${ICON.link} Voir le lien</a>` : '';
-    return `<div class="card taches-envie ${r ? 'prise' : ''}">
-      <button class="taches-envie-corps" data-act="taches-envie-modifier" data-id="${e.id}"><span><b>${esc(e.titre)}</b>${e.prix ? `<span class="muted small"> · ${esc(e.prix)}</span>` : ''}</span>
-        ${e.detail ? `<span class="muted small taches-envie-detail">${esc(e.detail)}</span>` : ''}</button>
-      ${lien || etat ? `<div class="row wrap taches-envie-actions">${lien}<span class="grow"></span>${etat}</div>` : ''}
-    </div>`;
-  };
-  const note = moi
-    ? `<p class="muted small taches-aide">C'est ta liste : les autres voient qui s'occupe de quoi, toi non. La surprise reste entière.</p>`
-    : `<p class="muted small taches-aide">« Je m'en occupe » reste invisible pour ${esc(m.nom)}.${monMembre() ? '' : ' Relie ton compte à ton profil (Réglages › Foyer) pour que ta propre liste garde aussi la surprise.'}</p>`;
-  return `<div class="chips taches-chips">${membres.map((x) => `<button class="chip" data-act="taches-envies-membre" data-v="${x.id}" aria-pressed="${x.id === m.id}">${esc(x.nom)}${x.id === monMembre() ? ' (moi)' : ''}</button>`).join('')}</div>
-    <div class="row taches-entete"><h3 class="section-title grow">${moi ? 'Mes envies' : `Les envies de ${esc(m.nom)}`}</h3><button class="btn small" data-act="taches-envie-nouvelle">${ICON.plus} Ajouter</button></div>
-    ${note}
-    ${envies.length ? `<div class="taches-envies">${envies.map(carte).join('')}</div>` : `<div class="empty taches-vide">${GENRES.cadeaux.icone}<p>Pas encore d'envie pour ${esc(m.nom)}.</p></div>`}`;
-}
-
-function rendu() {
-  if (!D.ok) return '<div class="spinner"></div>';
-  const ouvertes = D.taches.filter((t) => !t.fait);
-  const retard = ouvertes.filter((t) => t.echeance && t.echeance < aujourdhui()).length;
-  const vues = [['taches', 'Tâches', ouvertes.length ? `<span class="taches-pastille ${retard ? 'retard' : ''}">${ouvertes.length}</span>` : ''], ['listes', 'Listes', ''], ['envies', 'Envies', '']];
-  const corps = ui.vue === 'listes' ? vueListes() : ui.vue === 'envies' ? vueEnvies() : vueTaches();
-  return `<div class="taches">
-    <div class="seg taches-vues" role="tablist" aria-label="Tâches, listes et envies">${vues.map(([v, l, b]) => `<button role="tab" data-act="taches-vue" data-v="${v}" aria-pressed="${ui.vue === v}" aria-selected="${ui.vue === v}">${l}${b}</button>`).join('')}</div>
-    ${corps}</div>`;
-}
-
-// ---------------------------------------------------------------------------
-// Formulaires de l'écran
-// ---------------------------------------------------------------------------
-document.addEventListener('submit', async (e) => {
-  const f = e.target;
-  if (f.dataset?.form === 'taches-rapide') {
-    e.preventDefault();
-    const texte = f.texte.value.trim();
-    if (!texte) { feuilleTache({}); return; }
-    const a = analyseTache(texte, { maintenant: new Date(), membres: state.members });
-    if (!a.titre) return;
-    try {
-      const t = await creerTache(a);
-      toast(`Tâche ajoutée${t.echeance ? ` · ${libelleEcheance(t.echeance, aujourdhui()).toLowerCase()}` : ''}${t.responsable ? ` · ${nomMembre(t.responsable)}` : ''}`);
-      render();
-      $('[data-form="taches-rapide"] [name="texte"]')?.focus();
-    } catch (err) { fail(err); }
-  }
-  if (f.dataset?.form === 'taches-element') {
-    e.preventDefault();
-    const texte = f.texte.value.trim();
-    if (!texte) return;
-    const section = f.section?.value || null;
-    ui.derniereSection = section;
-    try {
-      const el = await ajouterElement(f.dataset.liste, texte, section);
-      ui.ouverte = el.liste_id;
-      render();
-      $('[data-form="taches-element"] [name="texte"]')?.focus();
-    } catch (err) { fail(err); }
-  }
-});
-
-const tache = (id) => D.taches.find((t) => t.id === id);
-const actions = {
-  'taches-vue': (b) => { ui.vue = b.dataset.v; store.set('taches:vue', ui.vue); if (ui.vue !== 'listes') ui.ouverte = null; render(); },
-  'taches-filtre': (b) => { ui.filtre = b.dataset.v; render(); },
-  'taches-faites': () => { ui.faites = !ui.faites; render(); },
-  'taches-nouvelle': () => { const v = $('[data-form="taches-rapide"] [name="texte"]')?.value.trim(); feuilleTache(v ? analyseTache(v, { maintenant: new Date(), membres: state.members }) : {}); },
-  'taches-ouvrir': (b) => {
-    const t = tache(b.dataset.id);
-    if (!t) { toast('Cette tâche n\'existe plus'); return; }
-    if (state.tab !== 'taches') { ui.vue = 'taches'; switchTab('taches'); }
-    feuilleTache(t);
-  },
-  'taches-cocher': async (b) => {
-    const t = tache(b.dataset.id);
-    if (!t) return;
-    b.setAttribute('aria-checked', String(!t.fait));
-    b.closest('.taches-ligne')?.classList.toggle('fait', !t.fait);
-    try { const msg = await basculerTache(t); toast(msg); setTimeout(() => { if (state.tab === 'taches') render(); }, 350); } catch (err) { fail(err); render(); }
-  },
-  'taches-liste-nouvelle': () => feuilleNouvelleListe(),
-  'taches-liste-ouvrir': (b) => { ui.ouverte = b.dataset.id; render(); window.scrollTo({ top: 0 }); },
-  // Depuis l'Accueil : ouvre directement une liste.
-  'taches-liste-ouvrir-tab': (b) => { ui.vue = 'listes'; ui.ouverte = b.dataset.id; switchTab('taches'); },
-  'taches-liste-retour': () => { ui.ouverte = null; render(); },
-  'taches-liste-menu': (b) => { const l = listeParId(b.dataset.id); if (l) feuilleMenuListe(l); },
-  'taches-liste-terminer': async (b) => {
-    const l = listeParId(b.dataset.id);
-    if (!l) return;
-    try { await enregistrer(T.listes, D.listes, { ...l, archivee: true }); ui.ouverte = null; toast('Liste terminée, bravo !'); render(); } catch (err) { fail(err); }
-  },
-  'taches-lancer': (b) => feuilleLancer(b.dataset.id),
-  'taches-el-cocher': async (b) => {
-    const e = D.elements.find((x) => x.id === b.dataset.id);
-    if (!e) return;
-    b.setAttribute('aria-checked', String(!e.coche));
-    b.closest('.taches-el')?.classList.toggle('fait', !e.coche);
-    try { await basculerElement(e); render(); } catch (err) { fail(err); render(); }
-  },
-  'taches-el-modifier': (b) => { const e = elementsDe(b.dataset.liste).find((x) => x.id === b.dataset.id); if (e) feuilleElement(e); },
-  'taches-vers-courses': async (b) => {
-    const els = elementsDe(b.dataset.id).filter((e) => e.section === b.dataset.section && !e.coche);
-    if (!els.length) { toast('Tout est déjà coché dans cette rubrique'); return; }
-    try {
-      for (const e of els) await Data.addExtra(e.texte, '', guessAisle(e.texte));
-      toast(`${els.length} article${els.length > 1 ? 's' : ''} ajouté${els.length > 1 ? 's' : ''} aux courses`);
-    } catch (err) { fail(err); }
-  },
-  'taches-envies-membre': (b) => { ui.membreEnvies = b.dataset.v; render(); },
-  'taches-envie-nouvelle': () => feuilleEnvie({}),
-  'taches-envie-modifier': (b) => { const e = D.envies.find((x) => x.id === b.dataset.id); if (e) feuilleEnvie(e); },
-  'taches-envie-reserver': async (b) => {
-    const e = D.envies.find((x) => x.id === b.dataset.id);
-    if (!e || e.member_id === monMembre()) return;
-    try { await enregistrer(T.envies_reservations, D.resas, { envie_id: e.id, member_id: e.member_id, offert: false }, { onConflict: 'envie_id' }); toast(`C'est noté : ${nomMembre(e.member_id)} n'en saura rien`); render(); } catch (err) { fail(err); }
-  },
-  'taches-envie-offert': async (b) => {
-    const r = D.resas.find((x) => x.envie_id === b.dataset.id);
-    if (!r) return;
-    try { await enregistrer(T.envies_reservations, D.resas, { ...r, offert: true }, { onConflict: 'envie_id' }); toast('Marqué comme offert'); render(); } catch (err) { fail(err); }
-  },
-  'taches-envie-liberer': async (b) => {
-    const r = D.resas.find((x) => x.envie_id === b.dataset.id);
-    if (!r) return;
-    try { await retirer(T.envies_reservations, D.resas, r.id); toast('Envie de nouveau libre'); render(); } catch (err) { fail(err); }
-  },
-};
-
-// ---------------------------------------------------------------------------
-// API publique (autres modules) et enregistrement
-// ---------------------------------------------------------------------------
-const Taches = {
-  pret,
-  creer: creerTache,
-  async terminer(id) { await pret; const t = tache(id); if (t && !t.fait) await basculerTache(t); return tache(id) || null; },
-  async supprimerOrigine(origine, origineId) { await pret; for (const t of D.taches.filter((x) => !x.fait && x.origine === origine && x.origine_id === String(origineId))) await retirer(T.taches, D.taches, t.id); },
-  liste: ({ ouvertes = false } = {}) => D.taches.filter((t) => !ouvertes || !t.fait).map((t) => ({ ...t })),
-  ouvrir(id) { const t = tache(id); if (t) { ui.vue = 'taches'; switchTab('taches'); feuilleTache(t); } },
-  lancerListe,
-  // Réception d'un changement en direct (utilisé aussi par les tests de bout en bout).
-  _recevoir: (p) => TempsReel.recevoir(p),
-};
-window.Taches = Taches;
-
+// Module « Tâches et listes » : emplacement réservé, à construire (voir LISEZMOI.md).
 Modules.register({
   id: 'taches',
   onglet: 'famille',
   segment: 'Tâches & listes',
   ordre: 20,
   libelle: 'Tâches et listes',
-  tables: { taches: 'taches', listes: 'listes', liste_elements: 'liste_elements', envies: 'envies', envies_reservations: 'envies_reservations' },
-  charger,
-  rendu,
-  actions,
-  sourcesAccueil: (ctx) => {
-    const out = elementsAccueil(D.taches, { iso: ctx.iso, membre: ctx.membre, famille: ctx.famille, nom: nomMembre });
-    // Listes datées qui commencent dans les 3 jours (vacances, départ) : à préparer.
-    for (const l of D.listes.filter((x) => !x.est_modele && !x.archivee && x.date_debut && ecartJours(ctx.iso, x.date_debut) >= 0 && ecartJours(ctx.iso, x.date_debut) <= 3)) {
-      const p = progression(elementsDe(l.id));
-      if (p.faits < p.total) out.push({ heure: null, titre: l.titre, detail: `${p.faits}/${p.total} cochés · départ ${libelleEcheance(l.date_debut, ctx.iso).toLowerCase()}`, icone: iconeGenre(l.genre), act: 'taches-liste-ouvrir-tab', data: { id: l.id }, priorite: 1 });
-    }
-    return out;
-  },
-  agenda: (debut, fin) => {
-    const a = isoDate(debut), b = isoDate(fin);
-    return D.taches.filter((t) => !t.fait && t.echeance && t.echeance >= a && t.echeance <= b)
-      .map((t) => ({ id: `tache:${t.id}`, date: t.echeance, heure: t.heure || null, titre: t.titre, detail: ['Tâche', nomMembre(t.responsable)].filter(Boolean).join(' · '),
-        membres: t.responsable ? [t.responsable] : [], act: 'taches-ouvrir', data: { id: t.id } }));
-  },
-  ajoutRapide: {
-    type: 'tache',
-    libelle: 'Tâche',
-    analyser(texte, ctx) {
-      const a = analyseTache(texte, ctx);
-      if (!a.titre || !a.score) return null;
-      const iso = isoDate(ctx.maintenant || new Date());
-      const resume = [a.titre, a.echeance ? libelleEcheance(a.echeance, iso).toLowerCase() : '', a.recurrence ? libelleRecurrence(a.recurrence).toLowerCase() : '',
-        a.responsable ? (ctx.membres || []).find((m) => m.id === a.responsable)?.nom : ''].filter(Boolean).join(' · ');
-      return { score: a.score, resume, donnees: a };
-    },
-    async enregistrer(a) { const t = await creerTache(a); return `Tâche ajoutée${t.responsable ? ` pour ${nomMembre(t.responsable)}` : ''}`; },
-    ouvrir(texte, ctx) {
-      ui.vue = 'taches';
-      switchTab('taches');
-      feuilleTache(texte ? analyseTache(texte, ctx) : {});
-    },
-  },
-  notifications: [
-    { type: 'tache-confiee', libelle: 'Tâche confiée', description: 'Quand quelqu\'un te confie une tâche' },
-    { type: 'tache-echeance', libelle: 'Tâches du jour', description: 'Le matin, tes tâches du jour et en retard' },
-    { type: 'liste-depart', libelle: 'Listes de départ', description: 'La veille d\'un départ, ce qui reste à cocher', defaut: false },
-  ],
-  expose: { analyseTache, prochaineEcheance, libelleRecurrence, libelleEcheance, groupesTaches, progression, sectionsDe, titreVacances, copieModele, reservationVisible, elementsAccueil, MODELES, elementsModele },
+  rendu: () => Modules.bientot('Tâches et listes', 'Les tâches avec responsable et échéance, les listes types (avant départ, avant nounou, valises) et les listes d\'envies.'),
 });
 })();
 // ==== module univers ====
