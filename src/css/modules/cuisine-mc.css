@@ -1,0 +1,120 @@
+/* Cuisine reliée à Monsieur Cuisine : semaine des repas, recette, liste de courses « au magasin ».
+   Uniquement des jetons du thème (couleurs, rayons, ombres) pour suivre l'univers graphique de chacun. */
+
+/* Choix du planning affiché */
+.cmc-sources { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 12px; }
+.cmc-sources button {
+  min-height: 40px; border-radius: 999px; border: 2px solid var(--border); background: var(--surface); color: var(--ink);
+  font: inherit; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 4px 10px;
+}
+.cmc-sources button svg { width: 18px; height: 18px; flex: none; }
+.cmc-sources button[aria-pressed="true"] { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+
+/* État de la liaison */
+.cmc-liaison { display: flex; align-items: center; gap: 10px; padding: 10px 8px 10px 14px; margin-bottom: 12px; }
+.cmc-liaison .btn span { white-space: nowrap; }
+.cmc-pastille { width: 12px; height: 12px; border-radius: 50%; flex: none; background: var(--muted); box-shadow: 0 0 0 3px var(--surface-2); }
+.cmc-pastille[data-etat="ok"] { background: var(--mint); }
+.cmc-pastille[data-etat="erreur"] { background: var(--mango-strong); }
+.cmc-pastille[data-etat="deconnecte"] { background: var(--danger); }
+.cmc-alerte { color: var(--danger); font-weight: 700; }
+
+/* Semaine des repas */
+.cmc-jour { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 10px 12px; }
+.cmc-jour + .cmc-jour { margin-top: 10px; }
+.cmc-jour.cmc-auj { outline: 2px solid var(--primary); }
+.cmc-jour.cmc-jour-vide { padding-top: 8px; padding-bottom: 8px; }
+.cmc-jour h3 { margin: 0 0 4px; font-size: 15px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.cmc-jour p { margin: 0; }
+.cmc-badge { font-size: 12px; font-weight: 800; color: var(--primary-strong); background: var(--primary-soft); border-radius: 999px; padding: 2px 8px; }
+.cmc-repas {
+  display: flex; align-items: center; gap: 12px; width: 100%; min-height: 64px; padding: 6px 0; border: 0; background: none;
+  color: inherit; font: inherit; text-align: left; border-radius: 12px;
+}
+.cmc-repas + .cmc-repas { border-top: 1px dashed var(--border); }
+.cmc-repas > svg { width: 18px; height: 18px; color: var(--muted); flex: none; }
+.cmc-vignette {
+  width: 56px; height: 56px; border-radius: 12px; object-fit: cover; flex: none; background: var(--primary-soft); color: var(--primary);
+  display: grid; place-items: center;
+}
+.cmc-vignette svg { width: 24px; height: 24px; }
+.cmc-repas-titre { display: block; line-height: 1.25; overflow-wrap: anywhere; }
+.cmc-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: 13px; color: var(--muted); margin-top: 2px; }
+.cmc-meta svg { width: 14px; height: 14px; margin-right: -6px; }
+.cmc-reglages { padding: 14px; margin-top: 16px; }
+.cmc-reglages h3 { margin: 0 0 8px; font-size: 16px; }
+.cmc-reglages p { margin: 8px 0 0; }
+
+/* Feuille d'une recette */
+.cmc-recette-meta { margin-bottom: 10px; }
+.cmc-portions { display: flex; align-items: center; gap: 6px; background: var(--surface-2); border-radius: 14px; padding: 4px 4px 4px 14px; margin: 6px 0 4px; }
+.cmc-portions .icon-btn { font-size: 22px; font-weight: 800; background: var(--surface); border: 1px solid var(--border); }
+.sheet .cmc-membres, .sheet h3 + .cmc-ings { margin-top: 6px; }
+.cmc-membre { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.cmc-membre .btn { flex: none; }
+.cmc-groupe { font-size: 12px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); margin: 10px 0 2px; }
+.cmc-ings { list-style: none; margin: 0; padding: 0; }
+.cmc-ings li { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px dashed var(--border); overflow-wrap: anywhere; }
+.cmc-q { min-width: 72px; flex: none; font-weight: 700; color: var(--primary-strong); }
+.cmc-etapes { padding-left: 22px; margin: 6px 0 16px; }
+.cmc-etapes li { margin: 8px 0; line-height: 1.45; }
+
+/* Liste de courses : ajout, en-tête « au magasin » */
+.cmc-ajout { display: grid; grid-template-columns: 1fr 72px 44px; gap: 8px; padding: 10px; margin-bottom: 12px; align-items: center; }
+.cmc-ajout .input { min-width: 0; }
+.cmc-ajout-ok { background: var(--primary); color: var(--on-primary); border-radius: 12px; }
+.cmc-magasin { padding: 12px 14px; margin-bottom: 4px; }
+.cmc-courant { font-family: var(--display); font-size: 22px; line-height: 1.15; display: block; overflow-wrap: anywhere; }
+.cmc-progres-txt { font-size: 15px; color: var(--muted); white-space: nowrap; }
+.cmc-progres-txt b { font-size: 24px; color: var(--ink); }
+.cmc-progres { height: 10px; border-radius: 999px; background: var(--surface-2); overflow: hidden; margin: 10px 0; border: 1px solid var(--border); }
+.cmc-progres span { display: block; height: 100%; background: var(--mint); border-radius: inherit; transition: width .3s ease; }
+.cmc-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.cmc-actions .btn { flex: 1 1 auto; }
+
+/* Rayons et articles : gros boutons, titre du rayon collé en haut pendant le défilement */
+.cmc-rayon-titre {
+  position: sticky; top: calc(58px + var(--safe-t)); z-index: 5; display: flex; align-items: center; gap: 8px;
+  margin: 14px -16px 0; padding: 8px 16px; background: var(--bg); font-size: 15px; text-transform: uppercase; letter-spacing: .04em;
+}
+.cmc-compte { font-size: 12px; text-transform: none; letter-spacing: 0; color: var(--muted); font-weight: 700; }
+.cmc-art { display: flex; align-items: stretch; gap: 4px; background: var(--surface); border-radius: 14px; box-shadow: var(--shadow); margin-top: 8px; }
+.cmc-cocher {
+  flex: 1; min-width: 0; min-height: 60px; display: flex; align-items: center; gap: 12px; border: 0; background: none; color: inherit;
+  font: inherit; text-align: left; padding: 8px 4px 8px 12px; border-radius: 14px;
+}
+.cmc-case {
+  width: 30px; height: 30px; border-radius: 9px; border: 2px solid var(--border); background: var(--surface-2); flex: none;
+  display: grid; place-items: center; color: transparent; transition: background .15s ease, border-color .15s ease;
+}
+.cmc-case svg { width: 20px; height: 20px; stroke-width: 3; }
+.cmc-art-txt { min-width: 0; display: block; }
+.cmc-art-nom { display: block; font-size: 17px; font-weight: 700; line-height: 1.25; overflow-wrap: anywhere; }
+.cmc-qte { font-weight: 800; color: var(--primary-strong); white-space: nowrap; }
+.cmc-modifie { font-size: 11px; font-weight: 800; color: var(--muted); background: var(--surface-2); border-radius: 6px; padding: 1px 5px; vertical-align: 2px; }
+.cmc-art-detail { display: block; font-size: 13px; color: var(--muted); margin-top: 2px; overflow-wrap: anywhere; }
+.cmc-prec { color: var(--ink); font-weight: 700; }
+.cmc-art-menu { align-self: center; flex: none; color: var(--muted); }
+.cmc-fait { box-shadow: none; background: var(--surface-2); }
+.cmc-fait .cmc-case { background: var(--mint); border-color: var(--mint); color: var(--on-primary); }
+.cmc-fait .cmc-art-nom { text-decoration: line-through; color: var(--muted); }
+.cmc-fait .cmc-qte { color: var(--muted); }
+
+/* Rayons terminés, placard, masqués */
+.cmc-plie { margin-top: 18px; background: var(--surface); border-radius: var(--radius); padding: 4px 14px; box-shadow: var(--shadow); }
+.cmc-plie summary { min-height: 44px; display: flex; align-items: center; font-weight: 800; cursor: pointer; }
+.cmc-plie .cmc-rayon-titre { position: static; margin: 8px 0 0; padding: 0; background: none; }
+.cmc-plie .cmc-art { box-shadow: none; border: 1px solid var(--border); }
+.cmc-plie[open] { padding-bottom: 12px; }
+.cmc-mini { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-top: 1px solid var(--border); }
+.cmc-note { margin: 14px 4px 0; }
+
+/* Feuille de modification */
+.cmc-grille2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.cmc-feuille-actions { display: grid; gap: 8px; margin-top: 14px; }
+
+@media (prefers-reduced-motion: reduce) { .cmc-progres span, .cmc-case { transition: none; } }
+@media (max-width: 360px) {
+  .cmc-liaison .btn span { display: none; }
+  .cmc-ajout { grid-template-columns: 1fr 60px 44px; }
+}
