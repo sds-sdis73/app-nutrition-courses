@@ -10,7 +10,7 @@ const ONGLETS = [
   { id: 'plus', libelle: 'Plus', icone: I('<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>') },
 ];
 const CHAMPS_MODULE = ['id', 'onglet', 'segment', 'ordre', 'libelle', 'icone', 'description', 'rendu', 'ouvrir', 'actions', 'charger', 'tables', 'expose',
-  'sourcesAccueil', 'ajoutRapide', 'agenda', 'notifications', 'masquable', 'visible'];
+  'sourcesAccueil', 'resume', 'ajoutRapide', 'agenda', 'notifications', 'masquable', 'visible'];
 
 const Modules = {
   liste: [],
@@ -39,7 +39,12 @@ const Modules = {
     return m;
   },
   get(id) { return this.par[id] || null; },
-  masques() { return store.get('masques', []); },
+  masques() {
+    // Une seule fois : le Batch devient facultatif et masqué par défaut (Cuisine tient sur une ligne) ;
+    // on peut le réafficher dans Plus › Affichage.
+    if (!store.get('masques:v2', false)) { store.set('masques', [...new Set([...store.get('masques', []), 'batch'])]); store.set('masques:v2', true); }
+    return store.get('masques', []);
+  },
   masquer(id, oui) { const s = new Set(this.masques()); if (oui) s.add(id); else s.delete(id); store.set('masques', [...s]); },
   visible(m) { if (!m) return false; if (m.masquable && this.masques().includes(m.id)) return false; try { return m.visible ? !!m.visible() : true; } catch { return false; } },
   // Écrans d'un onglet, dans l'ordre (ceux qui ont un libellé de segment).
@@ -99,6 +104,16 @@ const Sync = {
 // ctx = { date: Date, iso: 'AAAA-MM-JJ', membre: membre courant, famille: vrai pour le fil de la famille }
 const Accueil = {
   sources: [],
+  // (a bis) Tuiles « En un coup d'œil » de l'Accueil : chaque module visible peut fournir un résumé (ou plusieurs).
+  // resume: (ctx) => { ordre, icone, titre, valeur, detail?, act, data? } | [ … ] | null
+  resumes(ctx = {}) {
+    const out = [];
+    for (const m of Modules.liste) {
+      if (!m.resume || !Modules.visible(m)) continue;
+      try { for (const r of [].concat(m.resume(ctx) || [])) if (r?.titre) out.push({ ordre: 100, ...r, module: m.id }); } catch (e) { console.warn('résumé de l\'Accueil', m.id, e); }
+    }
+    return out.sort((a, b) => a.ordre - b.ordre);
+  },
   async elements(ctx = {}) {
     const date = ctx.date || new Date();
     const c = { date, iso: isoDate(date), membre: null, famille: false, ...ctx };

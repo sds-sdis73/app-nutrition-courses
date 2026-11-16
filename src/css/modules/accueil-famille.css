@@ -40,3 +40,19 @@ button.af-carte:active { transform: translateY(1px); }
 .af-fab-espace { height: 72px; }
 .af-dictee { margin: 6px 0 0; }
 @media (prefers-reduced-motion: reduce) { .af-fab, button.af-carte { transition: none; transform: none; } }
+
+/* « En un coup d'œil » : tuiles des modules, deux par ligne. */
+.af-tuiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 0 0 16px; }
+.af-tuile {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-height: 96px; min-width: 0; text-align: left;
+  padding: 12px; border: 2px solid var(--ink); border-radius: 18px; background: var(--surface); color: var(--ink); font: inherit;
+  box-shadow: 0 3px 0 var(--ink);
+}
+.af-tuile:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
+.af-tuile-tete { display: flex; align-items: center; gap: 6px; min-width: 0; max-width: 100%; }
+.af-tuile-ico { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; background: var(--primary-soft); color: var(--primary-strong); flex: none; font-size: 15px; }
+.af-tuile-ico svg { width: 16px; height: 16px; }
+.af-tuile-titre { font-size: 13px; font-weight: 700; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.af-tuile-valeur { font-size: 17px; line-height: 1.2; font-family: var(--display); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; max-width: 100%; }
+.af-tuile-detail { font-size: 13px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; max-width: 100%; }
+:root[data-univers] .af-tuile { border: var(--u-bord) solid var(--u-ligne); border-radius: var(--u-r-btn); box-shadow: var(--u-sh-btn, none); }

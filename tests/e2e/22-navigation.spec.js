@@ -16,31 +16,38 @@ module.exports = {
     { name: 'barre : Accueil · Famille · Cuisine · Forme · Plus, avec leurs libellés', fn: async ({ page }) => {
       assert.deepEqual(await page.$$eval('.tabbar button', (l) => l.map((b) => b.textContent.trim())), ['Accueil', 'Famille', 'Cuisine', 'Forme', 'Plus']);
       assert.equal(await page.$eval('.tabbar [aria-current="page"]', (b) => b.dataset.tab), 'accueil');
-      assert.deepEqual(await segments(page), ['aujourdhui', 'accueil-famille', 'suivi']);
+      assert.deepEqual(await segments(page), ['accueil-famille', 'aujourdhui', 'suivi']);
+      // Les sous-menus tiennent sur une ligne, sans défilement horizontal.
+      assert.ok(await page.$eval('.segbar', (b) => b.scrollWidth <= b.clientWidth + 1));
     } },
-    { name: 'Famille : 5 segments, écrans « Bientôt ici »', fn: async ({ page }) => {
+    { name: 'Famille : 4 segments sur une ligne ; le Carnet est dans Plus', fn: async ({ page }) => {
       await tab(page, 'famille');
-      assert.deepEqual(await segments(page), ['agenda', 'taches', 'messages', 'photos', 'carnet']);
+      assert.deepEqual(await segments(page), ['agenda', 'taches', 'messages', 'photos']);
+      assert.ok(await page.$eval('.segbar', (b) => b.scrollWidth <= b.clientWidth + 1), 'la barre de Famille ne défile pas');
       assert.equal(await page.evaluate(() => state.tab), 'agenda');
       assert.equal(await page.$eval('#title', (e) => e.textContent), 'Agenda familial');
-      await page.click('.segbar [data-tab="carnet"]');
+      await tab(page, 'plus');
+      await page.click('.plus-ligne[data-id="carnet"]');
+      await page.waitForTimeout(300);
       assert.equal(await page.$eval('#title', (e) => e.textContent), 'Carnet de la famille');
+      assert.equal(await page.$eval('.tabbar [aria-current="page"]', (b) => b.dataset.tab), 'plus');
       assert.ok(await H.noHorizontalScroll(page));
     } },
-    { name: 'Cuisine : Repas, Courses, Recettes, Batch, Scan ; l\'onglet rouvre le dernier segment', fn: async ({ page }) => {
+    { name: 'Cuisine : Repas, Courses, Recettes, Scan (Batch masqué par défaut) ; l\'onglet rouvre le dernier segment', fn: async ({ page }) => {
       await tab(page, 'cuisine');
-      assert.deepEqual(await segments(page), ['planning', 'courses', 'recettes', 'batch', 'scan']);
+      assert.deepEqual(await segments(page), ['planning', 'courses', 'recettes', 'scan']);
+      assert.ok(await page.$eval('.segbar', (b) => b.scrollWidth <= b.clientWidth + 1), 'la barre de Cuisine ne défile pas');
       await page.click('.segbar [data-tab="recettes"]');
       assert.equal(await page.$eval('#title', (e) => e.textContent), 'Mes recettes');
       await tab(page, 'famille');
       await tab(page, 'cuisine');
       assert.equal(await page.evaluate(() => state.tab), 'recettes');
       await tab(page, 'accueil');
-      assert.equal(await page.evaluate(() => state.tab), 'aujourdhui');
+      assert.equal(await page.evaluate(() => state.tab), 'aujourdhui'); // dernier écran ouvert dans Accueil (Moi)
     } },
     { name: 'Plus : menu des réglages et outils, retour, feuille Réglages', fn: async ({ page }) => {
       await tab(page, 'plus');
-      assert.deepEqual(await page.$$eval('.plus-ligne', (l) => l.map((b) => b.dataset.id)), ['reglages', 'univers', 'notifications', 'agenda-synchro', 'monsieur-cuisine', 'securite', 'sauvegarde', 'widget']);
+      assert.deepEqual(await page.$$eval('.plus-ligne', (l) => l.map((b) => b.dataset.id)), ['carnet', 'reglages', 'univers', 'notifications', 'agenda-synchro', 'monsieur-cuisine', 'securite', 'sauvegarde', 'widget']);
       await page.click('.plus-ligne[data-id="sauvegarde"]');
       await page.waitForSelector('[data-act="sauvegarde-exporter"]');
       assert.equal(await page.$eval('.tabbar [aria-current="page"]', (b) => b.dataset.tab), 'plus');

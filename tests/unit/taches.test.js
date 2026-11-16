@@ -208,10 +208,10 @@ describe('envies : « je m\'en occupe » caché à la personne concernée', () =
 });
 
 describe('enregistrement du module', () => {
-  test('segment Famille › Tâches & listes, tables, analyseur « tâche », notifications', () => {
+  test('segment Famille › Tâches, tables, analyseur « tâche », notifications', () => {
     const m = app.Modules.get('taches');
     assert.equal(m.onglet, 'famille');
-    assert.equal(m.segment, 'Tâches & listes');
+    assert.equal(m.segment, 'Tâches');
     for (const t of ['taches', 'listes', 'liste_elements', 'envies', 'envies_reservations']) assert.equal(app.T[t], t);
     assert.ok(app.AjoutRapide.pour('tache'), 'le type « tâche » du « + » n\'est plus grisé');
     assert.ok(app.Modules.notifications().some((n) => n.module === 'taches' && n.type === 'taches'));

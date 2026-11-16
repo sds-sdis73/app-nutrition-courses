@@ -608,6 +608,13 @@ Modules.register({
     'messages-anciens': async () => { try { await plusAnciens(); rafraichir(); window.scrollTo({ top: 0 }); } catch (e) { fail(e); } },
     'messages-retirer-piece': (b) => { pieceJointe = null; montrerPiece(b.closest('form')); },
   },
+  // Tuile de l'Accueil : messages non lus de la discussion.
+  resume: () => {
+    const l = nonLus(M.liste, me(), monLu()?.lu_jusqu_a);
+    const der = l[l.length - 1] || M.liste[M.liste.length - 1];
+    return { ordre: 50, icone: icMsg, titre: 'Messages', valeur: l.length ? `${l.length} non lu${l.length > 1 ? 's' : ''}` : 'À jour',
+      detail: der ? `${nomCompte(der.user_id, der.auteur)} : ${apercu(der, 40)}` : 'Écrire à la famille', act: 'tab', data: { tab: 'messages' } };
+  },
   sourcesAccueil: () => {
     const l = nonLus(M.liste, me(), monLu()?.lu_jusqu_a);
     if (!l.length) return [];

@@ -927,7 +927,24 @@ function habiller(id, rendu) {
   if (!m || m.cuisineMc) return;
   const renduMiam = m.rendu;
   m.rendu = () => rendu(renduMiam);
+  // Tuile de l'Accueil : celle de Monsieur Cuisine quand la liaison est active, sinon celle du cœur.
+  const resumeMiam = m.resume;
+  if (resumeMiam) m.resume = () => (actif() ? (id === 'planning' ? resumeRepasMc() : resumeCoursesMc()) : resumeMiam());
   Object.defineProperty(m, 'cuisineMc', { value: true });
+}
+function resumeRepasMc() {
+  const d = new Date();
+  const repas = planning.filter((p) => p.date === isoDate(d)).sort(ordreRepas);
+  const pr = repas.length ? (prochainRepas(repas, d)?.repas || repas[0]) : null;
+  const soir = !pr || repas.length === 1 || pr === repas[repas.length - 1] || d.getHours() >= 14;
+  return { ordre: 30, icone: '🍽️', titre: soir ? 'Ce soir' : 'Ce midi', valeur: pr ? pr.titre : 'Rien de prévu',
+    detail: pr ? 'Monsieur Cuisine' : 'Planifier dans Monsieur Cuisine', act: pr ? 'cmc-recette' : 'tab', data: pr ? { id: pr.mc_id } : { tab: 'planning' } };
+}
+function resumeCoursesMc() {
+  const l = listeActuelle();
+  const reste = l.total - l.coches;
+  return { ordre: 40, icone: '🛒', titre: 'Courses', valeur: reste ? `${reste} article${reste > 1 ? 's' : ''}` : 'Liste à jour',
+    detail: reste ? (l.coches ? `${l.coches} déjà dans le caddie` : 'à acheter') : 'Rien à acheter', act: 'tab', data: { tab: 'courses' } };
 }
 habiller('planning', renduRepas);
 habiller('courses', renduCourses);

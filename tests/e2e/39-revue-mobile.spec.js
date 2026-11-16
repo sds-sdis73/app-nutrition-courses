@@ -15,19 +15,18 @@ module.exports = {
   name: 'Revue mobile : segments, champs, cibles tactiles, univers',
   async after({ page }) { await univers(page, null); await H.closeSheets(page); },
   tests: [
-    { name: 'barre de segments : le segment touché reste visible après le rendu, fondu sur le bord qui défile', fn: async ({ page }) => {
+    { name: 'barre de segments : tient sur une ligne à 390 px, segment touché visible', fn: async ({ page }) => {
       await H.openTab(page, 'agenda');
-      await page.evaluate(() => { const b = document.querySelector('.segbar'); b.scrollLeft = b.scrollWidth; });
-      await page.click('.segbar [data-tab="carnet"]');
+      await page.click('.segbar [data-tab="photos"]');
       await page.waitForTimeout(300);
       const r = await page.evaluate(() => {
         const bar = document.querySelector('.segbar'), b = bar.querySelector('[aria-pressed="true"]');
         const rb = b.getBoundingClientRect(), rr = bar.getBoundingClientRect();
         return { tab: b.dataset.tab, dedans: rb.left >= rr.left - 1 && rb.right <= rr.right + 1, deborde: bar.scrollWidth > bar.clientWidth, classes: bar.className, h: rb.height };
       });
-      assert.equal(r.tab, 'carnet');
+      assert.equal(r.tab, 'photos');
       assert.ok(r.dedans, 'segment actif hors de la barre');
-      if (r.deborde) assert.match(r.classes, /fondu-(gauche|droite)/);
+      assert.ok(!r.deborde, 'la barre ne doit plus défiler');
       assert.ok(r.h >= 44, `hauteur des segments : ${r.h}`);
       // Retour dans l'onglet Famille : le dernier écran rouvert est montré dans la barre.
       await H.openTab(page, 'accueil');

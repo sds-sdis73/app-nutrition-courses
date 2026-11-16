@@ -33,9 +33,10 @@ module.exports = {
     if (!mock) await vider(page);
   },
   tests: [
-    { name: 'Famille › Carnet : quatre volets, numéros d\'urgence en un geste', fn: async ({ page }) => {
-      await H.openTab(page, 'famille');
-      await page.click('.segbar [data-tab="carnet"]');
+    { name: 'Plus › Carnet : quatre volets, numéros d\'urgence en un geste', fn: async ({ page }) => {
+      await H.openTab(page, 'plus');
+      await page.click('.plus-ligne[data-id="carnet"]');
+      await page.waitForTimeout(300);
       assert.equal(await page.$eval('#title', (e) => e.textContent), 'Carnet de la famille');
       assert.deepEqual(await page.$$eval('.carnet-onglets .chip', (l) => l.map((b) => b.textContent)), ['Santé', 'Maison & animaux', 'Budget', 'Contacts']);
       assert.doesNotMatch(await page.$eval('#main', (e) => e.textContent), /Bientôt ici|attend sa base/);

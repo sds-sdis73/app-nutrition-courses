@@ -885,6 +885,19 @@ Modules.register({
   },
   // Pour les autres modules (fil, export) : événements, fériés, anniversaires et fêtes de la période.
   agenda: (debut, fin) => elementsModule(debut, fin).map(({ ev, ...e }) => e),
+  // Tuile de l'Accueil : le prochain événement des 7 jours.
+  resume: () => {
+    const d = new Date(), auj = isoDate(d), mtn = nowHM();
+    const cle = (e) => `${e.date} ${e.heure || '00:00'}`;
+    const els = elementsModule(minuit(d), addDays(minuit(d), 6)).filter((e) => e.date > auj || !e.heure || e.heure >= mtn).sort((a, b) => cle(a).localeCompare(cle(b)));
+    const e = els[0];
+    const nbJour = els.filter((x) => x.date === auj).length;
+    if (!e) return { ordre: 10, icone: ICO.cal, titre: 'Agenda', valeur: 'Semaine calme', detail: 'Rien de prévu sur 7 jours', act: 'tab', data: { tab: 'agenda' } };
+    const ecart = Math.round((dIso(e.date) - minuit(d)) / 864e5);
+    const quand = ecart === 0 ? "Aujourd'hui" : ecart === 1 ? 'Demain' : dIso(e.date).toLocaleDateString('fr-FR', { weekday: 'long' }).replace(/^./, (c) => c.toUpperCase());
+    return { ordre: 10, icone: ICO.cal, titre: nbJour > 1 ? `Agenda · ${nbJour} aujourd'hui` : 'Prochain événement', valeur: e.titre,
+      detail: `${quand}${e.heure ? ` à ${fmtHeure(e.heure)}` : ''}`, act: 'agenda-jour', data: { date: e.date } };
+  },
   sourcesAccueil: (ctx) => {
     const d = ctx.date || new Date();
     const id = ctx.famille ? null : ctx.membre?.id || null;

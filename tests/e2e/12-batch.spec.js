@@ -3,6 +3,9 @@ const H = require('../helpers');
 
 module.exports = {
   name: 'Batch cooking et restes',
+  // Le Batch est masqué par défaut (Cuisine tient sur une ligne) : on l'affiche pour ces scénarios.
+  async before({ page }) { await page.evaluate(() => Modules.masquer('batch', false)); },
+  async after({ page }) { await page.evaluate(() => Modules.masquer('batch', true)); },
   tests: [
     { name: 'session de batch générée depuis le planning', fn: async ({ page }) => {
       // Un repas « poulet rôti » en plus du dîner : des étapes à l'avance existent.

@@ -932,11 +932,11 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="
 .sheet-wrap { position: fixed; inset: 0; z-index: 50; }
 .sheet-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.4); opacity: 0; transition: .25s; }
 .sheet {
-  position: absolute; left: 0; right: 0; bottom: 0; max-height: 92vh; overflow-y: auto; overscroll-behavior: contain;
+  position: absolute; left: 0; right: 0; bottom: 0; max-height: calc(92vh - var(--safe-t)); max-height: calc(100dvh - var(--safe-t) - 16px); overflow-y: auto; overscroll-behavior: contain;
   background: var(--surface); border-radius: 22px 22px 0 0; padding: 8px 16px calc(24px + var(--safe-b));
   transform: translateY(100%); transition: transform .28s cubic-bezier(.2,.8,.2,1); max-width: 760px; margin: 0 auto;
 }
-.sheet.full { height: 100vh; max-height: 100vh; border-radius: 0; padding-top: calc(8px + var(--safe-t)); }
+.sheet.full { height: 100vh; max-height: 100vh; height: 100dvh; max-height: 100dvh; border-radius: 0; padding-top: calc(8px + var(--safe-t)); }
 .sheet-wrap.open .sheet { transform: none; }
 .sheet-wrap.open .sheet-backdrop { opacity: 1; }
 .sheet-grip { width: 40px; height: 5px; border-radius: 3px; background: var(--border); margin: 4px auto 12px; }
@@ -1185,13 +1185,13 @@ h1, h2, h3, .sheet-head h2, .section-title, .tl-head { font-weight: 800; letter-
 .tabbar button { font-size: 11px; gap: 3px; }
 .tabbar button span { display: block; }
 .segbar {
-  display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 6px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
   margin: 2px -16px 12px; padding: 2px 16px 4px;
 }
 .segbar::-webkit-scrollbar { display: none; }
 .segbar button {
   flex: none; border: 2px solid var(--ink); background: var(--surface); color: var(--ink);
-  border-radius: 999px; padding: 7px 14px; font: inherit; font-weight: 800; font-size: 14px; min-height: 44px; white-space: nowrap;
+  border-radius: 999px; padding: 7px 8px; font: inherit; font-weight: 800; font-size: 14px; min-height: 44px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 /* La barre défile : fondu sur le bord qui cache encore des segments (classes posées par Nav.centrerSegment). */
 .segbar.fondu-droite { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 32px), transparent); }
@@ -1264,6 +1264,22 @@ button.af-carte:active { transform: translateY(1px); }
 .af-fab-espace { height: 72px; }
 .af-dictee { margin: 6px 0 0; }
 @media (prefers-reduced-motion: reduce) { .af-fab, button.af-carte { transition: none; transform: none; } }
+
+/* « En un coup d'œil » : tuiles des modules, deux par ligne. */
+.af-tuiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 0 0 16px; }
+.af-tuile {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-height: 96px; min-width: 0; text-align: left;
+  padding: 12px; border: 2px solid var(--ink); border-radius: 18px; background: var(--surface); color: var(--ink); font: inherit;
+  box-shadow: 0 3px 0 var(--ink);
+}
+.af-tuile:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
+.af-tuile-tete { display: flex; align-items: center; gap: 6px; min-width: 0; max-width: 100%; }
+.af-tuile-ico { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; background: var(--primary-soft); color: var(--primary-strong); flex: none; font-size: 15px; }
+.af-tuile-ico svg { width: 16px; height: 16px; }
+.af-tuile-titre { font-size: 13px; font-weight: 700; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.af-tuile-valeur { font-size: 17px; line-height: 1.2; font-family: var(--display); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; max-width: 100%; }
+.af-tuile-detail { font-size: 13px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; max-width: 100%; }
+:root[data-univers] .af-tuile { border: var(--u-bord) solid var(--u-ligne); border-radius: var(--u-r-btn); box-shadow: var(--u-sh-btn, none); }
 /* ==== module agenda-synchro ==== */
 /* Plus › Agendas reliés : lien d'abonnement, agendas importés, iCloud (jetons du thème uniquement). */
 .async-titre { font-size: 17px; margin: 18px 0 8px; }
@@ -4087,7 +4103,7 @@ Forme.install = function install() {
 // ---------------------------------------------------------------------------
 const APP_NAME = 'Tribu & Toutous';
 // À incrémenter à chaque publication, avec la même valeur dans version.json.
-const APP_VERSION = '2026-11-16.2';
+const APP_VERSION = '2026-11-16.3';
 const SUPABASE_URL = 'https://svugddkrptqpjmywhorb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2dWdkZGtycHRxcGpteXdob3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MjU5NDgsImV4cCI6MjEwODUwMTk0OH0.63RETgf7rbVMquGV-7ooY3qn-Qf31uVCA3ZBfqBvFcI';
 const OFF = 'https://world.openfoodfacts.org/api/v2';
@@ -4196,7 +4212,8 @@ const state = {
   compte: null,
   comptes: [],
   authMode: 'login',
-  tab: store.get('tab', 'aujourdhui'),
+  // Une seule fois : l'Accueil s'ouvre désormais sur la journée de la famille (« Aujourd'hui ») et non plus sur « Moi ».
+  tab: (() => { const t = store.get('tab', 'accueil-famille'); if (store.get('accueil:v2', false)) return t; store.set('accueil:v2', true); store.set('vue:accueil', 'accueil-famille'); return t === 'aujourdhui' ? 'accueil-famille' : t; })(),
   offline: false,
   push: null,
   settings: { store_name: 'Super U Porte de Savoie Montmélian', store_slug: 'superu-montmelian', default_servings: 2 },
@@ -4609,7 +4626,7 @@ const ONGLETS = [
   { id: 'plus', libelle: 'Plus', icone: I('<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>') },
 ];
 const CHAMPS_MODULE = ['id', 'onglet', 'segment', 'ordre', 'libelle', 'icone', 'description', 'rendu', 'ouvrir', 'actions', 'charger', 'tables', 'expose',
-  'sourcesAccueil', 'ajoutRapide', 'agenda', 'notifications', 'masquable', 'visible'];
+  'sourcesAccueil', 'resume', 'ajoutRapide', 'agenda', 'notifications', 'masquable', 'visible'];
 
 const Modules = {
   liste: [],
@@ -4638,7 +4655,12 @@ const Modules = {
     return m;
   },
   get(id) { return this.par[id] || null; },
-  masques() { return store.get('masques', []); },
+  masques() {
+    // Une seule fois : le Batch devient facultatif et masqué par défaut (Cuisine tient sur une ligne) ;
+    // on peut le réafficher dans Plus › Affichage.
+    if (!store.get('masques:v2', false)) { store.set('masques', [...new Set([...store.get('masques', []), 'batch'])]); store.set('masques:v2', true); }
+    return store.get('masques', []);
+  },
   masquer(id, oui) { const s = new Set(this.masques()); if (oui) s.add(id); else s.delete(id); store.set('masques', [...s]); },
   visible(m) { if (!m) return false; if (m.masquable && this.masques().includes(m.id)) return false; try { return m.visible ? !!m.visible() : true; } catch { return false; } },
   // Écrans d'un onglet, dans l'ordre (ceux qui ont un libellé de segment).
@@ -4698,6 +4720,16 @@ const Sync = {
 // ctx = { date: Date, iso: 'AAAA-MM-JJ', membre: membre courant, famille: vrai pour le fil de la famille }
 const Accueil = {
   sources: [],
+  // (a bis) Tuiles « En un coup d'œil » de l'Accueil : chaque module visible peut fournir un résumé (ou plusieurs).
+  // resume: (ctx) => { ordre, icone, titre, valeur, detail?, act, data? } | [ … ] | null
+  resumes(ctx = {}) {
+    const out = [];
+    for (const m of Modules.liste) {
+      if (!m.resume || !Modules.visible(m)) continue;
+      try { for (const r of [].concat(m.resume(ctx) || [])) if (r?.titre) out.push({ ordre: 100, ...r, module: m.id }); } catch (e) { console.warn('résumé de l\'Accueil', m.id, e); }
+    }
+    return out.sort((a, b) => a.ordre - b.ordre);
+  },
   async elements(ctx = {}) {
     const date = ctx.date || new Date();
     const c = { date, iso: isoDate(date), membre: null, famille: false, ...ctx };
@@ -9031,11 +9063,12 @@ document.addEventListener('keydown', (e) => {
 // Cuisine : Repas, Courses, Recettes, Batch (masquable), Scan. Forme : le module Forme.
 // Plus : réglages et outils (les écrans à venir sont des modules de src/js/modules/).
 // ---------------------------------------------------------------------------
-Modules.register({ id: 'aujourdhui', onglet: 'accueil', segment: 'Ma journée', ordre: 10, libelle: () => APP_NAME, rendu: () => renderToday() });
+// « Moi » : repas, eau, activités et compagnon de la personne (l'écran d'ouverture est « Aujourd'hui », la famille).
+Modules.register({ id: 'aujourdhui', onglet: 'accueil', segment: 'Moi', ordre: 20, libelle: 'Ma journée', rendu: () => renderToday(), resume: () => resumeMoi() });
 Modules.register({ id: 'suivi', onglet: 'accueil', segment: 'Suivi', ordre: 30, libelle: 'Suivi nutritionnel', rendu: () => renderSuivi() });
 
 Modules.register({
-  id: 'planning', onglet: 'cuisine', segment: 'Repas', ordre: 10, libelle: 'Ma semaine', rendu: () => renderPlanning(),
+  id: 'planning', onglet: 'cuisine', segment: 'Repas', ordre: 10, libelle: 'Ma semaine', rendu: () => renderPlanning(), resume: () => resumeRepas(),
   // Repas de la semaine chargée, pour l'agenda familial.
   agenda: (debut, fin) => state.plan.filter((p) => p.recipe_id || p.reste_id).map((p) => {
     const date = isoDate(addDays(typeof p.week === 'string' ? isoToDate(p.week) : state.week, Number(p.day) || 0));
@@ -9043,7 +9076,7 @@ Modules.register({
     return { id: `repas:${p.week}:${p.day}:${p.slot}`, date, heure: SLOT_TIME[p.slot] || null, titre: r?.title || 'Reste', detail: slotLabel(p.slot), act: 'tab', data: { tab: 'planning' } };
   }),
 });
-Modules.register({ id: 'courses', onglet: 'cuisine', segment: 'Courses', ordre: 20, libelle: 'Liste de courses', rendu: () => renderCourses() });
+Modules.register({ id: 'courses', onglet: 'cuisine', segment: 'Courses', ordre: 20, libelle: 'Liste de courses', rendu: () => renderCourses(), resume: () => resumeCourses() });
 Modules.register({ id: 'recettes', onglet: 'cuisine', segment: 'Recettes', ordre: 30, libelle: 'Mes recettes', rendu: () => renderRecipes() });
 Modules.register({ id: 'batch', onglet: 'cuisine', segment: 'Batch', ordre: 40, libelle: 'Batch cooking', masquable: true, rendu: () => renderBatchTab() });
 Modules.register({ id: 'scan', onglet: 'cuisine', segment: 'Scan', ordre: 50, libelle: 'Scanner un produit', rendu: () => renderScan() });
@@ -9104,6 +9137,38 @@ AjoutRapide.ajouter({
   },
   ouvrir() { switchTab('forme'); },
 });
+
+// ---------------------------------------------------------------------------
+// Tuiles « En un coup d'œil » des écrans du cœur (Accueil › Aujourd'hui).
+// ---------------------------------------------------------------------------
+function resumeMoi() {
+  const m = journalMember();
+  if (!m) return null;
+  const d = new Date();
+  const c = companionOf(m);
+  const mange = Math.round(memberDay(m, d).entries.filter((e) => e.type === 'journal').reduce((t, e) => t + (e.n.kcal || 0), 0));
+  const besoin = Math.round(needs(m, d).kcal || 0);
+  return { ordre: 60, icone: c ? '🐾' : '🙂', titre: c ? `Moi et ${c.nom}` : 'Moi', valeur: `${fmtNum(mange)} / ${fmtNum(besoin)} kcal`,
+    detail: `Eau : ${fmtL(waterTotal(m, d))} / ${fmtL(waterGoal(m, d))}`, act: 'tab', data: { tab: 'aujourdhui' } };
+}
+function resumeRepas() {
+  const d = new Date();
+  const di = dayIndex(d);
+  // Prochain repas de la journée : le midi jusqu'à 14 h s'il est prévu, sinon le soir.
+  const prevu = (slot) => (di >= 0 ? state.plan.find((x) => x.day === di && x.slot === slot && (x.recipe_id || x.reste_id)) : null);
+  const midi = d.getHours() < 14 ? prevu('midi') : null;
+  const slot = midi ? 'midi' : d.getHours() < 14 && !prevu('soir') ? 'midi' : 'soir';
+  const p = midi || prevu('soir');
+  const r = p?.recipe_id ? recipeById(p.recipe_id) : null;
+  return { ordre: 30, icone: '🍽️', titre: slot === 'midi' ? 'Ce midi' : 'Ce soir', valeur: r ? r.title : p ? 'Un reste' : 'Rien de prévu',
+    detail: p ? mealWho(p) : 'Toucher pour planifier', act: 'tab', data: { tab: 'planning' } };
+}
+function resumeCourses() {
+  const tous = [...buildShopping().byAisle.values()].flat();
+  const reste = tous.filter((it) => !isChecked(it)).length;
+  return { ordre: 40, icone: '🛒', titre: 'Courses', valeur: reste ? `${reste} article${reste > 1 ? 's' : ''}` : 'Liste à jour',
+    detail: reste ? 'à acheter cette semaine' : 'Rien à acheter', act: 'tab', data: { tab: 'courses' } };
+}
 // ---------------------------------------------------------------------------
 // Comptes utilisateurs
 // ---------------------------------------------------------------------------
@@ -9794,6 +9859,15 @@ function augmenterJournee(html) {
 const vueJour = Modules.get('aujourdhui');
 if (vueJour) { const base = vueJour.rendu; vueJour.rendu = () => augmenterJournee(base()); }
 
+// « En un coup d'œil » : une tuile par module (agenda, tâches, repas, courses, messages, moi), qui mène à son écran.
+function tuilesHtml() {
+  const t = Accueil.resumes();
+  if (!t.length) return '';
+  return `<section class="af-tuiles" aria-label="En un coup d'œil">${t.map((r) => `<button class="af-tuile" data-act="${esc(r.act || 'tab')}" ${attrsData(r.data)}>
+      <span class="af-tuile-tete"><span class="af-tuile-ico" aria-hidden="true">${r.icone || '•'}</span><span class="af-tuile-titre">${esc(r.titre)}</span></span>
+      <b class="af-tuile-valeur">${esc(r.valeur || '')}</b>${r.detail ? `<span class="af-tuile-detail">${esc(r.detail)}</span>` : ''}</button>`).join('')}</section>`;
+}
+
 function renduFamille() {
   rafraichir('famille');
   const d = new Date();
@@ -9804,7 +9878,9 @@ function renduFamille() {
     <button class="chip" data-act="af-filtre" data-m="" aria-pressed="${!filtre}">Tout le monde</button>
     ${membres.map((m, i) => `<button class="chip" data-act="af-filtre" data-m="${m.id}" aria-pressed="${filtre === m.id}"><span class="af-pastille" style="--af-c:${couleurMembre(i)}"></span>${esc(m.nom)}</button>`).join('')}</div>`;
   const aJour = vues.famille?.cle?.startsWith(isoDate(d));
-  return `<p class="muted af-date">${d.getHours() < 12 ? 'Bonjour' : d.getHours() < 18 ? 'Bon après-midi' : 'Bonsoir'} · ${esc(d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }))}</p>
+  const nom = moiCompte()?.nom;
+  return `<p class="muted af-date">${d.getHours() < 12 ? 'Bonjour' : d.getHours() < 18 ? 'Bon après-midi' : 'Bonsoir'}${nom ? ` ${esc(nom)}` : ''} · ${esc(d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }))}</p>
+    ${tuilesHtml()}
     <div data-af-briefing="famille">${aJour ? briefingHtml('famille') : ''}</div>
     ${chips}
     <h3 class="tl-head">Aujourd'hui</h3>
@@ -9815,9 +9891,10 @@ function renduFamille() {
 Modules.register({
   id: 'accueil-famille',
   onglet: 'accueil',
-  segment: 'Famille',
-  ordre: 20,
-  libelle: 'Notre journée',
+  // Écran d'ouverture de l'appli : la journée de toute la famille, pas seulement la nutrition.
+  segment: 'Aujourd\'hui',
+  ordre: 10,
+  libelle: () => APP_NAME,
   rendu: renduFamille,
   async charger(force, { horsLigne } = {}) { if (!horsLigne) planifierPlusTard(6000); },
   sourcesAccueil: (ctx) => sourceRepas(ctx),
@@ -11148,6 +11225,19 @@ Modules.register({
   },
   // Pour les autres modules (fil, export) : événements, fériés, anniversaires et fêtes de la période.
   agenda: (debut, fin) => elementsModule(debut, fin).map(({ ev, ...e }) => e),
+  // Tuile de l'Accueil : le prochain événement des 7 jours.
+  resume: () => {
+    const d = new Date(), auj = isoDate(d), mtn = nowHM();
+    const cle = (e) => `${e.date} ${e.heure || '00:00'}`;
+    const els = elementsModule(minuit(d), addDays(minuit(d), 6)).filter((e) => e.date > auj || !e.heure || e.heure >= mtn).sort((a, b) => cle(a).localeCompare(cle(b)));
+    const e = els[0];
+    const nbJour = els.filter((x) => x.date === auj).length;
+    if (!e) return { ordre: 10, icone: ICO.cal, titre: 'Agenda', valeur: 'Semaine calme', detail: 'Rien de prévu sur 7 jours', act: 'tab', data: { tab: 'agenda' } };
+    const ecart = Math.round((dIso(e.date) - minuit(d)) / 864e5);
+    const quand = ecart === 0 ? "Aujourd'hui" : ecart === 1 ? 'Demain' : dIso(e.date).toLocaleDateString('fr-FR', { weekday: 'long' }).replace(/^./, (c) => c.toUpperCase());
+    return { ordre: 10, icone: ICO.cal, titre: nbJour > 1 ? `Agenda · ${nbJour} aujourd'hui` : 'Prochain événement', valeur: e.titre,
+      detail: `${quand}${e.heure ? ` à ${fmtHeure(e.heure)}` : ''}`, act: 'agenda-jour', data: { date: e.date } };
+  },
   sourcesAccueil: (ctx) => {
     const d = ctx.date || new Date();
     const id = ctx.famille ? null : ctx.membre?.id || null;
@@ -11938,9 +12028,12 @@ function feuilleContact(c, groupe = 'autres') {
 const ouvrirCarnet = (v) => { vue = v; store.set('carnet:vue', v); if (state.tab !== 'carnet') switchTab('carnet'); else render(); };
 Modules.register({
   id: 'carnet',
-  onglet: 'famille',
-  segment: 'Carnet',
-  ordre: 50,
+  // Dans Plus (consulté moins souvent) : l'onglet Famille garde quatre sous-menus qui tiennent sur une ligne.
+  onglet: 'plus',
+  segment: 'Carnet de la famille',
+  ordre: 5,
+  icone: I('<path d="M4 4h12a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3z"/><path d="M4 17a3 3 0 0 1 3-3h12"/><path d="M11 7.5v4M9 9.5h4"/>'),
+  description: 'Santé, vaccins, maison, animaux, contacts',
   libelle: 'Carnet de la famille',
   tables: Object.fromEntries(Object.values(TABLES).map((t) => [t, t])),
   charger,
@@ -12916,7 +13009,24 @@ function habiller(id, rendu) {
   if (!m || m.cuisineMc) return;
   const renduMiam = m.rendu;
   m.rendu = () => rendu(renduMiam);
+  // Tuile de l'Accueil : celle de Monsieur Cuisine quand la liaison est active, sinon celle du cœur.
+  const resumeMiam = m.resume;
+  if (resumeMiam) m.resume = () => (actif() ? (id === 'planning' ? resumeRepasMc() : resumeCoursesMc()) : resumeMiam());
   Object.defineProperty(m, 'cuisineMc', { value: true });
+}
+function resumeRepasMc() {
+  const d = new Date();
+  const repas = planning.filter((p) => p.date === isoDate(d)).sort(ordreRepas);
+  const pr = repas.length ? (prochainRepas(repas, d)?.repas || repas[0]) : null;
+  const soir = !pr || repas.length === 1 || pr === repas[repas.length - 1] || d.getHours() >= 14;
+  return { ordre: 30, icone: '🍽️', titre: soir ? 'Ce soir' : 'Ce midi', valeur: pr ? pr.titre : 'Rien de prévu',
+    detail: pr ? 'Monsieur Cuisine' : 'Planifier dans Monsieur Cuisine', act: pr ? 'cmc-recette' : 'tab', data: pr ? { id: pr.mc_id } : { tab: 'planning' } };
+}
+function resumeCoursesMc() {
+  const l = listeActuelle();
+  const reste = l.total - l.coches;
+  return { ordre: 40, icone: '🛒', titre: 'Courses', valeur: reste ? `${reste} article${reste > 1 ? 's' : ''}` : 'Liste à jour',
+    detail: reste ? (l.coches ? `${l.coches} déjà dans le caddie` : 'à acheter') : 'Rien à acheter', act: 'tab', data: { tab: 'courses' } };
 }
 habiller('planning', renduRepas);
 habiller('courses', renduCourses);
@@ -13578,6 +13688,13 @@ Modules.register({
     'messages-photo': (b) => voirPhotoMessage(b.dataset.id),
     'messages-anciens': async () => { try { await plusAnciens(); rafraichir(); window.scrollTo({ top: 0 }); } catch (e) { fail(e); } },
     'messages-retirer-piece': (b) => { pieceJointe = null; montrerPiece(b.closest('form')); },
+  },
+  // Tuile de l'Accueil : messages non lus de la discussion.
+  resume: () => {
+    const l = nonLus(M.liste, me(), monLu()?.lu_jusqu_a);
+    const der = l[l.length - 1] || M.liste[M.liste.length - 1];
+    return { ordre: 50, icone: icMsg, titre: 'Messages', valeur: l.length ? `${l.length} non lu${l.length > 1 ? 's' : ''}` : 'À jour',
+      detail: der ? `${nomCompte(der.user_id, der.auteur)} : ${apercu(der, 40)}` : 'Écrire à la famille', act: 'tab', data: { tab: 'messages' } };
   },
   sourcesAccueil: () => {
     const l = nonLus(M.liste, me(), monLu()?.lu_jusqu_a);
@@ -15378,13 +15495,21 @@ window.Taches = Taches;
 Modules.register({
   id: 'taches',
   onglet: 'famille',
-  segment: 'Tâches & listes',
+  segment: 'Tâches',
   ordre: 20,
   libelle: 'Tâches et listes',
   tables: { taches: 'taches', listes: 'listes', liste_elements: 'liste_elements', envies: 'envies', envies_reservations: 'envies_reservations' },
   charger,
   rendu,
   actions,
+  // Tuile de l'Accueil : tâches du jour et en retard.
+  resume: () => {
+    const auj = isoDate(new Date());
+    const l = D.taches.filter((t) => !t.fait && t.echeance && t.echeance <= auj).sort((a, b) => a.echeance.localeCompare(b.echeance));
+    const retard = l.filter((t) => t.echeance < auj).length;
+    return { ordre: 20, icone: '✅', titre: 'Tâches', valeur: l.length ? `${l.length} à faire` : 'Rien d\'urgent',
+      detail: l.length ? `${retard ? `${retard} en retard · ` : ''}${l[0].titre}` : 'Tout est fait pour aujourd\'hui', act: 'tab', data: { tab: 'taches' } };
+  },
   sourcesAccueil: (ctx) => {
     const out = elementsAccueil(D.taches, { iso: ctx.iso, membre: ctx.membre, famille: ctx.famille, nom: nomMembre });
     // Listes datées qui commencent dans les 3 jours (vacances, départ) : à préparer.

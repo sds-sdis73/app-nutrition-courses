@@ -7,11 +7,12 @@
 // Cuisine : Repas, Courses, Recettes, Batch (masquable), Scan. Forme : le module Forme.
 // Plus : réglages et outils (les écrans à venir sont des modules de src/js/modules/).
 // ---------------------------------------------------------------------------
-Modules.register({ id: 'aujourdhui', onglet: 'accueil', segment: 'Ma journée', ordre: 10, libelle: () => APP_NAME, rendu: () => renderToday() });
+// « Moi » : repas, eau, activités et compagnon de la personne (l'écran d'ouverture est « Aujourd'hui », la famille).
+Modules.register({ id: 'aujourdhui', onglet: 'accueil', segment: 'Moi', ordre: 20, libelle: 'Ma journée', rendu: () => renderToday(), resume: () => resumeMoi() });
 Modules.register({ id: 'suivi', onglet: 'accueil', segment: 'Suivi', ordre: 30, libelle: 'Suivi nutritionnel', rendu: () => renderSuivi() });
 
 Modules.register({
-  id: 'planning', onglet: 'cuisine', segment: 'Repas', ordre: 10, libelle: 'Ma semaine', rendu: () => renderPlanning(),
+  id: 'planning', onglet: 'cuisine', segment: 'Repas', ordre: 10, libelle: 'Ma semaine', rendu: () => renderPlanning(), resume: () => resumeRepas(),
   // Repas de la semaine chargée, pour l'agenda familial.
   agenda: (debut, fin) => state.plan.filter((p) => p.recipe_id || p.reste_id).map((p) => {
     const date = isoDate(addDays(typeof p.week === 'string' ? isoToDate(p.week) : state.week, Number(p.day) || 0));
@@ -19,7 +20,7 @@ Modules.register({
     return { id: `repas:${p.week}:${p.day}:${p.slot}`, date, heure: SLOT_TIME[p.slot] || null, titre: r?.title || 'Reste', detail: slotLabel(p.slot), act: 'tab', data: { tab: 'planning' } };
   }),
 });
-Modules.register({ id: 'courses', onglet: 'cuisine', segment: 'Courses', ordre: 20, libelle: 'Liste de courses', rendu: () => renderCourses() });
+Modules.register({ id: 'courses', onglet: 'cuisine', segment: 'Courses', ordre: 20, libelle: 'Liste de courses', rendu: () => renderCourses(), resume: () => resumeCourses() });
 Modules.register({ id: 'recettes', onglet: 'cuisine', segment: 'Recettes', ordre: 30, libelle: 'Mes recettes', rendu: () => renderRecipes() });
 Modules.register({ id: 'batch', onglet: 'cuisine', segment: 'Batch', ordre: 40, libelle: 'Batch cooking', masquable: true, rendu: () => renderBatchTab() });
 Modules.register({ id: 'scan', onglet: 'cuisine', segment: 'Scan', ordre: 50, libelle: 'Scanner un produit', rendu: () => renderScan() });
@@ -80,3 +81,35 @@ AjoutRapide.ajouter({
   },
   ouvrir() { switchTab('forme'); },
 });
+
+// ---------------------------------------------------------------------------
+// Tuiles « En un coup d'œil » des écrans du cœur (Accueil › Aujourd'hui).
+// ---------------------------------------------------------------------------
+function resumeMoi() {
+  const m = journalMember();
+  if (!m) return null;
+  const d = new Date();
+  const c = companionOf(m);
+  const mange = Math.round(memberDay(m, d).entries.filter((e) => e.type === 'journal').reduce((t, e) => t + (e.n.kcal || 0), 0));
+  const besoin = Math.round(needs(m, d).kcal || 0);
+  return { ordre: 60, icone: c ? '🐾' : '🙂', titre: c ? `Moi et ${c.nom}` : 'Moi', valeur: `${fmtNum(mange)} / ${fmtNum(besoin)} kcal`,
+    detail: `Eau : ${fmtL(waterTotal(m, d))} / ${fmtL(waterGoal(m, d))}`, act: 'tab', data: { tab: 'aujourdhui' } };
+}
+function resumeRepas() {
+  const d = new Date();
+  const di = dayIndex(d);
+  // Prochain repas de la journée : le midi jusqu'à 14 h s'il est prévu, sinon le soir.
+  const prevu = (slot) => (di >= 0 ? state.plan.find((x) => x.day === di && x.slot === slot && (x.recipe_id || x.reste_id)) : null);
+  const midi = d.getHours() < 14 ? prevu('midi') : null;
+  const slot = midi ? 'midi' : d.getHours() < 14 && !prevu('soir') ? 'midi' : 'soir';
+  const p = midi || prevu('soir');
+  const r = p?.recipe_id ? recipeById(p.recipe_id) : null;
+  return { ordre: 30, icone: '🍽️', titre: slot === 'midi' ? 'Ce midi' : 'Ce soir', valeur: r ? r.title : p ? 'Un reste' : 'Rien de prévu',
+    detail: p ? mealWho(p) : 'Toucher pour planifier', act: 'tab', data: { tab: 'planning' } };
+}
+function resumeCourses() {
+  const tous = [...buildShopping().byAisle.values()].flat();
+  const reste = tous.filter((it) => !isChecked(it)).length;
+  return { ordre: 40, icone: '🛒', titre: 'Courses', valeur: reste ? `${reste} article${reste > 1 ? 's' : ''}` : 'Liste à jour',
+    detail: reste ? 'à acheter cette semaine' : 'Rien à acheter', act: 'tab', data: { tab: 'courses' } };
+}

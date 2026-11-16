@@ -15,11 +15,14 @@ describe('registre des modules', () => {
   });
   test('segments de chaque onglet', () => {
     const seg = (o) => plain(app.Modules.vues(o).map((m) => m.id));
-    assert.deepEqual(seg('accueil'), ['aujourdhui', 'accueil-famille', 'suivi']);
-    assert.deepEqual(seg('famille'), ['agenda', 'taches', 'messages', 'photos', 'carnet']);
-    assert.deepEqual(seg('cuisine'), ['planning', 'courses', 'recettes', 'batch', 'scan']);
+    // Accueil s'ouvre sur la famille ; Famille et Cuisine tiennent en 4 sous-menus (Carnet dans Plus, Batch masqué par défaut).
+    assert.deepEqual(seg('accueil'), ['accueil-famille', 'aujourdhui', 'suivi']);
+    assert.deepEqual(seg('famille'), ['agenda', 'taches', 'messages', 'photos']);
+    assert.deepEqual(seg('cuisine'), ['planning', 'courses', 'recettes', 'scan']);
     assert.deepEqual(seg('forme'), ['forme']);
-    assert.deepEqual(seg('plus'), ['reglages', 'univers', 'notifications', 'agenda-synchro', 'monsieur-cuisine', 'securite', 'sauvegarde', 'widget']);
+    assert.deepEqual(seg('plus'), ['carnet', 'reglages', 'univers', 'notifications', 'agenda-synchro', 'monsieur-cuisine', 'securite', 'sauvegarde', 'widget']);
+    app.Modules.masquer('batch', false);
+    try { assert.deepEqual(seg('cuisine'), ['planning', 'courses', 'recettes', 'batch', 'scan']); } finally { app.Modules.masquer('batch', true); }
   });
   test('chaque écran a un rendu ou une action d\'ouverture', () => {
     for (const m of app.Modules.liste) assert.ok(m.rendu || m.ouvrir, `${m.id} sans rendu ni ouvrir`);
@@ -28,7 +31,9 @@ describe('registre des modules', () => {
     assert.equal(app.Nav.resoudre('cuisine'), 'planning');
     assert.equal(app.Nav.resoudre('famille'), 'agenda');
     assert.equal(app.Nav.resoudre('plus'), 'plus');
-    assert.equal(app.Nav.resoudre('batch'), 'batch');
+    app.Modules.masquer('batch', false);
+    try { assert.equal(app.Nav.resoudre('batch'), 'batch'); } finally { app.Modules.masquer('batch', true); }
+    assert.equal(app.Nav.resoudre('accueil'), 'accueil-famille');
     assert.equal(app.Nav.resoudre('nimporte'), 'aujourdhui');
   });
   test('batch masquable : masqué, il disparaît des segments et l\'onglet retombe sur Repas', () => {

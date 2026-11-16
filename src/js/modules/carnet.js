@@ -756,9 +756,12 @@ function feuilleContact(c, groupe = 'autres') {
 const ouvrirCarnet = (v) => { vue = v; store.set('carnet:vue', v); if (state.tab !== 'carnet') switchTab('carnet'); else render(); };
 Modules.register({
   id: 'carnet',
-  onglet: 'famille',
-  segment: 'Carnet',
-  ordre: 50,
+  // Dans Plus (consulté moins souvent) : l'onglet Famille garde quatre sous-menus qui tiennent sur une ligne.
+  onglet: 'plus',
+  segment: 'Carnet de la famille',
+  ordre: 5,
+  icone: I('<path d="M4 4h12a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3z"/><path d="M4 17a3 3 0 0 1 3-3h12"/><path d="M11 7.5v4M9 9.5h4"/>'),
+  description: 'Santé, vaccins, maison, animaux, contacts',
   libelle: 'Carnet de la famille',
   tables: Object.fromEntries(Object.values(TABLES).map((t) => [t, t])),
   charger,

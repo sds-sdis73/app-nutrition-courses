@@ -1006,13 +1006,21 @@ window.Taches = Taches;
 Modules.register({
   id: 'taches',
   onglet: 'famille',
-  segment: 'Tâches & listes',
+  segment: 'Tâches',
   ordre: 20,
   libelle: 'Tâches et listes',
   tables: { taches: 'taches', listes: 'listes', liste_elements: 'liste_elements', envies: 'envies', envies_reservations: 'envies_reservations' },
   charger,
   rendu,
   actions,
+  // Tuile de l'Accueil : tâches du jour et en retard.
+  resume: () => {
+    const auj = isoDate(new Date());
+    const l = D.taches.filter((t) => !t.fait && t.echeance && t.echeance <= auj).sort((a, b) => a.echeance.localeCompare(b.echeance));
+    const retard = l.filter((t) => t.echeance < auj).length;
+    return { ordre: 20, icone: '✅', titre: 'Tâches', valeur: l.length ? `${l.length} à faire` : 'Rien d\'urgent',
+      detail: l.length ? `${retard ? `${retard} en retard · ` : ''}${l[0].titre}` : 'Tout est fait pour aujourd\'hui', act: 'tab', data: { tab: 'taches' } };
+  },
   sourcesAccueil: (ctx) => {
     const out = elementsAccueil(D.taches, { iso: ctx.iso, membre: ctx.membre, famille: ctx.famille, nom: nomMembre });
     // Listes datées qui commencent dans les 3 jours (vacances, départ) : à préparer.

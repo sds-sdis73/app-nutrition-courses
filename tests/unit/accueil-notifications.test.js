@@ -184,7 +184,7 @@ test('modules : Accueil › Famille et Plus › Notifications enregistrés à la
   const f = app.Modules.get('accueil-famille');
   const n = app.Modules.get('notifications');
   assert.equal(f.onglet, 'accueil');
-  assert.equal(f.segment, 'Famille');
+  assert.equal(f.segment, 'Aujourd\'hui');
   assert.equal(n.onglet, 'plus');
   assert.equal(app.T.notif_prefs, 'notif_prefs');
   assert.equal(app.T.notif_file, 'notif_file');

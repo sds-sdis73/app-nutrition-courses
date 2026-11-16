@@ -7,7 +7,8 @@ const state = {
   compte: null,
   comptes: [],
   authMode: 'login',
-  tab: store.get('tab', 'aujourdhui'),
+  // Une seule fois : l'Accueil s'ouvre désormais sur la journée de la famille (« Aujourd'hui ») et non plus sur « Moi ».
+  tab: (() => { const t = store.get('tab', 'accueil-famille'); if (store.get('accueil:v2', false)) return t; store.set('accueil:v2', true); store.set('vue:accueil', 'accueil-famille'); return t === 'aujourdhui' ? 'accueil-famille' : t; })(),
   offline: false,
   push: null,
   settings: { store_name: 'Super U Porte de Savoie Montmélian', store_slug: 'superu-montmelian', default_servings: 2 },

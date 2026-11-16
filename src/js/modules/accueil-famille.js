@@ -318,6 +318,15 @@ function augmenterJournee(html) {
 const vueJour = Modules.get('aujourdhui');
 if (vueJour) { const base = vueJour.rendu; vueJour.rendu = () => augmenterJournee(base()); }
 
+// « En un coup d'œil » : une tuile par module (agenda, tâches, repas, courses, messages, moi), qui mène à son écran.
+function tuilesHtml() {
+  const t = Accueil.resumes();
+  if (!t.length) return '';
+  return `<section class="af-tuiles" aria-label="En un coup d'œil">${t.map((r) => `<button class="af-tuile" data-act="${esc(r.act || 'tab')}" ${attrsData(r.data)}>
+      <span class="af-tuile-tete"><span class="af-tuile-ico" aria-hidden="true">${r.icone || '•'}</span><span class="af-tuile-titre">${esc(r.titre)}</span></span>
+      <b class="af-tuile-valeur">${esc(r.valeur || '')}</b>${r.detail ? `<span class="af-tuile-detail">${esc(r.detail)}</span>` : ''}</button>`).join('')}</section>`;
+}
+
 function renduFamille() {
   rafraichir('famille');
   const d = new Date();
@@ -328,7 +337,9 @@ function renduFamille() {
     <button class="chip" data-act="af-filtre" data-m="" aria-pressed="${!filtre}">Tout le monde</button>
     ${membres.map((m, i) => `<button class="chip" data-act="af-filtre" data-m="${m.id}" aria-pressed="${filtre === m.id}"><span class="af-pastille" style="--af-c:${couleurMembre(i)}"></span>${esc(m.nom)}</button>`).join('')}</div>`;
   const aJour = vues.famille?.cle?.startsWith(isoDate(d));
-  return `<p class="muted af-date">${d.getHours() < 12 ? 'Bonjour' : d.getHours() < 18 ? 'Bon après-midi' : 'Bonsoir'} · ${esc(d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }))}</p>
+  const nom = moiCompte()?.nom;
+  return `<p class="muted af-date">${d.getHours() < 12 ? 'Bonjour' : d.getHours() < 18 ? 'Bon après-midi' : 'Bonsoir'}${nom ? ` ${esc(nom)}` : ''} · ${esc(d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }))}</p>
+    ${tuilesHtml()}
     <div data-af-briefing="famille">${aJour ? briefingHtml('famille') : ''}</div>
     ${chips}
     <h3 class="tl-head">Aujourd'hui</h3>
@@ -339,9 +350,10 @@ function renduFamille() {
 Modules.register({
   id: 'accueil-famille',
   onglet: 'accueil',
-  segment: 'Famille',
-  ordre: 20,
-  libelle: 'Notre journée',
+  // Écran d'ouverture de l'appli : la journée de toute la famille, pas seulement la nutrition.
+  segment: 'Aujourd\'hui',
+  ordre: 10,
+  libelle: () => APP_NAME,
   rendu: renduFamille,
   async charger(force, { horsLigne } = {}) { if (!horsLigne) planifierPlusTard(6000); },
   sourcesAccueil: (ctx) => sourceRepas(ctx),

@@ -76,6 +76,9 @@ async function login(page, env) {
   await waitLoaded(page);
   await page.waitForTimeout(1200);
   await closeSheets(page);
+  // L'appli s'ouvre sur Accueil › Aujourd'hui (la famille) ; les scénarios partent de Accueil › Moi (repas, eau, compagnon).
+  await page.evaluate(() => { if (state.tab === 'accueil-famille') switchTab('aujourdhui'); });
+  await page.waitForTimeout(300);
 }
 
 // Données de départ du foyer de test, créées une seule fois (idempotent).
