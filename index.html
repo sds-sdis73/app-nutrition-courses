@@ -4087,7 +4087,7 @@ Forme.install = function install() {
 // ---------------------------------------------------------------------------
 const APP_NAME = 'Tribu & Toutous';
 // À incrémenter à chaque publication, avec la même valeur dans version.json.
-const APP_VERSION = '2026-11-16.1';
+const APP_VERSION = '2026-11-16.2';
 const SUPABASE_URL = 'https://svugddkrptqpjmywhorb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2dWdkZGtycHRxcGpteXdob3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MjU5NDgsImV4cCI6MjEwODUwMTk0OH0.63RETgf7rbVMquGV-7ooY3qn-Qf31uVCA3ZBfqBvFcI';
 const OFF = 'https://world.openfoodfacts.org/api/v2';
@@ -12048,6 +12048,8 @@ function rayonMc(nom) {
 // Rayon retenu : celui du nom quand il est reconnu, sinon celui de Monsieur Cuisine, sinon « Autres ».
 // (Monsieur Cuisine range parfois toute une recette dans un seul rayon : persil et bouillon au rayon « Bœuf ».)
 function rayonDe(nom, categorieMc) {
+  const p = produitDe(nom);
+  if (p?.rayon) return p.rayon;
   const parNom = rayonDuNom(nom);
   if (parNom !== 'Autres') return parNom;
   return rayonMc(categorieMc) || 'Autres';
@@ -12059,8 +12061,10 @@ const ordreRayon = (r) => { const i = RAYONS.indexOf(r); return i < 0 ? RAYONS.l
 // ---------------------------------------------------------------------------
 const FRACTIONS = { '½': 0.5, '¼': 0.25, '¾': 0.75, '⅓': 1 / 3, '⅔': 2 / 3 };
 // « 1 ½ » → 1,5 ; « 1/2 » → 0,5 ; « 2-3 » → 3 (on prend le haut de la fourchette) ; « 2,5 » → 2,5.
+// Espace des milliers (« 1 200 », espace fine ou insécable) retirée avant lecture.
+const sansMilliers = (s) => String(s ?? '').replace(/(\d)[\s  ](\d{3})(?!\d)/g, '$1$2');
 function lireNombre(texte) {
-  const s = String(texte ?? '').trim().replace(/(\d),(\d)/g, '$1.$2');
+  const s = sansMilliers(texte).trim().replace(/(\d),(\d)/g, '$1.$2');
   if (!s) return null;
   let m = s.match(/^(\d+(?:\.\d+)?)\s*(?:-|–|à)\s*(\d+(?:\.\d+)?)/);
   if (m) return Number(m[2]);
@@ -12075,7 +12079,7 @@ function lireNombre(texte) {
 }
 // Sépare « 500 g » en { v: 500, unite: 'g' } (quantités saisies à la main).
 function decouperQuantite(texte) {
-  const s = String(texte ?? '').trim();
+  const s = sansMilliers(texte).trim();
   const v = lireNombre(s);
   if (v == null) return { v: null, unite: '' };
   const reste = s.replace(/(\d),(\d)/g, '$1.$2').replace(/^(\d+(?:\.\d+)?\s*(?:-|–|à)\s*)?(\d+\s+\d+\/\d+|\d+\/\d+|\d*\s*[½¼¾⅓⅔]|\d+(?:\.\d+)?)/, '').trim();
@@ -12134,21 +12138,176 @@ function nettoyerNom(nom) {
   return s;
 }
 const majuscule = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
-const cleArticle = (nom) => ingKey(nettoyerNom(nom));
+const cleArticle = (nom) => analyserLigne({ nom }).cle;
 // Ustensiles cités dans les listes de Monsieur Cuisine (« plat à gratin (20 x 35 cm) ») : rien à acheter.
 const MATERIEL = /^(?:(?:plats?|moules?) (?:a|en|pour|rond|carre|rectangulaire|allant|demontable|silicone)\b|(?:cercles? a patisserie|cercle|ramequins?|poche a douille|douille|emporte[- ]pieces?|cocotte|casserole|poele|saladier|fouet|spatule|thermometre|planche a decouper|couteau|pinceau|rouleau a patisserie|tamis|grille du four|plaque (?:de cuisson|du four|a patisserie)|bol mixeur|gobelet doseur|panier (?:vapeur|de cuisson)|varoma|mixeur|robot|cul de poule|cuillere en bois|louche|film etirable)\b)/;
 const estMateriel = (nom) => MATERIEL.test(sansAccents(String(nom ?? '').replace(/\([^)]*\)/g, ' ')).replace(/\s+/g, ' ').trim());
 
+// ---------------------------------------------------------------------------
+// Produits : un même produit écrit de dix façons par les recettes (« Gousses d’ail », « Gousse ail », « ail »,
+// « huile d‘olive », « Huile olive »…) est ramené à un seul nom, un seul rayon et une seule unité d'achat.
+// re : testé sur le nom aplati (minuscules, sans accents ni ponctuation, précisions comprises).
+// piece : poids moyen d'une pièce en g (les grammes et les pièces s'additionnent : « 1,2 kg (≈ 12) ») ;
+// unite + par : unité d'achat et contenance (bouillon : 1 cube pour 500 ml) ; basique : sel, poivre… mis de côté
+// (« Déjà au placard », bouton « Le racheter ») ; ignorer : jamais acheté (eau du robinet).
+// ---------------------------------------------------------------------------
+const FL = 'Fruits & légumes', BO = 'Boucherie', CR = 'Crèmerie & œufs', FR = 'Fromages', ES = 'Épicerie salée', SU = 'Épicerie sucrée', HE = 'Herbes & épices', CO = 'Conserves', BL = 'Boulangerie', BS = 'Boissons';
+const P = (re, nom, rayon, o = {}) => ({ re, nom, rayon, ...o });
+const PRODUITS = [
+  P(/^eau( (du robinet|froide|chaude|tiede|bouillante|tres chaude))?$|^eau (pour|a temperature)/, 'Eau', null, { ignorer: true }),
+  P(/^sel aux herbes/, 'Sel aux herbes', HE),
+  P(/^(gros |fin )?sel\b/, 'Sel', HE, { basique: true }),
+  P(/^poivre\b/, 'Poivre', HE, { basique: true }),
+  P(/^matiere grasse/, 'Matière grasse', CR, { basique: true }),
+  P(/^ail\b|^tetes? d ail\b/, 'Ail', FL, { ail: true }),
+  P(/^echalotes?\b/, 'Échalotes', FL, { piece: 30 }),
+  P(/^oignons? (nouveaux?|verts?|cebettes?|botte)\b/, 'Oignons nouveaux', FL),
+  P(/^oignons?\b/, 'Oignons', FL, { piece: 100 }),
+  P(/^(grosses? |petites? )?carottes?\b/, 'Carottes', FL, { piece: 100 }),
+  P(/^(grosses? |petites? )?pommes? de terre\b/, 'Pommes de terre', FL, { piece: 150 }),
+  P(/^patates? douces?\b/, 'Patates douces', FL, { piece: 300 }),
+  P(/^(courge )?butternut\b/, 'Butternut', FL),
+  P(/^potimarrons?\b/, 'Potimarron', FL),
+  P(/^(petits? )?champignons?\b/, 'Champignons de Paris', FL),
+  P(/^poireaux?\b/, 'Poireaux', FL),
+  P(/^poivrons?\b/, 'Poivrons', FL, { piece: 150 }),
+  P(/^aubergines?\b/, 'Aubergines', FL, { piece: 250 }),
+  P(/^courgettes?\b/, 'Courgettes', FL, { piece: 200 }),
+  P(/^brocolis?\b/, 'Brocoli', FL),
+  P(/^celeri\b/, 'Céleri', FL),
+  P(/^concombres?\b/, 'Concombre', FL, { piece: 300 }),
+  P(/^(jus de |zeste de )?citrons? verts?\b|^(jus|zeste) de citron vert/, 'Citrons verts', FL, { jus: 30 }),
+  P(/^(jus de |zeste de )?citrons?\b/, 'Citrons', FL, { jus: 40 }),
+  P(/^(jus d ?|jus de )?oranges?\b/, 'Oranges', FL, { jus: 80 }),
+  P(/^gingembre\b/, 'Gingembre', FL, { morceau: 20 }),
+  P(/^(chou )?pak ?cho/, 'Pak choï', FL),
+  P(/^tomates?( |,)*(concassees|pelees|en des|en boite)|^tomates? concass/, 'Tomates concassées (boîte)', CO, { boite: 400 }),
+  P(/^tomates?( |,)*coulis|^coulis de tomates?|^passata|^sauce tomate\b/, 'Coulis de tomates', CO, { boite: 500 }),
+  P(/^concentre de tomates?/, 'Concentré de tomates', CO, { cs: 15 }),
+  P(/^tomates?( cerises?)?\b/, 'Tomates', FL),
+  P(/^(pois|haricots?) (kidney|rouges?)/, 'Haricots rouges (boîte)', CO, { boite: 400 }),
+  P(/^mais\b/, 'Maïs (boîte)', CO, { boite: 285 }),
+  P(/^(blancs?|escalopes?|filets?|aiguillettes?) de poulet/, 'Blancs de poulet', BO),
+  P(/^(cuisses?|hauts? de cuisses?|pilons?) de poulet/, 'Cuisses de poulet', BO),
+  P(/^viande hachee|^(steaks? )?hache/, 'Viande hachée', BO),
+  P(/^boeuf a braiser|^paleron\b|^joue de boeuf|^macreuse/, 'Bœuf à braiser', BO),
+  P(/^filets? mignons? de porc/, 'Filet mignon de porc', BO),
+  P(/^lard(ons?)?\b|^lard de jambon/, 'Lardons', BO),
+  P(/^chorizo/, 'Chorizo', BO),
+  P(/^(bouillon|kub)\b.*\bboeuf\b|^fond de boeuf/, 'Bouillon de bœuf', ES, { unite: 'cube', par: 500 }),
+  P(/^(bouillon|kub)\b.*\b(volaille|poulet)\b|^fond de volaille/, 'Bouillon de volaille', ES, { unite: 'cube', par: 500 }),
+  P(/^(bouillon|kub)\b/, 'Bouillon de légumes', ES, { unite: 'cube', par: 500 }),
+  P(/^huiles? (d ?)?olive/, 'Huile d\'olive', ES, { liquide: true }),
+  P(/^huiles? (vegetale|de tournesol|neutre|de colza|de pepins de raisin)/, 'Huile végétale', ES, { liquide: true }),
+  P(/^sauce soja/, 'Sauce soja', ES, { liquide: true }),
+  P(/^moutarde\b/, 'Moutarde', ES),
+  P(/^(feuilles? de |plaques? de )?lasagnes?\b/, 'Lasagnes (feuilles)', ES),
+  P(/^beurre\b(?! de cacahu)/, 'Beurre', CR),
+  P(/^creme (liquide|legere|fleurette|fouettee|entiere liquide|semi epaisse)/, 'Crème liquide', CR, { liquide: true }),
+  P(/^creme (fraiche|epaisse)|^creme$/, 'Crème fraîche', CR),
+  P(/^creme de coco/, 'Crème de coco', ES),
+  P(/^lait de (noix de )?coco/, 'Lait de coco', ES, { liquide: true, boite: 400 }),
+  P(/^lait\b(?! de)/, 'Lait', CR, { liquide: true }),
+  P(/^(yaourts?|yogourts?)\b.*\bgrec/, 'Yaourt à la grecque', CR),
+  P(/^(oeufs?)\b/, 'Œufs', CR),
+  P(/^mozzarella/, 'Mozzarella', FR),
+  P(/^parmesan/, 'Parmesan', FR),
+  P(/^farine\b/, 'Farine', SU, { cs: 10 }),
+  P(/^sucre\b(?! glace)/, 'Sucre', SU),
+  P(/^(petits? )?pains? rassis/, 'Pain rassis', BL),
+  P(/^vin rouge/, 'Vin rouge', BS, { liquide: true }),
+  P(/^vin blanc/, 'Vin blanc', BS, { liquide: true }),
+  P(/^cumin\b/, 'Cumin', HE), P(/^paprika\b/, 'Paprika', HE), P(/^curcuma\b/, 'Curcuma', HE), P(/^(noix de )?muscade\b/, 'Muscade', HE),
+  P(/^cannelle\b/, 'Cannelle', HE), P(/^piment d espelette/, 'Piment d\'Espelette', HE), P(/^(piment|flocons de piment)\b.*(poudre|flocons|fort)|^flocons de piment/, 'Piment en poudre', HE),
+  P(/^garam masala/, 'Garam masala', HE), P(/^laurier\b/, 'Laurier', HE), P(/^origan\b/, 'Origan', HE), P(/^marjolaine\b/, 'Marjolaine', HE),
+  P(/^herbes?\b.*(italien|provence)/, 'Herbes de Provence', HE), P(/^thym\b/, 'Thym', HE), P(/^romarin\b/, 'Romarin', HE),
+  // Rayon seul (le nom reste celui de la recette).
+  P(/^huiles?\b/, null, ES, { liquide: true }), P(/^fond de (veau|volaille|boeuf)|^fumet/, null, ES), P(/^bouquet garni/, null, HE),
+  P(/^(cacahuetes?|arachides?|noix de cajou|amandes?|noisettes?|pignons?|graines? de|sesame)\b/, null, ES),
+  P(/^(nouilles?|vermicelles?|pates?\b|spaghettis?|tagliatelles?|riz\b|semoule|boulgour|quinoa|lentilles?|pois chiches?)/, null, ES),
+  P(/^(sauce|tabasco|vinaigre|ketchup|mayonnaise|nuoc|pate (a curry|de curry))/, null, ES), P(/^croutons?\b|^chapelure/, null, ES),
+  P(/^(cassonade|vergeoise|miel|sucre (glace|vanille|roux))\b/, null, SU),
+  P(/^piments?\b/, null, FL),
+  P(/^basilic\b/, 'Basilic', HE), P(/^menthe\b/, 'Menthe', HE), P(/^persil\b/, 'Persil', HE), P(/^coriandre\b/, 'Coriandre', HE), P(/^ciboulette\b/, 'Ciboulette', HE),
+];
+// Nom aplati pour la reconnaissance : sans parenthèses ni accents, apostrophes et virgules en espaces.
+const aplatir = (s) => norm(String(s ?? '').replace(/\([^)]*\)/g, ' '));
+const PAR_CLE = new Map(PRODUITS.filter((p) => p.nom).map((p) => [ingKey(p.nom), p]));
+// Produit reconnu d'après le nom complet (« tomates, concassées en boîte » ≠ « tomates »), puis le nom nettoyé.
+function produitDe(nomComplet, nomCourt = nomComplet) {
+  for (const s of [aplatir(nomComplet), aplatir(nomCourt)]) { if (!s) continue; const p = PRODUITS.find((x) => x.re.test(s)); if (p) return p; }
+  return null;
+}
+const produitParCle = (cle) => PAR_CLE.get(cle) || null;
+
+// Unité écrite devant le nom : « c.s. de concentré de tomates », « cac curcuma », « Pincée de thym », « Gousse ail ».
+const UNITE_DEVANT = /^(c\.\s?[sc]\.?|c\s[sc]|cac|cas|cuill[eè]res? [àa] (?:soupe|caf[ée])|pinc[ée]es?|gousses?|brins?|feuilles?|cubes?|morceaux?|tranches?|sachets?|bottes?|bo[iî]tes?|pots?)\s+(?:de\s+|d['’‘]\s*)?(.+)$/i;
+
 // Une ligne brute (Monsieur Cuisine, ajout, repas Miam) → nom affiché, clé, quantité de base.
 function analyserLigne({ nom, quantite, unite }) {
-  let n = nettoyerNom(nom);
+  const brut = String(nom ?? '').replace(/[’‘`]/g, '\'').trim();
+  let n = nettoyerNom(brut);
+  let complet = brut;
   let u = String(unite ?? '').trim();
   let v = lireNombre(quantite);
   if (v != null && !u) { const d = decouperQuantite(quantite); u = d.unite; }
-  const t = n.match(UNITE_EN_TETE);
-  if (t && !u) { u = t[1]; n = t[2].trim(); }
+  const t = n.match(UNITE_EN_TETE) || n.match(UNITE_DEVANT);
+  if (t) {
+    if (!u) u = t[1];
+    n = t[2].trim();
+    const tc = complet.match(UNITE_DEVANT) || complet.match(UNITE_EN_TETE);
+    if (tc) complet = tc[2];
+  }
+  const p = produitDe(complet, n);
+  if (p?.nom) n = p.nom;
   const { base, mult } = uniteBase(u);
   return { nom: majuscule(n), cle: ingKey(n), base, v: v == null ? null : v * mult };
+}
+
+// Quantités d'un produit ramenées à son unité d'achat : pièces et grammes additionnés, liquides en ml,
+// cuillères converties en grammes, bouillon en cubes, ail en gousses, jus en fruits entiers.
+function quantitesProduit(qtes, p) {
+  const q = { ...qtes };
+  if (!p) return q;
+  const prendre = (k) => { const v = q[k] || 0; delete q[k]; return v; };
+  if (p.unite) {
+    const n = prendre(p.unite) + prendre('pièce') + (prendre('g') + prendre('ml')) / p.par;
+    const autres = Object.keys(q).length;
+    for (const k of Object.keys(q)) delete q[k];
+    if (n > 0 || autres) q[p.unite] = Math.max(1, Math.ceil(n - 0.01));
+    return q;
+  }
+  if (p.ail) {
+    const n = prendre('gousse') + prendre('pièce') + prendre('g') / 5;
+    if (n > 0) q.gousse = Math.ceil(n - 0.01);
+    return q;
+  }
+  if (p.jus) {
+    const n = prendre('pièce') + Math.ceil((prendre('g') + prendre('ml') + prendre('cc') * 5) / p.jus - 0.01);
+    const autres = Object.keys(q).length;
+    for (const k of Object.keys(q)) delete q[k];
+    if (n > 0 || autres) q['pièce'] = Math.max(1, n);
+    return q;
+  }
+  if (p.liquide && (q.g || q.cc || q.ml)) { const ml = prendre('ml') + prendre('g') + prendre('cc') * 5; if (ml > 0) q.ml = ml; }
+  if (p.cs && q.cc && q.g) q.g += prendre('cc') * p.cs / 3;
+  if (p.morceau && q.morceau && q.g) q.g += prendre('morceau') * p.morceau;
+  if (p.piece && q['pièce'] && q.g) q.g += prendre('pièce') * p.piece;
+  return q;
+}
+function formatProduit(qtes, p) {
+  const seul = Object.keys(qtes).length === 1;
+  if (p?.ail && qtes.gousse >= 6) {
+    const tetes = Math.ceil(qtes.gousse / 10);
+    return `${formatQuantite('gousse', qtes.gousse)} (≈ ${tetes} tête${tetes > 1 ? 's' : ''})`;
+  }
+  if (p?.boite && seul && (qtes.g || qtes.ml)) {
+    const n = Math.max(1, Math.round((qtes.g || qtes.ml) / p.boite));
+    return `${formatQuantites(qtes)} (≈ ${n} boîte${n > 1 ? 's' : ''})`;
+  }
+  if (p?.boite && !qtes.g && !qtes.ml && Object.keys(qtes).length) return '1 boîte';
+  if (p?.piece && seul && qtes.g) return `${formatQuantite('g', qtes.g)} (≈ ${Math.max(1, Math.round(qtes.g / p.piece))})`;
+  return formatQuantites(qtes);
 }
 
 // ---------------------------------------------------------------------------
@@ -12166,7 +12325,7 @@ function construireListe(lignes, { modifs: mods = {}, placard = () => null, main
     if (!String(l.nom || '').trim()) continue;
     if (estMateriel(l.nom)) { if (!materiel.includes(nettoyerNom(l.nom))) materiel.push(nettoyerNom(l.nom)); continue; }
     const a = analyserLigne(l);
-    if (!a.cle) continue;
+    if (!a.cle || produitParCle(a.cle)?.ignorer) continue;
     const art = par.get(a.cle) || { cle: a.cle, nom: a.nom, qtes: {}, sansQte: false, recettes: [], categories: [], sources: [], ajoutIds: [] };
     if (a.v != null && a.v > 0) art.qtes[a.base] = (art.qtes[a.base] || 0) + a.v; else art.sansQte = true;
     if (l.recette && !art.recettes.includes(l.recette)) art.recettes.push(l.recette);
@@ -12180,7 +12339,9 @@ function construireListe(lignes, { modifs: mods = {}, placard = () => null, main
   const masques = [];
   for (const art of par.values()) {
     const m = mods[art.cle] || null;
-    const origine = formatQuantites(art.qtes);
+    const prod = produitParCle(art.cle);
+    art.qtes = quantitesProduit(art.qtes, prod);
+    const origine = formatProduit(art.qtes, prod);
     const quantite = m?.quantite ? `${m.quantite}${m.unite ? ` ${m.unite}` : ''}` : origine;
     const x = {
       ...art, modif: m, origine, quantite, nom: m?.nom || art.nom, precision: m?.precision || '',
@@ -12188,7 +12349,7 @@ function construireListe(lignes, { modifs: mods = {}, placard = () => null, main
       coche: cocheActive(m, maintenant), modifie: !!(m && (m.nom || m.quantite || m.precision || m.rayon)),
     };
     if (m?.masque) { masques.push(x); continue; }
-    const pl = !m?.forcer && !art.sources.every((s) => s === 'ajout') ? placard(art.cle) : null;
+    const pl = !m?.forcer && !art.sources.every((s) => s === 'ajout') ? (placard(art.cle) || (prod?.basique ? { type: 'basique' } : null)) : null;
     if (pl) { auPlacard.push({ ...x, placard: pl }); continue; }
     visibles.push(x);
   }
@@ -12800,7 +12961,7 @@ Modules.register({
   },
   expose: {
     RAYONS, rayonDe, rayonMc, lireNombre, decouperQuantite, uniteBase, formatQuantite, formatQuantites, uniteLisible, nettoyerNom, cleArticle, estMateriel,
-    analyserLigne, construireListe, cocheActive, texteListe, ingredientsRecette, etapesLisibles, versIngredientCoeur, nutrimentsMc, repasDeLaSemaine, prochainRepas, ilYa, etatLiaison,
+    analyserLigne, construireListe, produitDe, quantitesProduit, formatProduit, cocheActive, texteListe, ingredientsRecette, etapesLisibles, versIngredientCoeur, nutrimentsMc, repasDeLaSemaine, prochainRepas, ilYa, etatLiaison,
     // Pour les tests de bout en bout : simule un changement reçu en direct d'un autre téléphone.
     recevoir,
   },

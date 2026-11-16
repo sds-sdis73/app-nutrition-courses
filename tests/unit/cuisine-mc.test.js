@@ -122,7 +122,7 @@ describe('cuisine-mc : construction de la liste', () => {
     assert.equal(article(l, 'ail').quantite, '3 gousses');
     assert.deepEqual(plain(article(l, 'ail').recettes), ['Keftas', 'Soupe']);
     assert.equal(article(l, 'lait').quantite, '450 ml');
-    assert.equal(article(l, 'carotte').quantite, '1,3 kg + 2');
+    assert.equal(article(l, 'carotte').quantite, '1,5 kg (≈ 15)');
     assert.equal(article(l, 'yaourt').quantite, '');
   });
   test('matériel retiré, placard mis de côté, ajouts gardés même au placard', () => {
@@ -170,9 +170,53 @@ describe('cuisine-mc : construction de la liste', () => {
   test('texte à partager : articles restants par rayon', () => {
     const l = m.construireListe(lignes, { placard, maintenant: new Date('2026-10-21T12:00:00'), modifs: { ail: { cle: 'ail', coche: true, coche_le: '2026-10-21T11:00:00' } } });
     const t = m.texteListe(l, 'Courses');
-    assert.match(t, /^Courses\n\nFRUITS & LÉGUMES\n- Carottes : 1,3 kg \+ 2\n/);
+    assert.match(t, /^Courses\n\nFRUITS & LÉGUMES\n- Carottes : 1,5 kg \(≈ 15\)\n/);
     assert.doesNotMatch(t, /Ail/);
     assert.match(t, /- Lait : 450 ml/);
+  });
+});
+
+describe('cuisine-mc : un produit, une ligne (vraie liste Monsieur Cuisine)', () => {
+  const brut = [
+    ['Gousses d’ail', '2'], ['ail', '2', 'gousses'], ['Gousse ail', '2'], ['Gousses d\'ail', '2'],
+    ['huile d\'olive', '20', 'g'], ['huile d‘olive', '1', ' c.s.'], ['Huile olive', '30', 'g'], ['Huiles d\'olive', '2', ' c.s.'], ['Huile d’olive', '4', 'g'],
+    ['oignons', '210', 'g', 'Légumes'], ['Oignon', '1'], ['oignons (180 g)', '2'], ['Oignon (rouge)', '100', 'g'], ['oignon blanc', '1'],
+    ['potimarron', '1 200', 'g', 'Légumes'], ['potimarron', '1000', 'g', 'Légumes'],
+    ['Cube Bouillon légume', '1'], ['bouillon de légumes, prêt à l\'emploi', '1 000', 'g'], ['Bouillon Kub Or ou autre', '1'], ['cube de bouillon de légumes', '2'],
+    ['tomates, concassées en boîte/bocal', '750', 'g'], ['tomates concassées', '250', 'g'], ['tomates, coulis en boîte/bocal', '800', 'g', 'Légumes'],
+    ['c.s. de concentré de tomates', '1', '', 'Légumes'], ['concentré de tomates', '60', 'g', 'Légumes'],
+    ['sel', '1', 'c.c.', 'Bœuf'], ['Sel, poivre', ''], ['poivre, noir, moulu', '½', 'c.c.'], ['Pincée de poivre', '1'],
+    ['Eau', '700', 'g'], ['eau', '300', 'ml'],
+    ['jus de citron', '20', 'g', 'Bœuf'], ['c.s. de jus de citron', '1'],
+    ['lait de coco', '40', 'cl'], ['lait de noix de coco, non sucré', '400', 'g'],
+    ['brins de menthe', '7', '', 'Bœuf'], ['cac curcuma', '2'],
+  ].map(([nom, quantite, unite = '', categorie = null]) => ({ nom, quantite, unite, categorie, source: 'mc', recette: 'R' }));
+  const l = m.construireListe(brut, {});
+  const tous = l.rayons.flatMap((r) => r.articles.map((a) => ({ ...a, rayon: r.nom })));
+  const un = (nom) => { const x = tous.filter((a) => a.nom === nom); assert.equal(x.length, 1, `${nom} : une seule ligne`); return x[0]; };
+  test('noms différents, même produit : une seule ligne, quantités additionnées', () => {
+    assert.equal(un('Ail').quantite, '8 gousses (≈ 1 tête)');
+    assert.equal(un('Huile d\'olive').quantite, '99 ml');
+    assert.equal(un('Oignons').quantite, '710 g (≈ 7)');
+    assert.equal(un('Potimarron').quantite, '2,2 kg');
+    assert.equal(un('Bouillon de légumes').quantite, '6 cubes');
+    assert.equal(un('Tomates concassées (boîte)').quantite, '1 kg (≈ 3 boîtes)');
+    assert.equal(un('Coulis de tomates').quantite, '800 g (≈ 2 boîtes)');
+    assert.equal(un('Concentré de tomates').quantite, '75 g');
+    assert.equal(un('Citrons').quantite, '1');
+    assert.equal(un('Lait de coco').quantite, '800 ml (≈ 2 boîtes)');
+    assert.equal(un('Curcuma').quantite, '2 c. à c.');
+  });
+  test('un seul rayon par produit, celui de Monsieur Cuisine ignoré quand il se trompe', () => {
+    assert.equal(un('Menthe').rayon, 'Herbes & épices');
+    assert.equal(un('Citrons').rayon, 'Fruits & légumes');
+    assert.equal(un('Concentré de tomates').rayon, 'Conserves');
+    assert.equal(un('Huile d\'olive').rayon, 'Épicerie salée');
+  });
+  test('eau retirée, sel et poivre au placard', () => {
+    assert.ok(!tous.some((a) => /eau/i.test(a.nom)));
+    assert.deepEqual(plain(l.placard.map((a) => a.nom).sort()), ['Poivre', 'Sel']);
+    assert.equal(l.total, tous.length);
   });
 });
 
@@ -200,7 +244,7 @@ describe('cuisine-mc : recettes et nutrition', () => {
   test('ingrédient converti pour la table Ciqual', () => {
     assert.deepEqual(plain(m.versIngredientCoeur({ nom: 'Lait', quantite: '20', unite: 'cl' })), { name: 'Lait', qty: '200', unit: 'ml' });
     assert.deepEqual(plain(m.versIngredientCoeur({ nom: 'sel', quantite: '1 ½', unite: 'c.c.' })), { name: 'Sel', qty: '1.5', unit: 'c. à c.' });
-    assert.deepEqual(plain(m.versIngredientCoeur({ nom: 'Œuf (calibre M)', quantite: '2' })), { name: 'Œuf', qty: '2', unit: 'pièce' });
+    assert.deepEqual(plain(m.versIngredientCoeur({ nom: 'Œuf (calibre M)', quantite: '2' })), { name: 'Œufs', qty: '2', unit: 'pièce' });
     assert.deepEqual(plain(m.versIngredientCoeur({ nom: 'brins de persil', quantite: '10' })), { name: 'Persil', qty: '10', unit: 'g' });
   });
   test('valeurs de Monsieur Cuisine en secours', () => {
