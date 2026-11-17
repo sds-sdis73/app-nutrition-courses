@@ -960,6 +960,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="
 .pu-etapes { padding-left: 18px; margin: 4px 0 10px; }
 .pu-calc { display: block; color: var(--muted); margin-top: 2px; }
 .pu-auto { border: 0; background: none; padding: 0; font: inherit; color: var(--primary-strong); text-decoration: underline; }
+.pu-changer { display: block; margin-top: 2px; font-size: 13px; }
 /* Scan */
 .scan-hero {
   display: grid; gap: 12px; padding: 20px; text-align: center;
@@ -4113,7 +4114,7 @@ Forme.install = function install() {
 // ---------------------------------------------------------------------------
 const APP_NAME = 'Tribu & Toutous';
 // À incrémenter à chaque publication, avec la même valeur dans version.json.
-const APP_VERSION = '2026-11-17.3';
+const APP_VERSION = '2026-11-17.4';
 const SUPABASE_URL = 'https://svugddkrptqpjmywhorb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2dWdkZGtycHRxcGpteXdob3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MjU5NDgsImV4cCI6MjEwODUwMTk0OH0.63RETgf7rbVMquGV-7ooY3qn-Qf31uVCA3ZBfqBvFcI';
 const OFF = 'https://world.openfoodfacts.org/api/v2';
@@ -7309,12 +7310,19 @@ function linkItem(k, name, { retour } = {}) {
     const url = safeUrl(form.url.value.trim());
     if (!url || !/(^|\.)coursesu\.com$/.test(new URL(url).hostname)) { toast('Collez un lien coursesu.com'); return; }
     let label = form.label.value.trim();
+    // Autre produit, nom laissé tel quel : l'ancien nom ne correspond plus, il est relu dans la nouvelle adresse.
+    const autre = !!cur && url !== cur.url;
+    if (autre && label === (cur.label || '')) label = '';
     if (!label) { const m = url.match(/\/p\/([^/]+)\//); label = m ? decodeURIComponent(m[1]).replace(/-+/g, ' ').replace(/^\w/, (c) => c.toUpperCase()) : ''; }
-    const manual = parseFloat(form.prix.value.replace(',', '.'));
-    const ean = form.ean.value.trim() || null;
+    let manual = parseFloat(form.prix.value.replace(',', '.'));
+    let ean = form.ean.value.trim() || null;
+    // Autre produit : le prix et le code-barres de l'ancien, laissés tels quels, ne valent plus.
+    if (autre && ean === (cur.ean || null)) ean = null;
+    if (autre && manual === Number(cur.prix)) manual = NaN;
     const pid = PanierU.pidUrl(url);
     const extra = { ean, pid };
-    if (manual > 0 && manual !== Number(cur?.prix)) Object.assign(extra, { prix: manual, prix_source: 'manuel', prix_date: isoDate(new Date()) });
+    if (autre) Object.assign(extra, { prix: null, prix_source: null, prix_date: null });
+    if (manual > 0 && (autre || manual !== Number(cur?.prix))) Object.assign(extra, { prix: manual, prix_source: 'manuel', prix_date: isoDate(new Date()) });
     try {
       await Data.saveLink(k, url, label, extra);
       closeSheet(); render(); toast('Produit mémorisé');
@@ -7452,6 +7460,7 @@ function panierUSheet(articles, { sansOuvert = false } = {}) {
           const au = PanierU.auto(a), main = PanierU.main(a.cle);
           const calc = au.calcule ? `Besoin ${esc(fmtMesure(au.b))} · produit de ${esc(fmtMesure(au.c))} → ${au.n}` : au.c ? `Produit de ${esc(fmtMesure(au.c))}${au.b ? '' : ' · quantité de la liste inconnue'}` : 'Contenance inconnue : ajoutez-la au nom du produit (🔗)';
           return `<div class="pu-ligne"><span class="grow"><b>${esc(a.nom)}</b><span class="muted small"> · ${esc(a.lien?.label || `n° ${a.pid}`)}</span>
+            <button class="pu-auto pu-changer" data-x="lier" data-cle="${esc(a.cle)}" data-nom="${esc(a.nom)}">Changer de produit</button>
             <span class="pu-calc small">${calc}${main != null ? ` · <button class="pu-auto" data-x="auto" data-cle="${esc(a.cle)}">réglé à la main, revenir au calcul</button>` : ''}</span></span>
           <button class="icon-btn" data-x="moins" data-cle="${esc(a.cle)}" aria-label="Un de moins">−</button><b class="pu-q">${PanierU.qte(a)}</b><button class="icon-btn" data-x="plus" data-cle="${esc(a.cle)}" aria-label="Un de plus">${ICON.plus}</button></div>`;
         }).join('')}</div>

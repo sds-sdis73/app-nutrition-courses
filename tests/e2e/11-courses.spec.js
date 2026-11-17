@@ -107,17 +107,26 @@ module.exports = {
     } },
     { name: 'panier Courses U : après une association, retour à la liste des articles sans produit', fn: async ({ page }) => {
       await page.click('[data-act="panier-u"]');
-      await page.waitForSelector('.sheet-wrap.open [data-x="lier"]');
-      const avant = await page.$$eval('.sheet-wrap.open [data-x="lier"]', (l) => l.length);
-      await page.click('.sheet-wrap.open [data-x="lier"]');
+      await page.waitForSelector('.sheet-wrap.open details[data-sans] [data-x="lier"]');
+      const avant = await page.$$eval('.sheet-wrap.open details[data-sans] [data-x="lier"]', (l) => l.length);
+      await page.click('.sheet-wrap.open details[data-sans] [data-x="lier"]');
       await page.waitForSelector('form[data-form="link"] [name="url"]');
       await page.fill('form[data-form="link"] [name="url"]', 'https://www.coursesu.com/p/produit-test-500g/1234567.html');
       await page.click('form[data-form="link"] button.primary');
       await page.waitForSelector('.sheet-wrap.open details[data-sans][open]', { timeout: 5000 });
-      assert.equal(await page.$$eval('.sheet-wrap.open [data-x="lier"]', (l) => l.length), avant - 1);
+      assert.equal(await page.$$eval('.sheet-wrap.open details[data-sans] [data-x="lier"]', (l) => l.length), avant - 1);
       assert.match(await page.$eval('.sheet-wrap.open', (e) => e.textContent), /1 article prêt/);
+      // Changer le produit d'un article déjà associé : fenêtre préremplie, puis retour à la liste.
+      await page.click('.sheet-wrap.open .pu-changer');
+      await page.waitForSelector('form[data-form="link"] [name="url"]');
+      assert.match(await page.$eval('form[data-form="link"] [name="url"]', (i) => i.value), /1234567/);
+      await page.fill('form[data-form="link"] [name="url"]', 'https://www.coursesu.com/p/autre-produit-1kg/7654321.html');
+      await page.click('form[data-form="link"] button.primary');
+      await page.waitForSelector('.sheet-wrap.open .pu-changer', { timeout: 5000 });
+      assert.match(await page.$eval('.sheet-wrap.open', (e) => e.textContent), /produit de 1 kg/i);
+      assert.ok(await page.evaluate(() => Object.values(state.links).some((l) => l.pid === '7654321')));
       // Annuler une association ramène aussi à la liste.
-      await page.click('.sheet-wrap.open [data-x="lier"]');
+      await page.click('.sheet-wrap.open details[data-sans] [data-x="lier"]');
       await page.waitForSelector('form[data-form="link"]');
       await page.keyboard.press('Escape');
       await page.waitForSelector('.sheet-wrap.open details[data-sans][open]', { timeout: 5000 });

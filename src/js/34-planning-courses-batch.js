@@ -454,12 +454,19 @@ function linkItem(k, name, { retour } = {}) {
     const url = safeUrl(form.url.value.trim());
     if (!url || !/(^|\.)coursesu\.com$/.test(new URL(url).hostname)) { toast('Collez un lien coursesu.com'); return; }
     let label = form.label.value.trim();
+    // Autre produit, nom laissé tel quel : l'ancien nom ne correspond plus, il est relu dans la nouvelle adresse.
+    const autre = !!cur && url !== cur.url;
+    if (autre && label === (cur.label || '')) label = '';
     if (!label) { const m = url.match(/\/p\/([^/]+)\//); label = m ? decodeURIComponent(m[1]).replace(/-+/g, ' ').replace(/^\w/, (c) => c.toUpperCase()) : ''; }
-    const manual = parseFloat(form.prix.value.replace(',', '.'));
-    const ean = form.ean.value.trim() || null;
+    let manual = parseFloat(form.prix.value.replace(',', '.'));
+    let ean = form.ean.value.trim() || null;
+    // Autre produit : le prix et le code-barres de l'ancien, laissés tels quels, ne valent plus.
+    if (autre && ean === (cur.ean || null)) ean = null;
+    if (autre && manual === Number(cur.prix)) manual = NaN;
     const pid = PanierU.pidUrl(url);
     const extra = { ean, pid };
-    if (manual > 0 && manual !== Number(cur?.prix)) Object.assign(extra, { prix: manual, prix_source: 'manuel', prix_date: isoDate(new Date()) });
+    if (autre) Object.assign(extra, { prix: null, prix_source: null, prix_date: null });
+    if (manual > 0 && (autre || manual !== Number(cur?.prix))) Object.assign(extra, { prix: manual, prix_source: 'manuel', prix_date: isoDate(new Date()) });
     try {
       await Data.saveLink(k, url, label, extra);
       closeSheet(); render(); toast('Produit mémorisé');

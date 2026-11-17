@@ -118,6 +118,7 @@ function panierUSheet(articles, { sansOuvert = false } = {}) {
           const au = PanierU.auto(a), main = PanierU.main(a.cle);
           const calc = au.calcule ? `Besoin ${esc(fmtMesure(au.b))} · produit de ${esc(fmtMesure(au.c))} → ${au.n}` : au.c ? `Produit de ${esc(fmtMesure(au.c))}${au.b ? '' : ' · quantité de la liste inconnue'}` : 'Contenance inconnue : ajoutez-la au nom du produit (🔗)';
           return `<div class="pu-ligne"><span class="grow"><b>${esc(a.nom)}</b><span class="muted small"> · ${esc(a.lien?.label || `n° ${a.pid}`)}</span>
+            <button class="pu-auto pu-changer" data-x="lier" data-cle="${esc(a.cle)}" data-nom="${esc(a.nom)}">Changer de produit</button>
             <span class="pu-calc small">${calc}${main != null ? ` · <button class="pu-auto" data-x="auto" data-cle="${esc(a.cle)}">réglé à la main, revenir au calcul</button>` : ''}</span></span>
           <button class="icon-btn" data-x="moins" data-cle="${esc(a.cle)}" aria-label="Un de moins">−</button><b class="pu-q">${PanierU.qte(a)}</b><button class="icon-btn" data-x="plus" data-cle="${esc(a.cle)}" aria-label="Un de plus">${ICON.plus}</button></div>`;
         }).join('')}</div>
