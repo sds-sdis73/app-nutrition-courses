@@ -101,3 +101,8 @@
   .agenda-nuance { width: 40px; height: 40px; border-width: 5px; }
 }
 @media (prefers-reduced-motion: reduce) { .agenda-item { transition: none; } }
+
+/* Semaine en cours : jours passés repliés au-dessus d'aujourd'hui */
+.agenda-passes { margin: 0 0 10px; }
+.agenda-passes > summary { cursor: pointer; padding: 8px 2px; color: var(--muted); font-weight: 600; font-size: 14px; }
+.agenda-passes[open] > summary { margin-bottom: 6px; }

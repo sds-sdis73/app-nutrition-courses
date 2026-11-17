@@ -29,10 +29,10 @@ Deno.serve(async (req) => {
   if (error) return texte("Agenda indisponible pour le moment", 503);
   const noms = Object.fromEntries((membres ?? []).map((m: { id: string; nom: string }) => [m.id, m.nom]));
   const maintenant = new Date();
-  const corps = calendrier(veventsAbonnement(evs ?? [], { noms, maintenant }), { nom: exp.nom || "Tribu & Toutous" });
+  const corps = calendrier(veventsAbonnement(evs ?? [], { noms, maintenant }), { nom: exp.nom || "Tribu" });
   await admin.from("agenda_export").update({ lu_le: maintenant.toISOString() }).eq("foyer_id", exp.foyer_id);
   return new Response(req.method === "HEAD" ? null : corps, {
     status: 200,
-    headers: { ...CORS, "Content-Type": "text/calendar; charset=utf-8", "Content-Disposition": 'inline; filename="tribu-et-toutous.ics"', "Cache-Control": "private, max-age=900" },
+    headers: { ...CORS, "Content-Type": "text/calendar; charset=utf-8", "Content-Disposition": 'inline; filename="tribu.ics"', "Cache-Control": "private, max-age=900" },
   });
 });

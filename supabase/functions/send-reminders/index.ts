@@ -57,7 +57,7 @@ Deno.serve(async (req) => {
     if (!user) return json({ error: "Connexion requise" }, 401);
     const { data: subs } = await admin.from("push_abonnements").select("*").eq("user_id", user.id);
     let sent = 0;
-    for (const s of (subs ?? []) as Sub[]) if (await envoyer(s, { title: "Tribu & Toutous", body: "Les notifications fonctionnent sur cet appareil 👍", tag: "test" })) sent++;
+    for (const s of (subs ?? []) as Sub[]) if (await envoyer(s, { title: "Tribu", body: "Les notifications fonctionnent sur cet appareil 👍", tag: "test" })) sent++;
     return json({ ok: true, sent });
   }
 

@@ -542,7 +542,7 @@ const SAUVEGARDE_EXCLUES = ['mc_secrets', 'push_abonnements', 'rappels_envoyes',
 // Données personnelles : seulement celles du compte qui exporte (pas les séances partagées par les autres).
 const SAUVEGARDE_PERSO = /^(forme_|mensurations$|compte_preferences$)/;
 const tablesASauvegarder = (tablesConnues = []) => [...new Set([...SAUVEGARDE_TABLES, ...tablesConnues])].filter((t) => t && !SAUVEGARDE_EXCLUES.includes(t));
-const nomFichierSauvegarde = (d) => `tribu-et-toutous-sauvegarde-${isoDate(d)}.json`;
+const nomFichierSauvegarde = (d) => `tribu-sauvegarde-${isoDate(d)}.json`;
 const joursDepuis = (iso, maintenant) => (iso ? Math.floor((maintenant - new Date(iso)) / 864e5) : null);
 // Rappel mensuel : jamais sauvegardé, ou il y a 30 jours ou plus.
 function rappelSauvegarde(derniereIso, maintenant = new Date()) {

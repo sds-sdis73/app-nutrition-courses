@@ -1,6 +1,6 @@
 {
-  "name": "Tribu & Toutous",
-  "short_name": "T&T",
+  "name": "Tribu",
+  "short_name": "Tribu",
   "description": "L'appli de la famille : agenda, tâches, repas, courses, forme et tout le foyer au même endroit.",
   "lang": "fr",
   "start_url": "./",

@@ -67,7 +67,7 @@ function remplirPanierCoursesU() {
   (async () => {
     if (!/(^|\.)coursesu\.com$/.test(location.hostname)) { alert('Ouvrez d’abord coursesu.com, puis touchez ce favori.'); return; }
     let brut = (location.hash.match(/tribu-panier=([\d*,]+)/) || [])[1];
-    if (!brut) brut = prompt('Collez le code du panier copié depuis Tribu & Toutous :') || '';
+    if (!brut) brut = prompt('Collez le code du panier copié depuis Tribu :') || '';
     brut = String(brut).replace(/^.*tribu-panier=/, '').trim();
     const lignes = brut.split(',').map((x) => x.split('*')).filter(([p]) => /^\d{3,12}$/.test(p)).map(([p, q]) => [p, Math.max(1, Math.min(20, parseInt(q, 10) || 1))]);
     if (!lignes.length) { alert('Aucun produit à ajouter.'); return; }
@@ -75,7 +75,7 @@ function remplirPanierCoursesU() {
     bandeau.style.cssText = 'position:fixed;left:12px;right:12px;top:12px;z-index:2147483647;padding:14px 16px;border-radius:12px;background:#1d1d1f;color:#fff;font:600 16px/1.35 system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
     document.body.appendChild(bandeau);
     const dire = (t) => { bandeau.textContent = t; };
-    dire('Tribu & Toutous : préparation du panier…');
+    dire('Tribu : préparation du panier…');
     let jeton = (document.querySelector('input[name="csrf_token"]') || {}).value;
     if (!jeton) {
       try {
@@ -88,7 +88,7 @@ function remplirPanierCoursesU() {
     let ok = 0; const rates = [];
     for (let i = 0; i < lignes.length; i++) {
       const [pid, q] = lignes[i];
-      dire(`Tribu & Toutous : ajout ${i + 1}/${lignes.length}…`);
+      dire(`Tribu : ajout ${i + 1}/${lignes.length}…`);
       const corps = new URLSearchParams({ pid, Quantity: String(q), quantity: String(q), update: 'true', fullview: 'true', location: 'search', requestedQuantity: '', modifiableOrderID: '', isLuckyProduct: 'false', pageType: 'Search result', productRecommended: 'false', productSponsored: 'false', csrf_token: jeton });
       try {
         const r = await fetch(url, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-Requested-With': 'XMLHttpRequest' }, body: corps });
@@ -100,7 +100,7 @@ function remplirPanierCoursesU() {
       await new Promise((r) => setTimeout(r, 350));
     }
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* sans importance */ }
-    dire(`Tribu & Toutous : ${ok} produit${ok > 1 ? 's' : ''} ajouté${ok > 1 ? 's' : ''} au panier${rates.length ? `, ${rates.length} indisponible${rates.length > 1 ? 's' : ''} (n° ${rates.join(', ')})` : ''}. Rechargement…`);
+    dire(`Tribu : ${ok} produit${ok > 1 ? 's' : ''} ajouté${ok > 1 ? 's' : ''} au panier${rates.length ? `, ${rates.length} indisponible${rates.length > 1 ? 's' : ''} (n° ${rates.join(', ')})` : ''}. Rechargement…`);
     setTimeout(() => location.reload(), rates.length ? 5000 : 2200);
   })();
 }

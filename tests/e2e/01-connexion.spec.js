@@ -34,7 +34,7 @@ module.exports = {
       await H.closeSheets(page);
       assert.equal(await page.evaluate(() => state.tab), 'accueil-famille'); // l'Accueil s'ouvre sur la journée de la famille
       assert.ok(await page.$('.af-tuiles .af-tuile'), 'tuiles « En un coup d\'œil »');
-      assert.equal(await page.$eval('#title', (e) => e.textContent), 'Tribu & Toutous');
+      assert.equal(await page.$eval('#title', (e) => e.textContent), 'Tribu');
       assert.ok(await page.$('.tabbar button[aria-current="page"]'));
       assert.ok(await page.evaluate(() => state.members.length >= 3 && state.recipes.length >= 3), 'foyer de test peuplé');
     } },

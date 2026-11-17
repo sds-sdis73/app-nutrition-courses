@@ -190,7 +190,7 @@ function mcSheet() {
       </ol>
       <button class="btn primary block" data-x="start">Ouvrir la page Lidl</button>
       <form class="stack" data-x="fin" style="margin-top:12px" hidden><textarea class="input" name="adresse" rows="3" placeholder="lidl-com.monsieur-cuisine.Companion://login/prod?code=…" required></textarea><button class="btn primary">Valider la connexion</button></form>
-      <p class="muted small">Votre mot de passe n'est jamais vu par Tribu &amp; Toutous. Liaison non officielle : elle peut cesser de fonctionner si Monsieur Cuisine change son service.</p>`;
+      <p class="muted small">Votre mot de passe n'est jamais vu par Tribu. Liaison non officielle : elle peut cesser de fonctionner si Monsieur Cuisine change son service.</p>`;
   };
   draw().catch((e) => fail(e));
   el.addEventListener('click', async (e) => {
@@ -225,11 +225,11 @@ function widgetSheet() {
     <ol class="steps">
       <li>Installe <b>Scriptable</b> depuis l'App Store (gratuit).</li>
       <li>Touche <b>Copier le script</b> ci-dessous.</li>
-      <li>Dans Scriptable : <b>+</b> en haut à droite, colle le texte, nomme le script <b>Miam &amp; moi</b>, puis touche ▶︎. Saisis ton e-mail et ton mot de passe Tribu &amp; Toutous (ils restent dans le trousseau de ton iPhone).</li>
-      <li>Sur l'écran d'accueil : appui long, <b>+</b>, <b>Scriptable</b>, taille <b>moyenne</b>, puis appui long sur le widget › <b>Modifier le widget</b> › Script : <b>Miam &amp; moi</b>.</li>
+      <li>Dans Scriptable : <b>+</b> en haut à droite, colle le texte, nomme le script <b>Tribu</b>, puis touche ▶︎. Saisis ton e-mail et ton mot de passe Tribu (ils restent dans le trousseau de ton iPhone).</li>
+      <li>Sur l'écran d'accueil : appui long, <b>+</b>, <b>Scriptable</b>, taille <b>moyenne</b>, puis appui long sur le widget › <b>Modifier le widget</b> › Script : <b>Tribu</b>.</li>
     </ol>
     <button class="btn primary block" data-x="copy">Copier le script</button>
-    <p class="muted small">Le widget se met à jour quand iOS le décide (en général toutes les 15 à 30 minutes) et à chaque ouverture de Tribu &amp; Toutous. « +250 ml » s'enregistre directement depuis le widget ; « Noter » ouvre l'app.</p>`);
+    <p class="muted small">Le widget se met à jour quand iOS le décide (en général toutes les 15 à 30 minutes) et à chaque ouverture de Tribu. « +250 ml » s'enregistre directement depuis le widget ; « Noter » ouvre l'app.</p>`);
   $('[data-x="copy"]', el).addEventListener('click', async () => {
     try {
       const txt = await (await fetch(WIDGET_URL, { cache: 'no-store' })).text();

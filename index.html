@@ -9,8 +9,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@500;600;700;800&display=swap">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="T&amp;T">
-<title>Tribu &amp; Toutous</title>
+<meta name="apple-mobile-web-app-title" content="Tribu">
+<title>Tribu</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -1420,6 +1420,11 @@ button.af-carte:active { transform: translateY(1px); }
   .agenda-nuance { width: 40px; height: 40px; border-width: 5px; }
 }
 @media (prefers-reduced-motion: reduce) { .agenda-item { transition: none; } }
+
+/* Semaine en cours : jours passés repliés au-dessus d'aujourd'hui */
+.agenda-passes { margin: 0 0 10px; }
+.agenda-passes > summary { cursor: pointer; padding: 8px 2px; color: var(--muted); font-weight: 600; font-size: 14px; }
+.agenda-passes[open] > summary { margin-bottom: 6px; }
 /* ==== module carnet ==== */
 /* Module « Carnet de la famille » : uniquement les jetons du thème, pour suivre chaque univers graphique. */
 .carnet { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
@@ -2304,7 +2309,7 @@ button.af-carte:active { transform: translateY(1px); }
 </head>
 <body>
 <header class="topbar">
-  <h1 id="title">Tribu &amp; Toutous</h1>
+  <h1 id="title">Tribu</h1>
   <button class="icon-btn" data-act="ajout-rapide" aria-label="Ajouter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></button>
   <button class="icon-btn" data-act="settings" aria-label="Paramètres"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
 </header>
@@ -4112,9 +4117,9 @@ Forme.install = function install() {
 // ---------------------------------------------------------------------------
 // Configuration
 // ---------------------------------------------------------------------------
-const APP_NAME = 'Tribu & Toutous';
+const APP_NAME = 'Tribu';
 // À incrémenter à chaque publication, avec la même valeur dans version.json.
-const APP_VERSION = '2026-11-17.6';
+const APP_VERSION = '2026-11-17.7';
 const SUPABASE_URL = 'https://svugddkrptqpjmywhorb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2dWdkZGtycHRxcGpteXdob3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MjU5NDgsImV4cCI6MjEwODUwMTk0OH0.63RETgf7rbVMquGV-7ooY3qn-Qf31uVCA3ZBfqBvFcI';
 const OFF = 'https://world.openfoodfacts.org/api/v2';
@@ -7410,7 +7415,7 @@ function remplirPanierCoursesU() {
   (async () => {
     if (!/(^|\.)coursesu\.com$/.test(location.hostname)) { alert('Ouvrez d’abord coursesu.com, puis touchez ce favori.'); return; }
     let brut = (location.hash.match(/tribu-panier=([\d*,]+)/) || [])[1];
-    if (!brut) brut = prompt('Collez le code du panier copié depuis Tribu & Toutous :') || '';
+    if (!brut) brut = prompt('Collez le code du panier copié depuis Tribu :') || '';
     brut = String(brut).replace(/^.*tribu-panier=/, '').trim();
     const lignes = brut.split(',').map((x) => x.split('*')).filter(([p]) => /^\d{3,12}$/.test(p)).map(([p, q]) => [p, Math.max(1, Math.min(20, parseInt(q, 10) || 1))]);
     if (!lignes.length) { alert('Aucun produit à ajouter.'); return; }
@@ -7418,7 +7423,7 @@ function remplirPanierCoursesU() {
     bandeau.style.cssText = 'position:fixed;left:12px;right:12px;top:12px;z-index:2147483647;padding:14px 16px;border-radius:12px;background:#1d1d1f;color:#fff;font:600 16px/1.35 system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
     document.body.appendChild(bandeau);
     const dire = (t) => { bandeau.textContent = t; };
-    dire('Tribu & Toutous : préparation du panier…');
+    dire('Tribu : préparation du panier…');
     let jeton = (document.querySelector('input[name="csrf_token"]') || {}).value;
     if (!jeton) {
       try {
@@ -7431,7 +7436,7 @@ function remplirPanierCoursesU() {
     let ok = 0; const rates = [];
     for (let i = 0; i < lignes.length; i++) {
       const [pid, q] = lignes[i];
-      dire(`Tribu & Toutous : ajout ${i + 1}/${lignes.length}…`);
+      dire(`Tribu : ajout ${i + 1}/${lignes.length}…`);
       const corps = new URLSearchParams({ pid, Quantity: String(q), quantity: String(q), update: 'true', fullview: 'true', location: 'search', requestedQuantity: '', modifiableOrderID: '', isLuckyProduct: 'false', pageType: 'Search result', productRecommended: 'false', productSponsored: 'false', csrf_token: jeton });
       try {
         const r = await fetch(url, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-Requested-With': 'XMLHttpRequest' }, body: corps });
@@ -7443,7 +7448,7 @@ function remplirPanierCoursesU() {
       await new Promise((r) => setTimeout(r, 350));
     }
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* sans importance */ }
-    dire(`Tribu & Toutous : ${ok} produit${ok > 1 ? 's' : ''} ajouté${ok > 1 ? 's' : ''} au panier${rates.length ? `, ${rates.length} indisponible${rates.length > 1 ? 's' : ''} (n° ${rates.join(', ')})` : ''}. Rechargement…`);
+    dire(`Tribu : ${ok} produit${ok > 1 ? 's' : ''} ajouté${ok > 1 ? 's' : ''} au panier${rates.length ? `, ${rates.length} indisponible${rates.length > 1 ? 's' : ''} (n° ${rates.join(', ')})` : ''}. Rechargement…`);
     setTimeout(() => location.reload(), rates.length ? 5000 : 2200);
   })();
 }
@@ -8165,7 +8170,7 @@ function mcSheet() {
       </ol>
       <button class="btn primary block" data-x="start">Ouvrir la page Lidl</button>
       <form class="stack" data-x="fin" style="margin-top:12px" hidden><textarea class="input" name="adresse" rows="3" placeholder="lidl-com.monsieur-cuisine.Companion://login/prod?code=…" required></textarea><button class="btn primary">Valider la connexion</button></form>
-      <p class="muted small">Votre mot de passe n'est jamais vu par Tribu &amp; Toutous. Liaison non officielle : elle peut cesser de fonctionner si Monsieur Cuisine change son service.</p>`;
+      <p class="muted small">Votre mot de passe n'est jamais vu par Tribu. Liaison non officielle : elle peut cesser de fonctionner si Monsieur Cuisine change son service.</p>`;
   };
   draw().catch((e) => fail(e));
   el.addEventListener('click', async (e) => {
@@ -8200,11 +8205,11 @@ function widgetSheet() {
     <ol class="steps">
       <li>Installe <b>Scriptable</b> depuis l'App Store (gratuit).</li>
       <li>Touche <b>Copier le script</b> ci-dessous.</li>
-      <li>Dans Scriptable : <b>+</b> en haut à droite, colle le texte, nomme le script <b>Miam &amp; moi</b>, puis touche ▶︎. Saisis ton e-mail et ton mot de passe Tribu &amp; Toutous (ils restent dans le trousseau de ton iPhone).</li>
-      <li>Sur l'écran d'accueil : appui long, <b>+</b>, <b>Scriptable</b>, taille <b>moyenne</b>, puis appui long sur le widget › <b>Modifier le widget</b> › Script : <b>Miam &amp; moi</b>.</li>
+      <li>Dans Scriptable : <b>+</b> en haut à droite, colle le texte, nomme le script <b>Tribu</b>, puis touche ▶︎. Saisis ton e-mail et ton mot de passe Tribu (ils restent dans le trousseau de ton iPhone).</li>
+      <li>Sur l'écran d'accueil : appui long, <b>+</b>, <b>Scriptable</b>, taille <b>moyenne</b>, puis appui long sur le widget › <b>Modifier le widget</b> › Script : <b>Tribu</b>.</li>
     </ol>
     <button class="btn primary block" data-x="copy">Copier le script</button>
-    <p class="muted small">Le widget se met à jour quand iOS le décide (en général toutes les 15 à 30 minutes) et à chaque ouverture de Tribu &amp; Toutous. « +250 ml » s'enregistre directement depuis le widget ; « Noter » ouvre l'app.</p>`);
+    <p class="muted small">Le widget se met à jour quand iOS le décide (en général toutes les 15 à 30 minutes) et à chaque ouverture de Tribu. « +250 ml » s'enregistre directement depuis le widget ; « Noter » ouvre l'app.</p>`);
   $('[data-x="copy"]', el).addEventListener('click', async () => {
     try {
       const txt = await (await fetch(WIDGET_URL, { cache: 'no-store' })).text();
@@ -10348,7 +10353,7 @@ function rendu() {
 const ETAPES_APPLE = [
   'Sur ton iPhone ou un ordinateur, ouvre <b>appleid.apple.com</b> et connecte-toi avec ton identifiant Apple.',
   'Va dans <b>Connexion et sécurité</b>, puis <b>Mots de passe pour app</b>.',
-  'Touche <b>« + »</b> (ou « Générer un mot de passe »), et nomme-le <b>Tribu &amp; Toutous</b>.',
+  'Touche <b>« + »</b> (ou « Générer un mot de passe »), et nomme-le <b>Tribu</b>.',
   'Apple affiche un mot de passe de 16 lettres, comme <b>abcd-efgh-ijkl-mnop</b> : copie-le.',
   'Reviens ici, touche <b>Relier iCloud</b>, puis colle ton identifiant Apple (ton adresse e-mail) et ce mot de passe.',
   'Choisis le calendrier à partager avec la famille (par exemple « Famille »). C\'est tout.',
@@ -10515,7 +10520,7 @@ Modules.register({
     'agenda-synchro-ouvrir': () => { closeSheet(); switchTab('agenda-synchro'); },
     'agenda-synchro-creer-lien': async () => {
       occupe = 'export'; render();
-      try { exportLigne = await Sync.upsert(T.agenda_export, { id: exportLigne?.id, jeton: nouveauJeton(), nom: 'Tribu & Toutous' }); sauver(); toast('Lien privé créé'); }
+      try { exportLigne = await Sync.upsert(T.agenda_export, { id: exportLigne?.id, jeton: nouveauJeton(), nom: 'Tribu' }); sauver(); toast('Lien privé créé'); }
       catch (e) { fail(e, 'Lien non créé'); } finally { occupe = ''; render(); }
     },
     'agenda-synchro-copier': async () => {
@@ -11101,15 +11106,20 @@ function vueJour(a) {
 function vueSemaine(a, b) {
   const items = elementsAffiches(a, b);
   const auj = isoDate(new Date());
-  let html = '';
-  for (let d = a; d <= b; d = addDays(d, 1)) {
+  const carte = (d) => {
     const iso = isoDate(d);
     const v = affiche('vacances') && vacancesDu(iso);
-    html += `<section class="card agenda-carte agenda-jour${iso === auj ? ' auj' : ''}${v ? ' vac' : ''}">
+    return `<section class="card agenda-carte agenda-jour${iso === auj ? ' auj' : ''}${v ? ' vac' : ''}">
       <button type="button" class="agenda-jour-titre" data-act="agenda-jour" data-date="${iso}"><b>${esc(maj(fmtJourLong(d)))}</b>${iso === auj ? '<span class="agenda-tag">Aujourd\'hui</span>' : ''}${v ? `<span class="agenda-tag vac" title="${esc(v.titre)}">Vacances</span>` : ''}</button>
       ${listeJour(iso, items)}</section>`;
-  }
-  return html;
+  };
+  const passes = [], suite = [];
+  for (let d = a; d <= b; d = addDays(d, 1)) (isoDate(d) < auj ? passes : suite).push(d);
+  // Semaine en cours : on commence par aujourd'hui ; les jours déjà passés sont repliés au-dessus (pas de lundi en tête un vendredi).
+  if (!passes.length || !suite.length) return [...passes, ...suite].map(carte).join('');
+  const de = (d) => fmtJourLong(d).split(' ')[0];
+  const nb = items.filter((e) => e.date < auj && e.type !== 'ferie').length;
+  return `<details class="agenda-passes"><summary>Début de semaine (${esc(de(passes[0]))}${passes.length > 1 ? ` → ${esc(de(passes[passes.length - 1]))}` : ''})${nb ? ` · ${nb} élément${nb > 1 ? 's' : ''}` : ''}</summary>${passes.map(carte).join('')}</details>${suite.map(carte).join('')}`;
 }
 function vueMois(a, b) {
   const c = curseur();
@@ -12992,7 +13002,7 @@ function carteReglages() {
   const batch = Modules.get('batch');
   return `<section class="card cmc-reglages"><h3>Réglages de la cuisine</h3>
     ${batch ? `<label class="check"><input type="checkbox" data-cmc-batch ${Modules.masques().includes('batch') ? '' : 'checked'}> Afficher le batch cooking</label>` : ''}
-    <p class="muted small">Le planning et la liste de courses viennent de Monsieur Cuisine (lecture seule). Tes modifications de la liste restent dans Tribu &amp; Toutous, même après une synchronisation.</p></section>`;
+    <p class="muted small">Le planning et la liste de courses viennent de Monsieur Cuisine (lecture seule). Tes modifications de la liste restent dans Tribu, même après une synchronisation.</p></section>`;
 }
 // Feuille d'une recette : portions, calories de chacun, « J'ai mangé ça », ingrédients, étapes.
 function ouvrirRecette(id) {
@@ -16307,7 +16317,7 @@ const SAUVEGARDE_EXCLUES = ['mc_secrets', 'push_abonnements', 'rappels_envoyes',
 // Données personnelles : seulement celles du compte qui exporte (pas les séances partagées par les autres).
 const SAUVEGARDE_PERSO = /^(forme_|mensurations$|compte_preferences$)/;
 const tablesASauvegarder = (tablesConnues = []) => [...new Set([...SAUVEGARDE_TABLES, ...tablesConnues])].filter((t) => t && !SAUVEGARDE_EXCLUES.includes(t));
-const nomFichierSauvegarde = (d) => `tribu-et-toutous-sauvegarde-${isoDate(d)}.json`;
+const nomFichierSauvegarde = (d) => `tribu-sauvegarde-${isoDate(d)}.json`;
 const joursDepuis = (iso, maintenant) => (iso ? Math.floor((maintenant - new Date(iso)) / 864e5) : null);
 // Rappel mensuel : jamais sauvegardé, ou il y a 30 jours ou plus.
 function rappelSauvegarde(derniereIso, maintenant = new Date()) {

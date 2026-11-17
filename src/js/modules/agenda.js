@@ -532,15 +532,20 @@ function vueJour(a) {
 function vueSemaine(a, b) {
   const items = elementsAffiches(a, b);
   const auj = isoDate(new Date());
-  let html = '';
-  for (let d = a; d <= b; d = addDays(d, 1)) {
+  const carte = (d) => {
     const iso = isoDate(d);
     const v = affiche('vacances') && vacancesDu(iso);
-    html += `<section class="card agenda-carte agenda-jour${iso === auj ? ' auj' : ''}${v ? ' vac' : ''}">
+    return `<section class="card agenda-carte agenda-jour${iso === auj ? ' auj' : ''}${v ? ' vac' : ''}">
       <button type="button" class="agenda-jour-titre" data-act="agenda-jour" data-date="${iso}"><b>${esc(maj(fmtJourLong(d)))}</b>${iso === auj ? '<span class="agenda-tag">Aujourd\'hui</span>' : ''}${v ? `<span class="agenda-tag vac" title="${esc(v.titre)}">Vacances</span>` : ''}</button>
       ${listeJour(iso, items)}</section>`;
-  }
-  return html;
+  };
+  const passes = [], suite = [];
+  for (let d = a; d <= b; d = addDays(d, 1)) (isoDate(d) < auj ? passes : suite).push(d);
+  // Semaine en cours : on commence par aujourd'hui ; les jours déjà passés sont repliés au-dessus (pas de lundi en tête un vendredi).
+  if (!passes.length || !suite.length) return [...passes, ...suite].map(carte).join('');
+  const de = (d) => fmtJourLong(d).split(' ')[0];
+  const nb = items.filter((e) => e.date < auj && e.type !== 'ferie').length;
+  return `<details class="agenda-passes"><summary>Début de semaine (${esc(de(passes[0]))}${passes.length > 1 ? ` → ${esc(de(passes[passes.length - 1]))}` : ''})${nb ? ` · ${nb} élément${nb > 1 ? 's' : ''}` : ''}</summary>${passes.map(carte).join('')}</details>${suite.map(carte).join('')}`;
 }
 function vueMois(a, b) {
   const c = curseur();

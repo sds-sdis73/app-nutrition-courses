@@ -87,7 +87,7 @@ export function regrouper(messages, actif = true) {
   const lignes = messages.map((m) => `• ${m.title} : ${m.body}`);
   let body = lignes.join('\n');
   if (body.length > 360) body = `${body.slice(0, 357)}…`;
-  return [{ title: `Tribu & Toutous · ${messages.length} nouvelles`, body, url: messages[0].url || './', tag: 'groupe' }];
+  return [{ title: `Tribu · ${messages.length} nouvelles`, body, url: messages[0].url || './', tag: 'groupe' }];
 }
 
 // ---------------------------------------------------------------------------

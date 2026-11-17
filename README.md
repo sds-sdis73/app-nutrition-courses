@@ -1,6 +1,6 @@
 # app-nutrition-courses
 
-Application web mobile « Tribu & Toutous » (nom court sur l'écran d'accueil : « T&T » ; icône : porte-manteau avec trois manteaux et deux laisses), l'appli de la famille, anciennement « Miam & moi ». Navigation en 5 onglets : Accueil · Famille (agenda, tâches et listes, messages, photos, carnet) · Cuisine (repas, courses, recettes, batch, scan) · Forme · Plus (réglages, univers, notifications, Monsieur Cuisine, sécurité, sauvegarde, widget).
+Application web mobile « Tribu » (nom sur l’écran d’accueil : « Tribu » ; icône : porte-manteau avec trois manteaux et deux laisses, dessiné dans src/actifs/icone.svg, PNG produits par tools/icones.js), l'appli de la famille, anciennement « Miam & moi ». Navigation en 5 onglets : Accueil · Famille (agenda, tâches et listes, messages, photos, carnet) · Cuisine (repas, courses, recettes, batch, scan) · Forme · Plus (réglages, univers, notifications, Monsieur Cuisine, sécurité, sauvegarde, widget).
 
 En ligne : https://sds-sdis73.github.io/app-nutrition-courses/
 

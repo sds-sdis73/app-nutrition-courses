@@ -158,7 +158,7 @@ describe('sauvegarde', () => {
   });
   test('fichier : nom daté, résumé, et clés de l\'ancien format pour l\'import', () => {
     const now = new Date('2026-11-16T10:00:00');
-    assert.equal(B.nomFichierSauvegarde(now), 'tribu-et-toutous-sauvegarde-2026-11-16.json');
+    assert.equal(B.nomFichierSauvegarde(now), 'tribu-sauvegarde-2026-11-16.json');
     const d = B.construireSauvegarde({ tables: { recettes: [{ id: 'r1' }, { id: 'r2' }], reglages: [{ store_name: 'U' }], planning_repas: [{ id: 'p1' }] }, foyer: { id: 'f', nom: 'Maison' }, compte: 'a@b.c', maintenant: now });
     assert.equal(d.format, 'tribu-et-toutous/sauvegarde');
     assert.deepEqual(plain(d.resume), { tables: 3, lignes: 4 });

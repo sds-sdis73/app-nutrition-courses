@@ -7,7 +7,7 @@
 //   (nonGere + rrule : règle d'un autre agenda que l'appli ne sait pas modifier, gardée telle quelle)
 
 export const TZ = 'Europe/Paris';
-export const PRODID = '-//Tribu & Toutous//Agenda familial//FR';
+export const PRODID = '-//Tribu//Agenda familial//FR';
 export const DOMAINE_UID = 'tribu-et-toutous';
 const CATEGORIES = ['evenement', 'rdv', 'activite', 'anniversaire'];
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -249,7 +249,7 @@ export function fusionnerVevent(distant, ev, opts) {
 }
 
 // Calendrier complet. opts : { nom, methode (abonnement : true ; CalDAV : false), rafraichir: 'PT1H' }.
-export function calendrier(vevents, { nom = 'Tribu & Toutous', methode = true, rafraichir = 'PT1H' } = {}) {
+export function calendrier(vevents, { nom = 'Tribu', methode = true, rafraichir = 'PT1H' } = {}) {
   const tete = ['BEGIN:VCALENDAR', 'VERSION:2.0', `PRODID:${PRODID}`, 'CALSCALE:GREGORIAN'];
   if (methode) tete.push('METHOD:PUBLISH', `X-WR-CALNAME:${echapper(nom)}`, `X-WR-TIMEZONE:${TZ}`, `REFRESH-INTERVAL;VALUE=DURATION:${rafraichir}`, `X-PUBLISHED-TTL:${rafraichir}`);
   return [...tete.map(plier), VTIMEZONE_PARIS, ...vevents, 'END:VCALENDAR'].join('\r\n') + '\r\n';

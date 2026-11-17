@@ -59,11 +59,11 @@ test('ICS : génération d\'un calendrier (heures de Paris, journées entières,
   const judo = { id: '11111111-2222-4333-8444-555555555555', titre: 'Judo, cours; débutants', categorie: 'activite', debut: '2026-11-18T13:00:00Z', fin: '2026-11-18T14:00:00Z',
     journee: false, lieu: 'Gymnase de Meylan', notes: 'Kimono\nCeinture', membres: ['aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee'], recurrence: { freq: 'hebdo', jours: [3] }, exceptions: ['2026-12-23'], updated_at: '2026-11-15T10:00:00Z' };
   const vacances = { id: '99999999-2222-4333-8444-555555555555', titre: 'Vacances à la mer', debut: '2026-12-18T23:00:00Z', fin: '2026-12-25T23:00:00Z', journee: true, membres: [], exceptions: [] };
-  const texte = I.calendrier([I.vevent(judo, { noms: { 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee': 'Zoé' }, maintenant: new Date('2026-11-15T12:00:00Z') }), I.vevent(vacances)], { nom: 'Tribu & Toutous' });
+  const texte = I.calendrier([I.vevent(judo, { noms: { 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee': 'Zoé' }, maintenant: new Date('2026-11-15T12:00:00Z') }), I.vevent(vacances)], { nom: 'Tribu' });
   assert.ok(texte.endsWith(CRLF));
   assert.ok(!/[^\r]\n/.test(texte), 'fins de ligne CRLF');
   const l = I.deplier(texte).split('\n');
-  for (const attendu of ['METHOD:PUBLISH', 'X-WR-CALNAME:Tribu & Toutous', 'TZID:Europe/Paris', 'UID:11111111-2222-4333-8444-555555555555@tribu-et-toutous',
+  for (const attendu of ['METHOD:PUBLISH', 'X-WR-CALNAME:Tribu', 'TZID:Europe/Paris', 'UID:11111111-2222-4333-8444-555555555555@tribu-et-toutous',
     'DTSTAMP:20261115T120000Z', 'DTSTART;TZID=Europe/Paris:20261118T140000', 'DTEND;TZID=Europe/Paris:20261118T150000', 'SUMMARY:Judo\\, cours\\; débutants',
     'DESCRIPTION:Kimono\\nCeinture\\n\\nPour : Zoé', 'RRULE:FREQ=WEEKLY;BYDAY=WE', 'EXDATE;TZID=Europe/Paris:20261223T140000', 'X-TT-CATEGORIE:activite',
     'DTSTART;VALUE=DATE:20261219', 'DTEND;VALUE=DATE:20261227']) assert.ok(l.includes(attendu), `ligne manquante : ${attendu}`);

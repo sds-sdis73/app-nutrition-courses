@@ -44,6 +44,11 @@ module.exports = {
       assert.match(mercredi, /Vacances/);
       assert.match(mercredi, /14 h.*Judo.*Gymnase · Léa · Antoine s'en occupe/s);
       assert.equal(await page.$$eval('.agenda-jour', (l) => l.length), 7);
+      // Mercredi : la semaine commence par aujourd'hui ; lundi et mardi sont repliés au-dessus.
+      assert.ok(await page.$eval('.agenda > .agenda-jour', (e) => e.classList.contains('auj')), 'premier jour affiché = aujourd\'hui');
+      assert.equal(await page.$$eval('details.agenda-passes .agenda-jour', (l) => l.length), 2);
+      assert.equal(await page.$eval('details.agenda-passes', (d) => d.open), false);
+      assert.match(await page.$eval('details.agenda-passes summary', (e) => e.textContent), /Début de semaine \(lundi → mardi\)/);
       assert.ok(await H.noHorizontalScroll(page));
     } },
     { name: 'vue jour : bandeau des vacances, fiche de l\'événement récurrent', fn: async ({ page }) => {

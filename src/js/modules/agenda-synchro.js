@@ -205,7 +205,7 @@ function rendu() {
 const ETAPES_APPLE = [
   'Sur ton iPhone ou un ordinateur, ouvre <b>appleid.apple.com</b> et connecte-toi avec ton identifiant Apple.',
   'Va dans <b>Connexion et sécurité</b>, puis <b>Mots de passe pour app</b>.',
-  'Touche <b>« + »</b> (ou « Générer un mot de passe »), et nomme-le <b>Tribu &amp; Toutous</b>.',
+  'Touche <b>« + »</b> (ou « Générer un mot de passe »), et nomme-le <b>Tribu</b>.',
   'Apple affiche un mot de passe de 16 lettres, comme <b>abcd-efgh-ijkl-mnop</b> : copie-le.',
   'Reviens ici, touche <b>Relier iCloud</b>, puis colle ton identifiant Apple (ton adresse e-mail) et ce mot de passe.',
   'Choisis le calendrier à partager avec la famille (par exemple « Famille »). C\'est tout.',
@@ -372,7 +372,7 @@ Modules.register({
     'agenda-synchro-ouvrir': () => { closeSheet(); switchTab('agenda-synchro'); },
     'agenda-synchro-creer-lien': async () => {
       occupe = 'export'; render();
-      try { exportLigne = await Sync.upsert(T.agenda_export, { id: exportLigne?.id, jeton: nouveauJeton(), nom: 'Tribu & Toutous' }); sauver(); toast('Lien privé créé'); }
+      try { exportLigne = await Sync.upsert(T.agenda_export, { id: exportLigne?.id, jeton: nouveauJeton(), nom: 'Tribu' }); sauver(); toast('Lien privé créé'); }
       catch (e) { fail(e, 'Lien non créé'); } finally { occupe = ''; render(); }
     },
     'agenda-synchro-copier': async () => {

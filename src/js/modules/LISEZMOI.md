@@ -1,4 +1,4 @@
-# Modules de Tribu & Toutous
+# Modules de Tribu
 
 Un module = **un fichier `src/js/modules/<id>.js`** (et, s'il a des styles, `src/css/modules/<id>.css`).
 L'assembleur (`npm run build`, `tools/assemble.js`) place les modules **après le cœur** (`src/js/00-…` à `89-…`),

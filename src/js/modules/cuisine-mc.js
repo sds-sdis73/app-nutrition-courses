@@ -681,7 +681,7 @@ function carteReglages() {
   const batch = Modules.get('batch');
   return `<section class="card cmc-reglages"><h3>Réglages de la cuisine</h3>
     ${batch ? `<label class="check"><input type="checkbox" data-cmc-batch ${Modules.masques().includes('batch') ? '' : 'checked'}> Afficher le batch cooking</label>` : ''}
-    <p class="muted small">Le planning et la liste de courses viennent de Monsieur Cuisine (lecture seule). Tes modifications de la liste restent dans Tribu &amp; Toutous, même après une synchronisation.</p></section>`;
+    <p class="muted small">Le planning et la liste de courses viennent de Monsieur Cuisine (lecture seule). Tes modifications de la liste restent dans Tribu, même après une synchronisation.</p></section>`;
 }
 // Feuille d'une recette : portions, calories de chacun, « J'ai mangé ça », ingrédients, étapes.
 function ouvrirRecette(id) {

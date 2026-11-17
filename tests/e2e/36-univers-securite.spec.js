@@ -266,7 +266,7 @@ module.exports = {
       await H.openTab(page, 'sauvegarde');
       assert.match(await page.$eval('[data-sauvegarde-quand]', (e) => e.textContent), /Aucune sauvegarde/);
       const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 60000 }), page.click('[data-act="sauvegarde-exporter"]')]);
-      assert.equal(dl.suggestedFilename(), 'tribu-et-toutous-sauvegarde-2026-10-21.json');
+      assert.equal(dl.suggestedFilename(), 'tribu-sauvegarde-2026-10-21.json');
       const d = JSON.parse(fs.readFileSync(await dl.path(), 'utf8'));
       assert.equal(d.format, 'tribu-et-toutous/sauvegarde');
       for (const t of ['foyer_membres', 'recettes', 'planning_repas', 'journal', 'forme_seances', 'activites']) assert.ok(Array.isArray(d.tables[t]), `table ${t}`);

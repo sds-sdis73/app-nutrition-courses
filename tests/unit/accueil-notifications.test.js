@@ -91,7 +91,7 @@ test('send-reminders : notifications d\'un même passage regroupées en une seul
   eq(R.regrouper(m.slice(0, 1), true), [{ title: 'Bilan du soir', body: 'Un coup d\'œil ?', url: './#suivi', tag: 'bilan' }]);
   const g = R.regrouper(m, true);
   assert.equal(g.length, 1);
-  assert.equal(g[0].title, 'Tribu & Toutous · 2 nouvelles');
+  assert.equal(g[0].title, 'Tribu · 2 nouvelles');
   assert.equal(g[0].body, '• Bilan du soir : Un coup d\'œil ?\n• Demain : Dentiste à 14 h');
   assert.equal(R.regrouper(m, false).length, 2, 'regroupement désactivé');
 });
