@@ -432,7 +432,8 @@ function shoppingText() {
   }
   return lines.join('\n').trim();
 }
-function linkItem(k, name) {
+// retour : rappelé à la fermeture (validation, oubli ou annulation), pour revenir à l'écran d'origine (panier U).
+function linkItem(k, name, { retour } = {}) {
   const cur = state.links[k];
   const el = openSheet(`${sheetHead(`Produit pour « ${name} »`)}
     <ol class="muted small" style="margin-top:0;padding-left:18px"><li>Ouvrez la recherche Courses U et choisissez le produit.</li><li>Copiez l'adresse de sa page (elle contient <code>/p/</code>).</li><li>Collez-la ci-dessous : elle sera réutilisée à chaque liste.</li></ol>
@@ -446,7 +447,7 @@ function linkItem(k, name) {
       ${cur?.prix ? `<p class="muted small" style="margin:0">Prix actuel : ${fmtEur(Number(cur.prix))} (${PRICE_SRC[cur.prix_source] || 'mémorisé'}${cur.prix_date ? `, ${fmtDay(isoToDate(cur.prix_date))}` : ''}).</p>` : ''}
       <button class="btn primary block">Mémoriser</button>
       ${cur ? '<button type="button" class="btn danger block" data-x="del">Oublier ce produit</button>' : ''}
-    </form>`);
+    </form>`, { onClose: retour ? () => setTimeout(retour, 300) : undefined });
   const form = $('form', el);
   form.addEventListener('submit', async (e) => {
     e.preventDefault();

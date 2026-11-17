@@ -106,7 +106,8 @@ function remplirPanierCoursesU() {
 }
 const favoriPanierU = () => `javascript:${encodeURIComponent(`(${remplirPanierCoursesU.toString()})()`)}`;
 
-function panierUSheet(articles) {
+// sansOuvert : rubrique « Sans produit associé » dépliée (retour après une association).
+function panierUSheet(articles, { sansOuvert = false } = {}) {
   const dessiner = () => {
     const { avec, sans } = PanierU.repartir(articles);
     const code = PanierU.code(avec);
@@ -123,7 +124,7 @@ function panierUSheet(articles) {
         <a class="btn primary block" style="margin-top:12px" data-x="ouvrir" href="${esc(lien)}" target="_blank" rel="noopener">${ICON.cart} Ouvrir Courses U et remplir</a>
         <p class="muted small" style="margin:8px 0 0">Sur la page Courses U qui s'ouvre, touchez le favori <b>Remplir le panier</b>. Le code du panier est aussi copié : si le favori le demande, collez-le.</p>`
         : '<p class="muted small">Aucun article n\'est encore associé à un produit Courses U. Associez-les ci-dessous : c\'est à faire une seule fois par article.</p>'}
-      ${sans.length ? `<details class="ndetails" ${avec.length ? '' : 'open'}><summary>Sans produit associé (${sans.length})</summary>
+      ${sans.length ? `<details class="ndetails" data-sans ${avec.length && !sansOuvert ? '' : 'open'}><summary>Sans produit associé (${sans.length})</summary>
         ${sans.map((a) => `<div class="pu-ligne"><span class="grow">${esc(a.nom)}</span><button class="btn small" data-x="lier" data-cle="${esc(a.cle)}" data-nom="${esc(a.nom)}">${ICON.link} Associer</button></div>`).join('')}</details>` : ''}
       <details class="ndetails"><summary>Première fois : installer le favori « Remplir le panier »</summary>
         <p class="small"><b>Sur iPhone (Safari)</b></p>
@@ -135,6 +136,7 @@ function panierUSheet(articles) {
       </details>`;
   };
   const el = openSheet(dessiner());
+  if (sansOuvert) requestAnimationFrame(() => el.querySelector('[data-sans]')?.scrollIntoView({ block: 'start' }));
   const copier = async (txt, msg) => { try { await navigator.clipboard.writeText(txt); toast(msg); } catch { toast('Copie impossible sur ce navigateur'); } };
   el.addEventListener('click', async (e) => {
     const b = e.target.closest('[data-x]');
@@ -143,7 +145,7 @@ function panierUSheet(articles) {
     if (x === 'favori') { e.preventDefault(); toast('Glissez ce bouton dans la barre des favoris'); return; }
     if (x === 'ouvrir') { copier(PanierU.code(PanierU.repartir(articles).avec), 'Code du panier copié'); return; }
     if (x === 'copier-favori') { copier(favoriPanierU(), 'Favori copié : collez-le comme adresse du signet'); return; }
-    if (x === 'lier') { closeSheet(); linkItem(b.dataset.cle, b.dataset.nom); return; }
+    if (x === 'lier') { closeSheet(); linkItem(b.dataset.cle, b.dataset.nom, { retour: () => panierUSheet(articles, { sansOuvert: true }) }); return; }
     if (x === 'plus' || x === 'moins' || x === 'auto') {
       const a = articles.find((y) => y.cle === b.dataset.cle);
       PanierU.setQte(b.dataset.cle, x === 'auto' ? null : PanierU.qte(a) + (x === 'plus' ? 1 : -1));

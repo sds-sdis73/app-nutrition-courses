@@ -105,6 +105,26 @@ module.exports = {
       assert.match(await cu.evaluate(() => document.body.textContent), /2 produits ajoutés au panier/);
       await cu.close();
     } },
+    { name: 'panier Courses U : après une association, retour à la liste des articles sans produit', fn: async ({ page }) => {
+      await page.click('[data-act="panier-u"]');
+      await page.waitForSelector('.sheet-wrap.open [data-x="lier"]');
+      const avant = await page.$$eval('.sheet-wrap.open [data-x="lier"]', (l) => l.length);
+      await page.click('.sheet-wrap.open [data-x="lier"]');
+      await page.waitForSelector('form[data-form="link"] [name="url"]');
+      await page.fill('form[data-form="link"] [name="url"]', 'https://www.coursesu.com/p/produit-test-500g/1234567.html');
+      await page.click('form[data-form="link"] button.primary');
+      await page.waitForSelector('.sheet-wrap.open details[data-sans][open]', { timeout: 5000 });
+      assert.equal(await page.$$eval('.sheet-wrap.open [data-x="lier"]', (l) => l.length), avant - 1);
+      assert.match(await page.$eval('.sheet-wrap.open', (e) => e.textContent), /1 article prêt/);
+      // Annuler une association ramène aussi à la liste.
+      await page.click('.sheet-wrap.open [data-x="lier"]');
+      await page.waitForSelector('form[data-form="link"]');
+      await page.keyboard.press('Escape');
+      await page.waitForSelector('.sheet-wrap.open details[data-sans][open]', { timeout: 5000 });
+      await page.evaluate(async () => { for (const k of Object.keys(state.links)) await Data.deleteLink(k); });
+      await H.closeSheets(page);
+      await page.evaluate(() => render());
+    } },
     { name: 'copier la liste : texte complet', fn: async ({ page }) => {
       await page.evaluate(() => { window.__copied = ''; navigator.clipboard.writeText = async (t) => { window.__copied = t; }; });
       await page.click('[data-act="copy-list"]');
