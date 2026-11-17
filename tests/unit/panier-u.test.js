@@ -37,3 +37,16 @@ describe('panier Courses U : contenance et nombre de produits', () => {
     for (const k of ['farine', 'oeufs', 'huile']) delete app.state.links[k];
   });
 });
+
+describe('magasin Courses U', () => {
+  test('adresse collée → identifiant du magasin, nom deviné', () => {
+    assert.equal(app.slugMagasin('https://www.coursesu.com/drive-superu-cognin'), 'superu-cognin');
+    assert.equal(app.slugMagasin('https://www.coursesu.com/drive-hyperu-saint-jean-de-maurienne?utm=1'), 'hyperu-saint-jean-de-maurienne');
+    assert.equal(app.slugMagasin('superu-montmelian'), 'superu-montmelian');
+    assert.equal(app.slugMagasin('https://www.coursesu.com/p/lait/123.html'), '');
+    assert.equal(app.slugMagasin(''), '');
+    assert.equal(app.nomMagasin('superu-cognin'), 'Super U Cognin');
+    assert.equal(app.nomMagasin('hyperu-saint-jean'), 'Hyper U Saint Jean');
+    assert.equal(app.nomMagasin('uexpress-chambery'), 'U Express Chambery');
+  });
+});

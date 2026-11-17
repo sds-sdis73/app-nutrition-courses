@@ -370,7 +370,7 @@ function buildShopping() {
 const qtyLabel = (it) => (it.extraId ? it.qtyText : it.qty ? fmtQtyBase(it.qty, it.base) : '');
 const isChecked = (it) => (it.extraId ? !!it.checked : !!state.checks[it.key]);
 const cuSearch = (name) => `https://www.coursesu.com/recherche?q=${encodeURIComponent(name)}`;
-const cuStore = () => `https://www.coursesu.com/drive-${encodeURIComponent(state.settings.store_slug)}`;
+const cuStore = () => (state.settings.store_slug ? `https://www.coursesu.com/drive-${encodeURIComponent(state.settings.store_slug)}` : 'https://www.coursesu.com/');
 
 function renderShopping() {
   const addForm = `<form class="card extra-form" style="padding:12px;margin-bottom:12px" data-form="extra">
@@ -396,7 +396,7 @@ function renderShopping() {
   const basicsHtml = `<p class="muted small" style="margin:14px 0 0">Basiques non listés${skippedBasics.length ? ` (${esc(skippedBasics.map((x) => x.name).join(', '))})` : ''} · <button class="btn small" data-act="basiques" style="border:0;padding:0 4px;min-height:0;color:var(--primary-strong)">modifier les basiques</button></p>`;
   return `${addForm}${budgetHtml}
     <div class="card" style="padding:12px;margin-bottom:12px">
-      <div class="row"><span style="color:#e30613">${ICON.store}</span><div class="grow"><b>${esc(state.settings.store_name)}</b><div class="muted small">Courses U · <span data-checked-count>${checkedCountText()}</span></div></div></div>
+      <div class="row"><span style="color:#e30613">${ICON.store}</span><div class="grow"><b>${esc(state.settings.store_name || 'Magasin non choisi')}</b>${state.settings.store_slug ? '' : ' <button class="btn small" data-act="choisir-magasin">Choisir</button>'}<div class="muted small">Courses U · <span data-checked-count>${checkedCountText()}</span></div></div></div>
       <a class="btn soft block" style="margin-top:10px" href="${esc(cuStore())}" target="_blank" rel="noopener">${ICON.ext} 1. Ouvrir mon magasin sur Courses U</a>
       <p class="muted small" style="margin:8px 0 0">Puis, pour chaque article : <b>U</b> ouvre le produit mémorisé, la loupe lance une recherche, et ${ICON.link.replace('<svg', '<svg width="14" height="14" style="vertical-align:-2px"')} mémorise le produit choisi pour les prochaines fois.</p>
       <button class="btn primary block" style="margin-top:10px" data-act="panier-u">${ICON.cart} Remplir mon panier U</button>

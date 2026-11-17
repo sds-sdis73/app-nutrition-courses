@@ -108,12 +108,13 @@ const favoriPanierU = () => `javascript:${encodeURIComponent(`(${remplirPanierCo
 
 // sansOuvert : rubrique « Sans produit associé » dépliée (retour après une association).
 function panierUSheet(articles, { sansOuvert = false } = {}) {
+  if (!state.settings.store_slug) { choisirMagasin({ ensuite: () => panierUSheet(articles, { sansOuvert }) }); return; }
   const dessiner = () => {
     const { avec, sans } = PanierU.repartir(articles);
     const code = PanierU.code(avec);
     const lien = code ? `${cuStore()}#tribu-panier=${code}` : '';
     return `${sheetHead('Remplir mon panier Courses U')}
-      <p class="muted small" style="margin-top:0">${esc(state.settings.store_name)} · ${avec.length} article${avec.length > 1 ? 's' : ''} prêt${avec.length > 1 ? 's' : ''}${sans.length ? `, ${sans.length} sans produit associé` : ''}.</p>
+      <p class="muted small" style="margin-top:0">${esc(state.settings.store_name)} <button class="pu-auto" data-x="magasin">changer</button> · ${avec.length} article${avec.length > 1 ? 's' : ''} prêt${avec.length > 1 ? 's' : ''}${sans.length ? `, ${sans.length} sans produit associé` : ''}.</p>
       ${avec.length ? `<div class="pu-liste">${avec.map((a) => {
           const au = PanierU.auto(a), main = PanierU.main(a.cle);
           const calc = au.calcule ? `Besoin ${esc(fmtMesure(au.b))} · produit de ${esc(fmtMesure(au.c))} → ${au.n}` : au.c ? `Produit de ${esc(fmtMesure(au.c))}${au.b ? '' : ' · quantité de la liste inconnue'}` : 'Contenance inconnue : ajoutez-la au nom du produit (🔗)';
@@ -146,6 +147,7 @@ function panierUSheet(articles, { sansOuvert = false } = {}) {
     if (x === 'favori') { e.preventDefault(); toast('Glissez ce bouton dans la barre des favoris'); return; }
     if (x === 'ouvrir') { copier(PanierU.code(PanierU.repartir(articles).avec), 'Code du panier copié'); return; }
     if (x === 'copier-favori') { copier(favoriPanierU(), 'Favori copié : collez-le comme adresse du signet'); return; }
+    if (x === 'magasin') { closeSheet(); choisirMagasin({ ensuite: () => panierUSheet(articles) }); return; }
     if (x === 'lier') { closeSheet(); linkItem(b.dataset.cle, b.dataset.nom, { retour: () => panierUSheet(articles, { sansOuvert: true }) }); return; }
     if (x === 'plus' || x === 'moins' || x === 'auto') {
       const a = articles.find((y) => y.cle === b.dataset.cle);
@@ -155,4 +157,57 @@ function panierUSheet(articles, { sansOuvert = false } = {}) {
       el.querySelectorAll('details').forEach((d, i) => { d.open = ouverts[i] ?? d.open; });
     }
   });
+}
+
+// ---------------------------------------------------------------------------
+// Magasin Courses U du foyer : demandé à la première connexion d'un nouveau foyer, puis modifiable (Paramètres, Panier U).
+// ---------------------------------------------------------------------------
+// « https://www.coursesu.com/drive-superu-cognin », « drive-superu-cognin » ou « superu-cognin » → « superu-cognin ».
+function slugMagasin(texte) {
+  const t = String(texte || '').trim().toLowerCase();
+  const s = (t.match(/drive-([a-z0-9-]+)/)?.[1] || (/^[a-z0-9-]+$/.test(t) ? t.replace(/^drive-/, '') : '')).replace(/-+$/, '');
+  return /^[a-z0-9-]{3,80}$/.test(s) ? s : '';
+}
+// « superu-cognin » → « Super U Cognin » ; « hyperu-saint-jean » → « Hyper U Saint Jean ».
+function nomMagasin(slug) {
+  const enseigne = { superu: 'Super U', hyperu: 'Hyper U', uexpress: 'U Express', marcheu: 'Marché U', utile: 'Utile' };
+  const [t, ...reste] = String(slug || '').split('-');
+  const ville = reste.join(' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  return [enseigne[t] || (t ? t.replace(/^\w/, (c) => c.toUpperCase()) : ''), ville].filter(Boolean).join(' ');
+}
+function choisirMagasin({ ensuite } = {}) {
+  const s = state.settings;
+  const el = openSheet(`${sheetHead('Votre magasin Courses U')}
+    <p class="muted small" style="margin-top:0">Il sert à ouvrir votre drive et à y remplir le panier depuis la liste de courses.</p>
+    <ol class="small pu-etapes"><li>Ouvrez Courses U et choisissez votre magasin (bouton « Choisir mon magasin » du site).</li>
+      <li>Copiez l'adresse de la page du magasin : elle contient <code>coursesu.com/drive-</code>.</li><li>Collez-la ci-dessous.</li></ol>
+    <a class="btn soft block" href="https://www.coursesu.com/" target="_blank" rel="noopener">${ICON.ext} Ouvrir Courses U</a>
+    <form class="stack" style="margin-top:12px" data-form="magasin">
+      <label class="field"><span>Adresse du magasin</span><input class="input" name="adresse" inputmode="url" autocomplete="off" placeholder="https://www.coursesu.com/drive-…" value="${esc(s.store_slug ? `https://www.coursesu.com/drive-${s.store_slug}` : '')}"></label>
+      <label class="field"><span>Nom (facultatif)</span><input class="input" name="nom" maxlength="60" placeholder="Deviné d'après l'adresse" value="${esc(s.store_name || '')}"></label>
+      <button class="btn primary block">Enregistrer ce magasin</button>
+      <button type="button" class="btn block" data-x="plus-tard">Plus tard</button>
+    </form>`);
+  const form = $('form', el);
+  form.adresse.addEventListener('input', () => { const sl = slugMagasin(form.adresse.value); if (sl && !form.nom.dataset.touche) form.nom.value = nomMagasin(sl); });
+  form.nom.addEventListener('input', () => { form.nom.dataset.touche = '1'; });
+  $('[data-x="plus-tard"]', el).addEventListener('click', () => closeSheet());
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const slug = slugMagasin(form.adresse.value);
+    if (!slug) { toast('Collez l\'adresse de la page du magasin (coursesu.com/drive-…)'); return; }
+    try {
+      await Data.saveSettings({ store_slug: slug, store_name: form.nom.value.trim() || nomMagasin(slug) });
+      closeSheet(); render(); toast('Magasin enregistré');
+      if (ensuite) setTimeout(ensuite, 320);
+    } catch (err) { fail(err); }
+  });
+}
+// Première connexion d'un foyer sans magasin : demandé une fois par appareil (« Plus tard » ne revient pas à chaque ouverture).
+function demanderMagasinSiBesoin() {
+  if (state.settings.store_slug || !foyer()) return;
+  const cle = `magasin:demande:${foyer()}`;
+  if (store.get(cle, false)) return;
+  store.set(cle, true);
+  setTimeout(() => { if (!sheets.length && !state.settings.store_slug) choisirMagasin(); }, 1500);
 }

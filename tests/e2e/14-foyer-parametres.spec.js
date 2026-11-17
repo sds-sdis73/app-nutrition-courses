@@ -9,7 +9,7 @@ module.exports = {
     await page.evaluate(async () => {
       for (const m of state.members.filter((x) => /Invité test/.test(x.nom))) await Data.deleteMember(m.id);
       for (const r of state.recipes.filter((x) => /Recette importée test/.test(x.title))) await Data.deleteRecipe(r.id);
-      await Data.saveSettings({ store_name: 'Super U Porte de Savoie Montmélian', default_servings: 3 });
+      await Data.saveSettings({ store_name: 'Super U Porte de Savoie Montmélian', store_slug: 'superu-montmelian', default_servings: 3 });
       render();
     });
   },
@@ -68,6 +68,46 @@ module.exports = {
       await page.evaluate(() => openFoyerComptes());
       const code = await page.evaluate(() => state.foyer.code_invitation);
       await page.waitForFunction((c) => (document.querySelector('.sheet-wrap.open')?.textContent || '').includes(c), code, { timeout: 15000 });
+      await H.closeSheets(page);
+    } },
+    { name: 'magasin non choisi : demandé une fois, adresse collée → identifiant et nom devinés', fn: async ({ page }) => {
+      await page.evaluate(async () => { await Data.saveSettings({ store_name: '', store_slug: '' }); localStorage.removeItem(`magasin:demande:${foyer()}`); demanderMagasinSiBesoin(); });
+      await page.waitForSelector('.sheet-wrap.open form[data-form="magasin"]', { timeout: 5000 });
+      await page.fill('.sheet-wrap.open [name="adresse"]', 'https://www.coursesu.com/drive-superu-cognin');
+      assert.equal(await page.$eval('.sheet-wrap.open [name="nom"]', (i) => i.value), 'Super U Cognin');
+      await page.click('.sheet-wrap.open form[data-form="magasin"] button.primary');
+      await page.waitForTimeout(1200);
+      assert.deepEqual(await page.evaluate(() => [state.settings.store_slug, state.settings.store_name]), ['superu-cognin', 'Super U Cognin']);
+      // Déjà demandé sur cet appareil : pas de nouvelle demande, même sans magasin.
+      await page.evaluate(async () => { await Data.saveSettings({ store_name: '', store_slug: '' }); demanderMagasinSiBesoin(); });
+      await page.waitForTimeout(1800);
+      assert.equal(await page.$('.sheet-wrap.open form[data-form="magasin"]'), null);
+      // Panier U sans magasin : le choix du magasin passe d'abord.
+      await page.evaluate(() => panierUSheet([]));
+      await page.waitForSelector('.sheet-wrap.open form[data-form="magasin"]');
+      await H.closeSheets(page);
+      await page.evaluate(async () => { await Data.saveSettings({ store_name: 'Super U Porte de Savoie Montmélian', store_slug: 'superu-montmelian' }); render(); });
+    } },
+    { name: 'supprimer mon compte : confirmation écrite, appel au serveur, déconnexion (simulés)', fn: async ({ page }) => {
+      await page.evaluate(() => {
+        window.__appels = [];
+        window.__invoke = Foyer.invoke; window.__signOut = db.auth.signOut;
+        Foyer.invoke = async (nom, corps) => { window.__appels.push([nom, corps]); return { ok: true }; };
+        db.auth.signOut = async () => { window.__appels.push(['signOut']); return {}; };
+        openFoyerComptes();
+      });
+      await page.waitForSelector('.sheet-wrap.open details[data-supprimer]');
+      await page.click('.sheet-wrap.open details[data-supprimer] summary');
+      assert.match(await page.$eval('.sheet-wrap.open details[data-supprimer]', (e) => e.textContent), /dernier compte de ce foyer|Le foyer continue/);
+      await page.fill('.sheet-wrap.open [data-form="supprimer-compte"] [name="confirmation"]', 'oui');
+      await page.click('.sheet-wrap.open [data-form="supprimer-compte"] button');
+      await page.waitForTimeout(400);
+      assert.deepEqual(await page.evaluate(() => window.__appels), []);
+      await page.fill('.sheet-wrap.open [data-form="supprimer-compte"] [name="confirmation"]', 'supprimer');
+      await page.click('.sheet-wrap.open [data-form="supprimer-compte"] button');
+      await page.waitForTimeout(800);
+      assert.deepEqual(await page.evaluate(() => window.__appels), [['supprimer-compte', { confirmation: 'SUPPRIMER' }], ['signOut']]);
+      await page.evaluate(() => { Foyer.invoke = window.__invoke; db.auth.signOut = window.__signOut; });
       await H.closeSheets(page);
     } },
     { name: 'export JSON puis import', fn: async ({ page }) => {

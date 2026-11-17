@@ -106,6 +106,7 @@ const ACTIONS = {
   slot: (b) => onSlot(Number(b.dataset.d), b.dataset.s),
   'cancel-move': () => { state.moving = null; render(); },
   'link-item': (b) => linkItem(b.dataset.k, b.dataset.n),
+  'choisir-magasin': () => choisirMagasin(),
   'panier-u': () => { const { byAisle } = buildShopping(); panierUSheet([...byAisle.values()].flat().filter((it) => !isChecked(it)).map((it) => ({ cle: it.ingKey, nom: it.name, besoin: it.extraId ? it.qtyText : it.qty && !it.noQty ? { v: it.qty, base: COUNTABLE.has(it.base) || !it.base ? 'pièce' : it.base } : null }))); },
   'copy-list': async () => {
     try { await navigator.clipboard.writeText(shoppingText()); toast('Liste copiée'); } catch { toast('Copie impossible sur ce navigateur'); }

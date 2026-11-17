@@ -142,7 +142,14 @@ function openFoyerComptes() {
       <div class="ntable"><div class="nt-title">Comptes du foyer</div>${comptes}</div>
       <details class="ndetails"><summary>Rejoindre un autre foyer</summary>
         <p class="muted small">Vos données actuelles resteront dans votre foyer actuel. Saisissez le code reçu :</p>
-        <form class="row" data-form="join"><input class="input grow" name="code" placeholder="Code à 8 caractères" maxlength="10" autocapitalize="characters" required><button class="btn primary">Rejoindre</button></form></details>`;
+        <form class="row" data-form="join"><input class="input grow" name="code" placeholder="Code à 8 caractères" maxlength="10" autocapitalize="characters" required><button class="btn primary">Rejoindre</button></form></details>
+      <details class="ndetails" data-supprimer><summary>Supprimer mon compte</summary>
+        ${(state.comptes || []).some((c) => c.user_id !== me())
+          ? `<p class="small">Votre compte et vos réglages personnels (notifications, appareils) seront supprimés. <b>Le foyer continue</b> pour les autres comptes, avec tout ce qui a été saisi : recettes, planning, agenda, photos, messages…</p>`
+          : `<p class="small">Vous êtes le dernier compte de ce foyer : <b>le foyer et toutes ses données seront supprimés</b> (recettes, planning, agenda, carnet, photos, messages, suivi…). Pensez à exporter vos données avant (Paramètres › Exporter).</p>`}
+        <form class="stack" data-form="supprimer-compte"><label class="field"><span>Pour confirmer, écrivez SUPPRIMER</span><input class="input" name="confirmation" autocomplete="off" autocapitalize="characters" required></label>
+          <button class="btn danger block">Supprimer définitivement mon compte</button></form>
+        <p class="muted small">C'est irréversible.</p></details>`;
   };
   draw();
   el.addEventListener('click', async (e) => {
@@ -167,6 +174,21 @@ function openFoyerComptes() {
   el.addEventListener('submit', async (e) => {
     e.preventDefault();
     const f = e.target;
+    if (f.dataset.form === 'supprimer-compte') {
+      if (f.confirmation.value.trim().toUpperCase() !== 'SUPPRIMER') { toast('Écrivez SUPPRIMER pour confirmer'); return; }
+      const btn = $('button', f);
+      btn.disabled = true; btn.textContent = 'Suppression…';
+      try {
+        const fid = foyer();
+        await Foyer.invoke('supprimer-compte', { confirmation: 'SUPPRIMER' });
+        // Copies locales de ce foyer sur cet appareil : effacées aussi.
+        try { for (const k of Object.keys(localStorage)) if (fid && k.includes(fid)) localStorage.removeItem(k); } catch { /* stockage indisponible */ }
+        while (sheets.length) closeSheet();
+        await db.auth.signOut({ scope: 'local' }).catch(() => {});
+        toast('Compte supprimé');
+      } catch (err) { btn.disabled = false; btn.textContent = 'Supprimer définitivement mon compte'; toast(err.message); }
+      return;
+    }
     if (f.dataset.form === 'foyer-nom') {
       try {
         const { error } = await db.from('foyers').update({ nom: f.nom.value.trim() || 'Mon foyer' }).eq('id', foyer());
@@ -224,6 +246,7 @@ async function onSession(session) {
     await Forme.load(true).catch((e) => console.warn('forme', e));
     await Modules.charger(true, { horsLigne: false });
     state.loaded = true;
+    demanderMagasinSiBesoin();
     const qs = new URLSearchParams(location.search);
     const hash = location.hash.replace('#', '');
     // Lien direct vers un écran (#planning, #agenda…) ou un onglet (#cuisine).

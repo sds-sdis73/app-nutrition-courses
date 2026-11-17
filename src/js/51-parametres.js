@@ -15,8 +15,8 @@ function openSettings() {
     <button class="btn soft block" data-x="foyer" style="margin-bottom:16px">${ICON.users} Mon foyer · ${state.members.length ? `${state.members.length} membre${state.members.length > 1 ? 's' : ''}` : 'à configurer'}</button>
     <form class="stack" data-form="settings">
       <h3 style="margin:0">Supermarché</h3>
-      <label class="field"><span>Nom du magasin</span><input class="input" name="store_name" value="${esc(s.store_name)}" required></label>
-      <label class="field"><span>Adresse Courses U du magasin</span><input class="input" name="store_slug" value="${esc(`https://www.coursesu.com/drive-${s.store_slug}`)}" required></label>
+      <label class="field"><span>Nom du magasin</span><input class="input" name="store_name" value="${esc(s.store_name)}" placeholder="Ex. Super U de ma ville"></label>
+      <label class="field"><span>Adresse Courses U du magasin</span><input class="input" name="store_slug" value="${esc(s.store_slug ? `https://www.coursesu.com/drive-${s.store_slug}` : '')}" placeholder="https://www.coursesu.com/drive-…"></label>
       <p class="muted small" style="margin:0">Pour changer de magasin : sur coursesu.com, choisissez votre magasin, puis copiez l'adresse de sa page (elle commence par <code>coursesu.com/drive-</code>).</p>
       <h3 style="margin:16px 0 0">Repas</h3>
       <label class="field"><span>Nombre de personnes par défaut</span><input class="input" type="number" min="1" max="20" name="default_servings" value="${s.default_servings}"></label>
@@ -36,10 +36,10 @@ function openSettings() {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const raw = form.store_slug.value.trim();
-    const slug = (raw.match(/drive-([a-z0-9-]+)/i)?.[1] || raw.replace(/^drive-/, '')).toLowerCase();
-    if (!/^[a-z0-9-]+$/.test(slug)) { toast('Adresse du magasin invalide'); return; }
+    const slug = raw ? slugMagasin(raw) : '';
+    if (raw && !slug) { toast('Adresse du magasin invalide'); return; }
     try {
-      await Data.saveSettings({ store_name: form.store_name.value.trim(), store_slug: slug, default_servings: clamp(parseInt(form.default_servings.value, 10) || 2, 1, 20) });
+      await Data.saveSettings({ store_name: form.store_name.value.trim() || (slug ? nomMagasin(slug) : ''), store_slug: slug, default_servings: clamp(parseInt(form.default_servings.value, 10) || 2, 1, 20) });
       closeSheet(); render(); toast('Paramètres enregistrés');
     } catch (err) { fail(err); }
   });

@@ -4114,7 +4114,7 @@ Forme.install = function install() {
 // ---------------------------------------------------------------------------
 const APP_NAME = 'Tribu & Toutous';
 // À incrémenter à chaque publication, avec la même valeur dans version.json.
-const APP_VERSION = '2026-11-17.5';
+const APP_VERSION = '2026-11-17.6';
 const SUPABASE_URL = 'https://svugddkrptqpjmywhorb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2dWdkZGtycHRxcGpteXdob3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MjU5NDgsImV4cCI6MjEwODUwMTk0OH0.63RETgf7rbVMquGV-7ooY3qn-Qf31uVCA3ZBfqBvFcI';
 const OFF = 'https://world.openfoodfacts.org/api/v2';
@@ -4227,7 +4227,7 @@ const state = {
   tab: (() => { const t = store.get('tab', 'accueil-famille'); if (store.get('accueil:v2', false)) return t; store.set('accueil:v2', true); store.set('vue:accueil', 'accueil-famille'); return t === 'aujourdhui' ? 'accueil-famille' : t; })(),
   offline: false,
   push: null,
-  settings: { store_name: 'Drive Super U Cognin', store_slug: 'superu-cognin', default_servings: 2 },
+  settings: { store_name: '', store_slug: '', default_servings: 2 },
   recipes: [],
   links: {},
   scans: [],
@@ -4312,7 +4312,8 @@ const Data = {
     if (!state.placards.some((x) => x.type === 'basique')) await Data.seedBasiques().catch((e) => console.warn(e));
     if (s.data) state.settings = s.data;
     else {
-      const ins = await db.from(T.settings).insert(own()).select().single();
+      // Nouveau foyer : aucun magasin choisi (l'appli le demande à la première connexion).
+      const ins = await db.from(T.settings).insert({ ...own(), store_name: '', store_slug: '' }).select().single();
       if (ins.error) throw ins.error;
       state.settings = ins.data;
     }
@@ -7226,7 +7227,7 @@ function buildShopping() {
 const qtyLabel = (it) => (it.extraId ? it.qtyText : it.qty ? fmtQtyBase(it.qty, it.base) : '');
 const isChecked = (it) => (it.extraId ? !!it.checked : !!state.checks[it.key]);
 const cuSearch = (name) => `https://www.coursesu.com/recherche?q=${encodeURIComponent(name)}`;
-const cuStore = () => `https://www.coursesu.com/drive-${encodeURIComponent(state.settings.store_slug)}`;
+const cuStore = () => (state.settings.store_slug ? `https://www.coursesu.com/drive-${encodeURIComponent(state.settings.store_slug)}` : 'https://www.coursesu.com/');
 
 function renderShopping() {
   const addForm = `<form class="card extra-form" style="padding:12px;margin-bottom:12px" data-form="extra">
@@ -7252,7 +7253,7 @@ function renderShopping() {
   const basicsHtml = `<p class="muted small" style="margin:14px 0 0">Basiques non listés${skippedBasics.length ? ` (${esc(skippedBasics.map((x) => x.name).join(', '))})` : ''} · <button class="btn small" data-act="basiques" style="border:0;padding:0 4px;min-height:0;color:var(--primary-strong)">modifier les basiques</button></p>`;
   return `${addForm}${budgetHtml}
     <div class="card" style="padding:12px;margin-bottom:12px">
-      <div class="row"><span style="color:#e30613">${ICON.store}</span><div class="grow"><b>${esc(state.settings.store_name)}</b><div class="muted small">Courses U · <span data-checked-count>${checkedCountText()}</span></div></div></div>
+      <div class="row"><span style="color:#e30613">${ICON.store}</span><div class="grow"><b>${esc(state.settings.store_name || 'Magasin non choisi')}</b>${state.settings.store_slug ? '' : ' <button class="btn small" data-act="choisir-magasin">Choisir</button>'}<div class="muted small">Courses U · <span data-checked-count>${checkedCountText()}</span></div></div></div>
       <a class="btn soft block" style="margin-top:10px" href="${esc(cuStore())}" target="_blank" rel="noopener">${ICON.ext} 1. Ouvrir mon magasin sur Courses U</a>
       <p class="muted small" style="margin:8px 0 0">Puis, pour chaque article : <b>U</b> ouvre le produit mémorisé, la loupe lance une recherche, et ${ICON.link.replace('<svg', '<svg width="14" height="14" style="vertical-align:-2px"')} mémorise le produit choisi pour les prochaines fois.</p>
       <button class="btn primary block" style="margin-top:10px" data-act="panier-u">${ICON.cart} Remplir mon panier U</button>
@@ -7450,12 +7451,13 @@ const favoriPanierU = () => `javascript:${encodeURIComponent(`(${remplirPanierCo
 
 // sansOuvert : rubrique « Sans produit associé » dépliée (retour après une association).
 function panierUSheet(articles, { sansOuvert = false } = {}) {
+  if (!state.settings.store_slug) { choisirMagasin({ ensuite: () => panierUSheet(articles, { sansOuvert }) }); return; }
   const dessiner = () => {
     const { avec, sans } = PanierU.repartir(articles);
     const code = PanierU.code(avec);
     const lien = code ? `${cuStore()}#tribu-panier=${code}` : '';
     return `${sheetHead('Remplir mon panier Courses U')}
-      <p class="muted small" style="margin-top:0">${esc(state.settings.store_name)} · ${avec.length} article${avec.length > 1 ? 's' : ''} prêt${avec.length > 1 ? 's' : ''}${sans.length ? `, ${sans.length} sans produit associé` : ''}.</p>
+      <p class="muted small" style="margin-top:0">${esc(state.settings.store_name)} <button class="pu-auto" data-x="magasin">changer</button> · ${avec.length} article${avec.length > 1 ? 's' : ''} prêt${avec.length > 1 ? 's' : ''}${sans.length ? `, ${sans.length} sans produit associé` : ''}.</p>
       ${avec.length ? `<div class="pu-liste">${avec.map((a) => {
           const au = PanierU.auto(a), main = PanierU.main(a.cle);
           const calc = au.calcule ? `Besoin ${esc(fmtMesure(au.b))} · produit de ${esc(fmtMesure(au.c))} → ${au.n}` : au.c ? `Produit de ${esc(fmtMesure(au.c))}${au.b ? '' : ' · quantité de la liste inconnue'}` : 'Contenance inconnue : ajoutez-la au nom du produit (🔗)';
@@ -7488,6 +7490,7 @@ function panierUSheet(articles, { sansOuvert = false } = {}) {
     if (x === 'favori') { e.preventDefault(); toast('Glissez ce bouton dans la barre des favoris'); return; }
     if (x === 'ouvrir') { copier(PanierU.code(PanierU.repartir(articles).avec), 'Code du panier copié'); return; }
     if (x === 'copier-favori') { copier(favoriPanierU(), 'Favori copié : collez-le comme adresse du signet'); return; }
+    if (x === 'magasin') { closeSheet(); choisirMagasin({ ensuite: () => panierUSheet(articles) }); return; }
     if (x === 'lier') { closeSheet(); linkItem(b.dataset.cle, b.dataset.nom, { retour: () => panierUSheet(articles, { sansOuvert: true }) }); return; }
     if (x === 'plus' || x === 'moins' || x === 'auto') {
       const a = articles.find((y) => y.cle === b.dataset.cle);
@@ -7497,6 +7500,59 @@ function panierUSheet(articles, { sansOuvert = false } = {}) {
       el.querySelectorAll('details').forEach((d, i) => { d.open = ouverts[i] ?? d.open; });
     }
   });
+}
+
+// ---------------------------------------------------------------------------
+// Magasin Courses U du foyer : demandé à la première connexion d'un nouveau foyer, puis modifiable (Paramètres, Panier U).
+// ---------------------------------------------------------------------------
+// « https://www.coursesu.com/drive-superu-cognin », « drive-superu-cognin » ou « superu-cognin » → « superu-cognin ».
+function slugMagasin(texte) {
+  const t = String(texte || '').trim().toLowerCase();
+  const s = (t.match(/drive-([a-z0-9-]+)/)?.[1] || (/^[a-z0-9-]+$/.test(t) ? t.replace(/^drive-/, '') : '')).replace(/-+$/, '');
+  return /^[a-z0-9-]{3,80}$/.test(s) ? s : '';
+}
+// « superu-cognin » → « Super U Cognin » ; « hyperu-saint-jean » → « Hyper U Saint Jean ».
+function nomMagasin(slug) {
+  const enseigne = { superu: 'Super U', hyperu: 'Hyper U', uexpress: 'U Express', marcheu: 'Marché U', utile: 'Utile' };
+  const [t, ...reste] = String(slug || '').split('-');
+  const ville = reste.join(' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  return [enseigne[t] || (t ? t.replace(/^\w/, (c) => c.toUpperCase()) : ''), ville].filter(Boolean).join(' ');
+}
+function choisirMagasin({ ensuite } = {}) {
+  const s = state.settings;
+  const el = openSheet(`${sheetHead('Votre magasin Courses U')}
+    <p class="muted small" style="margin-top:0">Il sert à ouvrir votre drive et à y remplir le panier depuis la liste de courses.</p>
+    <ol class="small pu-etapes"><li>Ouvrez Courses U et choisissez votre magasin (bouton « Choisir mon magasin » du site).</li>
+      <li>Copiez l'adresse de la page du magasin : elle contient <code>coursesu.com/drive-</code>.</li><li>Collez-la ci-dessous.</li></ol>
+    <a class="btn soft block" href="https://www.coursesu.com/" target="_blank" rel="noopener">${ICON.ext} Ouvrir Courses U</a>
+    <form class="stack" style="margin-top:12px" data-form="magasin">
+      <label class="field"><span>Adresse du magasin</span><input class="input" name="adresse" inputmode="url" autocomplete="off" placeholder="https://www.coursesu.com/drive-…" value="${esc(s.store_slug ? `https://www.coursesu.com/drive-${s.store_slug}` : '')}"></label>
+      <label class="field"><span>Nom (facultatif)</span><input class="input" name="nom" maxlength="60" placeholder="Deviné d'après l'adresse" value="${esc(s.store_name || '')}"></label>
+      <button class="btn primary block">Enregistrer ce magasin</button>
+      <button type="button" class="btn block" data-x="plus-tard">Plus tard</button>
+    </form>`);
+  const form = $('form', el);
+  form.adresse.addEventListener('input', () => { const sl = slugMagasin(form.adresse.value); if (sl && !form.nom.dataset.touche) form.nom.value = nomMagasin(sl); });
+  form.nom.addEventListener('input', () => { form.nom.dataset.touche = '1'; });
+  $('[data-x="plus-tard"]', el).addEventListener('click', () => closeSheet());
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const slug = slugMagasin(form.adresse.value);
+    if (!slug) { toast('Collez l\'adresse de la page du magasin (coursesu.com/drive-…)'); return; }
+    try {
+      await Data.saveSettings({ store_slug: slug, store_name: form.nom.value.trim() || nomMagasin(slug) });
+      closeSheet(); render(); toast('Magasin enregistré');
+      if (ensuite) setTimeout(ensuite, 320);
+    } catch (err) { fail(err); }
+  });
+}
+// Première connexion d'un foyer sans magasin : demandé une fois par appareil (« Plus tard » ne revient pas à chaque ouverture).
+function demanderMagasinSiBesoin() {
+  if (state.settings.store_slug || !foyer()) return;
+  const cle = `magasin:demande:${foyer()}`;
+  if (store.get(cle, false)) return;
+  store.set(cle, true);
+  setTimeout(() => { if (!sheets.length && !state.settings.store_slug) choisirMagasin(); }, 1500);
 }
 // ---------------------------------------------------------------------------
 // Compagnon animal : rendu SVG, humeurs, messages, bilan quotidien, coquillages, boutique
@@ -8996,8 +9052,8 @@ function openSettings() {
     <button class="btn soft block" data-x="foyer" style="margin-bottom:16px">${ICON.users} Mon foyer · ${state.members.length ? `${state.members.length} membre${state.members.length > 1 ? 's' : ''}` : 'à configurer'}</button>
     <form class="stack" data-form="settings">
       <h3 style="margin:0">Supermarché</h3>
-      <label class="field"><span>Nom du magasin</span><input class="input" name="store_name" value="${esc(s.store_name)}" required></label>
-      <label class="field"><span>Adresse Courses U du magasin</span><input class="input" name="store_slug" value="${esc(`https://www.coursesu.com/drive-${s.store_slug}`)}" required></label>
+      <label class="field"><span>Nom du magasin</span><input class="input" name="store_name" value="${esc(s.store_name)}" placeholder="Ex. Super U de ma ville"></label>
+      <label class="field"><span>Adresse Courses U du magasin</span><input class="input" name="store_slug" value="${esc(s.store_slug ? `https://www.coursesu.com/drive-${s.store_slug}` : '')}" placeholder="https://www.coursesu.com/drive-…"></label>
       <p class="muted small" style="margin:0">Pour changer de magasin : sur coursesu.com, choisissez votre magasin, puis copiez l'adresse de sa page (elle commence par <code>coursesu.com/drive-</code>).</p>
       <h3 style="margin:16px 0 0">Repas</h3>
       <label class="field"><span>Nombre de personnes par défaut</span><input class="input" type="number" min="1" max="20" name="default_servings" value="${s.default_servings}"></label>
@@ -9017,10 +9073,10 @@ function openSettings() {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const raw = form.store_slug.value.trim();
-    const slug = (raw.match(/drive-([a-z0-9-]+)/i)?.[1] || raw.replace(/^drive-/, '')).toLowerCase();
-    if (!/^[a-z0-9-]+$/.test(slug)) { toast('Adresse du magasin invalide'); return; }
+    const slug = raw ? slugMagasin(raw) : '';
+    if (raw && !slug) { toast('Adresse du magasin invalide'); return; }
     try {
-      await Data.saveSettings({ store_name: form.store_name.value.trim(), store_slug: slug, default_servings: clamp(parseInt(form.default_servings.value, 10) || 2, 1, 20) });
+      await Data.saveSettings({ store_name: form.store_name.value.trim() || (slug ? nomMagasin(slug) : ''), store_slug: slug, default_servings: clamp(parseInt(form.default_servings.value, 10) || 2, 1, 20) });
       closeSheet(); render(); toast('Paramètres enregistrés');
     } catch (err) { fail(err); }
   });
@@ -9165,6 +9221,7 @@ const ACTIONS = {
   slot: (b) => onSlot(Number(b.dataset.d), b.dataset.s),
   'cancel-move': () => { state.moving = null; render(); },
   'link-item': (b) => linkItem(b.dataset.k, b.dataset.n),
+  'choisir-magasin': () => choisirMagasin(),
   'panier-u': () => { const { byAisle } = buildShopping(); panierUSheet([...byAisle.values()].flat().filter((it) => !isChecked(it)).map((it) => ({ cle: it.ingKey, nom: it.name, besoin: it.extraId ? it.qtyText : it.qty && !it.noQty ? { v: it.qty, base: COUNTABLE.has(it.base) || !it.base ? 'pièce' : it.base } : null }))); },
   'copy-list': async () => {
     try { await navigator.clipboard.writeText(shoppingText()); toast('Liste copiée'); } catch { toast('Copie impossible sur ce navigateur'); }
@@ -9476,7 +9533,14 @@ function openFoyerComptes() {
       <div class="ntable"><div class="nt-title">Comptes du foyer</div>${comptes}</div>
       <details class="ndetails"><summary>Rejoindre un autre foyer</summary>
         <p class="muted small">Vos données actuelles resteront dans votre foyer actuel. Saisissez le code reçu :</p>
-        <form class="row" data-form="join"><input class="input grow" name="code" placeholder="Code à 8 caractères" maxlength="10" autocapitalize="characters" required><button class="btn primary">Rejoindre</button></form></details>`;
+        <form class="row" data-form="join"><input class="input grow" name="code" placeholder="Code à 8 caractères" maxlength="10" autocapitalize="characters" required><button class="btn primary">Rejoindre</button></form></details>
+      <details class="ndetails" data-supprimer><summary>Supprimer mon compte</summary>
+        ${(state.comptes || []).some((c) => c.user_id !== me())
+          ? `<p class="small">Votre compte et vos réglages personnels (notifications, appareils) seront supprimés. <b>Le foyer continue</b> pour les autres comptes, avec tout ce qui a été saisi : recettes, planning, agenda, photos, messages…</p>`
+          : `<p class="small">Vous êtes le dernier compte de ce foyer : <b>le foyer et toutes ses données seront supprimés</b> (recettes, planning, agenda, carnet, photos, messages, suivi…). Pensez à exporter vos données avant (Paramètres › Exporter).</p>`}
+        <form class="stack" data-form="supprimer-compte"><label class="field"><span>Pour confirmer, écrivez SUPPRIMER</span><input class="input" name="confirmation" autocomplete="off" autocapitalize="characters" required></label>
+          <button class="btn danger block">Supprimer définitivement mon compte</button></form>
+        <p class="muted small">C'est irréversible.</p></details>`;
   };
   draw();
   el.addEventListener('click', async (e) => {
@@ -9501,6 +9565,21 @@ function openFoyerComptes() {
   el.addEventListener('submit', async (e) => {
     e.preventDefault();
     const f = e.target;
+    if (f.dataset.form === 'supprimer-compte') {
+      if (f.confirmation.value.trim().toUpperCase() !== 'SUPPRIMER') { toast('Écrivez SUPPRIMER pour confirmer'); return; }
+      const btn = $('button', f);
+      btn.disabled = true; btn.textContent = 'Suppression…';
+      try {
+        const fid = foyer();
+        await Foyer.invoke('supprimer-compte', { confirmation: 'SUPPRIMER' });
+        // Copies locales de ce foyer sur cet appareil : effacées aussi.
+        try { for (const k of Object.keys(localStorage)) if (fid && k.includes(fid)) localStorage.removeItem(k); } catch { /* stockage indisponible */ }
+        while (sheets.length) closeSheet();
+        await db.auth.signOut({ scope: 'local' }).catch(() => {});
+        toast('Compte supprimé');
+      } catch (err) { btn.disabled = false; btn.textContent = 'Supprimer définitivement mon compte'; toast(err.message); }
+      return;
+    }
     if (f.dataset.form === 'foyer-nom') {
       try {
         const { error } = await db.from('foyers').update({ nom: f.nom.value.trim() || 'Mon foyer' }).eq('id', foyer());
@@ -9558,6 +9637,7 @@ async function onSession(session) {
     await Forme.load(true).catch((e) => console.warn('forme', e));
     await Modules.charger(true, { horsLigne: false });
     state.loaded = true;
+    demanderMagasinSiBesoin();
     const qs = new URLSearchParams(location.search);
     const hash = location.hash.replace('#', '');
     // Lien direct vers un écran (#planning, #agenda…) ou un onglet (#cuisine).

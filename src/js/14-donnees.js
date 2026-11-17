@@ -53,7 +53,8 @@ const Data = {
     if (!state.placards.some((x) => x.type === 'basique')) await Data.seedBasiques().catch((e) => console.warn(e));
     if (s.data) state.settings = s.data;
     else {
-      const ins = await db.from(T.settings).insert(own()).select().single();
+      // Nouveau foyer : aucun magasin choisi (l'appli le demande à la première connexion).
+      const ins = await db.from(T.settings).insert({ ...own(), store_name: '', store_slug: '' }).select().single();
       if (ins.error) throw ins.error;
       state.settings = ins.data;
     }
