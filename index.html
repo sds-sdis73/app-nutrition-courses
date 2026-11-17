@@ -1269,7 +1269,7 @@ button.af-carte:active { transform: translateY(1px); }
 .af-tuiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 0 0 16px; }
 .af-tuile {
   display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-height: 96px; min-width: 0; text-align: left;
-  padding: 12px; border: 2px solid var(--ink); border-radius: 18px; background: var(--surface); color: var(--ink); font: inherit;
+  padding: 12px; border: 2px solid var(--ink); border-radius: 12px; background: var(--surface); color: var(--ink); font: inherit;
   box-shadow: 0 3px 0 var(--ink);
 }
 .af-tuile:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
@@ -1279,7 +1279,7 @@ button.af-carte:active { transform: translateY(1px); }
 .af-tuile-titre { font-size: 13px; font-weight: 700; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .af-tuile-valeur { font-size: 17px; line-height: 1.2; font-family: var(--display); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; max-width: 100%; }
 .af-tuile-detail { font-size: 13px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; max-width: 100%; }
-:root[data-univers] .af-tuile { border: var(--u-bord) solid var(--u-ligne); border-radius: var(--u-r-btn); box-shadow: var(--u-sh-btn, none); }
+:root[data-univers] .af-tuile { border: var(--u-bord) solid var(--u-ligne); border-radius: 12px; box-shadow: var(--u-sh-btn, none); }
 /* ==== module agenda-synchro ==== */
 /* Plus › Agendas reliés : lien d'abonnement, agendas importés, iCloud (jetons du thème uniquement). */
 .async-titre { font-size: 17px; margin: 18px 0 8px; }
@@ -4103,7 +4103,7 @@ Forme.install = function install() {
 // ---------------------------------------------------------------------------
 const APP_NAME = 'Tribu & Toutous';
 // À incrémenter à chaque publication, avec la même valeur dans version.json.
-const APP_VERSION = '2026-11-16.3';
+const APP_VERSION = '2026-11-16.4';
 const SUPABASE_URL = 'https://svugddkrptqpjmywhorb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2dWdkZGtycHRxcGpteXdob3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MjU5NDgsImV4cCI6MjEwODUwMTk0OH0.63RETgf7rbVMquGV-7ooY3qn-Qf31uVCA3ZBfqBvFcI';
 const OFF = 'https://world.openfoodfacts.org/api/v2';
