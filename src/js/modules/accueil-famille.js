@@ -57,11 +57,13 @@ function classerBriefing({ agenda = [], accueil = [], seances = [], membres = []
     if (tr) return { ...base, type: 'trajet', sens: tr.sens, membres: tr.qui, pour: tr.pour };
     return { ...base, type: 'evenement' };
   };
-  for (const e of agenda) out.push(de(e, e.source));
+  // Les repas restent dans Cuisine : jamais dans le briefing.
+  for (const e of agenda) { const x = de(e, e.source); if (x.type !== 'repas') out.push(x); }
   const deja = new Set(out.map((x) => `${sansAccents(x.titre)}|${x.heure || ''}`));
   for (const e of accueil) {
     if (['accueil-famille', 'agenda', 'planning'].includes(e.module)) continue;
     const x = de(e, e.module);
+    if (x.type === 'repas') continue;
     const k = `${sansAccents(x.titre)}|${x.heure || ''}`;
     if (!deja.has(k)) { deja.add(k); out.push(x); }
   }
@@ -169,21 +171,6 @@ const moiCompte = () => memberById(state.compte?.member_id) || state.members[0] 
 const enfantsDuFoyer = () => state.members.filter((m) => m.naissance && ageOf(m) < 15).map((m) => m.id);
 const indexMembre = (id) => state.members.findIndex((m) => m.id === id);
 
-// Repas du jour du planning, pour le fil de la famille (Ma journée les montre déjà).
-function sourceRepas(ctx) {
-  if (!ctx.famille) return [];
-  const di = dayIndex(ctx.date);
-  if (di < 0) return [];
-  const out = [];
-  for (const p of state.plan.filter((x) => x.day === di && ['midi', 'soir'].includes(x.slot))) {
-    const r = p.recipe_id ? recipeById(p.recipe_id) : null;
-    if (!r) continue;
-    const mangeurs = mealEaters(p);
-    out.push({ type: 'repas', heure: SLOT_TIME[p.slot], titre: `${slotLabel(p.slot)} : ${r.title}`, detail: mealWho(p), icone: '🍽️',
-      membres: mangeurs.length === state.members.length ? [] : mangeurs.map((m) => m.id), act: 'open-recipe', data: { id: r.id } });
-  }
-  return out;
-}
 
 // Données du briefing de demain (fil des modules, agenda, séances prévues).
 async function donneesBriefing(date = new Date()) {
@@ -318,7 +305,7 @@ function augmenterJournee(html) {
 const vueJour = Modules.get('aujourdhui');
 if (vueJour) { const base = vueJour.rendu; vueJour.rendu = () => augmenterJournee(base()); }
 
-// « En un coup d'œil » : une tuile par module (agenda, tâches, repas, courses, messages, moi), qui mène à son écran.
+// « En un coup d'œil » : une tuile par module (agenda, tâches, courses, messages, moi ; les repas restent dans Cuisine), qui mène à son écran.
 function tuilesHtml() {
   const t = Accueil.resumes();
   if (!t.length) return '';
@@ -356,7 +343,6 @@ Modules.register({
   libelle: () => APP_NAME,
   rendu: renduFamille,
   async charger(force, { horsLigne } = {}) { if (!horsLigne) planifierPlusTard(6000); },
-  sourcesAccueil: (ctx) => sourceRepas(ctx),
   actions: {
     'af-filtre': (b) => { filtre = b.dataset.m || null; $$('.af-membres .chip').forEach((c) => c.setAttribute('aria-pressed', String((c.dataset.m || null) === filtre))); const f = $('[data-af-fil="famille"]'); if (f) f.innerHTML = filHtml('famille'); },
     'accueil-ajout': () => {

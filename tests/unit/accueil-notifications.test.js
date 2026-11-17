@@ -123,7 +123,7 @@ test('briefing : trajets d\'enfant reconnus par le titre ou le champ trajet', ()
   eq(plain(A.detecterTrajet({ titre: 'Crèche', trajet: { sens: 'retour', qui: ['a'], pour: ['z'] } }, MEMBRES, ENFANTS)), { sens: 'retour', qui: ['a'], pour: ['z'] });
 });
 
-test('briefing : éléments classés depuis l\'agenda et le fil des modules, sans doublon', () => {
+test('briefing : éléments classés depuis l\'agenda et le fil des modules, sans doublon ni repas (ils restent dans Cuisine)', () => {
   const agenda = [
     { source: 'planning', titre: 'Gratin', heure: '19:30', membres: [] },
     { source: 'agenda', titre: 'Déposer Zoé', heure: '08:30', membres: ['a'] },
@@ -137,9 +137,8 @@ test('briefing : éléments classés depuis l\'agenda et le fil des modules, san
     { module: 'carnet', titre: 'Vermifuge', heure: '09:00', membres: [] },
   ];
   const l = A.classerBriefing({ agenda, accueil, seances: [{ titre: 'Renfo', heure: '07:00', membres: ['a'] }], membres: MEMBRES, enfants: ENFANTS });
-  eq(l.map((e) => `${e.type}:${e.titre}`), ['repas:Gratin', 'trajet:Déposer Zoé', 'evenement:Judo', 'tache:Vaccin du chien', 'evenement:Vermifuge', 'seance:Renfo']);
-  assert.equal(l[0].creneau, 'soir');
-  eq(l[1].pour, ['z']);
+  eq(l.map((e) => `${e.type}:${e.titre}`), ['trajet:Déposer Zoé', 'evenement:Judo', 'tache:Vaccin du chien', 'evenement:Vermifuge', 'seance:Renfo']);
+  eq(l[0].pour, ['z']);
 });
 
 test('fil : « moi » garde ce qui me concerne (moi, les enfants, le foyer) ; « famille » se filtre par membre', () => {
@@ -189,7 +188,7 @@ test('modules : Accueil › Famille et Plus › Notifications enregistrés à la
   assert.equal(app.T.notif_prefs, 'notif_prefs');
   assert.equal(app.T.notif_file, 'notif_file');
   assert.ok(app.ACTIONS['accueil-ajout'] && app.ACTIONS['af-filtre']);
-  assert.ok(app.Accueil.sources.some((s) => s.module === 'accueil-famille'));
+  assert.ok(!app.Accueil.sources.some((s) => s.module === 'accueil-famille'), 'les repas ne sont plus dans le fil');
 });
 
 test('rappels par personne de la fiche d\'un événement : programmés à l\'heure choisie, pour cette personne seulement', () => {

@@ -12,13 +12,8 @@ Modules.register({ id: 'aujourdhui', onglet: 'accueil', segment: 'Moi', ordre: 2
 Modules.register({ id: 'suivi', onglet: 'accueil', segment: 'Suivi', ordre: 30, libelle: 'Suivi nutritionnel', rendu: () => renderSuivi() });
 
 Modules.register({
-  id: 'planning', onglet: 'cuisine', segment: 'Repas', ordre: 10, libelle: 'Ma semaine', rendu: () => renderPlanning(), resume: () => resumeRepas(),
-  // Repas de la semaine chargée, pour l'agenda familial.
-  agenda: (debut, fin) => state.plan.filter((p) => p.recipe_id || p.reste_id).map((p) => {
-    const date = isoDate(addDays(typeof p.week === 'string' ? isoToDate(p.week) : state.week, Number(p.day) || 0));
-    const r = p.recipe_id ? recipeById(p.recipe_id) : null;
-    return { id: `repas:${p.week}:${p.day}:${p.slot}`, date, heure: SLOT_TIME[p.slot] || null, titre: r?.title || 'Reste', detail: slotLabel(p.slot), act: 'tab', data: { tab: 'planning' } };
-  }),
+  id: 'planning', onglet: 'cuisine', segment: 'Repas', ordre: 10, libelle: 'Ma semaine', rendu: () => renderPlanning(),
+  // Les repas ne s'affichent que dans Cuisine : ni tuile d'accueil, ni agenda, ni fil (pas de doublon).
 });
 Modules.register({ id: 'courses', onglet: 'cuisine', segment: 'Courses', ordre: 20, libelle: 'Liste de courses', rendu: () => renderCourses(), resume: () => resumeCourses() });
 Modules.register({ id: 'recettes', onglet: 'cuisine', segment: 'Recettes', ordre: 30, libelle: 'Mes recettes', rendu: () => renderRecipes() });
@@ -94,18 +89,6 @@ function resumeMoi() {
   const besoin = Math.round(needs(m, d).kcal || 0);
   return { ordre: 60, icone: c ? '🐾' : '🙂', titre: c ? `Moi et ${c.nom}` : 'Moi', valeur: `${fmtNum(mange)} / ${fmtNum(besoin)} kcal`,
     detail: `Eau : ${fmtL(waterTotal(m, d))} / ${fmtL(waterGoal(m, d))}`, act: 'tab', data: { tab: 'aujourdhui' } };
-}
-function resumeRepas() {
-  const d = new Date();
-  const di = dayIndex(d);
-  // Prochain repas de la journée : le midi jusqu'à 14 h s'il est prévu, sinon le soir.
-  const prevu = (slot) => (di >= 0 ? state.plan.find((x) => x.day === di && x.slot === slot && (x.recipe_id || x.reste_id)) : null);
-  const midi = d.getHours() < 14 ? prevu('midi') : null;
-  const slot = midi ? 'midi' : d.getHours() < 14 && !prevu('soir') ? 'midi' : 'soir';
-  const p = midi || prevu('soir');
-  const r = p?.recipe_id ? recipeById(p.recipe_id) : null;
-  return { ordre: 30, icone: '🍽️', titre: slot === 'midi' ? 'Ce midi' : 'Ce soir', valeur: r ? r.title : p ? 'Un reste' : 'Rien de prévu',
-    detail: p ? mealWho(p) : 'Toucher pour planifier', act: 'tab', data: { tab: 'planning' } };
 }
 function resumeCourses() {
   const tous = [...buildShopping().byAisle.values()].flat();

@@ -32,7 +32,6 @@ function parisNow() {
 const addDays = (d: Date, n: number) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
 const mondayOf = (d: Date) => addDays(d, -((d.getDay() + 6) % 7));
 const absente = (e: { message?: string } | null) => !!e && /relation|does not exist|schema cache/i.test(e.message ?? "");
-const SLOT_HEURE: Record<string, string> = { "petit-dejeuner": "07:30", collation: "10:30", midi: "12:30", gouter: "16:30", soir: "19:30" };
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
@@ -182,13 +181,14 @@ Deno.serve(async (req) => {
     // Briefing du soir de secours : à l'heure choisie, si l'appli ne l'a pas préparé (personne ne l'a ouverte aujourd'hui).
     const enAttenteBriefing = users.filter((uid) => { const p = prefsCompte(uid, list); return veut(p, "briefing") && p.briefing_heure === hour && !enSilence(p, hour) && !preparees.has(`briefing:${uid}:${demain}`); });
     if (enAttenteBriefing.length) {
-      const elements = await elementsDemain(admin, foyerId, tomorrow, demain);
       const { data: membres } = await admin.from("foyer_membres").select("id, nom").eq("foyer_id", foyerId).order("ordre");
       for (const uid of enAttenteBriefing) {
         const moi = (comptes ?? []).find((c) => c.user_id === uid)?.member_id ?? null;
         const { data: ss } = await admin.from("forme_seances").select("heure, prevu, type").eq("user_id", uid).eq("date", demain).eq("statut", "prevu");
         const seances = (ss ?? []).map((x) => ({ type: "seance", titre: x.prevu?.titre ?? "Séance", heure: x.heure ? String(x.heure).slice(0, 5) : null, membres: moi ? [moi] : [] }));
-        const b = composerBriefing({ elements: [...elements, ...seances], membres: membres ?? [], moi });
+        // Les repas restent dans Cuisine : le briefing de secours n'annonce que les séances prévues, et ne part pas sans rien.
+        const b = composerBriefing({ elements: seances, membres: membres ?? [], moi });
+        if (!b.nb) continue;
         const { error: dup } = await admin.from("rappels_envoyes").insert({ foyer_id: foyerId, type: "briefing", key: `${uid}:${demain}` });
         if (!dup) ajouterPerso(uid, { type: "briefing", key: demain, title: "Demain", body: b.resume, url: "./#aujourdhui" });
       }
@@ -217,21 +217,3 @@ Deno.serve(async (req) => {
   return json({ ok: true, sent, at: `${today} ${hour}h` });
 });
 
-// Repas de demain pour le briefing de secours : planning de l'appli et planning Monsieur Cuisine (tables facultatives).
-// deno-lint-ignore no-explicit-any
-async function elementsDemain(admin: any, foyerId: string, tomorrow: Date, demain: string) {
-  const out: { type: string; titre: string; heure: string | null; creneau: string; membres: string[] }[] = [];
-  const { data: meals } = await admin.from("planning_repas").select("slot, recipe_id, reste_id").eq("foyer_id", foyerId).eq("week", iso(mondayOf(tomorrow))).eq("day", (tomorrow.getDay() + 6) % 7);
-  const ids = [...new Set((meals ?? []).map((m: { recipe_id: string }) => m.recipe_id).filter(Boolean))];
-  const { data: recs } = ids.length ? await admin.from("recettes").select("id, title").in("id", ids) : { data: [] };
-  for (const m of meals ?? []) {
-    if (!["midi", "soir"].includes(m.slot)) continue;
-    const titre = (recs ?? []).find((r: { id: string }) => r.id === m.recipe_id)?.title ?? (m.reste_id ? "Reste" : null);
-    if (titre) out.push({ type: "repas", titre, heure: SLOT_HEURE[m.slot] ?? null, creneau: m.slot, membres: [] });
-  }
-  if (!out.length) {
-    const { data: mc, error } = await admin.from("mc_planning").select("titre").eq("foyer_id", foyerId).eq("date", demain);
-    if (!error) for (const r of mc ?? []) out.push({ type: "repas", titre: r.titre, heure: null, creneau: "", membres: [] });
-  }
-  return out;
-}

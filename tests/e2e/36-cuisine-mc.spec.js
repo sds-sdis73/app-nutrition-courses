@@ -137,11 +137,12 @@ module.exports = {
       assert.match(s, /n'a pas transmis les ingrédients/);
       await H.closeSheets(page);
     } },
-    { name: 'Accueil : le prochain repas Monsieur Cuisine dans le fil du jour', fn: async ({ page }) => {
-      const els = await page.evaluate(async () => (await Accueil.elements({ date: new Date() })).filter((e) => e.module === 'cuisine-mc').map((e) => ({ titre: e.titre, heure: e.heure, act: e.act })));
-      assert.deepEqual(els, [{ titre: 'Au menu : Quiche aux poireaux', heure: '12:30', act: 'cmc-recette' }]);
-      const ag = await page.evaluate(async () => (await Agenda.elements(isoToDate('2026-10-19'), isoToDate('2026-10-25'))).filter((e) => e.source === 'cuisine-mc').length);
-      assert.equal(ag, 3);
+    { name: 'Repas Monsieur Cuisine seulement dans Cuisine : ni dans le fil, ni dans l\'agenda, ni dans les tuiles de l\'accueil', fn: async ({ page }) => {
+      const els = await page.evaluate(async () => (await Accueil.elements({ date: new Date(), famille: true })).filter((e) => e.module === 'cuisine-mc' || e.type === 'repas').length);
+      assert.equal(els, 0);
+      const ag = await page.evaluate(async () => (await Agenda.elements(isoToDate('2026-10-19'), isoToDate('2026-10-25'))).filter((e) => ['cuisine-mc', 'planning'].includes(e.source)).length);
+      assert.equal(ag, 0);
+      assert.ok(!(await page.evaluate(() => Accueil.resumes().some((r) => /midi|soir/i.test(r.titre)))));
     } },
     { name: 'Courses : rayons dans l\'ordre du magasin, doublons fusionnés, matériel retiré, placard à part', fn: async ({ page }) => {
       await page.click('.segbar [data-tab="courses"]');

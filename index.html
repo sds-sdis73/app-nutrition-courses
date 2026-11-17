@@ -4114,7 +4114,7 @@ Forme.install = function install() {
 // ---------------------------------------------------------------------------
 const APP_NAME = 'Tribu & Toutous';
 // À incrémenter à chaque publication, avec la même valeur dans version.json.
-const APP_VERSION = '2026-11-17.4';
+const APP_VERSION = '2026-11-17.5';
 const SUPABASE_URL = 'https://svugddkrptqpjmywhorb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2dWdkZGtycHRxcGpteXdob3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MjU5NDgsImV4cCI6MjEwODUwMTk0OH0.63RETgf7rbVMquGV-7ooY3qn-Qf31uVCA3ZBfqBvFcI';
 const OFF = 'https://world.openfoodfacts.org/api/v2';
@@ -9248,13 +9248,8 @@ Modules.register({ id: 'aujourdhui', onglet: 'accueil', segment: 'Moi', ordre: 2
 Modules.register({ id: 'suivi', onglet: 'accueil', segment: 'Suivi', ordre: 30, libelle: 'Suivi nutritionnel', rendu: () => renderSuivi() });
 
 Modules.register({
-  id: 'planning', onglet: 'cuisine', segment: 'Repas', ordre: 10, libelle: 'Ma semaine', rendu: () => renderPlanning(), resume: () => resumeRepas(),
-  // Repas de la semaine chargée, pour l'agenda familial.
-  agenda: (debut, fin) => state.plan.filter((p) => p.recipe_id || p.reste_id).map((p) => {
-    const date = isoDate(addDays(typeof p.week === 'string' ? isoToDate(p.week) : state.week, Number(p.day) || 0));
-    const r = p.recipe_id ? recipeById(p.recipe_id) : null;
-    return { id: `repas:${p.week}:${p.day}:${p.slot}`, date, heure: SLOT_TIME[p.slot] || null, titre: r?.title || 'Reste', detail: slotLabel(p.slot), act: 'tab', data: { tab: 'planning' } };
-  }),
+  id: 'planning', onglet: 'cuisine', segment: 'Repas', ordre: 10, libelle: 'Ma semaine', rendu: () => renderPlanning(),
+  // Les repas ne s'affichent que dans Cuisine : ni tuile d'accueil, ni agenda, ni fil (pas de doublon).
 });
 Modules.register({ id: 'courses', onglet: 'cuisine', segment: 'Courses', ordre: 20, libelle: 'Liste de courses', rendu: () => renderCourses(), resume: () => resumeCourses() });
 Modules.register({ id: 'recettes', onglet: 'cuisine', segment: 'Recettes', ordre: 30, libelle: 'Mes recettes', rendu: () => renderRecipes() });
@@ -9330,18 +9325,6 @@ function resumeMoi() {
   const besoin = Math.round(needs(m, d).kcal || 0);
   return { ordre: 60, icone: c ? '🐾' : '🙂', titre: c ? `Moi et ${c.nom}` : 'Moi', valeur: `${fmtNum(mange)} / ${fmtNum(besoin)} kcal`,
     detail: `Eau : ${fmtL(waterTotal(m, d))} / ${fmtL(waterGoal(m, d))}`, act: 'tab', data: { tab: 'aujourdhui' } };
-}
-function resumeRepas() {
-  const d = new Date();
-  const di = dayIndex(d);
-  // Prochain repas de la journée : le midi jusqu'à 14 h s'il est prévu, sinon le soir.
-  const prevu = (slot) => (di >= 0 ? state.plan.find((x) => x.day === di && x.slot === slot && (x.recipe_id || x.reste_id)) : null);
-  const midi = d.getHours() < 14 ? prevu('midi') : null;
-  const slot = midi ? 'midi' : d.getHours() < 14 && !prevu('soir') ? 'midi' : 'soir';
-  const p = midi || prevu('soir');
-  const r = p?.recipe_id ? recipeById(p.recipe_id) : null;
-  return { ordre: 30, icone: '🍽️', titre: slot === 'midi' ? 'Ce midi' : 'Ce soir', valeur: r ? r.title : p ? 'Un reste' : 'Rien de prévu',
-    detail: p ? mealWho(p) : 'Toucher pour planifier', act: 'tab', data: { tab: 'planning' } };
 }
 function resumeCourses() {
   const tous = [...buildShopping().byAisle.values()].flat();
@@ -9778,11 +9761,13 @@ function classerBriefing({ agenda = [], accueil = [], seances = [], membres = []
     if (tr) return { ...base, type: 'trajet', sens: tr.sens, membres: tr.qui, pour: tr.pour };
     return { ...base, type: 'evenement' };
   };
-  for (const e of agenda) out.push(de(e, e.source));
+  // Les repas restent dans Cuisine : jamais dans le briefing.
+  for (const e of agenda) { const x = de(e, e.source); if (x.type !== 'repas') out.push(x); }
   const deja = new Set(out.map((x) => `${sansAccents(x.titre)}|${x.heure || ''}`));
   for (const e of accueil) {
     if (['accueil-famille', 'agenda', 'planning'].includes(e.module)) continue;
     const x = de(e, e.module);
+    if (x.type === 'repas') continue;
     const k = `${sansAccents(x.titre)}|${x.heure || ''}`;
     if (!deja.has(k)) { deja.add(k); out.push(x); }
   }
@@ -9890,21 +9875,6 @@ const moiCompte = () => memberById(state.compte?.member_id) || state.members[0] 
 const enfantsDuFoyer = () => state.members.filter((m) => m.naissance && ageOf(m) < 15).map((m) => m.id);
 const indexMembre = (id) => state.members.findIndex((m) => m.id === id);
 
-// Repas du jour du planning, pour le fil de la famille (Ma journée les montre déjà).
-function sourceRepas(ctx) {
-  if (!ctx.famille) return [];
-  const di = dayIndex(ctx.date);
-  if (di < 0) return [];
-  const out = [];
-  for (const p of state.plan.filter((x) => x.day === di && ['midi', 'soir'].includes(x.slot))) {
-    const r = p.recipe_id ? recipeById(p.recipe_id) : null;
-    if (!r) continue;
-    const mangeurs = mealEaters(p);
-    out.push({ type: 'repas', heure: SLOT_TIME[p.slot], titre: `${slotLabel(p.slot)} : ${r.title}`, detail: mealWho(p), icone: '🍽️',
-      membres: mangeurs.length === state.members.length ? [] : mangeurs.map((m) => m.id), act: 'open-recipe', data: { id: r.id } });
-  }
-  return out;
-}
 
 // Données du briefing de demain (fil des modules, agenda, séances prévues).
 async function donneesBriefing(date = new Date()) {
@@ -10039,7 +10009,7 @@ function augmenterJournee(html) {
 const vueJour = Modules.get('aujourdhui');
 if (vueJour) { const base = vueJour.rendu; vueJour.rendu = () => augmenterJournee(base()); }
 
-// « En un coup d'œil » : une tuile par module (agenda, tâches, repas, courses, messages, moi), qui mène à son écran.
+// « En un coup d'œil » : une tuile par module (agenda, tâches, courses, messages, moi ; les repas restent dans Cuisine), qui mène à son écran.
 function tuilesHtml() {
   const t = Accueil.resumes();
   if (!t.length) return '';
@@ -10077,7 +10047,6 @@ Modules.register({
   libelle: () => APP_NAME,
   rendu: renduFamille,
   async charger(force, { horsLigne } = {}) { if (!horsLigne) planifierPlusTard(6000); },
-  sourcesAccueil: (ctx) => sourceRepas(ctx),
   actions: {
     'af-filtre': (b) => { filtre = b.dataset.m || null; $$('.af-membres .chip').forEach((c) => c.setAttribute('aria-pressed', String((c.dataset.m || null) === filtre))); const f = $('[data-af-fil="famille"]'); if (f) f.innerHTML = filHtml('famille'); },
     'accueil-ajout': () => {
@@ -13192,16 +13161,8 @@ function habiller(id, rendu) {
   m.rendu = () => rendu(renduMiam);
   // Tuile de l'Accueil : celle de Monsieur Cuisine quand la liaison est active, sinon celle du cœur.
   const resumeMiam = m.resume;
-  if (resumeMiam) m.resume = () => (actif() ? (id === 'planning' ? resumeRepasMc() : resumeCoursesMc()) : resumeMiam());
+  if (resumeMiam) m.resume = () => (actif() ? resumeCoursesMc() : resumeMiam());
   Object.defineProperty(m, 'cuisineMc', { value: true });
-}
-function resumeRepasMc() {
-  const d = new Date();
-  const repas = planning.filter((p) => p.date === isoDate(d)).sort(ordreRepas);
-  const pr = repas.length ? (prochainRepas(repas, d)?.repas || repas[0]) : null;
-  const soir = !pr || repas.length === 1 || pr === repas[repas.length - 1] || d.getHours() >= 14;
-  return { ordre: 30, icone: '🍽️', titre: soir ? 'Ce soir' : 'Ce midi', valeur: pr ? pr.titre : 'Rien de prévu',
-    detail: pr ? 'Monsieur Cuisine' : 'Planifier dans Monsieur Cuisine', act: pr ? 'cmc-recette' : 'tab', data: pr ? { id: pr.mc_id } : { tab: 'planning' } };
 }
 function resumeCoursesMc() {
   const l = listeActuelle();
@@ -13221,18 +13182,7 @@ Modules.register({
   tables: { mc_connexions: 'mc_connexions', mc_planning: 'mc_planning', mc_courses: 'mc_courses', mc_recettes: 'mc_recettes', courses_modifs: 'courses_modifs' },
   charger,
   actions,
-  sourcesAccueil: (ctx) => {
-    const repas = planning.filter((p) => p.date === ctx.iso).sort(ordreRepas);
-    if (!repas.length) return [];
-    const maintenant = ctx.iso === isoDate(new Date()) ? new Date() : ctx.date;
-    const pr = prochainRepas(repas, maintenant)?.repas || repas[0];
-    const r = recettes.get(Number(pr.recette_mc_id));
-    const soir = repas.length === 1 || pr === repas[repas.length - 1];
-    const duree = Number(pr.duree_min || r?.duree_min) || 0;
-    return [{ heure: soir ? SLOT_TIME.soir : SLOT_TIME.midi, titre: `Au menu : ${pr.titre}`, detail: [duree ? `${duree} min` : '', r ? kcalTxt(r) : '', 'Monsieur Cuisine'].filter(Boolean).join(' · '), icone: ICON.chef, act: 'cmc-recette', data: { id: pr.mc_id } }];
-  },
-  agenda: (debut, fin) => planning.filter((p) => p.date >= isoDate(debut) && p.date <= isoDate(fin))
-    .map((p) => ({ id: `mc:${p.mc_id}`, date: p.date, heure: null, titre: p.titre, detail: 'Repas · Monsieur Cuisine', act: 'cmc-recette', data: { id: p.mc_id } })),
+  // Repas Monsieur Cuisine : seulement dans Cuisine (pas dans le fil, l'agenda ni les tuiles de l'accueil).
   ajoutRapide: {
     type: 'article',
     libelle: 'Article',

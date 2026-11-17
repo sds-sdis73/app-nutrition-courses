@@ -930,16 +930,8 @@ function habiller(id, rendu) {
   m.rendu = () => rendu(renduMiam);
   // Tuile de l'Accueil : celle de Monsieur Cuisine quand la liaison est active, sinon celle du cœur.
   const resumeMiam = m.resume;
-  if (resumeMiam) m.resume = () => (actif() ? (id === 'planning' ? resumeRepasMc() : resumeCoursesMc()) : resumeMiam());
+  if (resumeMiam) m.resume = () => (actif() ? resumeCoursesMc() : resumeMiam());
   Object.defineProperty(m, 'cuisineMc', { value: true });
-}
-function resumeRepasMc() {
-  const d = new Date();
-  const repas = planning.filter((p) => p.date === isoDate(d)).sort(ordreRepas);
-  const pr = repas.length ? (prochainRepas(repas, d)?.repas || repas[0]) : null;
-  const soir = !pr || repas.length === 1 || pr === repas[repas.length - 1] || d.getHours() >= 14;
-  return { ordre: 30, icone: '🍽️', titre: soir ? 'Ce soir' : 'Ce midi', valeur: pr ? pr.titre : 'Rien de prévu',
-    detail: pr ? 'Monsieur Cuisine' : 'Planifier dans Monsieur Cuisine', act: pr ? 'cmc-recette' : 'tab', data: pr ? { id: pr.mc_id } : { tab: 'planning' } };
 }
 function resumeCoursesMc() {
   const l = listeActuelle();
@@ -959,18 +951,7 @@ Modules.register({
   tables: { mc_connexions: 'mc_connexions', mc_planning: 'mc_planning', mc_courses: 'mc_courses', mc_recettes: 'mc_recettes', courses_modifs: 'courses_modifs' },
   charger,
   actions,
-  sourcesAccueil: (ctx) => {
-    const repas = planning.filter((p) => p.date === ctx.iso).sort(ordreRepas);
-    if (!repas.length) return [];
-    const maintenant = ctx.iso === isoDate(new Date()) ? new Date() : ctx.date;
-    const pr = prochainRepas(repas, maintenant)?.repas || repas[0];
-    const r = recettes.get(Number(pr.recette_mc_id));
-    const soir = repas.length === 1 || pr === repas[repas.length - 1];
-    const duree = Number(pr.duree_min || r?.duree_min) || 0;
-    return [{ heure: soir ? SLOT_TIME.soir : SLOT_TIME.midi, titre: `Au menu : ${pr.titre}`, detail: [duree ? `${duree} min` : '', r ? kcalTxt(r) : '', 'Monsieur Cuisine'].filter(Boolean).join(' · '), icone: ICON.chef, act: 'cmc-recette', data: { id: pr.mc_id } }];
-  },
-  agenda: (debut, fin) => planning.filter((p) => p.date >= isoDate(debut) && p.date <= isoDate(fin))
-    .map((p) => ({ id: `mc:${p.mc_id}`, date: p.date, heure: null, titre: p.titre, detail: 'Repas · Monsieur Cuisine', act: 'cmc-recette', data: { id: p.mc_id } })),
+  // Repas Monsieur Cuisine : seulement dans Cuisine (pas dans le fil, l'agenda ni les tuiles de l'accueil).
   ajoutRapide: {
     type: 'article',
     libelle: 'Article',
