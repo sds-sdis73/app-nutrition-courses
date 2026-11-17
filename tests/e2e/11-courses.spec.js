@@ -78,6 +78,7 @@ module.exports = {
       await page.click('[data-act="panier-u"]');
       await page.waitForSelector('.sheet-wrap.open [data-x="ouvrir"]');
       assert.match(await page.$eval('.sheet-wrap.open', (e) => e.textContent), /1 article prêt/);
+      assert.match(await page.$eval('.sheet-wrap.open', (e) => e.textContent), /Produit de 500 g/);
       await page.click('.sheet-wrap.open [data-x="plus"]');
       const href = await page.$eval('.sheet-wrap.open [data-x="ouvrir"]', (a) => a.getAttribute('href'));
       assert.match(href, /^https:\/\/www\.coursesu\.com\/drive-[a-z0-9-]+#tribu-panier=7634896\*2$/);

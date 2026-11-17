@@ -440,6 +440,7 @@ function linkItem(k, name) {
     <form class="stack" style="margin-top:12px" data-form="link">
       <label class="field"><span>Lien du produit Courses U</span><input class="input" name="url" type="url" inputmode="url" required placeholder="https://www.coursesu.com/p/…" value="${esc(cur?.url || '')}"></label>
       <label class="field"><span>Nom du produit (facultatif)</span><input class="input" name="label" placeholder="Ex. Oignons jaunes U 1 kg" value="${esc(cur?.label || '')}"></label>
+      <p class="muted small" style="margin:0">Le format (500 g, 6x1l, boîte de 12…) est lu dans l'adresse ou dans ce nom : il sert à calculer combien de produits mettre au panier.</p>
       <div class="grid2"><label class="field"><span>Prix (€, facultatif)</span><input class="input" name="prix" type="number" step="0.01" min="0" inputmode="decimal" value="${esc(cur?.prix ?? '')}" placeholder="${cur?.prix_source === 'openprices' ? 'auto' : 'ex. 1,89'}"></label>
         <label class="field"><span>Code-barres (facultatif)</span><input class="input" name="ean" inputmode="numeric" value="${esc(cur?.ean || '')}" placeholder="pour le prix moyen"></label></div>
       ${cur?.prix ? `<p class="muted small" style="margin:0">Prix actuel : ${fmtEur(Number(cur.prix))} (${PRICE_SRC[cur.prix_source] || 'mémorisé'}${cur.prix_date ? `, ${fmtDay(isoToDate(cur.prix_date))}` : ''}).</p>` : ''}

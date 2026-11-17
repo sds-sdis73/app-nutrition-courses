@@ -875,7 +875,7 @@ const actions = {
   'cmc-modifier': (b) => modifierArticle(b.dataset.cle),
   'cmc-forcer': async (b) => { try { await ecrireModif(b.dataset.cle, { forcer: true }); render(); } catch (e) { if (modifsDispo) fail(e); } },
   'cmc-reafficher': async (b) => { try { await ecrireModif(b.dataset.cle, { masque: false }); render(); } catch (e) { if (modifsDispo) fail(e); } },
-  'cmc-panier-u': () => panierUSheet(listeActuelle().rayons.flatMap((r) => r.articles).filter((a) => !a.coche).map((a) => ({ cle: a.cle, nom: a.nom }))),
+  'cmc-panier-u': () => panierUSheet(listeActuelle().rayons.flatMap((r) => r.articles).filter((a) => !a.coche).map((a) => ({ cle: a.cle, nom: a.nom, besoin: a.quantite || null }))),
   'cmc-copier': async () => { try { await navigator.clipboard.writeText(texteListe(listeActuelle())); toast('Liste copiée'); } catch { toast('Copie impossible sur ce navigateur'); } },
   'cmc-partager': async () => {
     const text = texteListe(listeActuelle());
