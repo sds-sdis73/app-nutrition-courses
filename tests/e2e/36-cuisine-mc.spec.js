@@ -157,7 +157,7 @@ module.exports = {
       assert.match(t, /Matériel retiré de la liste : plat à gratin/);
       assert.match(t, /Déjà au placard \(1\)/);
       assert.doesNotMatch(await texte(page, '.cmc-rayon'), /Sel/);
-      assert.ok(await page.$('.cmc-magasin a[href*="coursesu.com"]'), 'lien Courses U conservé');
+      assert.ok(await page.$('.cmc-magasin [data-act="cmc-panier-u"]'), 'bouton Panier U présent');
     } },
     { name: 'cocher : écrit dans courses_modifs ; un rayon terminé passe à la fin', fn: async ({ page }) => {
       for (const cle of ['ail', 'chou fleur', 'poireaux'.replace(/x$/, '')]) { await cocher(page, cle); await page.waitForTimeout(350); }

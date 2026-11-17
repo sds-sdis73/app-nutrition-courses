@@ -770,7 +770,7 @@ function renduCourses(renduMiam) {
       <div class="cmc-progres-txt"><b>${l.coches}</b>/${l.total}</div></div>
     <div class="cmc-progres" role="progressbar" aria-valuemin="0" aria-valuemax="${l.total}" aria-valuenow="${l.coches}" aria-label="Articles dans le caddie"><span style="width:${pct}%"></span></div>
     <div class="cmc-actions">
-      <a class="btn small" href="${esc(cuStore())}" target="_blank" rel="noopener">${ICON.store} Courses U</a>
+      <button class="btn small primary" data-act="cmc-panier-u">${ICON.cart} Panier U</button>
       <button class="btn small" data-act="cmc-copier">${ICON.copy} Copier</button>
       <button class="btn small" data-act="cmc-partager">${ICON.share} Partager</button>
       ${l.coches ? `<button class="btn small primary" data-act="cmc-terminer">${ICON.check} Terminer</button>` : ''}</div></section>`;
@@ -875,6 +875,7 @@ const actions = {
   'cmc-modifier': (b) => modifierArticle(b.dataset.cle),
   'cmc-forcer': async (b) => { try { await ecrireModif(b.dataset.cle, { forcer: true }); render(); } catch (e) { if (modifsDispo) fail(e); } },
   'cmc-reafficher': async (b) => { try { await ecrireModif(b.dataset.cle, { masque: false }); render(); } catch (e) { if (modifsDispo) fail(e); } },
+  'cmc-panier-u': () => panierUSheet(listeActuelle().rayons.flatMap((r) => r.articles).filter((a) => !a.coche).map((a) => ({ cle: a.cle, nom: a.nom }))),
   'cmc-copier': async () => { try { await navigator.clipboard.writeText(texteListe(listeActuelle())); toast('Liste copiée'); } catch { toast('Copie impossible sur ce navigateur'); } },
   'cmc-partager': async () => {
     const text = texteListe(listeActuelle());

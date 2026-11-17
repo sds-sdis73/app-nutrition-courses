@@ -68,6 +68,42 @@ module.exports = {
       assert.match(await page.$eval('#main', (e) => e.textContent), /2,50 €/);
       await page.evaluate(async () => { for (const k of Object.keys(state.links)) await Data.deleteLink(k); render(); });
     } },
+    { name: 'panier Courses U : article associé, quantité, lien vers le drive, favori qui ajoute au panier', fn: async ({ page, ctx }) => {
+      await page.click('[data-act="link-item"]');
+      await page.waitForSelector('form[data-form="link"] [name="url"]');
+      await page.fill('form[data-form="link"] [name="url"]', 'https://www.coursesu.com/p/quinoa-bio-500g/7634896.html');
+      await page.click('form[data-form="link"] button.primary');
+      await page.waitForTimeout(1500);
+      assert.ok(await page.evaluate(() => Object.values(state.links).some((l) => l.pid === '7634896')));
+      await page.click('[data-act="panier-u"]');
+      await page.waitForSelector('.sheet-wrap.open [data-x="ouvrir"]');
+      assert.match(await page.$eval('.sheet-wrap.open', (e) => e.textContent), /1 article prêt/);
+      await page.click('.sheet-wrap.open [data-x="plus"]');
+      const href = await page.$eval('.sheet-wrap.open [data-x="ouvrir"]', (a) => a.getAttribute('href'));
+      assert.match(href, /^https:\/\/www\.coursesu\.com\/drive-[a-z0-9-]+#tribu-panier=7634896\*2$/);
+      const favori = await page.evaluate(() => favoriPanierU());
+      assert.match(favori, /^javascript:/);
+      await page.evaluate(async () => { for (const k of Object.keys(state.links)) await Data.deleteLink(k); for (const k of Object.keys(localStorage)) if (k.includes('panierU:')) localStorage.removeItem(k); });
+      await H.closeSheets(page);
+      // Faux coursesu.com : le favori lit l'ancre, récupère le jeton de la page et poste chaque produit.
+      const cu = await ctx.newPage();
+      const envois = [];
+      await cu.route('https://www.coursesu.com/**', async (route) => {
+        const req = route.request();
+        if (req.url().includes('Cart-AddProduct')) { envois.push(req.postData()); return route.fulfill({ contentType: 'application/json', body: '{"success":true}' }); }
+        return route.fulfill({ contentType: 'text/html', body: '<html><body><form><input type="hidden" name="csrf_token" value="jeton-de-test"></form></body></html>' });
+      });
+      await cu.goto('https://www.coursesu.com/drive-superu-cognin#tribu-panier=7634896*2,403997*1');
+      await cu.evaluate((code) => { (0, eval)(decodeURIComponent(code.slice('javascript:'.length))); }, favori);
+      await cu.waitForFunction(() => /ajouté/.test(document.body.textContent), null, { timeout: 8000 });
+      assert.equal(envois.length, 2);
+      const p1 = new URLSearchParams(envois[0]);
+      assert.equal(p1.get('pid'), '7634896');
+      assert.equal(p1.get('Quantity'), '2');
+      assert.equal(p1.get('csrf_token'), 'jeton-de-test');
+      assert.match(await cu.evaluate(() => document.body.textContent), /2 produits ajoutés au panier/);
+      await cu.close();
+    } },
     { name: 'copier la liste : texte complet', fn: async ({ page }) => {
       await page.evaluate(() => { window.__copied = ''; navigator.clipboard.writeText = async (t) => { window.__copied = t; }; });
       await page.click('[data-act="copy-list"]');

@@ -399,6 +399,7 @@ function renderShopping() {
       <div class="row"><span style="color:#e30613">${ICON.store}</span><div class="grow"><b>${esc(state.settings.store_name)}</b><div class="muted small">Courses U · <span data-checked-count>${checkedCountText()}</span></div></div></div>
       <a class="btn soft block" style="margin-top:10px" href="${esc(cuStore())}" target="_blank" rel="noopener">${ICON.ext} 1. Ouvrir mon magasin sur Courses U</a>
       <p class="muted small" style="margin:8px 0 0">Puis, pour chaque article : <b>U</b> ouvre le produit mémorisé, la loupe lance une recherche, et ${ICON.link.replace('<svg', '<svg width="14" height="14" style="vertical-align:-2px"')} mémorise le produit choisi pour les prochaines fois.</p>
+      <button class="btn primary block" style="margin-top:10px" data-act="panier-u">${ICON.cart} Remplir mon panier U</button>
       <div class="grid2" style="margin-top:10px"><button class="btn" data-act="copy-list">${ICON.copy} Copier</button><button class="btn" data-act="share-list">${ICON.share} Partager</button></div>
     </div>
     ${[...byAisle.entries()].filter(([, l]) => l.length).map(([aisle, list]) => { const sub = list.reduce((t, it) => t + (Prices.of(it)?.price || 0), 0); return `<div class="aisle"><h3>${esc(aisle)}${sub ? ` <span class="muted" style="float:right;text-transform:none;letter-spacing:0">${fmtEur(sub)}</span>` : ''}</h3>
@@ -454,7 +455,7 @@ function linkItem(k, name) {
     if (!label) { const m = url.match(/\/p\/([^/]+)\//); label = m ? decodeURIComponent(m[1]).replace(/-+/g, ' ').replace(/^\w/, (c) => c.toUpperCase()) : ''; }
     const manual = parseFloat(form.prix.value.replace(',', '.'));
     const ean = form.ean.value.trim() || null;
-    const pid = url.match(/\/(\d+)\.html/)?.[1] || null;
+    const pid = PanierU.pidUrl(url);
     const extra = { ean, pid };
     if (manual > 0 && manual !== Number(cur?.prix)) Object.assign(extra, { prix: manual, prix_source: 'manuel', prix_date: isoDate(new Date()) });
     try {
