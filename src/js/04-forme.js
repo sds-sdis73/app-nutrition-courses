@@ -45,7 +45,8 @@ function formeHash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) {
 
 const formeLib = () => (typeof FORME_EXOS !== 'undefined' ? FORME_EXOS : []);
 const formeExo = (id, perso = []) => formeLib().find((e) => e.id === id) || perso.find((e) => e.id === id) || null;
-const formeIsJump = (e) => /saut|jump|burpee|bondi|pli?om|corde/i.test(`${e.id} ${e.nom}`);
+// Exercices sautés (écartés quand les sauts sont déconseillés) : d'après l'identifiant, pas le nom affiché (qui peut changer).
+const formeIsJump = (e) => /saut|jump|burpee|bondi|pli?om|corde|patineur|pogo/i.test(e.id || '') || (e.kind === 'perso' && /saut|jump/i.test(e.nom || ''));
 // Exercices autorisés : matériel du lieu, exclusions, gênes.
 function formePool(p) {
   const genes = p.genes || [];

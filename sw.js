@@ -1,5 +1,5 @@
 /* Service worker Tribu : ouverture hors ligne, cache des fichiers de l'app, notifications push. */
-const CACHE = 'tt-shell-v2';
+const CACHE = 'tt-shell-v3';
 const SHELL = ['./', './index.html', './forme-data.js', './manifest.webmanifest', './aliments.json', './plats.json', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png',
   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js',
   'https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/umd/zxing-browser.min.js'];

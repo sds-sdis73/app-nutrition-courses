@@ -2713,7 +2713,8 @@ function formeHash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) {
 
 const formeLib = () => (typeof FORME_EXOS !== 'undefined' ? FORME_EXOS : []);
 const formeExo = (id, perso = []) => formeLib().find((e) => e.id === id) || perso.find((e) => e.id === id) || null;
-const formeIsJump = (e) => /saut|jump|burpee|bondi|pli?om|corde/i.test(`${e.id} ${e.nom}`);
+// Exercices sautés (écartés quand les sauts sont déconseillés) : d'après l'identifiant, pas le nom affiché (qui peut changer).
+const formeIsJump = (e) => /saut|jump|burpee|bondi|pli?om|corde|patineur|pogo/i.test(e.id || '') || (e.kind === 'perso' && /saut|jump/i.test(e.nom || ''));
 // Exercices autorisés : matériel du lieu, exclusions, gênes.
 function formePool(p) {
   const genes = p.genes || [];
@@ -4119,7 +4120,7 @@ Forme.install = function install() {
 // ---------------------------------------------------------------------------
 const APP_NAME = 'Tribu';
 // À incrémenter à chaque publication, avec la même valeur dans version.json.
-const APP_VERSION = '2026-11-17.7';
+const APP_VERSION = '2026-11-18.1';
 const SUPABASE_URL = 'https://svugddkrptqpjmywhorb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2dWdkZGtycHRxcGpteXdob3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MjU5NDgsImV4cCI6MjEwODUwMTk0OH0.63RETgf7rbVMquGV-7ooY3qn-Qf31uVCA3ZBfqBvFcI';
 const OFF = 'https://world.openfoodfacts.org/api/v2';

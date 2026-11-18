@@ -164,3 +164,16 @@ describe('suivi et intégration', () => {
     try { assert.equal(app.needs(m, app.today).kcal, base + 250); } finally { app.state.activites = []; }
   });
 });
+
+test('noms d\'exercices : uniques, et détection des sauts indépendante du nom affiché', () => {
+  const noms = app.FORME_EXOS.map((e) => e.nom);
+  assert.equal(new Set(noms).size, noms.length, 'pas deux exercices du même nom');
+  const sautes = app.FORME_EXOS.filter((e) => /saut|jump|burpee|corde|patineur|pogo/i.test(e.id)).map((e) => e.id);
+  const pool = app.formePool({ materiel: [], genes: ['genou'] }).map((e) => e.id);
+  for (const id of ['patineur', 'pogo', 'squat-saute', 'burpee', 'burpee-sans-saut']) { assert.ok(sautes.includes(id)); assert.ok(!pool.includes(id), `${id} écarté avec une gêne au genou`); }
+  const nom = (id) => app.FORME_EXOS.find((e) => e.id === id).nom;
+  assert.equal(nom('rotation-russe'), 'Russian twist');
+  assert.equal(nom('position-creuse'), 'Hollow body');
+  assert.equal(nom('chaise-murale'), 'Chaise (wall sit)');
+  assert.equal(nom('releve-turc'), 'Turkish get-up');
+});
